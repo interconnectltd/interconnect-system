@@ -224,12 +224,16 @@ exports.handler = async (event, context) => {
 
         } catch (supabaseError) {
             console.error('Supabase error:', supabaseError);
+            console.error('Error message:', supabaseError.message);
+            console.error('Error stack:', supabaseError.stack);
+            console.error('Error type:', supabaseError.constructor.name);
             return {
                 statusCode: 500,
                 headers,
                 body: JSON.stringify({ 
                     error: 'Database error',
-                    details: supabaseError.message
+                    details: supabaseError.message || 'Unknown error',
+                    type: supabaseError.constructor.name
                 })
             };
         }
