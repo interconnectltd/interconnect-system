@@ -69,7 +69,7 @@
         console.log('📌 3. DOM CONTENT LOADED');
         console.log('------------------------');
         
-        const lineButton = document.getElementById('lineLoginBtn');
+        const lineButton = document.getElementById('lineLoginBtn') || document.getElementById('lineRegisterBtn');
         if (lineButton) {
             console.log('✅ LINE button found');
             console.log('   ID:', lineButton.id);

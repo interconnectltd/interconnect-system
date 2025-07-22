@@ -24,6 +24,8 @@ window.addEventListener('supabaseReady', function() {
 });
 
 function initializeAuth() {
+    console.log('🔧 initializeAuth called');
+    
     // ログインフォームの処理
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
@@ -33,6 +35,7 @@ function initializeAuth() {
     // LINEログインボタンの処理
     const lineLoginBtn = document.getElementById('lineLoginBtn');
     if (lineLoginBtn) {
+        console.log('🎯 LINE Login button found, adding event listener');
         lineLoginBtn.addEventListener('click', handleLineLogin);
     }
     
@@ -41,8 +44,14 @@ function initializeAuth() {
     if (lineRegisterBtn) {
         console.log('🎯 LINE Register button found, adding event listener');
         lineRegisterBtn.addEventListener('click', handleLineLogin);
+        // クリックテスト用
+        lineRegisterBtn.addEventListener('click', function(e) {
+            console.log('🔥 LINE Register button clicked!');
+        }, true);
     } else {
         console.log('❌ LINE Register button NOT found');
+        // デバッグ：すべてのボタンを確認
+        console.log('Available buttons:', document.querySelectorAll('button'));
     }
     
     // 現在のユーザーセッションをチェック
