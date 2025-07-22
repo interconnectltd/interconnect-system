@@ -20,7 +20,17 @@ console.log('   ⚠️ If you see 2007213003, clear cache!');
 
 // Supabaseが準備できるまで待つ
 window.addEventListener('supabaseReady', function() {
+    console.log('📍 supabaseReady event received in auth-supabase.js');
     initializeAuth();
+});
+
+// DOMContentLoadedでも試す（念のため）
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📍 DOMContentLoaded in auth-supabase.js');
+    if (window.supabase) {
+        console.log('📍 Supabase already available, calling initializeAuth');
+        initializeAuth();
+    }
 });
 
 function initializeAuth() {
