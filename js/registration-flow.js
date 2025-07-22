@@ -491,4 +491,44 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // LINE登録ボタンの処理（auth-supabase.jsが読み込まれない場合の対策）
+    const lineRegisterBtn = document.getElementById('lineRegisterBtn');
+    if (lineRegisterBtn) {
+        console.log('🎯 LINE Register button found in registration-flow.js');
+        lineRegisterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🔥 LINE Register button clicked (registration-flow.js)');
+            
+            // handleLineLogin関数を探す
+            if (typeof window.handleLineLogin === 'function') {
+                console.log('✅ Calling handleLineLogin');
+                window.handleLineLogin(e);
+            } else {
+                console.error('❌ handleLineLogin function not found');
+                // 直接LINE認証URLを構築
+                const LINE_CHANNEL_ID = '2007688781';
+                const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
+                const state = Math.random().toString(36).substring(2, 15);
+                const nonce = Math.random().toString(36).substring(2, 15);
+                
+                sessionStorage.setItem('line_state', state);
+                
+                const params = new URLSearchParams({
+                    response_type: 'code',
+                    client_id: LINE_CHANNEL_ID,
+                    redirect_uri: LINE_REDIRECT_URI,
+                    state: state,
+                    scope: 'profile openid email',
+                    nonce: nonce
+                });
+                
+                const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+                console.log('Redirecting to:', authUrl);
+                window.location.href = authUrl;
+            }
+        });
+    } else {
+        console.log('❌ LINE Register button NOT found in registration-flow.js');
+    }
 });
