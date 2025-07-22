@@ -398,9 +398,11 @@ body::before {
     border-color: #d1d5db;
 }
 
-/* LINEログインボタン */
-.line-button {
+/* LINEログインボタン - auth-buttonクラスと併用する場合も考慮 */
+.line-button,
+.auth-button.line-button {
     background: #00C300 !important;
+    background-color: #00C300 !important;
     color: white !important;
     border: none !important;
     display: flex;
@@ -413,12 +415,23 @@ body::before {
     margin-bottom: 12px;
 }
 
-.line-button:hover {
+.line-button:hover,
+.auth-button.line-button:hover {
     background: #00B300 !important;
+    background-color: #00B300 !important;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 195, 0, 0.3);
 }
 
+.line-button:focus,
+.auth-button.line-button:focus {
+    background: #00C300 !important;
+    background-color: #00C300 !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 195, 0, 0.3);
+}
+
 .line-button i {
     font-size: 1.25rem;
+    color: white !important;
 }

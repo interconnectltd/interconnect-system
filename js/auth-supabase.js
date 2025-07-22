@@ -3,7 +3,7 @@
  */
 
 // LINE Login Configuration
-const LINE_CHANNEL_ID = '2007688616';
+const LINE_CHANNEL_ID = '2007688781';
 const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
 
 // Supabaseが準備できるまで待つ
