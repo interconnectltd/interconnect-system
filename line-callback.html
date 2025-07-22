@@ -120,7 +120,7 @@
             
             try {
                 // バックエンドAPIを呼び出してLINE認証を処理
-                const response = await fetch('/.netlify/functions/line-auth', {
+                const response = await fetch('/.netlify/functions/line-auth-simple', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

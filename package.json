@@ -26,5 +26,9 @@
   "homepage": "https://github.com/YOUR_USERNAME/INTERCONNECT#readme",
   "devDependencies": {
     "netlify-cli": "^15.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "node-fetch": "^2.6.9"
   }
 }
