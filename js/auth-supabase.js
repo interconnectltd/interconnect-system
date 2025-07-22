@@ -54,14 +54,8 @@ function initializeAuth() {
     if (lineRegisterBtn) {
         console.log('🎯 LINE Register button found, adding event listener');
         lineRegisterBtn.addEventListener('click', handleLineLogin);
-        // クリックテスト用
-        lineRegisterBtn.addEventListener('click', function(e) {
-            console.log('🔥 LINE Register button clicked!');
-        }, true);
     } else {
         console.log('❌ LINE Register button NOT found');
-        // デバッグ：すべてのボタンを確認
-        console.log('Available buttons:', document.querySelectorAll('button'));
     }
     
     // 現在のユーザーセッションをチェック
@@ -120,11 +114,10 @@ async function handleEmailLogin(e) {
 
 // LINEログイン
 function handleLineLogin(e) {
-    // イベントの伝播を完全に停止
+    // イベントの伝播を停止（stopImmediatePropagationは削除）
     if (e) {
         e.preventDefault();
         e.stopPropagation();
-        e.stopImmediatePropagation();
     }
     
     console.log('LINE Login button clicked (auth-supabase.js)');
@@ -221,6 +214,9 @@ function generateRandomString(length) {
     }
     return result;
 }
+
+// handleLineLogin関数をグローバルに公開（他のスクリプトから呼び出せるように）
+window.handleLineLogin = handleLineLogin;
 
 // ログアウト関数（グローバルに公開）
 window.logout = async function() {
