@@ -4,6 +4,10 @@
  */
 
 exports.handler = async (event, context) => {
+    console.log('line-auth-simple function called');
+    console.log('HTTP Method:', event.httpMethod);
+    console.log('Headers:', JSON.stringify(event.headers));
+    
     // CORSヘッダー
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -31,8 +35,23 @@ exports.handler = async (event, context) => {
     }
 
     try {
+        console.log('Request body:', event.body);
+        
         // リクエストボディをパース
-        const body = JSON.parse(event.body);
+        let body;
+        try {
+            body = JSON.parse(event.body);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ 
+                    error: 'Invalid JSON in request body',
+                    details: parseError.message
+                })
+            };
+        }
         const { code, redirect_uri } = body;
 
         if (!code || !redirect_uri) {
@@ -47,10 +66,18 @@ exports.handler = async (event, context) => {
         }
 
         // 環境変数を取得
+        console.log('Checking environment variables...');
         const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID;
         const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
         const SUPABASE_URL = process.env.SUPABASE_URL;
         const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+        
+        console.log('Environment check:', {
+            LINE_CHANNEL_ID: !!LINE_CHANNEL_ID,
+            LINE_CHANNEL_SECRET: !!LINE_CHANNEL_SECRET,
+            SUPABASE_URL: !!SUPABASE_URL,
+            SUPABASE_SERVICE_KEY: !!SUPABASE_SERVICE_KEY
+        });
 
         // 環境変数の確認
         if (!LINE_CHANNEL_ID || !LINE_CHANNEL_SECRET) {
@@ -213,12 +240,15 @@ exports.handler = async (event, context) => {
 
     } catch (error) {
         console.error('Function error:', error);
+        console.error('Error stack:', error.stack);
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({ 
                 error: 'Internal server error',
-                details: error.message
+                details: error.message,
+                type: error.constructor.name,
+                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
             })
         };
     }

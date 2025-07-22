@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netlify Functions Test</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #0066ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #0052cc;
+        }
+        pre {
+            background: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .error {
+            color: #ff0000;
+        }
+        .success {
+            color: #00aa00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Netlify Functions テスト</h1>
+    
+    <div class="test-section">
+        <h2>1. 環境変数テスト</h2>
+        <button onclick="testEnv()">環境変数をチェック</button>
+        <pre id="env-result">結果がここに表示されます...</pre>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. LINE Auth Function テスト</h2>
+        <p>テスト用のダミーデータで関数を呼び出します</p>
+        <button onclick="testLineAuth()">LINE Auth関数をテスト</button>
+        <pre id="auth-result">結果がここに表示されます...</pre>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 現在のURL情報</h2>
+        <pre id="url-info"></pre>
+    </div>
+
+    <script>
+        // URL情報を表示
+        document.getElementById('url-info').textContent = JSON.stringify({
+            origin: window.location.origin,
+            pathname: window.location.pathname,
+            functionsURL: window.location.origin + '/.netlify/functions/'
+        }, null, 2);
+        
+        async function testEnv() {
+            const resultEl = document.getElementById('env-result');
+            resultEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/test-env');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultEl.textContent = JSON.stringify(data, null, 2);
+                    resultEl.className = 'success';
+                } else {
+                    resultEl.textContent = `Error ${response.status}: ${JSON.stringify(data, null, 2)}`;
+                    resultEl.className = 'error';
+                }
+            } catch (error) {
+                resultEl.textContent = `Network Error: ${error.message}`;
+                resultEl.className = 'error';
+            }
+        }
+        
+        async function testLineAuth() {
+            const resultEl = document.getElementById('auth-result');
+            resultEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/line-auth-simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        code: 'TEST_CODE_12345',
+                        redirect_uri: window.location.origin + '/line-callback.html'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultEl.textContent = JSON.stringify(data, null, 2);
+                    resultEl.className = 'success';
+                } else {
+                    resultEl.textContent = `Error ${response.status}: ${JSON.stringify(data, null, 2)}`;
+                    resultEl.className = response.status === 400 ? '' : 'error';
+                }
+            } catch (error) {
+                resultEl.textContent = `Network Error: ${error.message}`;
+                resultEl.className = 'error';
+            }
+        }
+    </script>
+</body>
+</html>
