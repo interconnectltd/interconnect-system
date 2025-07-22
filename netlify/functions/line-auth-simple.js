@@ -164,11 +164,12 @@ exports.handler = async (event, context) => {
             const { createClient } = require('@supabase/supabase-js');
             const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-            // プロファイルテーブルで既存ユーザーを確認
+            // プロファイルテーブルで既存ユーザーを確認（emailで検索）
+            const lineEmail = `line_${profile.userId}@interconnect.com`;
             const { data: existingProfile, error: searchError } = await supabase
-                .from('profiles')
+                .from('user_profiles')
                 .select('*')
-                .eq('line_user_id', profile.userId)
+                .eq('email', lineEmail)
                 .single();
 
             let userProfile;
@@ -176,14 +177,12 @@ exports.handler = async (event, context) => {
             if (existingProfile) {
                 // 既存ユーザーを更新
                 const { data: updatedProfile, error: updateError } = await supabase
-                    .from('profiles')
+                    .from('user_profiles')
                     .update({
-                        display_name: profile.displayName,
-                        picture_url: profile.pictureUrl,
-                        status_message: profile.statusMessage,
+                        name: profile.displayName,
                         updated_at: new Date().toISOString()
                     })
-                    .eq('line_user_id', profile.userId)
+                    .eq('email', lineEmail)
                     .select()
                     .single();
 
@@ -192,12 +191,10 @@ exports.handler = async (event, context) => {
             } else {
                 // 新規ユーザーを作成
                 const { data: newProfile, error: insertError } = await supabase
-                    .from('profiles')
+                    .from('user_profiles')
                     .insert({
-                        line_user_id: profile.userId,
-                        display_name: profile.displayName,
-                        picture_url: profile.pictureUrl,
-                        status_message: profile.statusMessage
+                        name: profile.displayName,
+                        email: lineEmail
                     })
                     .select()
                     .single();
@@ -216,7 +213,6 @@ exports.handler = async (event, context) => {
                         id: userProfile.id,
                         line_user_id: profile.userId,
                         name: profile.displayName,
-                        picture: profile.pictureUrl,
                         email: userProfile.email || null
                     }
                 })
