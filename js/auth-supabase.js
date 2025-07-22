@@ -1,6 +1,10 @@
 /**
  * Supabase Authentication Module
+ * Version: 2025-01-22-v2
  */
+
+console.log('🚀 auth-supabase.js loaded at:', new Date().toISOString());
+console.log('   Script version: 2025-01-22-v2');
 
 // LINE Login Configuration
 const LINE_CHANNEL_ID = '2007688781';
@@ -12,6 +16,7 @@ console.log('   Value:', LINE_CHANNEL_ID);
 console.log('   Type:', typeof LINE_CHANNEL_ID);
 console.log('   Length:', LINE_CHANNEL_ID.length);
 console.log('   Is 10 digits?:', /^\d{10}$/.test(LINE_CHANNEL_ID));
+console.log('   ⚠️ If you see 2007213003, clear cache!');
 
 // Supabaseが準備できるまで待つ
 window.addEventListener('supabaseReady', function() {
