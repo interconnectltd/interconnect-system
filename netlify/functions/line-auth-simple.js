@@ -104,14 +104,10 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // node-fetchを動的にインポート
-        let fetch;
-        try {
-            fetch = require('node-fetch');
-        } catch (e) {
-            // node-fetchが無い場合は、Node.js 18+のfetchを使用
-            fetch = globalThis.fetch;
-        }
+        // Node.js 18以降は標準でfetchが使える
+        const fetch = globalThis.fetch || (() => {
+            throw new Error('Fetch API is not available');
+        })();
 
         // LINEトークンエンドポイントにリクエスト
         const tokenResponse = await fetch('https://api.line.me/oauth2/v2.1/token', {
