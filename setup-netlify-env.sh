@@ -36,10 +36,11 @@ echo ""
 echo "環境変数を設定します..."
 
 # 必要な環境変数の入力を求める
-read -p "SUPABASE_URL (例: https://whyoqhhzwtlxprhizmor.supabase.co): " SUPABASE_URL
-read -p "SUPABASE_SERVICE_KEY: " SUPABASE_SERVICE_KEY
-read -p "LINE_CHANNEL_ID (例: 2007213003): " LINE_CHANNEL_ID
-read -p "LINE_CHANNEL_SECRET: " LINE_CHANNEL_SECRET
+# ハードコードされた値を使用
+SUPABASE_URL="https://whyoqhhzwtlxprhizmor.supabase.co"
+SUPABASE_SERVICE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTUyMzI3NSwiZXhwIjoyMDY3MDk5Mjc1fQ.mYUFuZ8H2X8w2UOSwV4qeQ5C7e0skRgeV38hJ7ognSE"
+LINE_CHANNEL_ID="2007688781"
+LINE_CHANNEL_SECRET="REMOVED_LINE_CHANNEL_SECRET"
 
 # サイトURLを取得
 SITE_URL=$(netlify status --json | grep -o '"url":"[^"]*' | grep -o '[^"]*$')

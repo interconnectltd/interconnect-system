@@ -113,25 +113,39 @@
                     console.log('❌ generateRandomString function NOT found');
                 }
                 
-                // 実際のリダイレクトURLを追跡
-                const originalLocation = window.location.href;
-                Object.defineProperty(window.location, 'href', {
-                    get: function() { return originalLocation; },
-                    set: function(url) {
-                        console.log('🔗 REDIRECT DETECTED:');
-                        console.log('   URL:', url);
-                        
-                        // URLからclient_idを抽出
+                // 実際のリダイレクトURLを追跡（より安全な方法）
+                const originalAssign = window.location.assign;
+                const originalReplace = window.location.replace;
+                
+                // assignメソッドをラップ
+                window.location.assign = function(url) {
+                    console.log('🔗 REDIRECT DETECTED (assign):');
+                    console.log('   URL:', url);
+                    logClientId(url);
+                    return originalAssign.call(window.location, url);
+                };
+                
+                // replaceメソッドをラップ
+                window.location.replace = function(url) {
+                    console.log('🔗 REDIRECT DETECTED (replace):');
+                    console.log('   URL:', url);
+                    logClientId(url);
+                    return originalReplace.call(window.location, url);
+                };
+                
+                function logClientId(url) {
+                    try {
                         const urlObj = new URL(url);
                         const clientId = urlObj.searchParams.get('client_id');
                         console.log('   Extracted client_id:', clientId);
                         console.log('   client_id length:', clientId ? clientId.length : 'null');
                         console.log('   client_id type:', clientId ? typeof clientId : 'null');
-                        
-                        // 実際のリダイレクトを実行
-                        window.location.replace(url);
+                        console.log('   Expected: 2007688781');
+                        console.log('   Match:', clientId === '2007688781' ? '✅ YES' : '❌ NO');
+                    } catch (e) {
+                        console.log('   Could not parse URL');
                     }
-                });
+                }
             }, true); // キャプチャフェーズで最初に実行
             
         } else {
