@@ -39,7 +39,10 @@ function initializeAuth() {
     // LINE登録ボタンの処理
     const lineRegisterBtn = document.getElementById('lineRegisterBtn');
     if (lineRegisterBtn) {
+        console.log('🎯 LINE Register button found, adding event listener');
         lineRegisterBtn.addEventListener('click', handleLineLogin);
+    } else {
+        console.log('❌ LINE Register button NOT found');
     }
     
     // 現在のユーザーセッションをチェック
