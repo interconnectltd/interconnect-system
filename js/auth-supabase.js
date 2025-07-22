@@ -6,6 +6,13 @@
 const LINE_CHANNEL_ID = '2007688781';
 const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
 
+// デバッグ用：Channel IDの詳細確認
+console.log('🔍 auth-supabase.js: LINE_CHANNEL_ID defined');
+console.log('   Value:', LINE_CHANNEL_ID);
+console.log('   Type:', typeof LINE_CHANNEL_ID);
+console.log('   Length:', LINE_CHANNEL_ID.length);
+console.log('   Is 10 digits?:', /^\d{10}$/.test(LINE_CHANNEL_ID));
+
 // Supabaseが準備できるまで待つ
 window.addEventListener('supabaseReady', function() {
     initializeAuth();
