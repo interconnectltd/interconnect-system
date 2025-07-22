@@ -80,6 +80,8 @@ async function handleEmailLogin(e) {
 
 // LINEログイン
 function handleLineLogin() {
+    console.log('LINE Login button clicked');
+    
     // LINE認証URLを構築
     const state = generateRandomString(32);
     const nonce = generateRandomString(32);
@@ -96,8 +98,11 @@ function handleLineLogin() {
         nonce: nonce
     });
     
+    const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    console.log('Redirecting to:', authUrl);
+    
     // LINE認証ページへリダイレクト
-    window.location.href = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
+    window.location.href = authUrl;
 }
 
 // 認証状態をチェック
