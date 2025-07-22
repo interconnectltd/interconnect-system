@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/auth-unified.css">
 </head>
 <body>
     <div class="auth-container">
@@ -27,6 +28,19 @@
             </div>
             
             <h2 class="auth-title">新規登録</h2>
+            
+            <div class="auth-divider">
+                <span>SNSアカウントで登録</span>
+            </div>
+            
+            <button type="button" class="auth-button line-button" id="lineRegisterBtn" style="background: #00C300 !important; color: white !important; border: none !important;">
+                <i class="fab fa-line"></i>
+                LINEで登録
+            </button>
+            
+            <div class="auth-divider">
+                <span>または</span>
+            </div>
             
             <!-- Progress Indicator -->
             <div class="registration-progress">
@@ -603,11 +617,13 @@
     </div>
     
     <!-- Scripts -->
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
-    <script src="js/registration-flow.js"></script>
-    <script src="js/background-animation.js"></script>
+    <script src="js/error-prevention.js?v=20250122"></script>
+    <script src="js/null-check-fixes.js?v=20250122"></script>
+    <script src="js/safe-dom-utils.js?v=20250122"></script>
+    <script src="js/safe-storage.js?v=20250122"></script>
+    <script src="js/supabase-client.js?v=20250122"></script>
+    <script src="js/auth-supabase.js?v=20250122"></script>
+    <script src="js/registration-flow.js?v=20250122"></script>
+    <script src="js/auth-background-safe.js?v=20250122"></script>
 </body>
 </html>

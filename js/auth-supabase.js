@@ -36,6 +36,12 @@ function initializeAuth() {
         lineLoginBtn.addEventListener('click', handleLineLogin);
     }
     
+    // LINE登録ボタンの処理
+    const lineRegisterBtn = document.getElementById('lineRegisterBtn');
+    if (lineRegisterBtn) {
+        lineRegisterBtn.addEventListener('click', handleLineLogin);
+    }
+    
     // 現在のユーザーセッションをチェック
     checkAuthStatus();
 }

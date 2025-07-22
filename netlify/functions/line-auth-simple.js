@@ -166,11 +166,18 @@ exports.handler = async (event, context) => {
 
             // プロファイルテーブルで既存ユーザーを確認（emailで検索）
             const lineEmail = `line_${profile.userId}@interconnect.com`;
-            const { data: existingProfile, error: searchError } = await supabase
+            const { data: existingProfiles, error: searchError } = await supabase
                 .from('user_profiles')
                 .select('*')
-                .eq('email', lineEmail)
-                .single();
+                .eq('email', lineEmail);
+            
+            // エラーチェックを改善
+            if (searchError && searchError.code !== 'PGRST116') {
+                console.error('Search error:', searchError);
+                throw searchError;
+            }
+            
+            const existingProfile = existingProfiles && existingProfiles.length > 0 ? existingProfiles[0] : null;
 
             let userProfile;
             
