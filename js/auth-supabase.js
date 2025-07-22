@@ -35,11 +35,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeAuth() {
     console.log('🔧 initializeAuth called');
+    console.log('   Current page:', window.location.pathname);
+    console.log('   DOM ready state:', document.readyState);
     
     // ログインフォームの処理
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleEmailLogin);
+        console.log('   ✅ Login form handler attached');
     }
     
     // LINEログインボタンの処理
@@ -47,6 +50,11 @@ function initializeAuth() {
     if (lineLoginBtn) {
         console.log('🎯 LINE Login button found, adding event listener');
         lineLoginBtn.addEventListener('click', handleLineLogin);
+        
+        // デバッグ用: クリックイベントが本当に登録されたか確認
+        lineLoginBtn.addEventListener('click', function() {
+            console.log('📍 LINE Login button clicked (debug listener)');
+        });
     }
     
     // LINE登録ボタンの処理
@@ -54,13 +62,23 @@ function initializeAuth() {
     if (lineRegisterBtn) {
         console.log('🎯 LINE Register button found, adding event listener');
         lineRegisterBtn.addEventListener('click', handleLineLogin);
+        
+        // デバッグ用: クリックイベントが本当に登録されたか確認
+        lineRegisterBtn.addEventListener('click', function() {
+            console.log('📍 LINE Register button clicked (debug listener)');
+        });
     } else {
         console.log('❌ LINE Register button NOT found');
+        console.log('   Available buttons:', document.querySelectorAll('button').length);
+        console.log('   Buttons with ID:', Array.from(document.querySelectorAll('button[id]')).map(b => b.id));
     }
     
     // 現在のユーザーセッションをチェック
     checkAuthStatus();
 }
+
+// initializeAuth関数をグローバルに公開（デバッグ用）
+window.initializeAuth = initializeAuth;
 
 // メールアドレスでのログイン
 async function handleEmailLogin(e) {

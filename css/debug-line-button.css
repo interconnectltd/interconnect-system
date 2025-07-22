@@ -1,0 +1,87 @@
+/**
+ * Debug CSS for LINE Button
+ * LINEボタンの問題を視覚的に確認
+ */
+
+/* LINEボタンを目立たせる */
+#lineRegisterBtn {
+    /* 視覚的に確認しやすくする */
+    outline: 3px solid red !important;
+    outline-offset: 2px !important;
+    
+    /* z-indexを最前面に */
+    z-index: 9999 !important;
+    position: relative !important;
+    
+    /* クリック可能にする */
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    
+    /* アニメーションで目立たせる */
+    animation: debug-pulse 2s infinite !important;
+}
+
+/* ホバー時の効果を強調 */
+#lineRegisterBtn:hover {
+    outline: 3px solid blue !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 0 20px rgba(0, 0, 255, 0.5) !important;
+}
+
+/* クリック時の効果 */
+#lineRegisterBtn:active {
+    outline: 3px solid green !important;
+    transform: scale(0.95) !important;
+}
+
+/* パルスアニメーション */
+@keyframes debug-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+/* 親要素の問題を確認 */
+.auth-card,
+.auth-container {
+    /* オーバーフローを表示 */
+    overflow: visible !important;
+}
+
+/* フォームステップの問題を確認 */
+.form-step {
+    /* z-indexの問題を回避 */
+    z-index: auto !important;
+}
+
+/* 透明な要素を可視化 */
+*[style*="opacity: 0"],
+*[style*="visibility: hidden"],
+*[style*="display: none"] {
+    outline: 2px dashed orange !important;
+}
+
+/* pointer-events: noneの要素を可視化 */
+*[style*="pointer-events: none"] {
+    outline: 2px dashed purple !important;
+}
+
+/* デバッグ情報を表示 */
+#lineRegisterBtn::after {
+    content: "DEBUG: LINE Button" !important;
+    position: absolute !important;
+    top: -25px !important;
+    left: 0 !important;
+    background: red !important;
+    color: white !important;
+    padding: 2px 8px !important;
+    font-size: 12px !important;
+    border-radius: 4px !important;
+    z-index: 10000 !important;
+}

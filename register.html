@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/auth-unified.css">
+    <!-- Debug CSS (一時的) -->
+    <link rel="stylesheet" href="css/debug-line-button.css">
 </head>
 <body>
     <div class="auth-container">
@@ -33,7 +35,9 @@
                 <span>SNSアカウントで登録</span>
             </div>
             
-            <button type="button" class="auth-button line-button" id="lineRegisterBtn" style="background: #00C300 !important; color: white !important; border: none !important;">
+            <button type="button" class="auth-button line-button" id="lineRegisterBtn" 
+                    style="background: #00C300 !important; color: white !important; border: none !important;"
+                    onclick="console.log('LINE button clicked (inline)'); if(window.handleLineLogin) window.handleLineLogin(event); return false;">
                 <i class="fab fa-line"></i>
                 LINEで登録
             </button>
@@ -626,5 +630,8 @@
     <script src="js/auth-supabase.js?v=20250122"></script>
     <script src="js/line-login-debug-full.js?v=20250122"></script>
     <script src="js/registration-flow.js?v=20250122"></script>
+    <!-- Debug Script (一時的) -->
+    <script src="js/line-button-test.js?v=20250122"></script>
+    <script src="js/line-button-fix.js?v=20250122"></script>
 </body>
 </html>
