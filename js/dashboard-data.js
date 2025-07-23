@@ -32,6 +32,17 @@
                 await this.waitForSupabase();
             }
             
+            // 認証状態を確認
+            try {
+                const { data: { user }, error } = await window.supabase.auth.getUser();
+                if (error || !user) {
+                    console.warn('[DashboardStats] No authenticated user, using fallback data');
+                    // 認証なしでも動作を続ける
+                }
+            } catch (authError) {
+                console.warn('[DashboardStats] Auth check failed:', authError);
+            }
+            
             // 必要なテーブルが存在するか確認・作成
             await this.ensureTablesExist();
             
@@ -274,9 +285,17 @@
 
                 if (error) {
                     console.warn('[DashboardStats] 統計データ取得エラー:', error);
+                    console.warn('[DashboardStats] Error details:', {
+                        message: error.message,
+                        details: error.details,
+                        hint: error.hint,
+                        code: error.code
+                    });
                     // フォールバック: リアルタイム計算
                     return await this.generateFallbackStats();
                 }
+
+                console.log('[DashboardStats] Successfully fetched stats:', stats);
 
                 // キャッシュに保存
                 this.cache.stats = stats;
@@ -533,6 +552,58 @@
     // インスタンス作成と初期化
     window.dashboardStats = new DashboardStats();
 
+    // デバッグ用関数
+    window.testDashboardStats = async function() {
+        console.log('=== Testing Dashboard Stats ===');
+        
+        // 1. Supabase接続確認
+        console.log('1. Checking Supabase connection...');
+        if (window.supabase) {
+            console.log('✓ Supabase is available');
+        } else {
+            console.error('✗ Supabase is NOT available');
+            return;
+        }
+        
+        // 2. 認証状態確認
+        console.log('2. Checking authentication...');
+        const { data: { user }, error: authError } = await window.supabase.auth.getUser();
+        if (authError) {
+            console.warn('✗ Auth error:', authError);
+        } else if (!user) {
+            console.warn('✗ No authenticated user');
+        } else {
+            console.log('✓ Authenticated as:', user.email);
+        }
+        
+        // 3. dashboard_statsテーブルアクセス確認
+        console.log('3. Checking dashboard_stats table access...');
+        const { data, error } = await window.supabase
+            .from('dashboard_stats')
+            .select('*');
+            
+        if (error) {
+            console.error('✗ Table access error:', error);
+            console.error('Error details:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
+        } else {
+            console.log('✓ Table access successful');
+            console.log('Data retrieved:', data);
+        }
+        
+        // 4. 統計データ取得テスト
+        console.log('4. Testing fetchDashboardStats...');
+        const stats = await window.dashboardStats.fetchDashboardStats();
+        console.log('Stats result:', stats);
+        
+        console.log('=== Test Complete ===');
+    };
+
     console.log('[DashboardStats] Module loaded');
+    console.log('[DashboardStats] Run window.testDashboardStats() to debug');
 
 })();
