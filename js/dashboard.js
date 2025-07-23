@@ -44,6 +44,7 @@
      */
     function checkAuth() {
         // Authentication check disabled for testing
+        console.log('[Dashboard] Auth check skipped for testing');
         // const isLoggedIn = sessionStorage.getItem('isLoggedIn');
         // 
         // if (!isLoggedIn || isLoggedIn !== 'true') {

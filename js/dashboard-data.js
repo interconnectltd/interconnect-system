@@ -605,5 +605,10 @@
 
     console.log('[DashboardStats] Module loaded');
     console.log('[DashboardStats] Run window.testDashboardStats() to debug');
+    
+    // デバッグ関数が確実に登録されているか確認
+    if (window.testDashboardStats) {
+        console.log('[DashboardStats] Debug function is available');
+    }
 
 })();
