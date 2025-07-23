@@ -205,10 +205,19 @@ window.InterConnect.Registration.validateEmail = function(email) {
 window.InterConnect.Registration.showToast = function(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `registration-toast ${type}`;
-    toast.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-        <span>${message}</span>
-    `;
+    
+    // アイコンを安全に作成
+    const icon = document.createElement('i');
+    const iconClass = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+    icon.className = `fas ${iconClass}`;
+    
+    // メッセージを安全に作成
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    
+    // 要素を追加
+    toast.appendChild(icon);
+    toast.appendChild(messageSpan);
     
     Object.assign(toast.style, {
         position: 'fixed',
@@ -263,11 +272,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 文字数カウント機能
     const textareas = document.querySelectorAll('textarea[minlength]');
     textareas.forEach(textarea => {
-        const counterId = textarea.id.replace('-details', '-count');
-        const counterElement = document.getElementById(counterId);
+        const counterId = textarea.id ? textarea.id.replace('-details', '-count') : null;
+        const counterElement = counterId ? document.getElementById(counterId) : null;
         
         if (counterElement) {
-            textarea.addEventListener('input', function() {
+            const inputHandler = function() {
                 const charCount = this.value.length;
                 const minLength = parseInt(this.getAttribute('minlength'));
                 counterElement.textContent = charCount;
@@ -282,7 +291,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         charCountWrapper.classList.remove('valid');
                     }
                 }
-            });
+            };
+            
+            textarea.addEventListener('input', inputHandler);
+            
+            // イベントリスナーのクリーンアップ用に保存
+            textarea._inputHandler = inputHandler;
         }
     });
     
@@ -319,13 +333,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 // プレビュー表示
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    filePreview.innerHTML = `<img src="${e.target.result}" alt="QR Code Preview">`;
-                    filePreview.classList.add('active');
+                    if (filePreview) {
+                        // 安全に画像を表示
+                        filePreview.textContent = ''; // 既存のコンテンツをクリア
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = 'QR Code Preview';
+                        filePreview.appendChild(img);
+                        filePreview.classList.add('active');
+                    }
+                };
+                reader.onerror = function(e) {
+                    console.error('ファイル読み込みエラー:', e);
+                    window.InterConnect.Registration.showToast('ファイルの読み込みに失敗しました', 'error');
                 };
                 reader.readAsDataURL(file);
             } else {
-                filePreview.innerHTML = '';
-                filePreview.classList.remove('active');
+                if (filePreview) {
+                    filePreview.textContent = ''; // 安全にクリア
+                    filePreview.classList.remove('active');
+                }
             }
         });
     }
@@ -360,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 利用規約の同意確認
         const agreeCheckbox = document.querySelector('input[name="agree"]');
-        if (!agreeCheckbox.checked) {
+        if (!agreeCheckbox || !agreeCheckbox.checked) {
             window.InterConnect.Registration.showToast('利用規約に同意してください', 'error');
             return;
         }
@@ -389,7 +416,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 2000);
             
         } catch (error) {
-            window.InterConnect.Registration.showToast('登録に失敗しました。もう一度お試しください。', 'error');
+            console.error('登録エラー:', error);
+            window.InterConnect.Registration.showToast('登録に失敗しました: ' + (error.message || '不明なエラー'), 'error');
             submitButton.classList.remove('loading');
             submitButton.textContent = '登録する';
         }
@@ -397,30 +425,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // フォームデータの収集
     function collectFormData() {
+        // nullチェックを追加
+        const getElementValue = (id) => {
+            const elem = document.getElementById(id);
+            return elem ? elem.value : '';
+        };
+        
         const formData = {
             // 基本情報
-            name: document.getElementById('name').value,
-            company: document.getElementById('company').value,
-            email: document.getElementById('email').value,
-            position: document.getElementById('position').value || '',
+            name: getElementValue('name'),
+            company: getElementValue('company'),
+            email: getElementValue('email'),
+            position: getElementValue('position'),
             
             // 事業課題
             challenges: Array.from(document.querySelectorAll('input[name="challenges"]:checked'))
                 .map(cb => cb.value),
-            budget: document.getElementById('budget').value,
+            budget: getElementValue('budget'),
             
             // 事業課題の詳細
-            'revenue-details': document.getElementById('revenue-details') ? document.getElementById('revenue-details').value : '',
-            'hr-details': document.getElementById('hr-details') ? document.getElementById('hr-details').value : '',
-            'dx-details': document.getElementById('dx-details') ? document.getElementById('dx-details').value : '',
-            'strategy-details': document.getElementById('strategy-details') ? document.getElementById('strategy-details').value : '',
+            'revenue-details': getElementValue('revenue-details'),
+            'hr-details': getElementValue('hr-details'),
+            'dx-details': getElementValue('dx-details'),
+            'strategy-details': getElementValue('strategy-details'),
             
             // 連絡先
-            phone: document.getElementById('phone').value || '',
-            lineId: document.getElementById('line-id').value || '',
+            phone: getElementValue('phone'),
+            lineId: getElementValue('line-id'),
             
             // その他
-            newsletter: document.querySelector('input[name="newsletter"]').checked,
+            newsletter: document.querySelector('input[name="newsletter"]') ? document.querySelector('input[name="newsletter"]').checked : false,
             
             // スキル
             skills: Array.from(document.querySelectorAll('input[name="skills"]:checked'))
@@ -483,11 +517,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordConfirm = document.getElementById('password-confirm');
     if (passwordConfirm) {
         passwordConfirm.addEventListener('input', function() {
-            const password = document.getElementById('password').value;
-            if (this.value && this.value !== password) {
-                window.InterConnect.Registration.showFieldError(this, 'パスワードが一致しません');
-            } else {
-                window.InterConnect.Registration.clearFieldError(this);
+            const passwordElement = document.getElementById('password');
+            if (passwordElement) {
+                const password = passwordElement.value;
+                if (this.value && this.value !== password) {
+                    window.InterConnect.Registration.showFieldError(this, 'パスワードが一致しません');
+                } else {
+                    window.InterConnect.Registration.clearFieldError(this);
+                }
             }
         });
     }

@@ -119,6 +119,10 @@
             if (btn.onclick || checkCount > 10) {
                 clearInterval(checkInterval);
             }
+        } else if (checkCount > 10) {
+            // ボタンが見つからない場合も10回でクリア
+            console.log('❌ Button not found after 10 checks, stopping');
+            clearInterval(checkInterval);
         }
     }, 500);
     

@@ -20,19 +20,27 @@
         console.log('✅ LINE_CHANNEL_ID is defined');
         console.log('   Value:', LINE_CHANNEL_ID);
         console.log('   Type:', typeof LINE_CHANNEL_ID);
-        console.log('   Length:', LINE_CHANNEL_ID.length);
-        console.log('   First 5 chars:', LINE_CHANNEL_ID.substring(0, 5));
-        console.log('   Last 5 chars:', LINE_CHANNEL_ID.substring(LINE_CHANNEL_ID.length - 5));
-        console.log('   Full value (base64):', btoa(LINE_CHANNEL_ID));
+        console.log('   Length:', LINE_CHANNEL_ID ? LINE_CHANNEL_ID.length : 0);
+        console.log('   First 5 chars:', LINE_CHANNEL_ID ? LINE_CHANNEL_ID.substring(0, 5) : 'N/A');
+        console.log('   Last 5 chars:', LINE_CHANNEL_ID ? LINE_CHANNEL_ID.substring(LINE_CHANNEL_ID.length - 5) : 'N/A');
+        try {
+            console.log('   Full value (base64):', LINE_CHANNEL_ID ? btoa(LINE_CHANNEL_ID) : 'N/A');
+        } catch (e) {
+            console.log('   Full value (base64): Error encoding -', e.message);
+        }
         
         // 不可視文字チェック
         console.log('   Hidden characters check:');
-        for (let i = 0; i < LINE_CHANNEL_ID.length; i++) {
-            const char = LINE_CHANNEL_ID[i];
-            const code = char.charCodeAt(0);
-            if (code < 32 || code > 126) {
-                console.log(`   ⚠️ Hidden char at position ${i}: charCode ${code}`);
+        if (LINE_CHANNEL_ID && typeof LINE_CHANNEL_ID === 'string') {
+            for (let i = 0; i < LINE_CHANNEL_ID.length; i++) {
+                const char = LINE_CHANNEL_ID[i];
+                const code = char.charCodeAt(0);
+                if (code < 32 || code > 126) {
+                    console.log(`   ⚠️ Hidden char at position ${i}: charCode ${code}`);
+                }
             }
+        } else {
+            console.log('   LINE_CHANNEL_ID is not a valid string');
         }
         
         // 正規表現チェック
@@ -79,14 +87,16 @@
             console.log('   Tag:', lineButton.tagName);
             
             // イベントリスナーの詳細な追跡
-            const originalAddEventListener = lineButton.addEventListener;
-            lineButton.addEventListener = function(type, listener, options) {
-                console.log(`📎 Event listener added to LINE button:`);
-                console.log(`   Type: ${type}`);
-                console.log(`   Listener: ${listener.name || 'anonymous'}`);
-                console.log(`   Options:`, options);
-                return originalAddEventListener.call(this, type, listener, options);
-            };
+            if (lineButton.addEventListener) {
+                const originalAddEventListener = lineButton.addEventListener;
+                lineButton.addEventListener = function(type, listener, options) {
+                    console.log(`📎 Event listener added to LINE button:`);
+                    console.log(`   Type: ${type}`);
+                    console.log(`   Listener: ${listener.name || 'anonymous'}`);
+                    console.log(`   Options:`, options);
+                    return originalAddEventListener.call(this, type, listener, options);
+                };
+            }
             
             // クリックイベントの詳細追跡
             lineButton.addEventListener('click', function(e) {
@@ -158,10 +168,10 @@
                 const clientId = urlObj.searchParams.get('client_id');
                 if (clientId) {
                     console.log('   client_id in request:', clientId);
-                    console.log('   client_id === LINE_CHANNEL_ID:', clientId === LINE_CHANNEL_ID);
+                    console.log('   client_id === LINE_CHANNEL_ID:', typeof LINE_CHANNEL_ID !== 'undefined' ? clientId === LINE_CHANNEL_ID : 'LINE_CHANNEL_ID is undefined');
                 }
             } catch (e) {
-                console.log('   Could not parse URL');
+                console.log('   Could not parse URL:', e.message);
             }
         }
         return originalFetch.apply(this, args);

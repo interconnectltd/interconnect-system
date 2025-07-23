@@ -33,18 +33,28 @@
         const sidebar = document.querySelector('.sidebar');
         
         if (sidebarToggle && sidebar) {
-            sidebarToggle.addEventListener('click', function() {
+            const sidebarToggleHandler = function() {
                 sidebar.classList.toggle('show');
-            });
+            };
+            
+            sidebarToggle.addEventListener('click', sidebarToggleHandler);
             
             // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function(e) {
+            const outsideClickHandler = function(e) {
                 if (window.innerWidth <= 1024 && 
                     !sidebar.contains(e.target) && 
                     sidebar.classList.contains('show')) {
                     sidebar.classList.remove('show');
                 }
-            });
+            };
+            
+            document.addEventListener('click', outsideClickHandler);
+            
+            // クリーンアップ用にハンドラーを保存
+            window._sidebarHandlers = {
+                toggle: sidebarToggleHandler,
+                outside: outsideClickHandler
+            };
         }
     }
 
@@ -56,15 +66,27 @@
         const userDropdown = document.querySelector('.user-dropdown');
         
         if (userMenuBtn && userDropdown) {
-            userMenuBtn.addEventListener('click', function(e) {
+            const menuClickHandler = function(e) {
                 e.stopPropagation();
                 userDropdown.classList.toggle('show');
-            });
+            };
+            
+            userMenuBtn.addEventListener('click', menuClickHandler);
             
             // Close dropdown when clicking outside
-            document.addEventListener('click', function() {
-                userDropdown.classList.remove('show');
-            });
+            const dropdownCloseHandler = function() {
+                if (userDropdown) {
+                    userDropdown.classList.remove('show');
+                }
+            };
+            
+            document.addEventListener('click', dropdownCloseHandler);
+            
+            // クリーンアップ用にハンドラーを保存
+            window._userMenuHandlers = {
+                click: menuClickHandler,
+                close: dropdownCloseHandler
+            };
         }
     }
 
@@ -72,13 +94,22 @@
      * Update user information
      */
     function updateUserInfo() {
-        const userEmail = sessionStorage.getItem('userEmail');
-        const userName = userEmail ? userEmail.split('@')[0] : 'ゲスト';
-        
-        // Update all user name elements
-        document.querySelectorAll('.user-name').forEach(element => {
-            element.textContent = userName;
-        });
+        try {
+            const userEmail = typeof Storage !== 'undefined' ? sessionStorage.getItem('userEmail') : null;
+            const userName = userEmail ? userEmail.split('@')[0] : 'ゲスト';
+            
+            // Update all user name elements
+            const userNameElements = document.querySelectorAll('.user-name');
+            if (userNameElements.length > 0) {
+                userNameElements.forEach(element => {
+                    if (element) {
+                        element.textContent = userName;
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('ユーザー情報の更新エラー:', error);
+        }
     }
 
     /**
@@ -90,14 +121,19 @@
         try {
             if (confirm('ログアウトしますか？')) {
                 // Clear session data safely
-                if (typeof sessionStorage !== 'undefined') {
-                    sessionStorage.clear();
-                }
-                
-                if (typeof localStorage !== 'undefined') {
-                    localStorage.removeItem('rememberMe');
-                    localStorage.removeItem('userProfile');
-                    localStorage.removeItem('isLoggedIn');
+                try {
+                    if (typeof sessionStorage !== 'undefined') {
+                        sessionStorage.clear();
+                    }
+                    
+                    if (typeof localStorage !== 'undefined') {
+                        localStorage.removeItem('rememberMe');
+                        localStorage.removeItem('userProfile');
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('user');
+                    }
+                } catch (storageError) {
+                    console.error('ストレージクリアエラー:', storageError);
                 }
                 
                 // Show logout message

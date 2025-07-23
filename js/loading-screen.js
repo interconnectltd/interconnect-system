@@ -6,18 +6,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // ローディング画面の要素を作成
     const loadingScreen = document.createElement('div');
     loadingScreen.className = 'loading-screen';
-    loadingScreen.innerHTML = `
-        <div class="loading-video-container">
-            <video class="loading-video" autoplay muted playsinline preload="auto" webkit-playsinline>
-                <source src="assets/interconnect-top.mp4" type="video/mp4">
-            </video>
-            <div class="loading-overlay"></div>
-            <div class="loading-text">INTER CONNECT</div>
-            <div class="loading-progress">
-                <div class="loading-progress-bar"></div>
-            </div>
-        </div>
-    `;
+    // ローディング画面のコンテンツを安全に作成
+    const videoContainer = document.createElement('div');
+    videoContainer.className = 'loading-video-container';
+    
+    const video = document.createElement('video');
+    video.className = 'loading-video';
+    video.autoplay = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.setAttribute('webkit-playsinline', '');
+    
+    const source = document.createElement('source');
+    source.src = 'assets/interconnect-top.mp4';
+    source.type = 'video/mp4';
+    video.appendChild(source);
+    
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.className = 'loading-overlay';
+    
+    const loadingText = document.createElement('div');
+    loadingText.className = 'loading-text';
+    loadingText.textContent = 'INTER CONNECT';
+    
+    const loadingProgress = document.createElement('div');
+    loadingProgress.className = 'loading-progress';
+    
+    const progressBar = document.createElement('div');
+    progressBar.className = 'loading-progress-bar';
+    loadingProgress.appendChild(progressBar);
+    
+    videoContainer.appendChild(video);
+    videoContainer.appendChild(loadingOverlay);
+    videoContainer.appendChild(loadingText);
+    videoContainer.appendChild(loadingProgress);
+    
+    loadingScreen.appendChild(videoContainer);
 
     // ボディに追加
     document.body.appendChild(loadingScreen);

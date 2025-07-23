@@ -144,7 +144,13 @@ document.addEventListener('DOMContentLoaded', function() {
         guestButton.addEventListener('click', function(e) {
             e.preventDefault();
             this.classList.add('loading');
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ゲストログイン中...';
+            // 安全にローディング状態を表示
+            this.textContent = '';
+            const spinner = document.createElement('i');
+            spinner.className = 'fas fa-spinner fa-spin';
+            const text = document.createTextNode(' ゲストログイン中...');
+            this.appendChild(spinner);
+            this.appendChild(text);
             
             setTimeout(() => {
                 window.location.href = 'dashboard.html';

@@ -26,12 +26,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // ボタンの状態を変更
         button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
+        // 安全にローディング状態を表示
+        button.textContent = '';
+        const spinner = document.createElement('i');
+        spinner.className = 'fas fa-spinner fa-spin';
+        const text = document.createTextNode(' 処理中...');
+        button.appendChild(spinner);
+        button.appendChild(text);
         
         // 申込処理をシミュレート（実際はAPIコール）
         setTimeout(() => {
             // 成功時の処理
-            button.innerHTML = '<i class="fas fa-check"></i> 申込完了';
+            // 安全に完了状態を表示
+            button.textContent = '';
+            const checkIcon = document.createElement('i');
+            checkIcon.className = 'fas fa-check';
+            const completeText = document.createTextNode(' 申込完了');
+            button.appendChild(checkIcon);
+            button.appendChild(completeText);
             button.classList.remove('btn-primary');
             button.classList.add('btn-success');
             
@@ -43,7 +55,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 3秒後にボタンテキストを変更
             setTimeout(() => {
-                button.innerHTML = '<i class="fas fa-check-circle"></i> 申込済み';
+                // 安全に申込済み状態を表示
+                button.textContent = '';
+                const checkCircleIcon = document.createElement('i');
+                checkCircleIcon.className = 'fas fa-check-circle';
+                const doneText = document.createTextNode(' 申込済み');
+                button.appendChild(checkCircleIcon);
+                button.appendChild(doneText);
                 button.classList.add('btn-disabled');
             }, 3000);
             
@@ -77,10 +95,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // フォールバック: シンプルな通知を作成
             const toast = document.createElement('div');
             toast.className = `event-toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
+            // アイコンを安全に作成
+            const icon = document.createElement('i');
+            const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+            icon.className = `fas ${iconClass}`;
+            
+            // メッセージを安全に作成
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            
+            // 要素を追加
+            toast.appendChild(icon);
+            toast.appendChild(messageSpan);
             
             // スタイルを追加
             Object.assign(toast.style, {
@@ -122,10 +148,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // キャンセル処理
                 button.disabled = true;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
+                // 安全にローディング状態を表示
+                button.textContent = '';
+                const spinner2 = document.createElement('i');
+                spinner2.className = 'fas fa-spinner fa-spin';
+                const text2 = document.createTextNode(' 処理中...');
+                button.appendChild(spinner2);
+                button.appendChild(text2);
                 
                 setTimeout(() => {
-                    button.innerHTML = '参加申込';
+                    button.textContent = '参加申込';
                     button.classList.remove('btn-success', 'btn-disabled');
                     button.classList.add('btn-primary');
                     button.disabled = false;

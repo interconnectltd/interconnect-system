@@ -778,15 +778,28 @@
     function showToast(message, type = 'info', duration = 3000) {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div class="toast-content">
-                <i class="fas fa-${getToastIcon(type)}"></i>
-                <span>${message}</span>
-            </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
+        // トーストコンテンツを安全に作成
+        const toastContent = document.createElement('div');
+        toastContent.className = 'toast-content';
+        
+        const icon = document.createElement('i');
+        icon.className = `fas fa-${getToastIcon(type)}`;
+        
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = message;
+        
+        toastContent.appendChild(icon);
+        toastContent.appendChild(messageSpan);
+        
+        // 閉じるボタンを作成
+        const closeButton = document.createElement('button');
+        closeButton.className = 'toast-close';
+        const closeIcon = document.createElement('i');
+        closeIcon.className = 'fas fa-times';
+        closeButton.appendChild(closeIcon);
+        
+        toast.appendChild(toastContent);
+        toast.appendChild(closeButton);
         
         // Add styles
         toast.style.cssText = `

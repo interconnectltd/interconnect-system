@@ -43,6 +43,8 @@ function initializeAuth() {
     if (loginForm) {
         loginForm.addEventListener('submit', handleEmailLogin);
         console.log('   ✅ Login form handler attached');
+    } else if (window.location.pathname.includes('login.html')) {
+        console.warn('   ⚠️ Login form not found on login page');
     }
     
     // LINEログインボタンの処理
@@ -91,9 +93,20 @@ async function handleEmailLogin(e) {
     // ローディング状態
     submitButton.classList.add('loading');
     submitButton.disabled = true;
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ログイン中...';
+    // 安全にローディング状態を表示
+    submitButton.textContent = '';
+    const spinner = document.createElement('i');
+    spinner.className = 'fas fa-spinner fa-spin';
+    const text = document.createTextNode(' ログイン中...');
+    submitButton.appendChild(spinner);
+    submitButton.appendChild(text);
     
     try {
+        // windowオブジェクトとsupabaseの存在確認
+        if (!window.supabase || !window.supabase.auth) {
+            throw new Error('Supabase clientが初期化されていません');
+        }
+        
         // Supabaseでログイン
         const { data, error } = await window.supabase.auth.signInWithPassword({
             email: email,
@@ -111,19 +124,28 @@ async function handleEmailLogin(e) {
         // ログイン成功
         console.log('ログイン成功:', data.user);
         
-        // ユーザー情報をローカルストレージに保存
-        localStorage.setItem('user', JSON.stringify({
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.user_metadata?.name || email.split('@')[0]
-        }));
+        // ユーザー情報をローカルストレージに保存（エラーハンドリング付き）
+        try {
+            if (typeof Storage !== 'undefined') {
+                localStorage.setItem('user', JSON.stringify({
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: data.user.user_metadata?.name || email.split('@')[0]
+                }));
+            } else {
+                console.warn('LocalStorage is not available');
+            }
+        } catch (storageErr) {
+            console.error('LocalStorage保存エラー:', storageErr);
+            // ストレージエラーでもログインは続行
+        }
         
         // ダッシュボードへリダイレクト
         window.location.href = 'dashboard.html';
         
     } catch (err) {
         console.error('ログインエラー:', err);
-        showError('ログイン処理中にエラーが発生しました');
+        showError('ログイン処理中にエラーが発生しました: ' + (err.message || '不明なエラー'));
         submitButton.classList.remove('loading');
         submitButton.disabled = false;
         submitButton.textContent = 'ログイン';
@@ -154,7 +176,16 @@ function handleLineLogin(e) {
         const nonce = generateRandomString(32);
         
         // stateを保存（CSRF対策）
-        sessionStorage.setItem('line_state', state);
+        try {
+            if (typeof Storage !== 'undefined') {
+                sessionStorage.setItem('line_state', state);
+            } else {
+                throw new Error('SessionStorage is not available');
+            }
+        } catch (storageErr) {
+            console.error('SessionStorage保存エラー:', storageErr);
+            throw new Error('セッション情報の保存に失敗しました');
+        }
         
         const params = new URLSearchParams({
             response_type: 'code',
@@ -180,6 +211,12 @@ function handleLineLogin(e) {
 // 認証状態をチェック
 async function checkAuthStatus() {
     try {
+        // windowオブジェクトとsupabaseの存在確認
+        if (!window.supabase || !window.supabase.auth) {
+            console.warn('Supabase clientが初期化されていません');
+            return;
+        }
+        
         const { data: { user } } = await window.supabase.auth.getUser();
         
         if (user) {
@@ -192,6 +229,7 @@ async function checkAuthStatus() {
         }
     } catch (err) {
         console.error('認証状態チェックエラー:', err);
+        // エラーが発生してもアプリケーションは続行
     }
 }
 
@@ -203,23 +241,36 @@ function showError(message) {
         existingError.remove();
     }
     
-    // エラーメッセージを作成
+    // エラーメッセージを安全に作成
     const errorDiv = document.createElement('div');
     errorDiv.className = 'auth-error';
-    errorDiv.innerHTML = `
-        <i class="fas fa-exclamation-circle"></i>
-        <span>${message}</span>
-    `;
+    
+    // アイコンを作成
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-exclamation-circle';
+    
+    // メッセージテキストを作成
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    
+    // 要素を追加
+    errorDiv.appendChild(icon);
+    errorDiv.appendChild(messageSpan);
     
     // フォームの前に挿入
     const form = document.getElementById('loginForm');
-    if (form) {
+    if (form && form.parentNode) {
         form.parentNode.insertBefore(errorDiv, form);
+    } else {
+        // フォームが見つからない場合はbodyに追加
+        document.body.appendChild(errorDiv);
     }
     
     // 5秒後に自動で削除
     setTimeout(() => {
-        errorDiv.remove();
+        if (document.contains(errorDiv)) {
+            errorDiv.remove();
+        }
     }, 5000);
 }
 
@@ -244,9 +295,15 @@ window.logout = async function() {
             console.error('ログアウトエラー:', error);
         }
         
-        // ローカルストレージをクリア
-        localStorage.removeItem('user');
-        sessionStorage.clear();
+        // ローカルストレージをクリア（エラーハンドリング付き）
+        try {
+            if (typeof Storage !== 'undefined') {
+                localStorage.removeItem('user');
+                sessionStorage.clear();
+            }
+        } catch (storageErr) {
+            console.error('ストレージクリアエラー:', storageErr);
+        }
         
         // ログインページへリダイレクト
         window.location.href = 'login.html';

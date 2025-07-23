@@ -355,8 +355,12 @@ function initContactForm() {
             
             // ボタンのローディング状態
             const submitBtn = form.querySelector('.submit-btn');
-            const originalContent = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span>送信中...</span>';
+            const originalContent = submitBtn.textContent;
+            // 安全にローディング状態を表示
+            submitBtn.textContent = '';
+            const loadingSpan = document.createElement('span');
+            loadingSpan.textContent = '送信中...';
+            submitBtn.appendChild(loadingSpan);
             submitBtn.disabled = true;
             
             // 送信シミュレーション
@@ -379,7 +383,7 @@ function initContactForm() {
                 form.reset();
                 
                 // ボタンを元に戻す
-                submitBtn.innerHTML = originalContent;
+                submitBtn.textContent = originalContent;
                 submitBtn.disabled = false;
                 
                 // メッセージを削除

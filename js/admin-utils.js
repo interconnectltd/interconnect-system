@@ -54,13 +54,29 @@
                     border-left: 4px solid ${colors[type]};
                 `;
                 
-                toast.innerHTML = `
-                    <i class="${icons[type]}" style="color: ${colors[type]}; font-size: 18px;"></i>
-                    <span style="color: #374151; font-weight: 500; flex: 1;">${message}</span>
-                    <button onclick="this.parentNode.remove()" style="margin-left: auto; background: none; border: none; color: #9ca3af; cursor: pointer; padding: 4px;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
+                // アイコンを安全に作成
+                const toastIcon = document.createElement('i');
+                toastIcon.className = icons[type];
+                toastIcon.style.cssText = `color: ${colors[type]}; font-size: 18px;`;
+                
+                // メッセージを安全に作成
+                const toastMessage = document.createElement('span');
+                toastMessage.style.cssText = 'color: #374151; font-weight: 500; flex: 1;';
+                toastMessage.textContent = message;
+                
+                // 閉じるボタンを安全に作成
+                const closeButton = document.createElement('button');
+                closeButton.style.cssText = 'margin-left: auto; background: none; border: none; color: #9ca3af; cursor: pointer; padding: 4px;';
+                closeButton.onclick = function() { toast.remove(); };
+                
+                const closeIcon = document.createElement('i');
+                closeIcon.className = 'fas fa-times';
+                closeButton.appendChild(closeIcon);
+                
+                // 要素を追加
+                toast.appendChild(toastIcon);
+                toast.appendChild(toastMessage);
+                toast.appendChild(closeButton);
                 
                 document.body.appendChild(toast);
                 
@@ -99,18 +115,26 @@
                     border-radius: 8px;
                 `;
                 
-                loader.innerHTML = `
-                    <div style="
-                        width: 40px;
-                        height: 40px;
-                        border: 3px solid #e5e7eb;
-                        border-top: 3px solid #3b82f6;
-                        border-radius: 50%;
-                        animation: spin 1s linear infinite;
-                        margin-bottom: 12px;
-                    "></div>
-                    <span style="color: #6b7280; font-size: 14px;">${message}</span>
+                // スピナーを安全に作成
+                const spinner = document.createElement('div');
+                spinner.style.cssText = `
+                    width: 40px;
+                    height: 40px;
+                    border: 3px solid #e5e7eb;
+                    border-top: 3px solid #3b82f6;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin-bottom: 12px;
                 `;
+                
+                // メッセージを安全に作成
+                const messageSpan = document.createElement('span');
+                messageSpan.style.cssText = 'color: #6b7280; font-size: 14px;';
+                messageSpan.textContent = message;
+                
+                // 要素を追加
+                loader.appendChild(spinner);
+                loader.appendChild(messageSpan);
                 
                 // スピンアニメーション追加
                 if (!document.getElementById('interconnect-spin-style')) {
@@ -171,17 +195,41 @@
                     transition: transform 0.3s ease;
                 `;
                 
-                modalContent.innerHTML = `
-                    <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #111827;">${title}</h3>
-                        <button onclick="this.closest('.interconnect-modal').remove()" style="background: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div style="padding: 24px;">
-                        ${content}
-                    </div>
-                `;
+                // ヘッダーを安全に作成
+                const header = document.createElement('div');
+                header.style.cssText = 'padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;';
+                
+                const titleElement = document.createElement('h3');
+                titleElement.style.cssText = 'margin: 0; font-size: 18px; font-weight: 600; color: #111827;';
+                titleElement.textContent = title;
+                
+                const closeButton = document.createElement('button');
+                closeButton.style.cssText = 'background: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280;';
+                closeButton.onclick = function() { modal.remove(); };
+                
+                const closeIcon = document.createElement('i');
+                closeIcon.className = 'fas fa-times';
+                closeButton.appendChild(closeIcon);
+                
+                header.appendChild(titleElement);
+                header.appendChild(closeButton);
+                
+                // コンテンツを安全に作成
+                const contentDiv = document.createElement('div');
+                contentDiv.style.cssText = 'padding: 24px;';
+                
+                // contentがHTML文字列の場合はサニタイズが必要
+                if (typeof content === 'string') {
+                    // シンプルなテキストの場合
+                    contentDiv.textContent = content;
+                } else if (content instanceof HTMLElement) {
+                    // DOM要素の場合
+                    contentDiv.appendChild(content);
+                }
+                
+                // 要素を追加
+                modalContent.appendChild(header);
+                modalContent.appendChild(contentDiv);
                 
                 modal.appendChild(modalContent);
                 document.body.appendChild(modal);
@@ -324,7 +372,12 @@
                 });
                 
                 if (content) {
-                    element.innerHTML = content;
+                    // contentが文字列の場合はテキストとして設定
+                    if (typeof content === 'string') {
+                        element.textContent = content;
+                    } else if (content instanceof HTMLElement) {
+                        element.appendChild(content);
+                    }
                 }
                 
                 return element;
