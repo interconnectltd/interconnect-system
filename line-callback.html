@@ -81,15 +81,48 @@
     <script>
         // Supabaseが準備できるまで待つ
         window.addEventListener('supabaseReady', function() {
+            console.log('📍 supabaseReady event fired in line-callback.html');
             handleLineCallback();
         });
         
+        // フォールバック：Supabaseが既に準備済みの場合
+        if (window.supabase) {
+            console.log('📍 Supabase already ready, calling handleLineCallback');
+            handleLineCallback();
+        }
+        
+        // さらなるフォールバック：DOMContentLoadedで実行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📍 DOMContentLoaded in line-callback.html');
+            setTimeout(function() {
+                if (window.supabase && !window._callbackHandled) {
+                    console.log('📍 Fallback: calling handleLineCallback');
+                    handleLineCallback();
+                }
+            }, 1000);
+        });
+        
         async function handleLineCallback() {
+            // 重複実行を防ぐ
+            if (window._callbackHandled) {
+                console.log('⚠️ Callback already handled, skipping');
+                return;
+            }
+            window._callbackHandled = true;
+            
+            console.log('🚀 handleLineCallback started');
+            
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const state = urlParams.get('state');
             const error = urlParams.get('error');
             const errorDescription = urlParams.get('error_description');
+            
+            console.log('📌 Processing callback with:', {
+                code: code ? code.substring(0, 10) + '...' : null,
+                state: state ? state.substring(0, 10) + '...' : null,
+                error: error
+            });
             
             // エラーチェック
             if (error) {
@@ -120,16 +153,29 @@
             }
             
             try {
+                console.log('📡 Calling Netlify Function...');
+                const apiUrl = '/.netlify/functions/line-auth-simple-v2';
+                const requestBody = {
+                    code: code,
+                    redirect_uri: window.location.origin + '/line-callback.html'
+                };
+                
+                console.log('API URL:', apiUrl);
+                console.log('Request Body:', requestBody);
+                
                 // バックエンドAPIを呼び出してLINE認証を処理（v2を使用）
-                const response = await fetch('/.netlify/functions/line-auth-simple-v2', {
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        code: code,
-                        redirect_uri: window.location.origin + '/line-callback.html'
-                    })
+                    body: JSON.stringify(requestBody)
+                });
+                
+                console.log('📡 Response received:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok
                 });
                 
                 if (!response.ok) {

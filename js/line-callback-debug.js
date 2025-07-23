@@ -36,6 +36,11 @@
         console.log('   auth available:', !!(window.supabase && window.supabase.auth));
     });
     
+    // Supabaseの初期状態もチェック
+    console.log('📌 Initial Supabase Status:');
+    console.log('   window.supabase:', !!window.supabase);
+    console.log('   supabaseReady fired:', window._supabaseReady || false);
+    
     // Fetch APIの監視
     const originalFetch = window.fetch;
     window.fetch = function(...args) {
