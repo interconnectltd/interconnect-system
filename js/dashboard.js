@@ -20,7 +20,23 @@
         window.addEventListener('supabaseReady', function() {
             console.log('Dashboard: supabaseReady event received, updating user info');
             setTimeout(() => updateUserInfo(), 500);
+            
+            // ダッシュボード更新システムを初期化
+            if (window.dashboardUpdater) {
+                console.log('Dashboard: Initializing dashboard updater...');
+                setTimeout(() => {
+                    window.dashboardUpdater.init();
+                }, 1000);
+            }
         });
+        
+        // ダッシュボード更新システムが既に準備できている場合
+        if (window.dashboardUpdater && window.supabase) {
+            console.log('Dashboard: Dashboard updater already available, initializing...');
+            setTimeout(() => {
+                window.dashboardUpdater.init();
+            }, 1500);
+        }
     });
 
     /**
