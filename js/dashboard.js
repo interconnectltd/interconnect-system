@@ -10,6 +10,17 @@
         initSidebar();
         initUserMenu();
         updateUserInfo();
+        
+        // ProfileSyncが準備できたら再度更新
+        if (window.ProfileSync) {
+            setTimeout(() => updateUserInfo(), 1000);
+        }
+        
+        // supabaseReadyイベントでも更新
+        window.addEventListener('supabaseReady', function() {
+            console.log('Dashboard: supabaseReady event received, updating user info');
+            setTimeout(() => updateUserInfo(), 500);
+        });
     });
 
     /**
@@ -95,15 +106,59 @@
      */
     function updateUserInfo() {
         try {
-            const userEmail = typeof Storage !== 'undefined' ? sessionStorage.getItem('userEmail') : null;
-            const userName = userEmail && userEmail.includes('@') ? userEmail.split('@')[0] : 'ゲスト';
+            // まずlocalStorageから完全なユーザー情報を取得
+            let userName = 'ゲスト';
+            let userPicture = null;
+            
+            if (typeof Storage !== 'undefined') {
+                const userDataStr = localStorage.getItem('user');
+                if (userDataStr) {
+                    try {
+                        const userData = JSON.parse(userDataStr);
+                        console.log('User data from localStorage:', userData);
+                        
+                        // 名前の優先順位: name > display_name > emailの@前
+                        userName = userData.name || userData.display_name || userData.email?.split('@')[0] || 'ゲスト';
+                        userPicture = userData.picture || userData.picture_url;
+                    } catch (e) {
+                        console.error('Failed to parse user data:', e);
+                    }
+                }
+                
+                // フォールバック: sessionStorageのemail
+                if (userName === 'ゲスト') {
+                    const userEmail = sessionStorage.getItem('userEmail');
+                    if (userEmail && userEmail.includes('@')) {
+                        userName = userEmail.split('@')[0];
+                    }
+                }
+            }
             
             // Update all user name elements
             const userNameElements = document.querySelectorAll('.user-name');
+            console.log('Found user name elements:', userNameElements.length);
             if (userNameElements.length > 0) {
-                userNameElements.forEach(element => {
+                userNameElements.forEach((element, index) => {
                     if (element) {
+                        console.log(`Updating element ${index}:`, element);
+                        console.log(`  Parent:`, element.parentElement);
+                        console.log(`  Old text:`, element.textContent);
                         element.textContent = userName;
+                        console.log(`  New text:`, element.textContent);
+                    }
+                });
+            }
+            
+            // プロフィール画像も更新（存在する場合）
+            if (userPicture) {
+                const profileImages = document.querySelectorAll('.user-menu-btn img, .user-avatar img, .profile-pic img');
+                profileImages.forEach(img => {
+                    if (img) {
+                        img.src = userPicture;
+                        img.onerror = function() {
+                            // 画像読み込みエラー時はデフォルト画像
+                            this.src = 'assets/user-placeholder.svg';
+                        };
                     }
                 });
             }
@@ -116,5 +171,8 @@
      * Logout function は global-functions.js で定義済み
      * 重複を避けるためここでは定義しない
      */
+    
+    // グローバルに公開（デバッグ用）
+    window.updateDashboardUserInfo = updateUserInfo;
 
 })();

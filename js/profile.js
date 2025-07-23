@@ -10,24 +10,59 @@ window.InterConnect.Profile = {
     profileData: null,
     
     // プロフィールデータの読み込み
-    loadProfileData: function() {
+    loadProfileData: async function() {
         try {
-            // SafeStorageを使用
+            // まずSupabaseから最新のユーザー情報を取得
+            if (window.ProfileSync && window.ProfileSync.sync) {
+                console.log('Syncing profile from Supabase...');
+                await window.ProfileSync.sync();
+            }
+            
+            // localStorageからユーザー情報を取得
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const userData = JSON.parse(userStr);
+                    console.log('User data from sync:', userData);
+                    
+                    // プロフィールデータの初期化
+                    if (!window.InterConnect.Profile.profileData) {
+                        window.InterConnect.Profile.profileData = {};
+                    }
+                    
+                    // Supabaseのデータでプロフィールを更新
+                    window.InterConnect.Profile.profileData.name = userData.name || userData.display_name || '';
+                    window.InterConnect.Profile.profileData.email = userData.email || '';
+                    if (userData.picture || userData.picture_url) {
+                        window.InterConnect.Profile.profileData.profileImage = userData.picture || userData.picture_url;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                }
+            }
+            
+            // 既存のプロフィールデータも読み込む（追加情報用）
             const savedData = window.safeLocalStorage ? 
                 window.safeLocalStorage.getJSON('userProfile', null) : 
                 null;
             
             if (savedData) {
-                window.InterConnect.Profile.profileData = savedData;
-                window.InterConnect.Profile.updateProfileInfo();
+                // 既存データとマージ（Supabaseのデータを優先）
+                window.InterConnect.Profile.profileData = {
+                    ...savedData,
+                    ...window.InterConnect.Profile.profileData
+                };
                 
                 // デバッグ: 詳細フィールドの確認
-                console.log('Loaded profile data:', savedData);
-                console.log('revenue-details:', savedData['revenue-details']);
-                console.log('hr-details:', savedData['hr-details']);
-                console.log('dx-details:', savedData['dx-details']);
-                console.log('strategy-details:', savedData['strategy-details']);
+                console.log('Loaded profile data:', window.InterConnect.Profile.profileData);
+                console.log('revenue-details:', window.InterConnect.Profile.profileData['revenue-details']);
+                console.log('hr-details:', window.InterConnect.Profile.profileData['hr-details']);
+                console.log('dx-details:', window.InterConnect.Profile.profileData['dx-details']);
+                console.log('strategy-details:', window.InterConnect.Profile.profileData['strategy-details']);
             }
+            
+            window.InterConnect.Profile.updateProfileInfo();
+            
         } catch (error) {
             console.error('プロフィールデータの読み込みエラー:', error);
         }
@@ -58,6 +93,38 @@ window.InterConnect.Profile = {
         // 役職
         const positionElement = document.querySelector('.profile-title');
         if (positionElement) positionElement.textContent = data.position || '役職・肩書き';
+        
+        // プロフィール画像の更新
+        if (data.profileImage) {
+            // プロフィールページのアバター画像
+            const profileAvatar = document.querySelector('.profile-avatar img');
+            if (profileAvatar) {
+                profileAvatar.src = data.profileImage;
+                profileAvatar.onerror = function() {
+                    this.src = 'assets/user-placeholder.svg';
+                };
+            }
+            
+            // ヘッダーのユーザーアイコン
+            const headerUserImg = document.querySelector('.user-menu-btn img');
+            if (headerUserImg) {
+                headerUserImg.src = data.profileImage;
+                headerUserImg.onerror = function() {
+                    this.src = 'assets/user-placeholder.svg';
+                };
+            }
+        }
+        
+        // カバー画像の更新
+        if (data.coverImage) {
+            const coverImg = document.querySelector('.profile-cover img');
+            if (coverImg) {
+                coverImg.src = data.coverImage;
+                coverImg.onerror = function() {
+                    this.src = 'assets/user-placeholder.svg';
+                };
+            }
+        }
     }
 };
 
@@ -620,7 +687,7 @@ window.InterConnect.Profile.closeEditModal = function() {
     }
 };
 
-window.InterConnect.Profile.saveProfile = function() {
+window.InterConnect.Profile.saveProfile = async function() {
     try {
         const form = document.getElementById('profileEditForm');
         if (!form.checkValidity()) {
@@ -645,6 +712,26 @@ window.InterConnect.Profile.saveProfile = function() {
         // ローカルストレージに保存
         if (window.safeLocalStorage) {
             window.safeLocalStorage.setJSON('userProfile', window.InterConnect.Profile.profileData);
+        }
+        
+        // Supabaseに同期
+        if (window.ProfileSync && window.ProfileSync.update) {
+            console.log('Syncing profile to Supabase...');
+            const { error } = await window.ProfileSync.update({
+                name: updatedData.name,
+                display_name: updatedData.name,
+                company: updatedData.company,
+                position: updatedData.position,
+                bio: updatedData.bio,
+                phone: updatedData.phone,
+                lineId: updatedData.lineId
+            });
+            
+            if (error) {
+                console.error('Supabase sync error:', error);
+            } else {
+                console.log('Profile synced to Supabase successfully');
+            }
         }
         
         // UIを更新
@@ -796,7 +883,7 @@ window.InterConnect.Profile.saveCoverImage = function() {
     }
 };
 
-window.InterConnect.Profile.saveAvatarImage = function() {
+window.InterConnect.Profile.saveAvatarImage = async function() {
     try {
         const preview = document.getElementById('avatar-preview');
         if (preview && preview.style.display !== 'none') {
@@ -810,6 +897,21 @@ window.InterConnect.Profile.saveAvatarImage = function() {
                 window.InterConnect.Profile.profileData.profileImage = preview.src;
                 if (window.safeLocalStorage) {
                     window.safeLocalStorage.setJSON('userProfile', window.InterConnect.Profile.profileData);
+                }
+            }
+            
+            // Supabaseに同期
+            if (window.ProfileSync && window.ProfileSync.update) {
+                console.log('Syncing avatar to Supabase...');
+                const { error } = await window.ProfileSync.update({
+                    picture: preview.src,
+                    picture_url: preview.src
+                });
+                
+                if (error) {
+                    console.error('Avatar sync error:', error);
+                } else {
+                    console.log('Avatar synced to Supabase successfully');
                 }
             }
             
