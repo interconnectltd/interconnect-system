@@ -154,7 +154,7 @@
             
             try {
                 console.log('📡 Calling Netlify Function...');
-                const apiUrl = '/.netlify/functions/line-auth-simple-v2';
+                const apiUrl = '/.netlify/functions/line-auth-simple-v3';
                 const requestBody = {
                     code: code,
                     redirect_uri: window.location.origin + '/line-callback.html'
@@ -202,29 +202,40 @@
                 }
                 
                 const data = await response.json();
+                console.log('📡 Auth response data:', data);
                 
                 // ユーザー情報を保存
-                localStorage.setItem('user', JSON.stringify({
+                const userData = {
                     id: data.user.id,
                     email: data.user.email,
                     name: data.user.display_name,
                     picture: data.user.picture_url,
-                    provider: 'line'
-                }));
+                    provider: 'line',
+                    line_user_id: data.user.line_user_id
+                };
                 
-                // Supabaseセッションを設定
-                if (data.session_url) {
-                    // セッションURLにアクセスして認証を完了
-                    window.location.href = data.session_url;
-                } else {
-                    // 成功メッセージ
-                    document.querySelector('.callback-message').textContent = '認証成功！リダイレクトしています...';
-                    
-                    // ダッシュボードへリダイレクト
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1000);
+                console.log('Saving user data:', userData);
+                localStorage.setItem('user', JSON.stringify(userData));
+                
+                // セッション情報も保存（仮の実装）
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('userEmail', data.user.email);
+                
+                // 成功メッセージ
+                document.querySelector('.callback-message').textContent = '認証成功！リダイレクトしています...';
+                
+                // 成功アイコンに変更
+                const icon = document.querySelector('.callback-icon');
+                if (icon) {
+                    icon.className = 'fas fa-check-circle callback-icon';
+                    icon.style.color = '#10b981';
                 }
+                
+                // ダッシュボードへリダイレクト
+                console.log('Redirecting to dashboard...');
+                setTimeout(() => {
+                    window.location.href = data.redirect_to || 'dashboard.html';
+                }, 1000);
                 
             } catch (err) {
                 console.error('LINE認証エラー:', err);

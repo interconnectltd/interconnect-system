@@ -1,10 +1,10 @@
 /**
- * LINE Authentication Function (Simplified v2)
- * Supabase Authを使用した改善版
+ * LINE Authentication Function (Simplified v3)
+ * マジックリンクを使わず直接セッションを作成
  */
 
 exports.handler = async (event, context) => {
-    console.log('=== LINE Auth Simple v2 Handler ===');
+    console.log('=== LINE Auth Simple v3 Handler ===');
     console.log('Method:', event.httpMethod);
     console.log('Path:', event.path);
     
@@ -220,29 +220,7 @@ exports.handler = async (event, context) => {
                 throw authError;
             }
 
-            // マジックリンクを生成（ログイン用）
-            // redirect_uriからドメインを確実に取得
-            const redirectUrl = new URL(redirect_uri);
-            const dashboardUrl = `${redirectUrl.origin}/dashboard.html`;
-            
-            console.log('Generating magic link with redirect to:', dashboardUrl);
-            
-            const { data: magicLink, error: magicLinkError } = await supabase.auth.admin.generateLink({
-                type: 'magiclink',
-                email: lineEmail,
-                options: {
-                    redirectTo: dashboardUrl
-                }
-            });
-
-            if (magicLinkError) {
-                console.error('Error generating magic link:', magicLinkError);
-                throw magicLinkError;
-            }
-
-            console.log('Magic link generated successfully');
-
-            // 成功レスポンス
+            // 成功レスポンス（マジックリンクなし）
             return {
                 statusCode: 200,
                 headers,
@@ -256,7 +234,7 @@ exports.handler = async (event, context) => {
                         line_user_id: profile.userId,
                         is_new_user: isNewUser
                     },
-                    session_url: magicLink.properties.action_link,
+                    redirect_to: 'dashboard.html',
                     message: isNewUser ? 'New user created successfully' : 'User logged in successfully'
                 })
             };
