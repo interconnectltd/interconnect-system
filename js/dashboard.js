@@ -83,8 +83,10 @@
 
     /**
      * Logout function
+     * 注意：auth-supabase.jsでも定義されているため、存在チェックを追加
      */
-    window.logout = function() {
+    if (!window.logout) {
+        window.logout = function() {
         try {
             if (confirm('ログアウトしますか？')) {
                 // Clear session data safely
@@ -114,5 +116,6 @@
             window.location.href = 'index.html';
         }
     };
+    }
 
 })();
