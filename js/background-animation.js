@@ -87,8 +87,8 @@
         }
     }
     
-    // アニメーションループ
-    function animate() {
+    // アニメーションループ（AnimationManagerを使用）
+    function animate(deltaTime, currentTime) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // 背景グラデーション
@@ -107,8 +107,6 @@
         
         // 接続線の描画
         drawConnections();
-        
-        requestAnimationFrame(animate);
     }
     
     // 初期化
@@ -118,7 +116,22 @@
             container.insertBefore(canvas, container.firstChild);
             resizeCanvas();
             initParticles();
-            animate();
+            
+            // AnimationManagerに登録
+            if (window.AnimationManager) {
+                window.AnimationManager.register('backgroundParticles', animate, {
+                    priority: 1, // 低優先度
+                    fps: 60
+                });
+            } else {
+                // フォールバック（AnimationManagerが利用できない場合）
+                console.warn('AnimationManager not found, using fallback animation loop');
+                function fallbackAnimate() {
+                    animate(16, performance.now());
+                    requestAnimationFrame(fallbackAnimate);
+                }
+                fallbackAnimate();
+            }
         }
     }
     
@@ -127,6 +140,21 @@
         resizeCanvas();
         initParticles();
     });
+    
+    // クリーンアップ関数
+    function cleanup() {
+        if (window.AnimationManager) {
+            window.AnimationManager.unregister('backgroundParticles');
+        }
+        if (canvas.parentNode) {
+            canvas.parentNode.removeChild(canvas);
+        }
+        particles.length = 0;
+    }
+    
+    // ページ遷移時のクリーンアップ
+    window.addEventListener('beforeunload', cleanup);
+    window.addEventListener('pagehide', cleanup);
     
     // DOMロード後に初期化
     if (document.readyState === 'loading') {

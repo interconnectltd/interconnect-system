@@ -247,18 +247,33 @@ function initNumberAnimation() {
                     const increment = endValue / (duration / 16);
                     let currentValue = 0;
                     
-                    const updateNumber = () => {
-                        currentValue += increment;
-                        if (currentValue >= endValue) {
-                            target.textContent = endValue.toLocaleString() + suffix;
-                            target.classList.add('animated');
-                        } else {
-                            target.textContent = Math.floor(currentValue).toLocaleString() + suffix;
-                            requestAnimationFrame(updateNumber);
-                        }
-                    };
-                    
-                    updateNumber();
+                    if (window.AnimationManager) {
+                        // AnimationManagerを使用
+                        const animationId = `mono-counter-${target.dataset.value}-${Date.now()}`;
+                        window.AnimationManager.register(animationId, (deltaTime) => {
+                            currentValue += increment * (deltaTime / 16); // 60FPSベースで調整
+                            if (currentValue >= endValue) {
+                                target.textContent = endValue.toLocaleString() + suffix;
+                                target.classList.add('animated');
+                                window.AnimationManager.unregister(animationId);
+                            } else {
+                                target.textContent = Math.floor(currentValue).toLocaleString() + suffix;
+                            }
+                        }, { priority: 5 });
+                    } else {
+                        // フォールバック
+                        const updateNumber = () => {
+                            currentValue += increment;
+                            if (currentValue >= endValue) {
+                                target.textContent = endValue.toLocaleString() + suffix;
+                                target.classList.add('animated');
+                            } else {
+                                target.textContent = Math.floor(currentValue).toLocaleString() + suffix;
+                                requestAnimationFrame(updateNumber);
+                            }
+                        };
+                        updateNumber();
+                    }
                 }
             }
         });

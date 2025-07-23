@@ -97,18 +97,33 @@ function initCountAnimation() {
                 const increment = endValue / (duration / 16);
                 let currentValue = 0;
                 
-                const updateCount = () => {
-                    currentValue += increment;
-                    if (currentValue >= endValue) {
-                        target.textContent = endValue.toLocaleString();
-                        target.classList.add('counted');
-                    } else {
-                        target.textContent = Math.floor(currentValue).toLocaleString();
-                        requestAnimationFrame(updateCount);
-                    }
-                };
-                
-                updateCount();
+                if (window.AnimationManager) {
+                    // AnimationManagerを使用
+                    const animationId = `counter-${target.dataset.value}-${Date.now()}`;
+                    window.AnimationManager.register(animationId, (deltaTime) => {
+                        currentValue += increment * (deltaTime / 16); // 60FPSベースで調整
+                        if (currentValue >= endValue) {
+                            target.textContent = endValue.toLocaleString();
+                            target.classList.add('counted');
+                            window.AnimationManager.unregister(animationId);
+                        } else {
+                            target.textContent = Math.floor(currentValue).toLocaleString();
+                        }
+                    }, { priority: 5 });
+                } else {
+                    // フォールバック
+                    const updateCount = () => {
+                        currentValue += increment;
+                        if (currentValue >= endValue) {
+                            target.textContent = endValue.toLocaleString();
+                            target.classList.add('counted');
+                        } else {
+                            target.textContent = Math.floor(currentValue).toLocaleString();
+                            requestAnimationFrame(updateCount);
+                        }
+                    };
+                    updateCount();
+                }
             }
         });
     }, observerOptions);
