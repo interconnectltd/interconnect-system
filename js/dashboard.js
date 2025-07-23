@@ -105,6 +105,7 @@
      * Update user information
      */
     function updateUserInfo() {
+        console.log('[Dashboard] updateUserInfo called at', new Date().toISOString());
         try {
             // まずlocalStorageから完全なユーザー情報を取得
             let userName = 'ゲスト';
@@ -112,22 +113,35 @@
             
             if (typeof Storage !== 'undefined') {
                 const userDataStr = localStorage.getItem('user');
+                console.log('[Dashboard] Raw user data from localStorage:', userDataStr);
                 if (userDataStr) {
                     try {
                         const userData = JSON.parse(userDataStr);
-                        console.log('User data from localStorage:', userData);
+                        console.log('[Dashboard] Parsed user data:', userData);
                         
                         // 名前の優先順位: name > display_name > emailの@前
                         userName = userData.name || userData.display_name || userData.email?.split('@')[0] || 'ゲスト';
+                        
+                        // LINE IDの場合の対処
+                        if (userName.startsWith('line_') && userData.display_name && !userData.display_name.startsWith('line_')) {
+                            userName = userData.display_name;
+                            // 修正したデータを保存
+                            userData.name = userData.display_name;
+                            localStorage.setItem('user', JSON.stringify(userData));
+                        }
+                        
                         userPicture = userData.picture || userData.picture_url;
+                        console.log('[Dashboard] Extracted userName:', userName);
+                        console.log('[Dashboard] Extracted userPicture:', userPicture);
                     } catch (e) {
-                        console.error('Failed to parse user data:', e);
+                        console.error('[Dashboard] Failed to parse user data:', e);
                     }
                 }
                 
                 // フォールバック: sessionStorageのemail
-                if (userName === 'ゲスト') {
+                if (userName === 'ゲスト' || userName.startsWith('line_')) {
                     const userEmail = sessionStorage.getItem('userEmail');
+                    console.log('[Dashboard] Fallback to sessionStorage email:', userEmail);
                     if (userEmail && userEmail.includes('@')) {
                         userName = userEmail.split('@')[0];
                     }

@@ -34,12 +34,20 @@
                 id: user.id,
                 email: user.email,
                 name: user.user_metadata?.name || user.user_metadata?.display_name || user.email?.split('@')[0],
-                display_name: user.user_metadata?.display_name,
+                display_name: user.user_metadata?.display_name || user.user_metadata?.name,
                 picture: user.user_metadata?.picture,
                 picture_url: user.user_metadata?.picture_url,
                 provider: user.user_metadata?.provider || 'email',
                 line_user_id: user.user_metadata?.line_user_id
             };
+            
+            // LINE IDが名前として設定されている場合の対処
+            if (userData.name && userData.name.startsWith('line_')) {
+                console.log('Detected LINE ID as name, checking for display_name');
+                if (userData.display_name && !userData.display_name.startsWith('line_')) {
+                    userData.name = userData.display_name;
+                }
+            }
             
             console.log('Synced user data:', userData);
             
@@ -157,14 +165,28 @@
     // さらに早く実行（DOMContentLoaded前）
     if (typeof Storage !== 'undefined') {
         const userStr = localStorage.getItem('user');
+        console.log('[ProfileSync] Early sync - localStorage user:', userStr);
         if (userStr) {
             try {
                 const userData = JSON.parse(userStr);
+                
+                // LINE IDが名前になっている場合の修正
+                if (userData.name && userData.name.startsWith('line_')) {
+                    if (userData.display_name && !userData.display_name.startsWith('line_')) {
+                        userData.name = userData.display_name;
+                        // 修正したデータを保存
+                        localStorage.setItem('user', JSON.stringify(userData));
+                    }
+                }
+                
                 // DOMが準備できたらすぐに更新
                 if (document.readyState !== 'loading') {
                     updateUserDisplay(userData);
                 } else {
-                    document.addEventListener('DOMContentLoaded', () => updateUserDisplay(userData));
+                    document.addEventListener('DOMContentLoaded', () => {
+                        console.log('[ProfileSync] DOMContentLoaded - updating display');
+                        updateUserDisplay(userData);
+                    });
                 }
             } catch (e) {
                 console.error('Early sync error:', e);
