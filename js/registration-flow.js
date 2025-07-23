@@ -25,14 +25,15 @@ window.InterConnect.Registration = {
     }
 };
 
-// HTMLから呼び出せるようにグローバル関数も維持（後方互換性）
-window.nextStep = function() {
-    window.InterConnect.Registration.nextStep();
-};
-
-window.prevStep = function() {
-    window.InterConnect.Registration.prevStep();
-};
+// nextStep/prevStep は global-functions.js で定義済み
+// InterConnect.Registration の関数を global-functions.js の関数から呼び出すように設定
+window.addEventListener('DOMContentLoaded', function() {
+    // global-functions.js のステップ変更イベントを監視
+    window.addEventListener('stepChanged', function(e) {
+        // 必要に応じて registration-flow.js 側の処理を実行
+        console.log('Step changed:', e.detail);
+    });
+});
 
 // 関数を名前空間内に移動
 window.InterConnect.Registration.moveToStep = function(step) {
@@ -454,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lineId: getElementValue('line-id'),
             
             // その他
-            newsletter: document.querySelector('input[name="newsletter"]') ? document.querySelector('input[name="newsletter"]').checked : false,
+            newsletter: document.querySelector('input[name="newsletter"]')?.checked || false,
             
             // スキル
             skills: Array.from(document.querySelectorAll('input[name="skills"]:checked'))

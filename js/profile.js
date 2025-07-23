@@ -1334,7 +1334,7 @@ window.InterConnect.Profile.saveChallenges = function() {
         const checkedChallenges = Array.from(form.querySelectorAll('input[name="challenge"]:checked'))
             .map(cb => cb.value);
         
-        const budget = document.getElementById('edit-budget').value;
+        const budget = document.getElementById('edit-budget')?.value || '';
         
         // 詳細フィールドの値を取得（デバッグ付き）
         const detailFields = {};

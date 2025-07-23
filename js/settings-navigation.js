@@ -51,7 +51,7 @@
             }
         } else {
             // Show first section by default
-            if (sections.length > 0) {
+            if (sections.length > 0 && sections[0]) {
                 sections[0].style.display = 'block';
             }
         }

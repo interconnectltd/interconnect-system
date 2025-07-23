@@ -85,12 +85,16 @@ document.addEventListener('DOMContentLoaded', function() {
     let touchEndX = 0;
 
     document.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
+        if (e.changedTouches && e.changedTouches.length > 0) {
+            touchStartX = e.changedTouches[0].screenX;
+        }
     }, { passive: true });
 
     document.addEventListener('touchend', function(e) {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
+        if (e.changedTouches && e.changedTouches.length > 0) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }
     }, { passive: true });
 
     function handleSwipe() {

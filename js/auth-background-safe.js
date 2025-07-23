@@ -227,8 +227,13 @@ function cleanup() {
     }
     
     // パーティクルを停止
-    if (window.pJSDom && window.pJSDom.length > 0) {
-        window.pJSDom[0].pJS.fn.vendors.destroypJS();
+    if (window.pJSDom && window.pJSDom.length > 0 && window.pJSDom[0]) {
+        if (window.pJSDom[0].pJS && 
+            window.pJSDom[0].pJS.fn && 
+            window.pJSDom[0].pJS.fn.vendors &&
+            typeof window.pJSDom[0].pJS.fn.vendors.destroypJS === 'function') {
+            window.pJSDom[0].pJS.fn.vendors.destroypJS();
+        }
         window.pJSDom = [];
     }
 }

@@ -72,7 +72,7 @@ function initializeAuth() {
     } else {
         console.log('❌ LINE Register button NOT found');
         console.log('   Available buttons:', document.querySelectorAll('button').length);
-        console.log('   Buttons with ID:', Array.from(document.querySelectorAll('button[id]')).map(b => b.id));
+        console.log('   Buttons with ID:', Array.from(document.querySelectorAll('button[id]')).map(b => b?.id).filter(Boolean));
     }
     
     // 現在のユーザーセッションをチェック
@@ -130,7 +130,7 @@ async function handleEmailLogin(e) {
                 localStorage.setItem('user', JSON.stringify({
                     id: data.user.id,
                     email: data.user.email,
-                    name: data.user.user_metadata?.name || email.split('@')[0]
+                    name: data.user.user_metadata?.name || (email && email.includes('@') ? email.split('@')[0] : 'User')
                 }));
             } else {
                 console.warn('LocalStorage is not available');
@@ -287,27 +287,5 @@ function generateRandomString(length) {
 // handleLineLogin関数をグローバルに公開（他のスクリプトから呼び出せるように）
 window.handleLineLogin = handleLineLogin;
 
-// ログアウト関数（グローバルに公開）
-window.logout = async function() {
-    try {
-        const { error } = await window.supabase.auth.signOut();
-        if (error) {
-            console.error('ログアウトエラー:', error);
-        }
-        
-        // ローカルストレージをクリア（エラーハンドリング付き）
-        try {
-            if (typeof Storage !== 'undefined') {
-                localStorage.removeItem('user');
-                sessionStorage.clear();
-            }
-        } catch (storageErr) {
-            console.error('ストレージクリアエラー:', storageErr);
-        }
-        
-        // ログインページへリダイレクト
-        window.location.href = 'login.html';
-    } catch (err) {
-        console.error('ログアウト処理エラー:', err);
-    }
-};
+// ログアウト関数は global-functions.js で定義済み
+// 重複を避けるためここでは定義しない

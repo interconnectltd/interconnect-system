@@ -96,7 +96,7 @@
     function updateUserInfo() {
         try {
             const userEmail = typeof Storage !== 'undefined' ? sessionStorage.getItem('userEmail') : null;
-            const userName = userEmail ? userEmail.split('@')[0] : 'ゲスト';
+            const userName = userEmail && userEmail.includes('@') ? userEmail.split('@')[0] : 'ゲスト';
             
             // Update all user name elements
             const userNameElements = document.querySelectorAll('.user-name');
@@ -113,45 +113,8 @@
     }
 
     /**
-     * Logout function
-     * 注意：auth-supabase.jsでも定義されているため、存在チェックを追加
+     * Logout function は global-functions.js で定義済み
+     * 重複を避けるためここでは定義しない
      */
-    if (!window.logout) {
-        window.logout = function() {
-        try {
-            if (confirm('ログアウトしますか？')) {
-                // Clear session data safely
-                try {
-                    if (typeof sessionStorage !== 'undefined') {
-                        sessionStorage.clear();
-                    }
-                    
-                    if (typeof localStorage !== 'undefined') {
-                        localStorage.removeItem('rememberMe');
-                        localStorage.removeItem('userProfile');
-                        localStorage.removeItem('isLoggedIn');
-                        localStorage.removeItem('user');
-                    }
-                } catch (storageError) {
-                    console.error('ストレージクリアエラー:', storageError);
-                }
-                
-                // Show logout message
-                if (window.InterConnect && window.InterConnect.Registration && window.InterConnect.Registration.showToast) {
-                    window.InterConnect.Registration.showToast('ログアウトしました', 'success');
-                }
-                
-                // Redirect to index page after a short delay
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
-            }
-        } catch (error) {
-            console.error('Logout error:', error);
-            // Fallback: force redirect even if there's an error
-            window.location.href = 'index.html';
-        }
-    };
-    }
 
 })();

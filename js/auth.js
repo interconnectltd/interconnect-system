@@ -179,57 +179,19 @@
     }
 
     /**
-     * Multi-step form navigation
+     * Multi-step form navigation は global-functions.js で定義済み
+     * 重複を避けるためここでは定義しない
      */
-    window.nextStep = function() {
-        const currentStep = document.querySelector('.form-step.active');
-        const currentStepNum = parseInt(currentStep.dataset.step);
-        
-        // Validate current step
-        if (!validateStep(currentStepNum)) {
-            return;
-        }
-        
-        // Move to next step
-        if (currentStepNum < 3) {
-            // Hide current step
-            currentStep.classList.remove('active');
-            
-            // Show next step
-            const nextStep = document.querySelector(`.form-step[data-step="${currentStepNum + 1}"]`);
-            nextStep.classList.add('active');
-            
-            // Update progress
-            updateProgress(currentStepNum + 1);
-        }
-    };
-    
-    window.prevStep = function() {
-        const currentStep = document.querySelector('.form-step.active');
-        const currentStepNum = parseInt(currentStep.dataset.step);
-        
-        if (currentStepNum > 1) {
-            // Hide current step
-            currentStep.classList.remove('active');
-            
-            // Show previous step
-            const prevStep = document.querySelector(`.form-step[data-step="${currentStepNum - 1}"]`);
-            prevStep.classList.add('active');
-            
-            // Update progress
-            updateProgress(currentStepNum - 1);
-        }
-    };
     
     function validateStep(stepNum) {
         switch(stepNum) {
             case 1:
                 // Validate basic information
-                const name = document.getElementById('name').value;
-                const company = document.getElementById('company').value;
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const passwordConfirm = document.getElementById('password-confirm').value;
+                const name = document.getElementById('name')?.value || '';
+                const company = document.getElementById('company')?.value || '';
+                const email = document.getElementById('email')?.value || '';
+                const password = document.getElementById('password')?.value || '';
+                const passwordConfirm = document.getElementById('password-confirm')?.value || '';
                 
                 if (!name || !company || !email || !password || !passwordConfirm) {
                     showMessage('すべての項目を入力してください。', 'error');
@@ -256,7 +218,7 @@
             case 2:
                 // Validate business challenges
                 const challenges = document.querySelectorAll('input[name="challenges"]:checked');
-                const budget = document.getElementById('budget').value;
+                const budget = document.getElementById('budget')?.value || '';
                 
                 if (challenges.length === 0) {
                     showMessage('少なくとも1つの事業課題を選択してください。', 'error');

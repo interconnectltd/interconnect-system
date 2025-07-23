@@ -70,9 +70,11 @@
                 
                 // Reset hamburger
                 const spans = navToggler.querySelectorAll('span');
-                spans[0].style.transform = '';
-                spans[1].style.opacity = '';
-                spans[2].style.transform = '';
+                if (spans && spans.length >= 3) {
+                    spans[0].style.transform = '';
+                    spans[1].style.opacity = '';
+                    spans[2].style.transform = '';
+                }
             }
         };
         addEventListener(document, 'click', documentClickHandler);
