@@ -159,25 +159,74 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Supabase処理（簡易版）
+        // Supabase処理（改善版）
         try {
             const { createClient } = require('@supabase/supabase-js');
             const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-            // プロファイルテーブルで既存ユーザーを確認（emailで検索）
+            console.log('Supabase client created successfully');
+
+            // まずテーブルの存在を確認
             const lineEmail = `line_${profile.userId}@interconnect.com`;
-            const { data: existingProfiles, error: searchError } = await supabase
-                .from('user_profiles')
-                .select('*')
-                .eq('email', lineEmail);
+            console.log('Checking for user with email:', lineEmail);
             
-            // エラーチェックを改善
-            if (searchError && searchError.code !== 'PGRST116') {
-                console.error('Search error:', searchError);
-                throw searchError;
+            // authテーブルでユーザーを作成または取得
+            let authUser;
+            try {
+                // 既存ユーザーをメールで検索
+                const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+                
+                if (listError) {
+                    console.error('Error listing users:', listError);
+                    throw listError;
+                }
+                
+                const existingUser = users.find(u => u.email === lineEmail);
+                
+                if (existingUser) {
+                    console.log('Existing user found:', existingUser.id);
+                    authUser = existingUser;
+                } else {
+                    console.log('Creating new user...');
+                    // 新規ユーザーを作成
+                    const { data: { user }, error: createError } = await supabase.auth.admin.createUser({
+                        email: lineEmail,
+                        email_confirm: true,
+                        user_metadata: {
+                            name: profile.displayName,
+                            picture: profile.pictureUrl,
+                            provider: 'line',
+                            line_user_id: profile.userId
+                        }
+                    });
+                    
+                    if (createError) {
+                        console.error('Error creating user:', createError);
+                        throw createError;
+                    }
+                    
+                    console.log('New user created:', user.id);
+                    authUser = user;
+                }
+            } catch (authError) {
+                console.error('Auth operation error:', authError);
+                throw authError;
             }
             
-            const existingProfile = existingProfiles && existingProfiles.length > 0 ? existingProfiles[0] : null;
+            // プロファイルテーブルの処理（オプション）
+            let userProfile = null;
+            try {
+                const { data: existingProfiles, error: searchError } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('email', lineEmail);
+                
+                if (searchError && searchError.code !== 'PGRST116') {
+                    console.warn('Profile table might not exist or error:', searchError);
+                    // プロファイルテーブルがなくても続行
+                } else if (existingProfiles && existingProfiles.length > 0) {
+                    userProfile = existingProfiles[0];
+                }
 
             let userProfile;
             
