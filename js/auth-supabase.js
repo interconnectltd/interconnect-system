@@ -18,20 +18,38 @@ console.log('   Length:', LINE_CHANNEL_ID.length);
 console.log('   Is 10 digits?:', /^\d{10}$/.test(LINE_CHANNEL_ID));
 console.log('   ⚠️ If you see 2007213003, clear cache!');
 
+// 初期化タイミングの改善
+let authInitialized = false;
+
+function tryInitializeAuth() {
+    if (authInitialized) return;
+    
+    console.log('🔍 Trying to initialize auth...');
+    console.log('   Supabase available:', !!window.supabase);
+    console.log('   DOM state:', document.readyState);
+    
+    if (window.supabase && document.readyState !== 'loading') {
+        authInitialized = true;
+        initializeAuth();
+    }
+}
+
 // Supabaseが準備できるまで待つ
 window.addEventListener('supabaseReady', function() {
     console.log('📍 supabaseReady event received in auth-supabase.js');
-    initializeAuth();
+    tryInitializeAuth();
 });
 
-// DOMContentLoadedでも試す（念のため）
+// DOMContentLoadedでも試す
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📍 DOMContentLoaded in auth-supabase.js');
-    if (window.supabase) {
-        console.log('📍 Supabase already available, calling initializeAuth');
-        initializeAuth();
-    }
+    tryInitializeAuth();
 });
+
+// すでに読み込み済みの場合
+if (document.readyState !== 'loading') {
+    setTimeout(tryInitializeAuth, 100);
+}
 
 function initializeAuth() {
     console.log('🔧 initializeAuth called');
