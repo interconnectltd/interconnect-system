@@ -70,11 +70,17 @@
     
     // ユーザー情報をDOMに反映
     function updateUserDisplay(userData) {
+        console.log('[ProfileSync] updateUserDisplay called with:', userData);
+        
         // 名前の更新
         const userNameElements = document.querySelectorAll('.user-name');
-        userNameElements.forEach(element => {
+        console.log('[ProfileSync] Found user-name elements:', userNameElements.length);
+        
+        userNameElements.forEach((element, index) => {
             if (element) {
-                element.textContent = userData.name || userData.display_name || 'ゲスト';
+                const newName = userData.name || userData.display_name || 'ゲスト';
+                console.log(`[ProfileSync] Updating element ${index}: ${element.textContent} -> ${newName}`);
+                element.textContent = newName;
             }
         });
         
@@ -180,11 +186,13 @@
                 }
                 
                 // DOMが準備できたらすぐに更新
-                if (document.readyState !== 'loading') {
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    console.log('[ProfileSync] DOM ready, updating immediately');
                     updateUserDisplay(userData);
                 } else {
+                    console.log('[ProfileSync] Waiting for DOMContentLoaded');
                     document.addEventListener('DOMContentLoaded', () => {
-                        console.log('[ProfileSync] DOMContentLoaded - updating display');
+                        console.log('[ProfileSync] DOMContentLoaded fired - updating display');
                         updateUserDisplay(userData);
                     });
                 }
@@ -200,5 +208,19 @@
         update: updateProfile,
         updateDisplay: updateUserDisplay
     };
+    
+    // 確実に実行するため、短い遅延後にも実行
+    setTimeout(() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const userData = JSON.parse(userStr);
+                console.log('[ProfileSync] Delayed update (500ms)');
+                updateUserDisplay(userData);
+            } catch (e) {
+                console.error('[ProfileSync] Delayed update error:', e);
+            }
+        }
+    }, 500);
     
 })();
