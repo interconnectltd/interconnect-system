@@ -78,4 +78,4 @@ git push origin main
 ```
 
 ## ライセンス
-このプロジェクトはMITライセンスの下で公開されています。
+このプロジェクトはMITライセンスの下で公開されています。// Force redeploy at Thu Jul 24 10:25:51 JST 2025
