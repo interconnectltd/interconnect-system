@@ -21,48 +21,60 @@
         updateStatCards(stats) {
             console.log('[DashboardUI] Updating stat cards with:', stats);
 
+            // stats-container内のstat-cardを正確に選択
+            const statCards = document.querySelectorAll('.stats-container .stat-card');
+            console.log(`[DashboardUI] Found ${statCards.length} stat cards`);
+            
             const statMappings = [
                 {
-                    selector: '.stat-card:nth-child(1) .stat-value',
+                    element: statCards[0],
                     value: this.formatNumber(stats.total_members),
-                    changeSelector: '.stat-card:nth-child(1) .stat-change span',
                     changeValue: `${stats.member_growth_percentage}% 前月比`,
                     changeType: stats.member_growth_percentage >= 0 ? 'positive' : 'negative'
                 },
                 {
-                    selector: '.stat-card:nth-child(2) .stat-value',
+                    element: statCards[1],
                     value: this.formatNumber(stats.monthly_events),
-                    changeSelector: '.stat-card:nth-child(2) .stat-change span',
                     changeValue: `${stats.event_increase}イベント増加`,
                     changeType: stats.event_increase >= 0 ? 'positive' : 'negative'
                 },
                 {
-                    selector: '.stat-card:nth-child(3) .stat-value',
+                    element: statCards[2],
                     value: this.formatNumber(stats.matching_success),
-                    changeSelector: '.stat-card:nth-child(3) .stat-change span',
                     changeValue: '23% 増加',
                     changeType: 'positive'
                 },
                 {
-                    selector: '.stat-card:nth-child(4) .stat-value',
+                    element: statCards[3],
                     value: this.formatNumber(stats.unread_messages),
-                    changeSelector: '.stat-card:nth-child(4) .stat-change span',
                     changeValue: '5% 減少',
                     changeType: 'negative'
                 }
             ];
 
             statMappings.forEach((mapping, index) => {
-                this.animateStatValue(mapping.selector, mapping.value, () => {
-                    // 変化量も更新
-                    const changeElement = document.querySelector(mapping.changeSelector);
-                    const changeContainer = document.querySelector(mapping.changeSelector)?.parentElement;
-                    
-                    if (changeElement && changeContainer) {
-                        changeElement.textContent = mapping.changeValue;
-                        changeContainer.className = `stat-change ${mapping.changeType}`;
-                    }
-                });
+                if (!mapping.element) {
+                    console.warn(`[DashboardUI] Stat card ${index} not found`);
+                    return;
+                }
+                
+                // stat-value要素を直接取得
+                const statValueElement = mapping.element.querySelector('.stat-value');
+                const changeElement = mapping.element.querySelector('.stat-change span');
+                const changeContainer = mapping.element.querySelector('.stat-change');
+                
+                if (statValueElement) {
+                    // 直接値を更新（アニメーション付き）
+                    this.animateStatValueElement(statValueElement, mapping.value, () => {
+                        // 変化量も更新
+                        if (changeElement && changeContainer) {
+                            changeElement.textContent = mapping.changeValue;
+                            changeContainer.className = `stat-change ${mapping.changeType}`;
+                        }
+                    });
+                } else {
+                    console.warn(`[DashboardUI] stat-value element not found in card ${index}`);
+                }
             });
 
             // 更新時刻を保存
@@ -70,12 +82,11 @@
         }
 
         /**
-         * 統計値のアニメーション更新
+         * 統計値のアニメーション更新（要素を直接受け取る）
          */
-        animateStatValue(selector, newValue, callback) {
-            const element = document.querySelector(selector);
+        animateStatValueElement(element, newValue, callback) {
             if (!element) {
-                console.warn('[DashboardUI] Stat element not found:', selector);
+                console.warn('[DashboardUI] Element is null');
                 return;
             }
 
