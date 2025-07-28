@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メッセージ - INTERCONNECT</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/messages.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/responsive-menu.css">
+    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
+    <link rel="stylesheet" href="css/info-card-contrast-fix.css">
+</head>
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button class="mobile-menu-toggle" id="messagesSidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1>INTERCONNECT</h1>
+        <div class="mobile-header-actions">
+            <a href="notifications.html" class="notification-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-header">
+            <h1>INTERCONNECT</h1>
+            <button class="mobile-nav-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-menu">
+            <ul>
+                <li>
+                    <a href="dashboard.html" class="mobile-nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>ダッシュボード</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="members.html" class="mobile-nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>メンバー</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="events.html" class="mobile-nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>イベント</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="mobile-nav-link active">
+                        <i class="fas fa-envelope"></i>
+                        <span>メッセージ</span>
+                        <span class="badge">3</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="matching.html" class="mobile-nav-link">
+                        <i class="fas fa-handshake"></i>
+                        <span>マッチング</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html" class="mobile-nav-link">
+                        <i class="fas fa-user"></i>
+                        <span>プロフィール</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.html" class="mobile-nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>設定</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="mobile-nav-footer">
+            <a href="#" class="mobile-nav-link" onclick="logout(); return false;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>ログアウト</span>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Mobile Backdrop -->
+    <div class="mobile-backdrop"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="messagesSidebar">
+            <div class="sidebar-header">
+                <h1>INTERCONNECT</h1>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="メニュー">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html" class="sidebar-link">
+                            <i class="fas fa-home"></i>
+                            <span>ダッシュボード</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="members.html" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>メンバー</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="events.html" class="sidebar-link">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>イベント</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link active">
+                            <i class="fas fa-envelope"></i>
+                            <span>メッセージ</span>
+                            <span class="badge">3</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="matching.html" class="sidebar-link">
+                            <i class="fas fa-handshake"></i>
+                            <span>マッチング</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="profile.html" class="sidebar-link">
+                            <i class="fas fa-user"></i>
+                            <span>プロフィール</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>設定</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" class="sidebar-link" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>ログアウト</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>メッセージ</h1>
+                    <p>外部連絡先情報</p>
+                </div>
+                
+                <div class="header-right">
+                    <a href="notifications.html" class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </a>
+                    
+                    <div class="user-menu">
+                        <button class="user-menu-btn">
+                            <img src="assets/user-placeholder.svg" alt="User">
+                            <span class="user-name">ユーザー名</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        
+                        <div class="user-dropdown">
+                            <a href="profile.html">プロフィール</a>
+                            <a href="settings.html">設定</a>
+                            <hr>
+                            <a href="#" onclick="logout(); return false;">ログアウト</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Messages Content -->
+            <div class="content-container">
+                <div class="messages-info">
+                    <div class="info-card">
+                        <i class="fas fa-info-circle"></i>
+                        <h2>メッセージ機能について</h2>
+                        <p>INTERCONNECTでは、プライバシー保護のため、プラットフォーム内での直接メッセージング機能は提供しておりません。</p>
+                        <p>メンバーとの連絡は、各メンバーのプロフィールに記載されている外部連絡先（LINE、メールアドレス等）をご利用ください。</p>
+                    </div>
+                    
+                    <div class="contact-methods">
+                        <h3>連絡方法</h3>
+                        <div class="method-grid">
+                            <div class="method-card">
+                                <div class="method-icon">
+                                    <i class="fab fa-line"></i>
+                                </div>
+                                <h4>LINE</h4>
+                                <p>メンバーのプロフィールからLINE IDまたはQRコードを確認できます。</p>
+                            </div>
+                            
+                            <div class="method-card">
+                                <div class="method-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h4>メール</h4>
+                                <p>ビジネス用メールアドレスでの連絡が可能です。</p>
+                            </div>
+                            
+                            <div class="method-card">
+                                <div class="method-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h4>電話</h4>
+                                <p>必要に応じて電話番号も共有されます。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-connections">
+                        <h3>最近のコネクション</h3>
+                        <div class="connections-list">
+                            <div class="connection-item">
+                                <img src="assets/user-placeholder.svg" alt="User" class="connection-avatar">
+                                <div class="connection-info">
+                                    <h4>山田 太郎</h4>
+                                    <p>株式会社テックイノベーション</p>
+                                </div>
+                                <div class="connection-actions">
+                                    <button class="btn btn-small btn-outline">プロフィールを見る</button>
+                                </div>
+                            </div>
+                            
+                            <div class="connection-item">
+                                <img src="assets/user-placeholder.svg" alt="User" class="connection-avatar">
+                                <div class="connection-info">
+                                    <h4>佐藤 花子</h4>
+                                    <p>グローバルコマース株式会社</p>
+                                </div>
+                                <div class="connection-actions">
+                                    <button class="btn btn-small btn-outline">プロフィールを見る</button>
+                                </div>
+                            </div>
+                            
+                            <div class="connection-item">
+                                <img src="assets/user-placeholder.svg" alt="User" class="connection-avatar">
+                                <div class="connection-info">
+                                    <h4>鈴木 一郎</h4>
+                                    <p>フィンテックソリューションズ</p>
+                                </div>
+                                <div class="connection-actions">
+                                    <button class="btn btn-small btn-outline">プロフィールを見る</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/error-prevention.js"></script>
+    <script src="js/null-check-fixes.js"></script>
+    <script src="js/safe-dom-utils.js"></script>
+    <script src="js/safe-storage.js"></script>
+    <!-- <script src="js/debug-logger.js"></script> -->
+    <script src="js/supabase-client.js"></script>
+    <script src="js/global-functions.js"></script>
+    <script src="js/profile-sync.js"></script>
+    <script src="js/responsive-menu-simple.js"></script>
+    <script src="js/dashboard.js"></script>
+    <!-- <script src="js/notifications.js"></script> -->
+</body>
+</html>

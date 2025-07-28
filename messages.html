@@ -17,11 +17,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/messages.css">
-    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/messages-chat.css">
     <link rel="stylesheet" href="css/responsive-menu.css">
     <link rel="stylesheet" href="css/user-menu-zindex-only.css">
-    <link rel="stylesheet" href="css/info-card-contrast-fix.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -173,12 +171,12 @@
         </aside>
         
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content messages-main">
             <!-- Header -->
             <header class="dashboard-header">
                 <div class="header-left">
                     <h1>メッセージ</h1>
-                    <p>外部連絡先情報</p>
+                    <p>リアルタイムチャット</p>
                 </div>
                 
                 <div class="header-right">
@@ -204,85 +202,185 @@
                 </div>
             </header>
             
-            <!-- Messages Content -->
-            <div class="content-container">
-                <div class="messages-info">
-                    <div class="info-card">
-                        <i class="fas fa-info-circle"></i>
-                        <h2>メッセージ機能について</h2>
-                        <p>INTERCONNECTでは、プライバシー保護のため、プラットフォーム内での直接メッセージング機能は提供しておりません。</p>
-                        <p>メンバーとの連絡は、各メンバーのプロフィールに記載されている外部連絡先（LINE、メールアドレス等）をご利用ください。</p>
+            <!-- Messages Container -->
+            <div class="messages-container">
+                <!-- Chat List Sidebar -->
+                <aside class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <h2>チャット</h2>
+                        <button class="btn-icon" id="newChatBtn" aria-label="新規チャット">
+                            <i class="fas fa-edit"></i>
+                        </button>
                     </div>
                     
-                    <div class="contact-methods">
-                        <h3>連絡方法</h3>
-                        <div class="method-grid">
-                            <div class="method-card">
-                                <div class="method-icon">
-                                    <i class="fab fa-line"></i>
-                                </div>
-                                <h4>LINE</h4>
-                                <p>メンバーのプロフィールからLINE IDまたはQRコードを確認できます。</p>
+                    <div class="chat-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="チャットを検索..." id="chatSearch">
+                    </div>
+                    
+                    <div class="chat-list" id="chatList">
+                        <!-- チャットルームリストがここに動的に追加される -->
+                        <div class="chat-item active" data-room-id="room1">
+                            <img src="assets/user-placeholder.svg" alt="山田太郎" class="chat-avatar">
+                            <div class="chat-info">
+                                <div class="chat-name">山田 太郎</div>
+                                <div class="chat-last-message">こんにちは！プロジェクトの件で...</div>
                             </div>
-                            
-                            <div class="method-card">
-                                <div class="method-icon">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
-                                <h4>メール</h4>
-                                <p>ビジネス用メールアドレスでの連絡が可能です。</p>
+                            <div class="chat-meta">
+                                <div class="chat-time">10:30</div>
+                                <span class="unread-count">2</span>
                             </div>
-                            
-                            <div class="method-card">
-                                <div class="method-icon">
-                                    <i class="fas fa-phone"></i>
+                        </div>
+                        
+                        <div class="chat-item" data-room-id="room2">
+                            <img src="assets/user-placeholder.svg" alt="佐藤花子" class="chat-avatar">
+                            <div class="chat-info">
+                                <div class="chat-name">佐藤 花子</div>
+                                <div class="chat-last-message">ありがとうございます</div>
+                            </div>
+                            <div class="chat-meta">
+                                <div class="chat-time">昨日</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-item" data-room-id="room3">
+                            <img src="assets/user-placeholder.svg" alt="鈴木一郎" class="chat-avatar">
+                            <div class="chat-info">
+                                <div class="chat-name">鈴木 一郎</div>
+                                <div class="chat-last-message">了解しました</div>
+                            </div>
+                            <div class="chat-meta">
+                                <div class="chat-time">2日前</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                
+                <!-- Chat Area -->
+                <section class="chat-area">
+                    <!-- Chat Header -->
+                    <div class="chat-header">
+                        <button class="btn-icon mobile-back" id="mobileBackBtn">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="chat-header-info">
+                            <img src="assets/user-placeholder.svg" alt="山田太郎" class="chat-header-avatar">
+                            <div>
+                                <h3 class="chat-header-name">山田 太郎</h3>
+                                <p class="chat-header-status">
+                                    <span class="status-indicator online"></span>
+                                    オンライン
+                                </p>
+                            </div>
+                        </div>
+                        <div class="chat-header-actions">
+                            <button class="btn-icon" aria-label="音声通話">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="btn-icon" aria-label="ビデオ通話">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            <button class="btn-icon" aria-label="情報">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Messages Area -->
+                    <div class="messages-area" id="messagesArea">
+                        <!-- 日付区切り -->
+                        <div class="message-date-divider">
+                            <span>今日</span>
+                        </div>
+                        
+                        <!-- 受信メッセージ -->
+                        <div class="message received">
+                            <img src="assets/user-placeholder.svg" alt="山田太郎" class="message-avatar">
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    <p>こんにちは！プロジェクトの件でご相談があります。</p>
                                 </div>
-                                <h4>電話</h4>
-                                <p>必要に応じて電話番号も共有されます。</p>
+                                <div class="message-time">10:30</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 送信メッセージ -->
+                        <div class="message sent">
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    <p>こんにちは！どのような件でしょうか？</p>
+                                </div>
+                                <div class="message-time">10:32 <i class="fas fa-check-double read"></i></div>
+                            </div>
+                        </div>
+                        
+                        <!-- タイピングインジケーター -->
+                        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                            <img src="assets/user-placeholder.svg" alt="" class="message-avatar">
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="recent-connections">
-                        <h3>最近のコネクション</h3>
-                        <div class="connections-list">
-                            <div class="connection-item">
-                                <img src="assets/user-placeholder.svg" alt="User" class="connection-avatar">
-                                <div class="connection-info">
-                                    <h4>山田 太郎</h4>
-                                    <p>株式会社テックイノベーション</p>
-                                </div>
-                                <div class="connection-actions">
-                                    <button class="btn btn-small btn-outline">プロフィールを見る</button>
-                                </div>
-                            </div>
-                            
-                            <div class="connection-item">
-                                <img src="assets/user-placeholder.svg" alt="User" class="connection-avatar">
-                                <div class="connection-info">
-                                    <h4>佐藤 花子</h4>
-                                    <p>グローバルコマース株式会社</p>
-                                </div>
-                                <div class="connection-actions">
-                                    <button class="btn btn-small btn-outline">プロフィールを見る</button>
-                                </div>
-                            </div>
-                            
-                            <div class="connection-item">
-                                <img src="assets/user-placeholder.svg" alt="User" class="connection-avatar">
-                                <div class="connection-info">
-                                    <h4>鈴木 一郎</h4>
-                                    <p>フィンテックソリューションズ</p>
-                                </div>
-                                <div class="connection-actions">
-                                    <button class="btn btn-small btn-outline">プロフィールを見る</button>
-                                </div>
-                            </div>
+                    <!-- Message Input -->
+                    <div class="message-input-container">
+                        <div class="message-input-wrapper">
+                            <button class="btn-icon" id="attachBtn" aria-label="ファイル添付">
+                                <i class="fas fa-paperclip"></i>
+                            </button>
+                            <input type="file" id="fileInput" style="display: none;" accept="image/*,.pdf,.doc,.docx">
+                            <textarea 
+                                id="messageInput" 
+                                placeholder="メッセージを入力..."
+                                rows="1"
+                                maxlength="1000"
+                            ></textarea>
+                            <button class="btn-icon" id="emojiBtn" aria-label="絵文字">
+                                <i class="far fa-smile"></i>
+                            </button>
+                            <button class="btn-icon send-btn" id="sendBtn" aria-label="送信">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
                         </div>
                     </div>
+                </section>
+                
+                <!-- Empty State (チャット未選択時) -->
+                <div class="chat-empty-state" id="chatEmptyState">
+                    <i class="fas fa-comments"></i>
+                    <h3>チャットを選択してください</h3>
+                    <p>左側のリストからチャットを選択するか、新しいチャットを開始してください。</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('newChatBtn').click()">
+                        <i class="fas fa-plus"></i>
+                        新しいチャットを開始
+                    </button>
                 </div>
             </div>
         </main>
+    </div>
+    
+    <!-- New Chat Modal -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>新しいチャット</h3>
+                <button class="btn-icon" onclick="closeNewChatModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="user-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="userSearch" placeholder="ユーザーを検索...">
+                </div>
+                <div class="user-list" id="userList">
+                    <!-- ユーザーリストが動的に追加される -->
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Scripts -->
@@ -290,12 +388,17 @@
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <!-- <script src="js/debug-logger.js"></script> -->
     <script src="js/supabase-client.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
-    <!-- <script src="js/notifications.js"></script> -->
+    <script src="js/messages-supabase.js"></script>
+    <script src="js/messages-realtime.js"></script>
+    <script src="js/messages-ui.js"></script>
+    <script src="js/messages-input.js"></script>
+    <script src="js/messages-typing.js"></script>
+    <script src="js/messages-file-upload.js"></script>
+    <script src="js/messages-notification.js"></script>
 </body>
 </html>
