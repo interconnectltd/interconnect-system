@@ -1,0 +1,166 @@
+/**
+ * Enhanced Activity Styles
+ * アクティビティ表示の拡張スタイル
+ */
+
+/* アクティビティアイテムの拡張 */
+.activity-item.enhanced {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-item.enhanced:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 優先度インジケーター */
+.activity-item.enhanced[data-priority="10"]::before,
+.activity-item.enhanced[data-priority="9"]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #FFD700 0%, #FFA000 100%);
+}
+
+.activity-item.enhanced[data-priority="8"]::before,
+.activity-item.enhanced[data-priority="7"]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #4CAF50;
+}
+
+/* アクティビティアイコンのアニメーション */
+.activity-item.enhanced .activity-icon {
+    transition: transform 0.3s ease;
+}
+
+.activity-item.enhanced:hover .activity-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* 新着アクティビティのアニメーション */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.activity-item.enhanced {
+    animation: slideInLeft 0.5s ease forwards;
+}
+
+/* 順番にアニメーション */
+.activity-item.enhanced:nth-child(1) { animation-delay: 0.1s; }
+.activity-item.enhanced:nth-child(2) { animation-delay: 0.2s; }
+.activity-item.enhanced:nth-child(3) { animation-delay: 0.3s; }
+.activity-item.enhanced:nth-child(4) { animation-delay: 0.4s; }
+.activity-item.enhanced:nth-child(5) { animation-delay: 0.5s; }
+
+/* タイムスタンプのスタイル改善 */
+.activity-item.enhanced .activity-time {
+    font-size: 0.75rem;
+    color: #9E9E9E;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* アクティビティタイプ別の背景 */
+.activity-item.enhanced[data-activity-type*="success"],
+.activity-item.enhanced[data-activity-type*="completed"] {
+    background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, transparent 100%);
+}
+
+.activity-item.enhanced[data-activity-type*="milestone"],
+.activity-item.enhanced[data-activity-type*="achievement"] {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
+}
+
+/* ロード中のスケルトンスクリーン */
+.activity-skeleton {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.activity-skeleton-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.activity-skeleton-content {
+    flex: 1;
+}
+
+.activity-skeleton-text {
+    height: 16px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.activity-skeleton-text:last-child {
+    width: 60%;
+    height: 12px;
+    margin-bottom: 0;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* アクティビティがない場合の表示 */
+.activity-empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #9E9E9E;
+}
+
+.activity-empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.activity-empty-state p {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .activity-item.enhanced {
+        padding: 0.875rem;
+    }
+    
+    .activity-item.enhanced .activity-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .activity-item.enhanced .activity-content {
+        font-size: 0.875rem;
+    }
+}
