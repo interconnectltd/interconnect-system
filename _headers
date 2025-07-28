@@ -17,10 +17,10 @@
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate
   
-# JavaScript files
+# JavaScript files - shorter cache for development
 /js/*
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=300, must-revalidate
   
-# CSS files
+# CSS files - shorter cache for development
 /css/*
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=300, must-revalidate
