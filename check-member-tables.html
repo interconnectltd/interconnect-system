@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Check Member Tables</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        .info { background: #d1ecf1; }
+        .warning { background: #fff3cd; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>メンバー関連テーブルの調査</h1>
+    
+    <div class="section">
+        <h2>1. 利用可能なテーブルを確認</h2>
+        <button onclick="checkTables()">テーブルを確認</button>
+        <div id="table-results"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. テーブル構造の詳細</h2>
+        <button onclick="checkStructure()">構造を確認</button>
+        <div id="structure-results"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. 実装提案</h2>
+        <button onclick="suggestImplementation()">提案を表示</button>
+        <div id="suggestion-results"></div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        function log(section, content, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = content;
+            document.getElementById(`${section}-results`).appendChild(div);
+        }
+
+        async function checkTables() {
+            const results = document.getElementById('table-results');
+            results.innerHTML = '';
+            
+            const possibleTables = [
+                'profiles',
+                'users', 
+                'members',
+                'user_profiles',
+                'public.users',
+                'accounts'
+            ];
+            
+            log('table', '<h3>メンバー情報を含む可能性のあるテーブルを検索中...</h3>', 'info');
+            
+            for (const tableName of possibleTables) {
+                try {
+                    const { data, error, count } = await window.supabase
+                        .from(tableName)
+                        .select('*', { count: 'exact', head: true });
+                    
+                    if (!error) {
+                        log('table', `✅ <strong>${tableName}</strong>: ${count || 0} レコード`, 'success');
+                        
+                        // サンプルデータを取得して構造を確認
+                        const { data: sample } = await window.supabase
+                            .from(tableName)
+                            .select('*')
+                            .limit(1);
+                        
+                        if (sample && sample.length > 0) {
+                            const columns = Object.keys(sample[0]);
+                            log('table', `カラム: ${columns.join(', ')}`, 'info');
+                        }
+                    } else {
+                        log('table', `❌ ${tableName}: ${error.message}`, 'error');
+                    }
+                } catch (e) {
+                    log('table', `❌ ${tableName}: ${e.message}`, 'error');
+                }
+            }
+            
+            // auth.users の間接的な確認
+            log('table', '<h3>認証ユーザー数の確認</h3>', 'info');
+            try {
+                const { data: { user } } = await window.supabase.auth.getUser();
+                if (user) {
+                    log('table', `現在のユーザー: ${user.email} (ID: ${user.id})`, 'success');
+                    log('table', 'auth.usersテーブルは存在しますが、直接アクセスはできません', 'warning');
+                }
+            } catch (e) {
+                log('table', `認証エラー: ${e.message}`, 'error');
+            }
+        }
+
+        async function checkStructure() {
+            const results = document.getElementById('structure-results');
+            results.innerHTML = '';
+            
+            // profilesテーブルの詳細を確認
+            try {
+                const { data: profiles, error } = await window.supabase
+                    .from('profiles')
+                    .select('*')
+                    .limit(5);
+                
+                if (!error && profiles) {
+                    log('structure', '<h3>profilesテーブル構造</h3>', 'info');
+                    
+                    if (profiles.length > 0) {
+                        const columns = Object.keys(profiles[0]);
+                        let html = '<table style="width: 100%; border-collapse: collapse;">';
+                        html += '<tr><th>カラム名</th><th>型</th><th>説明</th></tr>';
+                        
+                        columns.forEach(col => {
+                            const sampleValue = profiles[0][col];
+                            const type = typeof sampleValue;
+                            let description = '';
+                            
+                            if (col === 'id') description = 'ユーザーID（auth.users.idと同じ）';
+                            if (col === 'created_at') description = '登録日時';
+                            if (col === 'updated_at') description = '更新日時';
+                            if (col === 'email') description = 'メールアドレス';
+                            if (col === 'name' || col === 'full_name') description = '名前';
+                            
+                            html += `<tr>
+                                <td>${col}</td>
+                                <td>${type}</td>
+                                <td>${description}</td>
+                            </tr>`;
+                        });
+                        
+                        html += '</table>';
+                        log('structure', html, 'info');
+                        
+                        log('structure', `<h4>サンプルデータ（${profiles.length}件）</h4>`, 'info');
+                        log('structure', `<pre>${JSON.stringify(profiles, null, 2)}</pre>`, 'info');
+                    } else {
+                        log('structure', 'profilesテーブルは空です', 'warning');
+                    }
+                } else {
+                    log('structure', 'profilesテーブルが見つかりません', 'error');
+                }
+            } catch (e) {
+                log('structure', `エラー: ${e.message}`, 'error');
+            }
+            
+            // user_activitiesから推測
+            try {
+                const { data: uniqueUsers } = await window.supabase
+                    .from('user_activities')
+                    .select('user_id')
+                    .limit(1000);
+                
+                if (uniqueUsers && uniqueUsers.length > 0) {
+                    const uniqueUserIds = [...new Set(uniqueUsers.map(u => u.user_id))];
+                    log('structure', `<h3>user_activitiesテーブルから推測</h3>`, 'info');
+                    log('structure', `ユニークユーザー数: ${uniqueUserIds.length}`, 'success');
+                }
+            } catch (e) {
+                log('structure', `user_activities確認エラー: ${e.message}`, 'error');
+            }
+        }
+
+        async function suggestImplementation() {
+            const results = document.getElementById('suggestion-results');
+            results.innerHTML = '';
+            
+            log('suggestion', '<h3>実装提案</h3>', 'info');
+            
+            // profilesテーブルの存在確認
+            const { error: profilesError } = await window.supabase
+                .from('profiles')
+                .select('*', { count: 'exact', head: true });
+            
+            if (!profilesError) {
+                log('suggestion', `
+                    <div class="success">
+                        <h4>方法1: profilesテーブルを使用（推奨）</h4>
+                        <pre>
+// 総メンバー数を取得
+const { count } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true });
+
+// アクティブメンバーのみ（例: 30日以内にログイン）
+const thirtyDaysAgo = new Date();
+thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+const { count: activeCount } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .gte('last_login', thirtyDaysAgo.toISOString());
+                        </pre>
+                    </div>
+                `, 'success');
+            }
+            
+            log('suggestion', `
+                <div class="info">
+                    <h4>方法2: Supabase Edge Functionを使用</h4>
+                    <p>auth.admin APIを使用してユーザー数を取得するEdge Functionを作成</p>
+                    <pre>
+// Edge Function (TypeScript)
+import { createClient } from '@supabase/supabase-js'
+import { serve } from 'std/server'
+
+serve(async (req) => {
+  const supabaseAdmin = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  )
+  
+  const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers()
+  
+  return new Response(
+    JSON.stringify({ count: users?.length ?? 0 }),
+    { headers: { 'Content-Type': 'application/json' } }
+  )
+})
+                    </pre>
+                </div>
+            `, 'info');
+            
+            log('suggestion', `
+                <div class="warning">
+                    <h4>方法3: トリガーで自動更新</h4>
+                    <p>auth.usersテーブルにトリガーを設定し、dashboard_statsを自動更新</p>
+                    <pre>
+-- PostgreSQL Function
+CREATE OR REPLACE FUNCTION update_member_count()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE dashboard_stats
+  SET total_members = (
+    SELECT COUNT(*) FROM auth.users
+  ),
+  updated_at = NOW()
+  WHERE id = 1;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger
+CREATE TRIGGER update_member_count_trigger
+AFTER INSERT OR DELETE ON auth.users
+FOR EACH STATEMENT
+EXECUTE FUNCTION update_member_count();
+                    </pre>
+                </div>
+            `, 'warning');
+        }
+
+        // 起動時に実行
+        window.addEventListener('supabaseReady', () => {
+            checkTables();
+        });
+    </script>
+</body>
+</html>
