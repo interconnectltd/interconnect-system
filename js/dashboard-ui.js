@@ -190,7 +190,7 @@
                             <i class="fas ${icon}"></i>
                         </div>
                         <div class="activity-content">
-                            <p><strong>${userName}</strong>${activity.description}</p>
+                            <p><strong>${userName}</strong>${activity.activity_data?.description || activity.description || activity.activity_type}</p>
                             <span class="activity-time">${timeAgo}</span>
                         </div>
                     </div>

@@ -259,9 +259,45 @@
          * サンプル活動データの作成（現在は使用しない）
          */
         async createSampleActivities() {
-            // 既存のuser_activitiesテーブル構造が不明なため、この機能は無効化
-            console.log('[DashboardStats] Sample activities creation is disabled');
-            return;
+            // 既存のテーブル構造に合わせてサンプルアクティビティを作成
+            const { data: { user } } = await window.supabase.auth.getUser();
+            if (!user) {
+                console.log('[DashboardStats] No authenticated user for sample activities');
+                return;
+            }
+
+            const sampleActivities = [
+                {
+                    user_id: user.id,
+                    activity_type: 'profile_update',
+                    activity_data: {
+                        description: 'プロフィールを更新しました',
+                        fields_updated: ['bio', 'avatar_url']
+                    }
+                },
+                {
+                    user_id: user.id,
+                    activity_type: 'event_registration',
+                    activity_data: {
+                        description: 'イベントに参加登録しました',
+                        event_title: '経営戦略セミナー'
+                    }
+                }
+            ];
+
+            try {
+                const { error } = await window.supabase
+                    .from('user_activities')
+                    .insert(sampleActivities);
+                
+                if (!error) {
+                    console.log('[DashboardStats] Sample activities created');
+                } else {
+                    console.log('[DashboardStats] Sample activities creation failed:', error);
+                }
+            } catch (e) {
+                console.log('[DashboardStats] Sample activities creation exception:', e);
+            }
         }
 
         /**
@@ -408,21 +444,21 @@
                 {
                     id: '1',
                     activity_type: 'join',
-                    description: 'さんがコミュニティに参加しました',
+                    activity_data: { description: 'コミュニティに参加しました' },
                     created_at: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
                     users: { name: '新規メンバー', picture_url: null }
                 },
                 {
                     id: '2',
                     activity_type: 'event_completed',
-                    description: '月例ネットワーキング会が成功裏に終了',
+                    activity_data: { description: '月例ネットワーキング会が成功裏に終了' },
                     created_at: new Date(now - 5 * 60 * 60 * 1000).toISOString(),
                     users: { name: 'システム', picture_url: null }
                 },
                 {
                     id: '3',
                     activity_type: 'matching',
-                    description: '3件の新しいビジネスマッチングが成立',
+                    activity_data: { description: '3件の新しいビジネスマッチングが成立' },
                     created_at: new Date(now - 24 * 60 * 60 * 1000).toISOString(),
                     users: { name: 'マッチングシステム', picture_url: null }
                 }
@@ -461,14 +497,14 @@
                     return this.generateFallbackEvents();
                 }
 
-                // イベントデータを整形（カラム名の違いに対応）
+                // イベントデータを整形（既存のカラム構造に対応）
                 if (events && events.length > 0) {
                     return events.map(event => ({
                         id: event.id,
-                        title: event.title || event.name || 'イベント',
-                        event_date: event.event_date || event.date || event.start_date || new Date().toISOString(),
-                        time: event.time || event.start_time || '時間未定',
-                        location: event.location || event.place || '場所未定',
+                        title: event.title || 'イベント',
+                        event_date: event.start_date || new Date().toISOString(),
+                        time: event.start_date ? new Date(event.start_date).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }) : '時間未定',
+                        location: event.location || '場所未定',
                         description: event.description || ''
                     }));
                 }

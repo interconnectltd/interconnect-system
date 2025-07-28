@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Existing Tables</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+        button { margin: 5px; padding: 8px 15px; }
+    </style>
+</head>
+<body>
+    <h1>既存テーブル構造のテスト</h1>
+    
+    <button onclick="testDashboardStats()">Test Dashboard Stats</button>
+    <button onclick="testEvents()">Test Events</button>
+    <button onclick="testActivities()">Test Activities</button>
+    <button onclick="createSampleData()">Create Sample Data</button>
+    
+    <div id="results"></div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        function log(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = `result ${isError ? 'error' : 'success'}`;
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+        }
+
+        async function testDashboardStats() {
+            try {
+                const { data, error } = await window.supabase
+                    .from('dashboard_stats')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) throw error;
+                
+                log('<h3>Dashboard Stats</h3>');
+                log(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                log(`Dashboard Stats Error: ${e.message}`, true);
+            }
+        }
+
+        async function testEvents() {
+            try {
+                const { data, error } = await window.supabase
+                    .from('events')
+                    .select('*')
+                    .order('start_date', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                log('<h3>Events (Latest 5)</h3>');
+                log(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                log(`Events Error: ${e.message}`, true);
+            }
+        }
+
+        async function testActivities() {
+            try {
+                const { data, error } = await window.supabase
+                    .from('user_activities')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                log('<h3>User Activities (Latest 5)</h3>');
+                log(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                log(`Activities Error: ${e.message}`, true);
+            }
+        }
+
+        async function createSampleData() {
+            // Get current user
+            const { data: { user } } = await window.supabase.auth.getUser();
+            if (!user) {
+                log('Not logged in!', true);
+                return;
+            }
+
+            // Update dashboard stats
+            try {
+                const { data: existing } = await window.supabase
+                    .from('dashboard_stats')
+                    .select('*')
+                    .limit(1);
+                
+                if (existing && existing.length > 0) {
+                    const { error } = await window.supabase
+                        .from('dashboard_stats')
+                        .update({
+                            total_members: 10,
+                            monthly_events: 5,
+                            matching_success: 3,
+                            unread_messages: 2,
+                            member_growth_percentage: 15.5,
+                            event_increase: 2
+                        })
+                        .eq('id', existing[0].id);
+                    
+                    if (!error) log('Dashboard stats updated');
+                } else {
+                    const { error } = await window.supabase
+                        .from('dashboard_stats')
+                        .insert([{
+                            total_members: 10,
+                            monthly_events: 5,
+                            matching_success: 3,
+                            unread_messages: 2,
+                            member_growth_percentage: 15.5,
+                            event_increase: 2
+                        }]);
+                    
+                    if (!error) log('Dashboard stats created');
+                }
+            } catch (e) {
+                log(`Stats error: ${e.message}`, true);
+            }
+
+            // Create sample activity
+            try {
+                const { error } = await window.supabase
+                    .from('user_activities')
+                    .insert([{
+                        user_id: user.id,
+                        activity_type: 'dashboard_test',
+                        activity_data: {
+                            description: 'ダッシュボードのテストを実行しました',
+                            timestamp: new Date().toISOString()
+                        }
+                    }]);
+                
+                if (!error) log('Sample activity created');
+            } catch (e) {
+                log(`Activity error: ${e.message}`, true);
+            }
+
+            // Create sample event
+            try {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                const { error } = await window.supabase
+                    .from('events')
+                    .insert([{
+                        title: 'テストイベント ' + Date.now(),
+                        description: 'これはダッシュボードのテストイベントです',
+                        start_date: tomorrow.toISOString(),
+                        location: 'オンライン',
+                        is_online: true,
+                        max_participants: 50,
+                        created_by: user.id
+                    }]);
+                
+                if (!error) log('Sample event created');
+            } catch (e) {
+                log(`Event error: ${e.message}`, true);
+            }
+        }
+
+        // Auto check auth on load
+        window.addEventListener('supabaseReady', async () => {
+            const { data: { user } } = await window.supabase.auth.getUser();
+            if (user) {
+                log(`Logged in as: ${user.email}`);
+            } else {
+                log('Not logged in - some features may not work', true);
+            }
+        });
+    </script>
+</body>
+</html>
