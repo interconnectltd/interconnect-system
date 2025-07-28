@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        .info { background: #d1ecf1; }
+        .data { background: #f4f4f4; padding: 10px; margin: 10px 0; }
+        pre { white-space: pre-wrap; }
+        button { margin: 5px; padding: 8px 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Data Test</h1>
+    
+    <div class="test-section">
+        <h2>Authentication Status</h2>
+        <button onclick="checkAuth()">Check Auth</button>
+        <div id="auth-status"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Dashboard Stats</h2>
+        <button onclick="fetchStats()">Fetch Stats</button>
+        <div id="stats-data"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Recent Activities</h2>
+        <button onclick="fetchActivities()">Fetch Activities</button>
+        <div id="activities-data"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Upcoming Events</h2>
+        <button onclick="fetchEvents()">Fetch Events</button>
+        <div id="events-data"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Messages</h2>
+        <button onclick="fetchMessages()">Fetch Messages</button>
+        <div id="messages-data"></div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        function log(section, message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `data ${type}`;
+            div.innerHTML = message;
+            document.getElementById(`${section}-status`) || document.getElementById(`${section}-data`).appendChild(div);
+        }
+
+        async function checkAuth() {
+            const authDiv = document.getElementById('auth-status');
+            authDiv.innerHTML = '';
+            
+            try {
+                const { data: { user } } = await window.supabase.auth.getUser();
+                if (user) {
+                    authDiv.innerHTML = `<div class="data success">Authenticated as: ${user.email}</div>`;
+                } else {
+                    authDiv.innerHTML = `<div class="data error">Not authenticated</div>`;
+                }
+            } catch (error) {
+                authDiv.innerHTML = `<div class="data error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function fetchStats() {
+            const statsDiv = document.getElementById('stats-data');
+            statsDiv.innerHTML = '<div class="data info">Loading...</div>';
+            
+            try {
+                const { data, error } = await window.supabase
+                    .from('dashboard_stats')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                statsDiv.innerHTML = `
+                    <div class="data success">Found ${data.length} records</div>
+                    <pre class="data">${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                statsDiv.innerHTML = `<div class="data error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function fetchActivities() {
+            const activitiesDiv = document.getElementById('activities-data');
+            activitiesDiv.innerHTML = '<div class="data info">Loading...</div>';
+            
+            try {
+                const { data, error } = await window.supabase
+                    .from('user_activities')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (error) throw error;
+                
+                activitiesDiv.innerHTML = `
+                    <div class="data success">Found ${data.length} records</div>
+                    <pre class="data">${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                activitiesDiv.innerHTML = `<div class="data error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function fetchEvents() {
+            const eventsDiv = document.getElementById('events-data');
+            eventsDiv.innerHTML = '<div class="data info">Loading...</div>';
+            
+            try {
+                const { data, error } = await window.supabase
+                    .from('events')
+                    .select('*')
+                    .order('date', { ascending: true })
+                    .limit(10);
+                
+                if (error) throw error;
+                
+                eventsDiv.innerHTML = `
+                    <div class="data success">Found ${data.length} records</div>
+                    <pre class="data">${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                eventsDiv.innerHTML = `<div class="data error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function fetchMessages() {
+            const messagesDiv = document.getElementById('messages-data');
+            messagesDiv.innerHTML = '<div class="data info">Loading...</div>';
+            
+            try {
+                const { data, error } = await window.supabase
+                    .from('messages')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (error) throw error;
+                
+                messagesDiv.innerHTML = `
+                    <div class="data success">Found ${data.length} records</div>
+                    <pre class="data">${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                messagesDiv.innerHTML = `<div class="data error">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-check auth on load
+        window.addEventListener('supabaseReady', checkAuth);
+        setTimeout(checkAuth, 1000);
+    </script>
+</body>
+</html>
