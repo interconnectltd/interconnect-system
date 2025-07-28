@@ -502,8 +502,8 @@
                     return events.map(event => ({
                         id: event.id,
                         title: event.title || 'イベント',
-                        event_date: event.start_date || new Date().toISOString(),
-                        time: event.start_date ? new Date(event.start_date).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }) : '時間未定',
+                        event_date: event.date || new Date().toISOString(),
+                        time: event.time || '時間未定',
                         location: event.location || '場所未定',
                         description: event.description || ''
                     }));

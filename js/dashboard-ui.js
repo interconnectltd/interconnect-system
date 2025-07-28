@@ -165,9 +165,9 @@
         }
 
         /**
-         * アクティビティリスト更新
+         * 最近のアクティビティ更新
          */
-        renderActivities(activities) {
+        renderRecentActivities(activities) {
             console.log('[DashboardUI] Rendering activities:', activities);
 
             const container = document.querySelector('.activity-list');
