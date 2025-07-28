@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/events.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/event-modal.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/responsive-menu.css">
     <link rel="stylesheet" href="css/user-menu-zindex-only.css">
@@ -343,6 +345,26 @@
         </main>
     </div>
     
+    <!-- Event Detail Modal -->
+    <div class="modal" id="eventDetailModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalEventTitle">イベント詳細</h2>
+                <button class="modal-close" onclick="window.eventModal.close()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalEventBody">
+                <!-- Event details will be dynamically inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.eventModal.close()">閉じる</button>
+                <button class="btn btn-primary" id="eventActionBtn">参加する</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Scripts -->
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
@@ -353,6 +375,8 @@
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
+    <script src="js/event-modal.js"></script>
+    <script src="js/calendar.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/event-registration.js"></script>
     <!-- <script src="js/notifications.js"></script> -->

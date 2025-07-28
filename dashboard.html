@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/responsive-menu.css">
     <link rel="stylesheet" href="css/user-menu-zindex-only.css">
+    <link rel="stylesheet" href="css/event-modal.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -355,6 +356,26 @@
         </main>
     </div>
     
+    <!-- Event Detail Modal -->
+    <div class="modal" id="eventDetailModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalEventTitle">イベント詳細</h2>
+                <button class="modal-close" onclick="window.dashboardUI.closeEventModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalEventBody">
+                <!-- Event details will be dynamically inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.dashboardUI.closeEventModal()">閉じる</button>
+                <button class="btn btn-primary" id="eventActionBtn">参加する</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Scripts -->
     <script src="js/dashboard-initial-loading.js"></script>
     <script src="js/error-prevention.js"></script>
@@ -375,6 +396,7 @@
     <script src="js/dashboard-updater.js"></script>
     <script src="js/dashboard-debug.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
+    <script src="js/event-modal.js"></script>
     <script src="js/dashboard.js"></script>
     <!-- 通知機能はJSを無効化 -->
     <!-- <script src="js/notifications.js"></script> -->

@@ -453,7 +453,7 @@
          * カレンダー表示
          */
         viewCalendar() {
-            console.log('[DashboardUI] Navigating to calendar');
+            console.log('[DashboardUI] カレンダーへ移動');
             window.location.href = 'events.html#calendar';
         }
 
@@ -517,58 +517,6 @@
             // 将来的にトースト通知システムを実装
         }
 
-        /**
-         * イベント詳細を表示
-         */
-        viewEventDetails(eventId) {
-            console.log('[DashboardUI] Viewing event details:', eventId);
-            
-            // イベント詳細ページへ遷移
-            // TODO: イベント詳細ページが未実装の場合は、モーダルで表示
-            if (window.location.pathname.includes('dashboard.html')) {
-                // 簡易的にアラートで表示（後でモーダルに変更）
-                this.showEventModal(eventId);
-            } else {
-                window.location.href = `events.html?id=${eventId}`;
-            }
-        }
-
-        /**
-         * イベントモーダル表示（簡易版）
-         */
-        async showEventModal(eventId) {
-            try {
-                // Supabaseからイベント詳細を取得
-                if (window.supabase) {
-                    const { data: event, error } = await window.supabase
-                        .from('events')
-                        .select('*')
-                        .eq('id', eventId)
-                        .single();
-                    
-                    if (error) {
-                        alert('イベント情報の取得に失敗しました');
-                        return;
-                    }
-                    
-                    if (event) {
-                        const eventDate = new Date(event.event_date);
-                        const dateStr = eventDate.toLocaleDateString('ja-JP', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        
-                        alert(`イベント詳細\n\nタイトル: ${event.title}\n日付: ${dateStr}\n時間: ${event.time || '未定'}\n場所: ${event.location || '未定'}\n\n詳細: ${event.description || '詳細情報なし'}`);
-                    }
-                } else {
-                    alert('イベント詳細ページは準備中です');
-                }
-            } catch (error) {
-                console.error('[DashboardUI] Error showing event modal:', error);
-                alert('イベント詳細の表示中にエラーが発生しました');
-            }
-        }
 
         /**
          * ボタンハンドラーの初期化

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Modal Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/event-modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-events {
+            display: grid;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .test-event {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .test-event:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>イベントモーダルテスト</h1>
+        <p>以下のイベントをクリックしてモーダルをテストしてください：</p>
+        
+        <div class="test-events">
+            <div class="test-event" onclick="testEventModal('event-1')">
+                <h3>経営戦略セミナー</h3>
+                <p>2025年2月15日 14:00〜 オンライン開催</p>
+                <small>ID: event-1 (テストデータ)</small>
+            </div>
+            
+            <div class="test-event" onclick="testEventModal('event-2')">
+                <h3>交流ランチ会</h3>
+                <p>2025年2月18日 12:00〜 東京・丸の内</p>
+                <small>ID: event-2 (テストデータ)</small>
+            </div>
+            
+            <div class="test-event" onclick="testEventModal('event-3')">
+                <h3>新規事業ピッチ大会</h3>
+                <p>2025年2月25日 18:00〜 大阪・梅田</p>
+                <small>ID: event-3 (テストデータ)</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div class="modal" id="eventDetailModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalEventTitle">イベント詳細</h2>
+                <button class="modal-close" onclick="window.eventModal.close()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalEventBody">
+                <!-- Event details will be dynamically inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.eventModal.close()">閉じる</button>
+                <button class="btn btn-primary" id="eventActionBtn">参加する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // モックSupabaseクライアント（テスト用）
+        window.supabase = {
+            from: (table) => ({
+                select: () => ({
+                    eq: () => ({
+                        single: async () => {
+                            // テストデータを返す
+                            const testEvents = {
+                                'event-1': {
+                                    id: 'event-1',
+                                    title: '経営戦略セミナー',
+                                    event_date: '2025-02-15',
+                                    time: '14:00〜16:00',
+                                    location: 'オンライン（Zoom）',
+                                    description: '最新の経営戦略について学ぶセミナーです。業界のエキスパートが登壇し、実践的な知識を共有します。',
+                                    max_participants: 100,
+                                    organizer: 'INTERCONNECT運営事務局',
+                                    requirements: '経営者・管理職の方',
+                                    tags: ['経営', 'ビジネス', 'オンライン']
+                                },
+                                'event-2': {
+                                    id: 'event-2',
+                                    title: '交流ランチ会',
+                                    event_date: '2025-02-18',
+                                    time: '12:00〜14:00',
+                                    location: '東京・丸の内 レストランXYZ',
+                                    description: 'カジュアルな雰囲気で他のメンバーと交流できるランチ会です。',
+                                    max_participants: 20,
+                                    organizer: '東京支部',
+                                    tags: ['交流', 'ランチ', '東京']
+                                },
+                                'event-3': {
+                                    id: 'event-3',
+                                    title: '新規事業ピッチ大会',
+                                    event_date: '2025-02-25',
+                                    time: '18:00〜21:00',
+                                    location: '大阪・梅田 イノベーションセンター',
+                                    description: '新規事業のアイデアを発表し、フィードバックを得られる貴重な機会です。',
+                                    max_participants: 50,
+                                    organizer: '関西支部',
+                                    agenda: '18:00 開場\\n18:30 開会の挨拶\\n18:45 ピッチ発表（各5分）\\n20:00 ネットワーキング\\n21:00 閉会',
+                                    tags: ['ピッチ', '新規事業', '大阪']
+                                }
+                            };
+                            
+                            const eventId = arguments[0]?.split("'")[1];
+                            return { data: testEvents[eventId], error: null };
+                        }
+                    }),
+                    count: 'exact',
+                    head: true
+                })
+            })
+        };
+
+        // テスト用の関数
+        function testEventModal(eventId) {
+            if (window.eventModal) {
+                window.eventModal.show(eventId);
+            } else {
+                alert('Event modal not loaded yet');
+            }
+        }
+    </script>
+    
+    <script src="js/event-modal.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カレンダーテスト</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/event-modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .test-info {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h1>カレンダー機能テスト</h1>
+        <p>このページはカレンダー機能のテスト用ページです。</p>
+        <a href="events.html#calendar" class="btn btn-primary">本番のカレンダーを見る</a>
+    </div>
+
+    <div class="content-container">
+        <!-- カレンダーコンテナが動的に追加されます -->
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div class="modal" id="eventDetailModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalEventTitle">イベント詳細</h2>
+                <button class="modal-close" onclick="window.eventModal.close()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalEventBody">
+                <!-- Event details will be dynamically inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.eventModal.close()">閉じる</button>
+                <button class="btn btn-primary" id="eventActionBtn">参加する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // モックSupabaseクライアント（テスト用）
+        window.supabase = {
+            from: (table) => ({
+                select: () => ({
+                    order: () => ({
+                        then: (callback) => {
+                            // テストデータ
+                            const testEvents = [
+                                {
+                                    id: '1',
+                                    title: '経営戦略セミナー',
+                                    event_date: '2025-02-15',
+                                    time: '14:00〜16:00',
+                                    location: 'オンライン',
+                                    description: 'テストイベント1'
+                                },
+                                {
+                                    id: '2',
+                                    title: '交流ランチ会',
+                                    event_date: '2025-02-18',
+                                    time: '12:00〜14:00',
+                                    location: '東京・丸の内',
+                                    description: 'テストイベント2'
+                                },
+                                {
+                                    id: '3',
+                                    title: '新規事業ピッチ大会',
+                                    event_date: '2025-02-25',
+                                    time: '18:00〜21:00',
+                                    location: '大阪・梅田',
+                                    description: 'テストイベント3'
+                                },
+                                {
+                                    id: '4',
+                                    title: 'AI勉強会',
+                                    event_date: '2025-02-15',
+                                    time: '10:00〜12:00',
+                                    location: 'オンライン',
+                                    description: 'テストイベント4'
+                                },
+                                {
+                                    id: '5',
+                                    title: 'ネットワーキングイベント',
+                                    event_date: '2025-03-01',
+                                    time: '19:00〜21:00',
+                                    location: '東京・渋谷',
+                                    description: 'テストイベント5'
+                                }
+                            ];
+                            
+                            callback({ data: testEvents, error: null });
+                        }
+                    }),
+                    eq: () => ({
+                        single: async () => {
+                            // イベント詳細用のテストデータ
+                            return { 
+                                data: {
+                                    id: '1',
+                                    title: 'テストイベント',
+                                    event_date: '2025-02-15',
+                                    time: '14:00〜16:00',
+                                    location: 'オンライン',
+                                    description: 'これはテストイベントです',
+                                    max_participants: 50
+                                }, 
+                                error: null 
+                            };
+                        }
+                    }),
+                    count: 'exact',
+                    head: true
+                })
+            })
+        };
+
+        // URLハッシュを設定してカレンダービューを表示
+        window.location.hash = 'calendar';
+    </script>
+
+    <script src="js/event-modal.js"></script>
+    <script src="js/calendar.js"></script>
+</body>
+</html>
