@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Check Event Table Structure</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Event Table Structure Check</h1>
+    <button onclick="checkEventTable()">Check Event Table</button>
+    <button onclick="createSampleEvent()">Create Sample Event</button>
+    <div id="result"></div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        const result = document.getElementById('result');
+
+        async function checkEventTable() {
+            result.innerHTML = '<p>Checking event table structure...</p>';
+            
+            try {
+                // Get one event to see the structure
+                const { data, error } = await window.supabase
+                    .from('events')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    result.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                    return;
+                }
+                
+                if (data && data.length > 0) {
+                    result.innerHTML = `
+                        <p class="success">Event table exists with columns:</p>
+                        <pre>${JSON.stringify(Object.keys(data[0]), null, 2)}</pre>
+                        <p>Sample data:</p>
+                        <pre>${JSON.stringify(data[0], null, 2)}</pre>
+                    `;
+                } else {
+                    // Try to insert a test event to see what columns are expected
+                    const testEvent = {
+                        title: 'Test Event',
+                        description: 'Test description'
+                    };
+                    
+                    const { error: insertError } = await window.supabase
+                        .from('events')
+                        .insert([testEvent]);
+                    
+                    if (insertError) {
+                        result.innerHTML = `
+                            <p class="error">Insert error (this helps identify required columns):</p>
+                            <pre>${JSON.stringify(insertError, null, 2)}</pre>
+                        `;
+                    } else {
+                        result.innerHTML = '<p class="success">Empty events table, test insert successful</p>';
+                    }
+                }
+            } catch (e) {
+                result.innerHTML = `<p class="error">Exception: ${e.message}</p>`;
+            }
+        }
+
+        async function createSampleEvent() {
+            result.innerHTML = '<p>Creating sample event...</p>';
+            
+            try {
+                const today = new Date();
+                const eventDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                
+                // Try different date formats
+                const event = {
+                    title: '経営戦略セミナー',
+                    description: 'ビジネス戦略について学ぶセミナーです',
+                    date: eventDate.toISOString().split('T')[0], // Try 'date' instead of 'event_date'
+                    time: '14:00〜16:00',
+                    location: 'オンライン開催',
+                    status: 'active'
+                };
+                
+                const { data, error } = await window.supabase
+                    .from('events')
+                    .insert([event])
+                    .select();
+                
+                if (error) {
+                    // If 'date' doesn't work, try other column names
+                    delete event.date;
+                    event.start_date = eventDate.toISOString();
+                    
+                    const { data: data2, error: error2 } = await window.supabase
+                        .from('events')
+                        .insert([event])
+                        .select();
+                    
+                    if (error2) {
+                        result.innerHTML = `
+                            <p class="error">Failed with both 'date' and 'start_date':</p>
+                            <pre>Error 1: ${JSON.stringify(error, null, 2)}</pre>
+                            <pre>Error 2: ${JSON.stringify(error2, null, 2)}</pre>
+                        `;
+                    } else {
+                        result.innerHTML = `<p class="success">Event created with 'start_date' column!</p>`;
+                    }
+                } else {
+                    result.innerHTML = `
+                        <p class="success">Event created successfully!</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (e) {
+                result.innerHTML = `<p class="error">Exception: ${e.message}</p>`;
+            }
+        }
+
+        // Auto-check on load
+        window.addEventListener('supabaseReady', () => {
+            result.innerHTML = '<p class="success">Supabase client ready</p>';
+        });
+    </script>
+</body>
+</html>
