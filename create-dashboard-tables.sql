@@ -1,7 +1,24 @@
 -- ===========================
 -- INTERCONNECT Dashboard Tables Creation
 -- Supabase SQL Editor で実行してください
+-- 
+-- 実行手順:
+-- 1. Supabase Dashboard にログイン
+-- 2. SQL Editor を開く
+-- 3. このファイルの内容を全てコピー＆ペースト
+-- 4. Run ボタンをクリック
 -- ===========================
+
+-- 既存のポリシーを削除（エラーを無視）
+DROP POLICY IF EXISTS "Allow authenticated users to read dashboard_stats" ON dashboard_stats;
+DROP POLICY IF EXISTS "Allow authenticated users to insert dashboard_stats" ON dashboard_stats;
+DROP POLICY IF EXISTS "Allow authenticated users to update dashboard_stats" ON dashboard_stats;
+DROP POLICY IF EXISTS "Allow users to read public activities" ON user_activities;
+DROP POLICY IF EXISTS "Allow users to insert own activities" ON user_activities;
+DROP POLICY IF EXISTS "Allow authenticated users to read events" ON events;
+DROP POLICY IF EXISTS "Allow authenticated users to create events" ON events;
+DROP POLICY IF EXISTS "Allow users to read own messages" ON messages;
+DROP POLICY IF EXISTS "Allow users to send messages" ON messages;
 
 -- 1. dashboard_stats テーブル作成
 CREATE TABLE IF NOT EXISTS dashboard_stats (

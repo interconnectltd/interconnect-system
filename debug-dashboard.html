@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+        button { margin: 5px; padding: 8px 15px; cursor: pointer; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Debug Tool</h1>
+
+    <div class="section">
+        <h2>1. Authentication Status</h2>
+        <button onclick="checkAuth()">Check Auth</button>
+        <button onclick="loginWithEmail()">Test Login</button>
+        <div id="auth-status"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Table Structure</h2>
+        <button onclick="checkAllTables()">Check All Tables</button>
+        <div id="table-status"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Test Operations</h2>
+        <button onclick="testDashboardStats()">Test Dashboard Stats</button>
+        <button onclick="testEvents()">Test Events</button>
+        <button onclick="testActivities()">Test Activities</button>
+        <div id="test-results"></div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        function log(message, type = 'info', containerId = 'auth-status') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            container.appendChild(div);
+        }
+
+        async function checkAuth() {
+            const container = document.getElementById('auth-status');
+            container.innerHTML = '';
+            
+            try {
+                const { data: { user }, error } = await window.supabase.auth.getUser();
+                
+                if (error) {
+                    log(`<strong>Auth Error:</strong> ${error.message}`, 'error');
+                    return;
+                }
+                
+                if (user) {
+                    log(`<strong>Authenticated:</strong> ${user.email}`, 'success');
+                    log(`<strong>User ID:</strong> ${user.id}`, 'info');
+                    
+                    // Check session
+                    const { data: { session } } = await window.supabase.auth.getSession();
+                    if (session) {
+                        log('<strong>Session:</strong> Active', 'success');
+                    }
+                } else {
+                    log('<strong>Not authenticated</strong> - Please login first', 'error');
+                }
+            } catch (e) {
+                log(`<strong>Exception:</strong> ${e.message}`, 'error');
+            }
+        }
+
+        async function loginWithEmail() {
+            const email = prompt('Enter email address:');
+            const password = prompt('Enter password:');
+            
+            if (!email || !password) return;
+            
+            try {
+                const { data, error } = await window.supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    log(`<strong>Login Error:</strong> ${error.message}`, 'error');
+                } else {
+                    log('<strong>Login successful!</strong>', 'success');
+                    setTimeout(checkAuth, 1000);
+                }
+            } catch (e) {
+                log(`<strong>Login Exception:</strong> ${e.message}`, 'error');
+            }
+        }
+
+        async function checkAllTables() {
+            const container = document.getElementById('table-status');
+            container.innerHTML = '<h3>Checking tables...</h3>';
+            
+            const tables = [
+                'dashboard_stats',
+                'user_activities', 
+                'events',
+                'messages'
+            ];
+            
+            let tableHTML = '<table><tr><th>Table</th><th>Status</th><th>Count</th><th>Sample Columns</th></tr>';
+            
+            for (const table of tables) {
+                try {
+                    const { data, error, count } = await window.supabase
+                        .from(table)
+                        .select('*', { count: 'exact' })
+                        .limit(1);
+                    
+                    if (error) {
+                        tableHTML += `<tr>
+                            <td>${table}</td>
+                            <td class="error">Error: ${error.code}</td>
+                            <td>-</td>
+                            <td>${error.message}</td>
+                        </tr>`;
+                    } else {
+                        const columns = data && data.length > 0 ? Object.keys(data[0]).join(', ') : 'No data';
+                        tableHTML += `<tr>
+                            <td>${table}</td>
+                            <td class="success">OK</td>
+                            <td>${count || 0}</td>
+                            <td><small>${columns}</small></td>
+                        </tr>`;
+                    }
+                } catch (e) {
+                    tableHTML += `<tr>
+                        <td>${table}</td>
+                        <td class="error">Exception</td>
+                        <td>-</td>
+                        <td>${e.message}</td>
+                    </tr>`;
+                }
+            }
+            
+            tableHTML += '</table>';
+            container.innerHTML = tableHTML;
+        }
+
+        async function testDashboardStats() {
+            const container = document.getElementById('test-results');
+            container.innerHTML = '<h3>Testing Dashboard Stats...</h3>';
+            
+            try {
+                // Read test
+                const { data: readData, error: readError } = await window.supabase
+                    .from('dashboard_stats')
+                    .select('*');
+                
+                if (readError) {
+                    log(`<strong>Read Error:</strong> ${readError.message}`, 'error', 'test-results');
+                } else {
+                    log(`<strong>Read Success:</strong> ${readData.length} records found`, 'success', 'test-results');
+                    if (readData.length > 0) {
+                        log(`<pre>${JSON.stringify(readData[0], null, 2)}</pre>`, 'info', 'test-results');
+                    }
+                }
+                
+                // Insert test (if no data)
+                if (!readError && readData.length === 0) {
+                    const { error: insertError } = await window.supabase
+                        .from('dashboard_stats')
+                        .insert([{
+                            total_members: 1,
+                            monthly_events: 0,
+                            matching_success: 0,
+                            unread_messages: 0,
+                            member_growth_percentage: 0,
+                            event_increase: 0
+                        }]);
+                    
+                    if (insertError) {
+                        log(`<strong>Insert Error:</strong> ${insertError.message}`, 'error', 'test-results');
+                    } else {
+                        log('<strong>Insert Success:</strong> Initial stats created', 'success', 'test-results');
+                    }
+                }
+            } catch (e) {
+                log(`<strong>Exception:</strong> ${e.message}`, 'error', 'test-results');
+            }
+        }
+
+        async function testEvents() {
+            const container = document.getElementById('test-results');
+            container.innerHTML = '<h3>Testing Events...</h3>';
+            
+            try {
+                // First, check what columns exist
+                const { data: sampleData, error: sampleError } = await window.supabase
+                    .from('events')
+                    .select('*')
+                    .limit(1);
+                
+                if (sampleError) {
+                    log(`<strong>Events Table Error:</strong> ${sampleError.message}`, 'error', 'test-results');
+                    return;
+                }
+                
+                if (sampleData && sampleData.length > 0) {
+                    log('<strong>Existing event structure:</strong>', 'info', 'test-results');
+                    log(`<pre>${JSON.stringify(sampleData[0], null, 2)}</pre>`, 'info', 'test-results');
+                } else {
+                    // Try to create a test event
+                    const testEvent = {
+                        title: 'Test Event ' + new Date().getTime(),
+                        description: 'This is a test event'
+                    };
+                    
+                    const { data, error } = await window.supabase
+                        .from('events')
+                        .insert([testEvent])
+                        .select();
+                    
+                    if (error) {
+                        log(`<strong>Insert Error:</strong> ${error.message}`, 'error', 'test-results');
+                        log('<strong>This error helps identify required columns</strong>', 'info', 'test-results');
+                    } else {
+                        log('<strong>Event created successfully!</strong>', 'success', 'test-results');
+                        log(`<pre>${JSON.stringify(data[0], null, 2)}</pre>`, 'info', 'test-results');
+                    }
+                }
+            } catch (e) {
+                log(`<strong>Exception:</strong> ${e.message}`, 'error', 'test-results');
+            }
+        }
+
+        async function testActivities() {
+            const container = document.getElementById('test-results');
+            container.innerHTML = '<h3>Testing User Activities...</h3>';
+            
+            try {
+                const { data: { user } } = await window.supabase.auth.getUser();
+                
+                if (!user) {
+                    log('<strong>Not authenticated</strong> - Cannot test activities', 'error', 'test-results');
+                    return;
+                }
+                
+                // Try to create an activity
+                const { data, error } = await window.supabase
+                    .from('user_activities')
+                    .insert([{
+                        user_id: user.id,
+                        activity_type: 'test',
+                        description: 'Test activity from debug tool',
+                        metadata: { source: 'debug-dashboard' }
+                    }])
+                    .select();
+                
+                if (error) {
+                    log(`<strong>Insert Error:</strong> ${error.message}`, 'error', 'test-results');
+                } else {
+                    log('<strong>Activity created successfully!</strong>', 'success', 'test-results');
+                    log(`<pre>${JSON.stringify(data[0], null, 2)}</pre>`, 'info', 'test-results');
+                }
+                
+                // Read activities
+                const { data: activities, error: readError } = await window.supabase
+                    .from('user_activities')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (!readError && activities) {
+                    log(`<strong>Recent activities:</strong> ${activities.length} found`, 'info', 'test-results');
+                }
+            } catch (e) {
+                log(`<strong>Exception:</strong> ${e.message}`, 'error', 'test-results');
+            }
+        }
+
+        // Auto-check on load
+        window.addEventListener('supabaseReady', () => {
+            log('<strong>Supabase client ready</strong>', 'success');
+            checkAuth();
+        });
+    </script>
+</body>
+</html>
