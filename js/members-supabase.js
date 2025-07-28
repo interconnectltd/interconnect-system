@@ -57,9 +57,9 @@
             try {
                 console.log('[MembersSupabase] メンバーデータ読み込み中...');
                 
-                // ベースクエリ（active_usersテーブルを使用）
+                // ベースクエリ（user_profilesテーブルを使用 - active_usersはビュー）
                 let query = window.supabase
-                    .from('active_users')
+                    .from('user_profiles')
                     .select('*', { count: 'exact' })
                     .eq('is_active', true)
                     .neq('id', this.currentUserId); // 自分以外のメンバー
