@@ -57,24 +57,37 @@ SELECT
 FROM public.user_profiles;
 
 -- 8. JavaScriptコードで使用するためのビューを作成（オプション）
+-- connection_countとmessage_countは実際に存在するか確認してから含める
 CREATE OR REPLACE VIEW public.members_view AS
 SELECT 
-    id,
-    email,
-    COALESCE(full_name, name) as full_name,
-    name,
-    company,
-    position,
-    title,
-    industry,
-    skills,
-    bio,
-    avatar_url,
-    is_online,
-    is_active,
-    connection_count,
-    message_count,
-    last_login_at,
-    created_at
-FROM public.user_profiles
-WHERE is_active = true;
+    up.id,
+    up.email,
+    COALESCE(up.full_name, up.name) as full_name,
+    up.name,
+    up.company,
+    up.position,
+    up.title,
+    up.industry,
+    up.skills,
+    up.bio,
+    up.avatar_url,
+    up.is_online,
+    up.is_active,
+    CASE 
+        WHEN EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'user_profiles' 
+                     AND column_name = 'connection_count') 
+        THEN up.connection_count 
+        ELSE 0 
+    END as connection_count,
+    CASE 
+        WHEN EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'user_profiles' 
+                     AND column_name = 'message_count') 
+        THEN up.message_count 
+        ELSE 0 
+    END as message_count,
+    up.last_login_at,
+    up.created_at
+FROM public.user_profiles up
+WHERE up.is_active = true;
