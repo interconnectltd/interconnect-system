@@ -348,26 +348,44 @@
                 // 手動でユーザー情報を追加
                 if (activities && activities.length > 0) {
                     const enrichedActivities = await Promise.all(activities.map(async (activity) => {
-                        const { data: userData } = await window.supabase
-                            .from('auth.users')
-                            .select('email, raw_user_meta_data')
-                            .eq('id', activity.user_id)
-                            .single();
-                        
-                        return {
-                            ...activity,
-                            users: userData ? {
-                                name: userData.raw_user_meta_data?.name || 
-                                      userData.raw_user_meta_data?.display_name || 
-                                      userData.email?.split('@')[0] || 
-                                      'ユーザー',
-                                picture_url: userData.raw_user_meta_data?.picture || 
-                                            userData.raw_user_meta_data?.picture_url
-                            } : {
-                                name: 'ユーザー',
-                                picture_url: null
+                        try {
+                            // auth.usersテーブルへの直接アクセスができない場合があるため、
+                            // エラーハンドリングを追加
+                            const { data: { user } } = await window.supabase.auth.getUser();
+                            
+                            // 現在のユーザーのアクティビティの場合、ローカルデータを使用
+                            if (activity.user_id === user?.id) {
+                                const userData = JSON.parse(localStorage.getItem('user') || '{}');
+                                return {
+                                    ...activity,
+                                    users: {
+                                        name: userData.name || 
+                                              userData.display_name || 
+                                              userData.email?.split('@')[0] || 
+                                              'あなた',
+                                        picture_url: userData.picture || userData.picture_url
+                                    }
+                                };
                             }
-                        };
+                            
+                            // その他のユーザーの場合
+                            return {
+                                ...activity,
+                                users: {
+                                    name: 'メンバー',
+                                    picture_url: null
+                                }
+                            };
+                        } catch (error) {
+                            console.warn('[DashboardStats] User data fetch error:', error);
+                            return {
+                                ...activity,
+                                users: {
+                                    name: 'ユーザー',
+                                    picture_url: null
+                                }
+                            };
+                        }
                     }));
 
                     return enrichedActivities;

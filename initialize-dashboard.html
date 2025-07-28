@@ -18,6 +18,16 @@
     <h1>Dashboard データベース初期化</h1>
     
     <div class="section">
+        <h2>重要：最初にSupabaseでSQLを実行してください</h2>
+        <div class="status info">
+            <p>1. Supabaseダッシュボードにログイン</p>
+            <p>2. SQL Editorを開く</p>
+            <p>3. <code>create-dashboard-tables.sql</code>の内容をコピー＆ペースト</p>
+            <p>4. 実行ボタンをクリック</p>
+        </div>
+    </div>
+
+    <div class="section">
         <h2>Step 1: テーブル確認</h2>
         <button onclick="checkTables()">テーブルを確認</button>
         <div id="table-status"></div>
