@@ -1,0 +1,332 @@
+/**
+ * Enhanced Notifications Styles
+ * 通知機能の完全実装用スタイル
+ */
+
+/* 通知ヘッダー */
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    gap: var(--space-md);
+}
+
+.notifications-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+/* アイコンボタン */
+.btn-icon {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: var(--primary-light);
+}
+
+.btn-icon-small {
+    background: none;
+    border: none;
+    padding: var(--space-xs);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    transition: var(--transition-base);
+}
+
+.btn-icon-small:hover {
+    color: var(--danger-color);
+}
+
+/* 詳細フィルター */
+.notifications-advanced-filters {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+    display: flex;
+    gap: var(--space-lg);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.filter-group label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.filter-select,
+.filter-input {
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    background: white;
+    transition: var(--transition-base);
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.filter-input {
+    min-width: 200px;
+}
+
+/* 通知アイテムの拡張 */
+.notification-item-full {
+    position: relative;
+    padding-left: calc(var(--space-lg) + 24px);
+}
+
+.notification-checkbox {
+    position: absolute;
+    left: var(--space-lg);
+    top: var(--space-lg);
+}
+
+.notification-select {
+    cursor: pointer;
+}
+
+.notification-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-xs);
+}
+
+.notification-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.notification-message {
+    color: var(--text-secondary);
+    margin: var(--space-sm) 0;
+    line-height: 1.5;
+}
+
+/* 削除アニメーション */
+.notification-item-full.deleting {
+    animation: slideOutRight 0.3s ease forwards;
+}
+
+@keyframes slideOutRight {
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* 空の状態 */
+.notifications-empty {
+    text-align: center;
+    padding: var(--space-3xl) var(--space-lg);
+    color: var(--text-secondary);
+}
+
+.notifications-empty i {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+    opacity: 0.3;
+}
+
+.notifications-empty h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+/* ページネーション */
+.notifications-pagination {
+    text-align: center;
+    padding: var(--space-lg);
+}
+
+.notifications-pagination .btn {
+    min-width: 200px;
+}
+
+/* バッチ操作モード */
+.notifications-page.batch-mode .notification-checkbox {
+    display: block;
+}
+
+.notifications-page:not(.batch-mode) .notification-checkbox {
+    display: none;
+}
+
+/* 新着通知アニメーション */
+.notification-item-full.new {
+    animation: slideInLeft 0.5s ease;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 通知タイプ別のアクセントカラー */
+.notification-item-full[data-type="event"] {
+    border-left: 3px solid #1976d2;
+}
+
+.notification-item-full[data-type="message"] {
+    border-left: 3px solid #7b1fa2;
+}
+
+.notification-item-full[data-type="match"] {
+    border-left: 3px solid #388e3c;
+}
+
+.notification-item-full[data-type="system"] {
+    border-left: 3px solid #f57c00;
+}
+
+/* ローディング状態 */
+.notifications-loading {
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+.notifications-loading i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* デスクトップ通知スタイル */
+.desktop-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: var(--space-lg);
+    max-width: 400px;
+    z-index: 9999;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .notifications-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .notifications-advanced-filters {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+    
+    .filter-group {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-input,
+    .filter-select {
+        width: 100%;
+    }
+    
+    .notification-header-row {
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+    
+    .notification-meta {
+        align-self: flex-start;
+    }
+    
+    .desktop-notification {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .notifications-advanced-filters,
+    .filter-select,
+    .filter-input {
+        background: var(--bg-dark);
+        color: var(--text-dark);
+    }
+    
+    .filter-select,
+    .filter-input {
+        border-color: var(--border-dark);
+    }
+    
+    .btn-icon {
+        background: var(--bg-dark);
+        border-color: var(--border-dark);
+        color: var(--text-dark);
+    }
+    
+    .desktop-notification {
+        background: var(--bg-dark);
+        color: var(--text-dark);
+    }
+}
