@@ -41,8 +41,8 @@
     <div id="results"></div>
 
     <script>
-        const SUPABASE_URL = 'https://whyoqhhzwtlxprhizmor.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
+        const API_URL = 'https://whyoqhhzwtlxprhizmor.supabase.co';
+        const API_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
 
         function log(message, type = 'info') {
             const div = document.createElement('div');
@@ -57,11 +57,11 @@
 
             try {
                 // Simple GET request
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?select=*&limit=1`, {
+                const response = await fetch(`${API_URL}/rest/v1/${tableName}?select=*&limit=1`, {
                     method: 'GET',
                     headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': API_ANON_KEY,
+                        'Authorization': `Bearer ${API_ANON_KEY}`,
                         'Content-Type': 'application/json',
                         'Prefer': 'return=representation'
                     }
@@ -105,9 +105,9 @@
                     log('Found authenticated session', 'success');
                     
                     try {
-                        const response = await fetch(`${SUPABASE_URL}/rest/v1/events?select=*&limit=1`, {
+                        const response = await fetch(`${API_URL}/rest/v1/events?select=*&limit=1`, {
                             headers: {
-                                'apikey': SUPABASE_ANON_KEY,
+                                'apikey': API_ANON_KEY,
                                 'Authorization': `Bearer ${session.access_token}`,
                                 'Content-Type': 'application/json'
                             }
@@ -139,14 +139,14 @@
                 return;
             }
 
-            const url = `${SUPABASE_URL}/rest/v1/${tableName}${query}`;
+            const url = `${API_URL}/rest/v1/${tableName}${query}`;
             log(`URL: ${url}`, 'info');
 
             try {
                 const response = await fetch(url, {
                     headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': API_ANON_KEY,
+                        'Authorization': `Bearer ${API_ANON_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 });

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Supabase Diagnostic Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+        button { margin: 5px; padding: 8px 15px; cursor: pointer; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f0f0f0; }
+        .status-icon { font-size: 20px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Supabase Diagnostic Tool</h1>
+    
+    <div class="section">
+        <h2>1. Connection Test</h2>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="testConnection()">Test Connection Only</button>
+        <div id="connection-results"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Authentication Test</h2>
+        <button onclick="testAuth()">Test Authentication</button>
+        <div id="auth-results"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Table Access Test</h2>
+        <button onclick="testTables()">Test All Tables</button>
+        <div id="table-results"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. Detailed Diagnostics</h2>
+        <button onclick="runDiagnostics()">Run Full Diagnostics</button>
+        <div id="diagnostic-results"></div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        const results = {
+            connection: document.getElementById('connection-results'),
+            auth: document.getElementById('auth-results'),
+            tables: document.getElementById('table-results'),
+            diagnostic: document.getElementById('diagnostic-results')
+        };
+
+        function log(section, message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            const icon = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            }[type] || '';
+            div.innerHTML = `<span class="status-icon">${icon}</span>${message}`;
+            results[section].appendChild(div);
+        }
+
+        function clearResults(section) {
+            if (section) {
+                results[section].innerHTML = '';
+            } else {
+                Object.values(results).forEach(r => r.innerHTML = '');
+            }
+        }
+
+        async function testConnection() {
+            clearResults('connection');
+            log('connection', 'Testing Supabase connection...', 'info');
+            
+            if (!window.supabase) {
+                log('connection', 'Supabase client not loaded!', 'error');
+                return false;
+            }
+            
+            log('connection', 'Supabase client loaded successfully', 'success');
+            log('connection', `URL: ${window.SUPABASE_URL}`, 'info');
+            
+            // Test basic API call
+            try {
+                const { data, error } = await window.supabase.from('dashboard_stats').select('count');
+                if (error) {
+                    log('connection', `API Test Error: ${error.message}`, 'error');
+                    return false;
+                } else {
+                    log('connection', 'API connection successful', 'success');
+                    return true;
+                }
+            } catch (e) {
+                log('connection', `Connection Exception: ${e.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testAuth() {
+            clearResults('auth');
+            log('auth', 'Testing authentication...', 'info');
+            
+            try {
+                const { data: { user }, error } = await window.supabase.auth.getUser();
+                
+                if (error) {
+                    log('auth', `Auth Error: ${error.message}`, 'error');
+                    return false;
+                }
+                
+                if (user) {
+                    log('auth', `Authenticated as: ${user.email}`, 'success');
+                    log('auth', `User ID: ${user.id}`, 'info');
+                    log('auth', `Role: ${user.role || 'user'}`, 'info');
+                    
+                    // Check session
+                    const { data: { session } } = await window.supabase.auth.getSession();
+                    if (session) {
+                        log('auth', 'Session is active', 'success');
+                        log('auth', `Token expires: ${new Date(session.expires_at * 1000).toLocaleString()}`, 'info');
+                    }
+                    return true;
+                } else {
+                    log('auth', 'Not authenticated', 'warning');
+                    log('auth', 'Some features may not work without authentication', 'warning');
+                    return false;
+                }
+            } catch (e) {
+                log('auth', `Auth Exception: ${e.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testTables() {
+            clearResults('tables');
+            log('tables', 'Testing table access...', 'info');
+            
+            const tables = [
+                { name: 'dashboard_stats', required: true },
+                { name: 'events', required: true },
+                { name: 'user_activities', required: true },
+                { name: 'messages', required: true }
+            ];
+            
+            let tableHTML = '<table><tr><th>Table</th><th>Status</th><th>Row Count</th><th>Sample Column</th></tr>';
+            
+            for (const table of tables) {
+                try {
+                    const { data, error, count } = await window.supabase
+                        .from(table.name)
+                        .select('*', { count: 'exact' })
+                        .limit(1);
+                    
+                    if (error) {
+                        tableHTML += `<tr>
+                            <td>${table.name}</td>
+                            <td class="error">❌ ${error.code || 'Error'}</td>
+                            <td>-</td>
+                            <td>${error.message}</td>
+                        </tr>`;
+                    } else {
+                        const columns = data && data.length > 0 ? Object.keys(data[0]).slice(0, 3).join(', ') + '...' : 'No data';
+                        tableHTML += `<tr>
+                            <td>${table.name}</td>
+                            <td class="success">✅ OK</td>
+                            <td>${count || 0}</td>
+                            <td>${columns}</td>
+                        </tr>`;
+                    }
+                } catch (e) {
+                    tableHTML += `<tr>
+                        <td>${table.name}</td>
+                        <td class="error">❌ Exception</td>
+                        <td>-</td>
+                        <td>${e.message}</td>
+                    </tr>`;
+                }
+            }
+            
+            tableHTML += '</table>';
+            log('tables', tableHTML, 'info');
+        }
+
+        async function runDiagnostics() {
+            clearResults('diagnostic');
+            log('diagnostic', 'Running full diagnostics...', 'info');
+            
+            // 1. Check RLS
+            log('diagnostic', '<h3>RLS (Row Level Security) Check</h3>', 'info');
+            
+            const rlsTables = ['dashboard_stats', 'events', 'user_activities', 'messages'];
+            for (const table of rlsTables) {
+                try {
+                    // Try to insert a dummy record to check RLS policies
+                    const { error } = await window.supabase
+                        .from(table)
+                        .insert([{ dummy: true }]);
+                    
+                    if (error) {
+                        if (error.code === '42501') {
+                            log('diagnostic', `${table}: RLS enabled (permission denied)`, 'warning');
+                        } else if (error.message.includes('required')) {
+                            log('diagnostic', `${table}: Insert test - missing required fields`, 'info');
+                        } else {
+                            log('diagnostic', `${table}: ${error.message}`, 'error');
+                        }
+                    }
+                } catch (e) {
+                    log('diagnostic', `${table}: Exception - ${e.message}`, 'error');
+                }
+            }
+            
+            // 2. Check API endpoints
+            log('diagnostic', '<h3>API Endpoint Check</h3>', 'info');
+            
+            const endpoints = [
+                { path: '/rest/v1/', name: 'REST API' },
+                { path: '/auth/v1/', name: 'Auth API' },
+                { path: '/storage/v1/', name: 'Storage API' }
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${window.SUPABASE_URL}${endpoint.path}`, {
+                        headers: {
+                            'apikey': window.SUPABASE_ANON_KEY
+                        }
+                    });
+                    
+                    if (response.ok || response.status === 404) {
+                        log('diagnostic', `${endpoint.name}: Accessible (${response.status})`, 'success');
+                    } else {
+                        log('diagnostic', `${endpoint.name}: Status ${response.status}`, 'warning');
+                    }
+                } catch (e) {
+                    log('diagnostic', `${endpoint.name}: ${e.message}`, 'error');
+                }
+            }
+            
+            // 3. Check specific queries
+            log('diagnostic', '<h3>Query Format Check</h3>', 'info');
+            
+            const queries = [
+                { table: 'events', query: 'select=*' },
+                { table: 'events', query: 'select=id,title' },
+                { table: 'events', query: 'select=id' },
+                { table: 'events', query: '' }
+            ];
+            
+            for (const q of queries) {
+                try {
+                    const { data, error } = await window.supabase
+                        .from(q.table)
+                        .select(q.query || '*')
+                        .limit(1);
+                    
+                    if (error) {
+                        log('diagnostic', `${q.table}?${q.query}: ${error.message}`, 'error');
+                    } else {
+                        log('diagnostic', `${q.table}?${q.query}: OK`, 'success');
+                    }
+                } catch (e) {
+                    log('diagnostic', `${q.table}?${q.query}: ${e.message}`, 'error');
+                }
+            }
+        }
+
+        async function runAllTests() {
+            clearResults();
+            await testConnection();
+            await testAuth();
+            await testTables();
+            await runDiagnostics();
+        }
+
+        // Auto-run connection test on load
+        window.addEventListener('supabaseReady', () => {
+            log('connection', 'Supabase ready event received', 'success');
+            testConnection();
+        });
+        
+        // Fallback
+        setTimeout(() => {
+            if (window.supabase && !results.connection.innerHTML) {
+                testConnection();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
