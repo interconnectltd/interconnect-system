@@ -87,7 +87,11 @@
             }
             
             log('connection', 'Supabase client loaded successfully', 'success');
-            log('connection', `URL: ${window.SUPABASE_URL}`, 'info');
+            // Get URL from environment or client
+            const supabaseUrl = window.SUPABASE_URL || 'https://whyoqhhzwtlxprhizmor.supabase.co';
+            const supabaseKey = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
+            
+            log('connection', `URL: ${supabaseUrl}`, 'info');
             
             // Test basic API call
             try {
@@ -230,9 +234,12 @@
             
             for (const endpoint of endpoints) {
                 try {
-                    const response = await fetch(`${window.SUPABASE_URL}${endpoint.path}`, {
+                    const supabaseUrl = window.SUPABASE_URL || 'https://whyoqhhzwtlxprhizmor.supabase.co';
+                    const supabaseKey = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
+                    
+                    const response = await fetch(`${supabaseUrl}${endpoint.path}`, {
                         headers: {
-                            'apikey': window.SUPABASE_ANON_KEY
+                            'apikey': supabaseKey
                         }
                     });
                     
@@ -250,26 +257,26 @@
             log('diagnostic', '<h3>Query Format Check</h3>', 'info');
             
             const queries = [
-                { table: 'events', query: 'select=*' },
-                { table: 'events', query: 'select=id,title' },
-                { table: 'events', query: 'select=id' },
-                { table: 'events', query: '' }
+                { table: 'events', query: '*', desc: 'select all' },
+                { table: 'events', query: 'id,title', desc: 'select specific columns' },
+                { table: 'events', query: 'id', desc: 'select single column' },
+                { table: 'events', query: '*', desc: 'default select' }
             ];
             
             for (const q of queries) {
                 try {
                     const { data, error } = await window.supabase
                         .from(q.table)
-                        .select(q.query || '*')
+                        .select(q.query)
                         .limit(1);
                     
                     if (error) {
-                        log('diagnostic', `${q.table}?${q.query}: ${error.message}`, 'error');
+                        log('diagnostic', `${q.table} (${q.desc}): ${error.message}`, 'error');
                     } else {
-                        log('diagnostic', `${q.table}?${q.query}: OK`, 'success');
+                        log('diagnostic', `${q.table} (${q.desc}): OK`, 'success');
                     }
                 } catch (e) {
-                    log('diagnostic', `${q.table}?${q.query}: ${e.message}`, 'error');
+                    log('diagnostic', `${q.table} (${q.desc}): ${e.message}`, 'error');
                 }
             }
         }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Table Check</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .table-test { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        .info { background: #d1ecf1; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>Simple Table Check</h1>
+    
+    <div id="results"></div>
+
+    <script type="module">
+        // Import Supabase directly
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        const supabaseUrl = 'https://whyoqhhzwtlxprhizmor.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
+        
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const results = document.getElementById('results');
+        
+        function addResult(table, success, message, data = null) {
+            const div = document.createElement('div');
+            div.className = `table-test ${success ? 'success' : 'error'}`;
+            div.innerHTML = `
+                <h3>${table}</h3>
+                <p>${success ? '✅' : '❌'} ${message}</p>
+                ${data ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : ''}
+            `;
+            results.appendChild(div);
+        }
+        
+        async function checkTables() {
+            // 1. Auth check
+            const { data: { user } } = await supabase.auth.getUser();
+            addResult('Authentication', !!user, user ? `Logged in as: ${user.email}` : 'Not authenticated');
+            
+            // 2. Dashboard Stats
+            try {
+                const { data, error } = await supabase
+                    .from('dashboard_stats')
+                    .select('*')
+                    .limit(1);
+                    
+                if (error) throw error;
+                addResult('dashboard_stats', true, `Found ${data.length} records`, data[0]);
+            } catch (error) {
+                addResult('dashboard_stats', false, error.message);
+            }
+            
+            // 3. Events
+            try {
+                const { data, error } = await supabase
+                    .from('events')
+                    .select('*')
+                    .limit(1);
+                    
+                if (error) throw error;
+                addResult('events', true, `Found ${data.length} records`, data[0]);
+            } catch (error) {
+                addResult('events', false, error.message);
+            }
+            
+            // 4. User Activities
+            try {
+                const { data, error } = await supabase
+                    .from('user_activities')
+                    .select('*')
+                    .limit(1);
+                    
+                if (error) throw error;
+                addResult('user_activities', true, `Found ${data.length} records`, data[0]);
+            } catch (error) {
+                addResult('user_activities', false, error.message);
+            }
+            
+            // 5. Messages
+            try {
+                const { data, error } = await supabase
+                    .from('messages')
+                    .select('*')
+                    .limit(1);
+                    
+                if (error) throw error;
+                addResult('messages', true, `Found ${data.length} records`, data[0]);
+            } catch (error) {
+                addResult('messages', false, error.message);
+            }
+            
+            // 6. Try raw fetch to events
+            addResult('Direct API Test', true, 'Testing direct REST API access...');
+            
+            try {
+                const response = await fetch(`${supabaseUrl}/rest/v1/events?limit=1`, {
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const text = await response.text();
+                
+                if (response.ok) {
+                    const data = JSON.parse(text);
+                    addResult('REST API', true, `Status ${response.status}`, data);
+                } else {
+                    addResult('REST API', false, `Status ${response.status}: ${text}`);
+                }
+            } catch (error) {
+                addResult('REST API', false, error.message);
+            }
+        }
+        
+        // Run checks on load
+        checkTables();
+    </script>
+</body>
+</html>
