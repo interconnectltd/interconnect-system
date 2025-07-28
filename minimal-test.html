@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Minimal Supabase Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .log { margin: 5px 0; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Minimal Supabase Test</h1>
+    <div id="logs"></div>
+
+    <script>
+        function log(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = `[${new Date().toISOString().split('T')[1].split('.')[0]}] ${msg}`;
+            document.getElementById('logs').appendChild(div);
+        }
+
+        async function test() {
+            const url = 'https://whyoqhhzwtlxprhizmor.supabase.co';
+            const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
+            
+            // Test 1: Basic API check
+            log('Test 1: Basic API check');
+            try {
+                const resp = await fetch(`${url}/rest/v1/`, {
+                    headers: { 'apikey': key }
+                });
+                log(`API Status: ${resp.status}`, resp.ok ? 'success' : 'error');
+            } catch (e) {
+                log(`API Error: ${e.message}`, 'error');
+            }
+
+            // Test 2: Auth check
+            log('Test 2: Auth check');
+            try {
+                const resp = await fetch(`${url}/auth/v1/user`, {
+                    headers: { 
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                const data = await resp.text();
+                log(`Auth Status: ${resp.status}`, resp.ok ? 'success' : 'error');
+                if (data) log(`Auth Response: ${data.substring(0, 100)}...`, 'info');
+            } catch (e) {
+                log(`Auth Error: ${e.message}`, 'error');
+            }
+
+            // Test 3: Tables
+            const tables = ['events', 'dashboard_stats', 'user_activities', 'messages'];
+            
+            for (const table of tables) {
+                log(`Test 3.${tables.indexOf(table) + 1}: ${table} table`);
+                try {
+                    const resp = await fetch(`${url}/rest/v1/${table}?limit=1`, {
+                        headers: {
+                            'apikey': key,
+                            'Authorization': `Bearer ${key}`,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const text = await resp.text();
+                    log(`${table}: ${resp.status} ${resp.statusText}`, resp.ok ? 'success' : 'error');
+                    if (!resp.ok) {
+                        log(`${table} error: ${text}`, 'error');
+                    }
+                } catch (e) {
+                    log(`${table} exception: ${e.message}`, 'error');
+                }
+            }
+
+            // Test 4: Try different select formats
+            log('Test 4: Different query formats for events');
+            const queries = [
+                '?select=*&limit=1',
+                '?select=id,title&limit=1',
+                '?limit=1',
+                ''
+            ];
+            
+            for (const query of queries) {
+                try {
+                    const resp = await fetch(`${url}/rest/v1/events${query}`, {
+                        headers: {
+                            'apikey': key,
+                            'Authorization': `Bearer ${key}`
+                        }
+                    });
+                    log(`events${query}: ${resp.status}`, resp.ok ? 'success' : 'error');
+                } catch (e) {
+                    log(`Query error: ${e.message}`, 'error');
+                }
+            }
+        }
+
+        // Run tests
+        test();
+    </script>
+</body>
+</html>

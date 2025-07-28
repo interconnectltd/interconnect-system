@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Direct API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        .info { background: #d1ecf1; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+        input { margin: 5px; padding: 5px; width: 300px; }
+        button { margin: 5px; padding: 8px 15px; }
+    </style>
+</head>
+<body>
+    <h1>Direct Supabase API Test</h1>
+    
+    <div>
+        <h2>認証情報</h2>
+        <p>URL: https://whyoqhhzwtlxprhizmor.supabase.co</p>
+        <p>Anon Key: eyJhbGc...（既知）</p>
+    </div>
+
+    <div>
+        <h2>テスト</h2>
+        <button onclick="testDirectAPI('events')">Test Events API</button>
+        <button onclick="testDirectAPI('dashboard_stats')">Test Dashboard Stats API</button>
+        <button onclick="testDirectAPI('user_activities')">Test User Activities API</button>
+        <button onclick="testWithAuth()">Test with Auth Token</button>
+    </div>
+
+    <div>
+        <h2>カスタムクエリ</h2>
+        <input type="text" id="tableName" placeholder="Table name" value="events">
+        <input type="text" id="query" placeholder="Query (e.g., ?select=*)" value="?select=id,title">
+        <button onclick="customQuery()">Execute</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://whyoqhhzwtlxprhizmor.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+        }
+
+        async function testDirectAPI(tableName) {
+            document.getElementById('results').innerHTML = '';
+            log(`Testing ${tableName} table...`);
+
+            try {
+                // Simple GET request
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?select=*&limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    }
+                });
+
+                const responseText = await response.text();
+                
+                log(`Status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                if (response.headers.get('content-type')?.includes('application/json')) {
+                    try {
+                        const data = JSON.parse(responseText);
+                        log(`<pre>${JSON.stringify(data, null, 2)}</pre>`, 'info');
+                    } catch (e) {
+                        log(`Response: ${responseText}`, 'info');
+                    }
+                } else {
+                    log(`Response: ${responseText}`, 'info');
+                }
+
+                // Log response headers
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                    headers[key] = value;
+                });
+                log(`<details><summary>Response Headers</summary><pre>${JSON.stringify(headers, null, 2)}</pre></details>`, 'info');
+
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testWithAuth() {
+            document.getElementById('results').innerHTML = '';
+            
+            // First, try to get auth token from Supabase client
+            if (window.supabase) {
+                const { data: { session } } = await window.supabase.auth.getSession();
+                
+                if (session) {
+                    log('Found authenticated session', 'success');
+                    
+                    try {
+                        const response = await fetch(`${SUPABASE_URL}/rest/v1/events?select=*&limit=1`, {
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${session.access_token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const data = await response.text();
+                        log(`Auth Status: ${response.status}`, response.ok ? 'success' : 'error');
+                        log(`<pre>${data}</pre>`, 'info');
+                        
+                    } catch (error) {
+                        log(`Auth Error: ${error.message}`, 'error');
+                    }
+                } else {
+                    log('No authenticated session found', 'error');
+                }
+            } else {
+                log('Supabase client not loaded', 'error');
+            }
+        }
+
+        async function customQuery() {
+            document.getElementById('results').innerHTML = '';
+            
+            const tableName = document.getElementById('tableName').value;
+            const query = document.getElementById('query').value;
+            
+            if (!tableName) {
+                log('Please enter a table name', 'error');
+                return;
+            }
+
+            const url = `${SUPABASE_URL}/rest/v1/${tableName}${query}`;
+            log(`URL: ${url}`, 'info');
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.text();
+                log(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                try {
+                    const json = JSON.parse(data);
+                    log(`<pre>${JSON.stringify(json, null, 2)}</pre>`, 'info');
+                } catch (e) {
+                    log(`Response: ${data}`, 'info');
+                }
+                
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Load Supabase client
+        const script = document.createElement('script');
+        script.src = 'js/supabase-client.js';
+        document.head.appendChild(script);
+        
+        script.onload = () => {
+            log('Supabase client loaded', 'success');
+        };
+    </script>
+</body>
+</html>
