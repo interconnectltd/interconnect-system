@@ -8,6 +8,29 @@
 
     console.log('[MembersSupabase] 初期化開始...');
 
+    // Supabaseの準備ができるまで待つ
+    function waitForSupabase() {
+        if (window.supabase) {
+            initializeMembersSupabase();
+        } else {
+            // supabaseReadyイベントを待つ
+            window.addEventListener('supabaseReady', initializeMembersSupabase);
+            // フォールバックとして1秒後に再チェック
+            setTimeout(() => {
+                if (!window.membersSupabase && window.supabase) {
+                    initializeMembersSupabase();
+                }
+            }, 1000);
+        }
+    }
+
+    function initializeMembersSupabase() {
+        if (window.membersSupabase) return; // 既に初期化済み
+        
+        console.log('[MembersSupabase] Supabase準備完了、マネージャー初期化...');
+        window.membersSupabase = new MembersSupabaseManager();
+    }
+
     class MembersSupabaseManager {
         constructor() {
             this.members = [];
@@ -132,8 +155,8 @@
                 // 各メンバーのコネクション数を取得
                 const { data: connections, error } = await window.supabase
                     .from('connections')
-                    .select('user_id, connected_id')
-                    .or(`user_id.in.(${memberIds.join(',')}),connected_id.in.(${memberIds.join(',')})`)
+                    .select('requester_id, receiver_id')
+                    .or(`requester_id.in.(${memberIds.join(',')}),receiver_id.in.(${memberIds.join(',')})`)
                     .eq('status', 'accepted');
 
                 if (error) throw error;
@@ -143,11 +166,11 @@
                 memberIds.forEach(id => connectionCounts[id] = 0);
 
                 connections?.forEach(conn => {
-                    if (connectionCounts[conn.user_id] !== undefined) {
-                        connectionCounts[conn.user_id]++;
+                    if (connectionCounts[conn.requester_id] !== undefined) {
+                        connectionCounts[conn.requester_id]++;
                     }
-                    if (connectionCounts[conn.connected_id] !== undefined) {
-                        connectionCounts[conn.connected_id]++;
+                    if (connectionCounts[conn.receiver_id] !== undefined) {
+                        connectionCounts[conn.receiver_id]++;
                     }
                 });
 
@@ -569,8 +592,8 @@
     `;
     document.head.appendChild(style);
 
-    // グローバルインスタンス
-    window.membersSupabase = new MembersSupabaseManager();
+    // Supabaseの準備を待ってから初期化
+    waitForSupabase();
 
     // ページ離脱時のクリーンアップ
     window.addEventListener('beforeunload', () => {
