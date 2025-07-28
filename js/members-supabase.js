@@ -57,15 +57,16 @@
             try {
                 console.log('[MembersSupabase] メンバーデータ読み込み中...');
                 
-                // ベースクエリ
+                // ベースクエリ（active_usersテーブルを使用）
                 let query = window.supabase
-                    .from('profiles')
+                    .from('active_users')
                     .select('*', { count: 'exact' })
+                    .eq('is_active', true)
                     .neq('id', this.currentUserId); // 自分以外のメンバー
 
-                // 検索フィルター
+                // 検索フィルター（nameも検索対象に追加）
                 if (this.filters.search) {
-                    query = query.or(`full_name.ilike.%${this.filters.search}%,company.ilike.%${this.filters.search}%,bio.ilike.%${this.filters.search}%`);
+                    query = query.or(`name.ilike.%${this.filters.search}%,full_name.ilike.%${this.filters.search}%,company.ilike.%${this.filters.search}%,bio.ilike.%${this.filters.search}%`);
                 }
 
                 // 業界フィルター
@@ -73,9 +74,20 @@
                     query = query.eq('industry', this.filters.industry);
                 }
 
-                // 役職フィルター
+                // 役職フィルター（positionを使用）
                 if (this.filters.role) {
-                    query = query.eq('role', this.filters.role);
+                    // roleマッピング: executive->経営者・役員, manager->管理職など
+                    const roleMap = {
+                        'executive': ['CEO', 'CTO', 'CFO', '代表', '役員', '社長'],
+                        'manager': ['部長', 'マネージャー', '課長', 'リーダー'],
+                        'specialist': ['エンジニア', 'デザイナー', 'コンサルタント', '専門'],
+                        'general': ['一般', 'スタッフ', 'メンバー']
+                    };
+                    
+                    if (roleMap[this.filters.role]) {
+                        const positions = roleMap[this.filters.role];
+                        query = query.or(positions.map(pos => `position.ilike.%${pos}%`).join(','));
+                    }
                 }
 
                 // スキルフィルター
@@ -183,15 +195,21 @@
         createMemberCard(member) {
             const { 
                 id, 
-                full_name = '名前未設定', 
+                name = '',
+                full_name = '', 
                 avatar_url = 'assets/user-placeholder.svg',
-                title = '役職未設定',
+                position = '役職未設定',
+                title = '',
                 company = '会社未設定',
                 industry = '',
                 skills = [],
-                connectionCount = 0,
+                connection_count = 0,
                 is_online = false
             } = member;
+            
+            // 表示名とタイトルの決定
+            const displayName = full_name || name || 'ユーザー';
+            const displayTitle = title || position;
 
             // スキルタグを最大3つまで表示
             const displaySkills = skills.slice(0, 3);
@@ -202,14 +220,14 @@
                     <div class="member-header">
                         <div style="position: relative;">
                             <img src="${this.escapeHtml(avatar_url)}" 
-                                 alt="${this.escapeHtml(full_name)}" 
+                                 alt="${this.escapeHtml(displayName)}" 
                                  class="member-avatar"
                                  onerror="this.src='assets/user-placeholder.svg'">
                             ${is_online ? '<span class="online-indicator"></span>' : ''}
                         </div>
                         <div class="member-info">
-                            <h3>${this.escapeHtml(full_name)}</h3>
-                            <p class="member-title">${this.escapeHtml(title)}</p>
+                            <h3>${this.escapeHtml(displayName)}</h3>
+                            <p class="member-title">${this.escapeHtml(displayTitle)}</p>
                             <p class="member-company">${this.escapeHtml(company)}</p>
                         </div>
                     </div>
@@ -224,7 +242,7 @@
                     <div class="member-stats">
                         <div class="stat">
                             <i class="fas fa-users"></i>
-                            <span>${connectionCount} コネクション</span>
+                            <span>${connection_count || 0} コネクション</span>
                         </div>
                     </div>
                     <div class="member-actions">
@@ -234,7 +252,7 @@
                         </a>
                         <button class="btn btn-outline btn-small connect-btn" 
                                 data-member-id="${id}"
-                                data-member-name="${this.escapeHtml(full_name)}">
+                                data-member-name="${this.escapeHtml(displayName)}">
                             <i class="fas fa-plus"></i>
                             <span class="btn-text">コネクト</span>
                         </button>

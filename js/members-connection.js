@@ -44,27 +44,27 @@
                 const { data: accepted } = await window.supabase
                     .from('connections')
                     .select('*')
-                    .or(`user_id.eq.${this.currentUserId},connected_id.eq.${this.currentUserId}`)
+                    .or(`requester_id.eq.${this.currentUserId},receiver_id.eq.${this.currentUserId}`)
                     .eq('status', 'accepted');
 
                 // ペンディングリクエスト
                 const { data: pending } = await window.supabase
                     .from('connections')
                     .select('*')
-                    .or(`user_id.eq.${this.currentUserId},connected_id.eq.${this.currentUserId}`)
+                    .or(`requester_id.eq.${this.currentUserId},receiver_id.eq.${this.currentUserId}`)
                     .eq('status', 'pending');
 
                 // コネクション情報を整理
                 accepted?.forEach(conn => {
-                    const connectedId = conn.user_id === this.currentUserId ? 
-                        conn.connected_id : conn.user_id;
+                    const connectedId = conn.requester_id === this.currentUserId ? 
+                        conn.receiver_id : conn.requester_id;
                     this.connections.set(connectedId, 'connected');
                 });
 
                 pending?.forEach(conn => {
-                    const connectedId = conn.user_id === this.currentUserId ? 
-                        conn.connected_id : conn.user_id;
-                    const status = conn.user_id === this.currentUserId ? 
+                    const connectedId = conn.requester_id === this.currentUserId ? 
+                        conn.receiver_id : conn.requester_id;
+                    const status = conn.requester_id === this.currentUserId ? 
                         'pending_sent' : 'pending_received';
                     this.connections.set(connectedId, status);
                     
@@ -139,7 +139,7 @@
                 const { data: existing } = await window.supabase
                     .from('connections')
                     .select('id, status')
-                    .or(`and(user_id.eq.${this.currentUserId},connected_id.eq.${memberId}),and(user_id.eq.${memberId},connected_id.eq.${this.currentUserId})`)
+                    .or(`and(requester_id.eq.${this.currentUserId},receiver_id.eq.${memberId}),and(requester_id.eq.${memberId},receiver_id.eq.${this.currentUserId})`)
                     .single();
 
                 if (existing) {
@@ -150,9 +150,10 @@
                 const { data, error } = await window.supabase
                     .from('connections')
                     .insert({
-                        user_id: this.currentUserId,
-                        connected_id: memberId,
+                        requester_id: this.currentUserId,
+                        receiver_id: memberId,
                         status: 'pending',
+                        message: 'コネクトさせていただければ幸いです。',
                         created_at: new Date().toISOString()
                     })
                     .select()
@@ -197,9 +198,9 @@
                 // コネクションステータスを更新
                 const { error } = await window.supabase
                     .from('connections')
-                    .update({ status: 'accepted' })
-                    .or(`user_id.eq.${memberId},connected_id.eq.${memberId}`)
-                    .or(`user_id.eq.${this.currentUserId},connected_id.eq.${this.currentUserId}`);
+                    .update({ status: 'accepted', responded_at: new Date().toISOString() })
+                    .or(`requester_id.eq.${memberId},receiver_id.eq.${memberId}`)
+                    .or(`requester_id.eq.${this.currentUserId},receiver_id.eq.${this.currentUserId}`);
 
                 if (error) throw error;
 
@@ -303,7 +304,7 @@
                         event: '*',
                         schema: 'public',
                         table: 'connections',
-                        filter: `user_id=eq.${this.currentUserId}`
+                        filter: `requester_id=eq.${this.currentUserId}`
                     },
                     (payload) => this.handleConnectionChange(payload)
                 )
@@ -312,7 +313,7 @@
                         event: '*',
                         schema: 'public',
                         table: 'connections',
-                        filter: `connected_id=eq.${this.currentUserId}`
+                        filter: `receiver_id=eq.${this.currentUserId}`
                     },
                     (payload) => this.handleConnectionChange(payload)
                 )
