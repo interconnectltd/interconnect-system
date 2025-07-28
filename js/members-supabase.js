@@ -157,10 +157,16 @@
             const grid = document.querySelector('.members-grid');
             if (!grid) return;
 
+            // ローディングプレースホルダーを削除
+            const loadingPlaceholder = grid.querySelector('.loading-placeholder');
+            if (loadingPlaceholder) {
+                loadingPlaceholder.remove();
+            }
+
             if (this.members.length === 0) {
                 grid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                        <i class="fas fa-users" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
                         <h3>メンバーが見つかりません</h3>
                         <p>検索条件を変更してお試しください</p>
                     </div>
@@ -349,7 +355,68 @@
          */
         showFallbackUI() {
             console.log('[MembersSupabase] フォールバックUI表示');
-            // 既存のダミーデータをそのまま表示
+            
+            const grid = document.querySelector('.members-grid');
+            if (!grid) return;
+            
+            // フォールバック用ダミーデータ
+            const fallbackMembers = [
+                {
+                    id: 'fallback-1',
+                    full_name: '山田 太郎',
+                    avatar_url: 'assets/user-placeholder.svg',
+                    title: '代表取締役CEO',
+                    company: '株式会社テックイノベーション',
+                    skills: ['IT', 'AI', 'DX推進'],
+                    connectionCount: 156,
+                    is_online: true
+                },
+                {
+                    id: 'fallback-2',
+                    full_name: '佐藤 花子',
+                    avatar_url: 'assets/user-placeholder.svg',
+                    title: 'マーケティング部長',
+                    company: 'グローバルコマース株式会社',
+                    skills: ['マーケティング', 'EC', 'グローバル'],
+                    connectionCount: 234,
+                    is_online: false
+                },
+                {
+                    id: 'fallback-3',
+                    full_name: '高橋 健一',
+                    avatar_url: 'assets/user-placeholder.svg',
+                    title: 'CTO',
+                    company: 'デジタルソリューションズ',
+                    skills: ['開発', 'クラウド', 'DevOps'],
+                    connectionCount: 198,
+                    is_online: true
+                }
+            ];
+            
+            this.members = fallbackMembers;
+            this.totalMembers = fallbackMembers.length;
+            
+            // UIを更新
+            this.updateMembersUI();
+            this.updateResultsCount();
+            
+            // エラー表示を追加
+            const errorBanner = document.createElement('div');
+            errorBanner.className = 'error-banner';
+            errorBanner.innerHTML = `
+                <div class="error-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>データベースに接続できません。サンプルデータを表示しています。</span>
+                    <button class="btn btn-small btn-primary" onclick="window.location.reload()">
+                        再読み込み
+                    </button>
+                </div>
+            `;
+            
+            const container = document.querySelector('.content-container');
+            if (container) {
+                container.insertBefore(errorBanner, container.firstChild);
+            }
         }
 
         /**
@@ -371,9 +438,10 @@
         }
     }
 
-    // オンラインインジケーターのスタイル
+    // スタイルを追加
     const style = document.createElement('style');
     style.textContent = `
+        /* オンラインインジケーター */
         .online-indicator {
             position: absolute;
             bottom: 5px;
@@ -390,10 +458,12 @@
             transition: all 0.3s ease;
         }
 
+        /* 空の状態 */
         .empty-state {
             padding: 3rem;
             text-align: center;
             color: var(--text-secondary);
+            grid-column: 1/-1;
         }
 
         .empty-state i {
@@ -406,6 +476,77 @@
             font-size: 1.25rem;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
+        }
+
+        /* ローディング状態 */
+        .loading-placeholder {
+            grid-column: 1/-1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .loading-spinner p {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* エラーバナー */
+        .error-banner {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 1px solid #f87171;
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            box-shadow: 0 2px 8px rgba(248, 113, 113, 0.1);
+        }
+
+        .error-content {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .error-content i {
+            color: #dc2626;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .error-content span {
+            flex: 1;
+            color: #7f1d1d;
+            font-weight: 500;
+            min-width: 200px;
+        }
+
+        .error-content .btn {
+            flex-shrink: 0;
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .error-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .error-content span {
+                min-width: auto;
+            }
         }
     `;
     document.head.appendChild(style);

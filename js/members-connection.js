@@ -135,6 +135,17 @@
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 送信中...';
 
+                // 重複チェック
+                const { data: existing } = await window.supabase
+                    .from('connections')
+                    .select('id, status')
+                    .or(`and(user_id.eq.${this.currentUserId},connected_id.eq.${memberId}),and(user_id.eq.${memberId},connected_id.eq.${this.currentUserId})`)
+                    .single();
+
+                if (existing) {
+                    throw new Error('既にコネクション申請済みです');
+                }
+
                 // コネクションレコードを作成
                 const { data, error } = await window.supabase
                     .from('connections')
@@ -147,7 +158,15 @@
                     .select()
                     .single();
 
-                if (error) throw error;
+                if (error) {
+                    // Supabaseエラーの詳細を解析
+                    if (error.code === '23505') { // 重複エラー
+                        throw new Error('既にコネクション申請済みです');
+                    } else if (error.code === '23503') { // 外部キー制約エラー
+                        throw new Error('ユーザーが見つかりません');
+                    }
+                    throw error;
+                }
 
                 // 通知を作成
                 await this.createNotification(memberId, memberName, 'connection_request');
