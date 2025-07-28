@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Supabase Integration</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        .warning { background: #fff3cd; }
+        .info { background: #d1ecf1; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+        button { margin: 5px; padding: 10px 20px; cursor: pointer; }
+        .metric { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Supabase Integration Verification</h1>
+    
+    <div class="section">
+        <h2>Database Connection Test</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connection-results"></div>
+    </div>
+
+    <div class="section">
+        <h2>Real Data vs Dashboard Display</h2>
+        <button onclick="compareData()">Compare Data</button>
+        <div id="comparison-results"></div>
+    </div>
+
+    <div class="section">
+        <h2>Live Calculations</h2>
+        <button onclick="calculateMetrics()">Calculate Metrics</button>
+        <div id="calculation-results"></div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        function log(section, content, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = content;
+            document.getElementById(`${section}-results`).appendChild(div);
+        }
+
+        async function testConnection() {
+            const results = document.getElementById('connection-results');
+            results.innerHTML = '';
+            
+            try {
+                const { data: { user } } = await window.supabase.auth.getUser();
+                log('connection', `✅ Authenticated as: ${user?.email || 'Anonymous'}`, 'success');
+                
+                // Test each table
+                const tables = ['dashboard_stats', 'events', 'messages', 'user_activities'];
+                for (const table of tables) {
+                    try {
+                        const { count, error } = await window.supabase
+                            .from(table)
+                            .select('*', { count: 'exact', head: true });
+                        
+                        if (error) {
+                            log('connection', `❌ ${table}: ${error.message}`, 'error');
+                        } else {
+                            log('connection', `✅ ${table}: ${count || 0} records`, 'success');
+                        }
+                    } catch (e) {
+                        log('connection', `❌ ${table}: ${e.message}`, 'error');
+                    }
+                }
+            } catch (e) {
+                log('connection', `❌ Connection error: ${e.message}`, 'error');
+            }
+        }
+
+        async function compareData() {
+            const results = document.getElementById('comparison-results');
+            results.innerHTML = '';
+            
+            try {
+                // 1. Dashboard Statsから取得
+                const { data: dashboardStats, error: statsError } = await window.supabase
+                    .from('dashboard_stats')
+                    .select('*')
+                    .limit(1);
+                
+                if (statsError) {
+                    log('comparison', `Dashboard stats error: ${statsError.message}`, 'error');
+                    return;
+                }
+                
+                const stats = dashboardStats?.[0] || {};
+                
+                // 2. 実際のデータをカウント
+                const comparisons = [];
+                
+                // イベント数を実際にカウント
+                const currentMonth = new Date();
+                const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+                const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+                
+                const { count: eventCount, error: eventError } = await window.supabase
+                    .from('events')
+                    .select('*', { count: 'exact', head: true })
+                    .gte('date', startOfMonth.toISOString().split('T')[0])
+                    .lte('date', endOfMonth.toISOString().split('T')[0]);
+                
+                comparisons.push({
+                    metric: '今月のイベント',
+                    dashboardValue: stats.monthly_events || 'N/A',
+                    actualValue: eventError ? `Error: ${eventError.message}` : eventCount,
+                    match: stats.monthly_events === eventCount
+                });
+                
+                // 未読メッセージ数をカウント
+                const { data: { user } } = await window.supabase.auth.getUser();
+                if (user) {
+                    const { count: messageCount, error: messageError } = await window.supabase
+                        .from('messages')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('recipient_id', user.id)
+                        .eq('is_read', false);
+                    
+                    comparisons.push({
+                        metric: '未読メッセージ',
+                        dashboardValue: stats.unread_messages || 'N/A',
+                        actualValue: messageError ? `Error: ${messageError.message}` : messageCount,
+                        match: stats.unread_messages === messageCount
+                    });
+                }
+                
+                // マッチング数（仮のテーブル名）
+                const { count: matchingCount, error: matchingError } = await window.supabase
+                    .from('matchings')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'success');
+                
+                comparisons.push({
+                    metric: 'マッチング成功数',
+                    dashboardValue: stats.matching_success || 'N/A',
+                    actualValue: matchingError ? 'テーブルなし/アクセス不可' : matchingCount,
+                    match: false
+                });
+                
+                // 結果を表示
+                let html = '<table style="width: 100%; border-collapse: collapse;">';
+                html += '<tr><th>メトリック</th><th>Dashboard値</th><th>実際の値</th><th>一致</th></tr>';
+                
+                comparisons.forEach(comp => {
+                    const matchIcon = comp.match ? '✅' : '❌';
+                    const rowClass = comp.match ? 'success' : 'warning';
+                    html += `<tr class="${rowClass}">
+                        <td>${comp.metric}</td>
+                        <td>${comp.dashboardValue}</td>
+                        <td>${comp.actualValue}</td>
+                        <td>${matchIcon}</td>
+                    </tr>`;
+                });
+                
+                html += '</table>';
+                log('comparison', html, 'info');
+                
+                // Dashboard statsの内容も表示
+                if (stats) {
+                    log('comparison', '<h3>Dashboard Stats Record:</h3><pre>' + JSON.stringify(stats, null, 2) + '</pre>', 'info');
+                }
+                
+            } catch (e) {
+                log('comparison', `Error: ${e.message}`, 'error');
+            }
+        }
+
+        async function calculateMetrics() {
+            const results = document.getElementById('calculation-results');
+            results.innerHTML = '';
+            
+            try {
+                log('calculation', '<h3>リアルタイム計算値:</h3>', 'info');
+                
+                // 1. 今月のイベント数を計算
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const startDate = new Date(year, month, 1).toISOString().split('T')[0];
+                const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+                
+                const { data: events, count: eventCount } = await window.supabase
+                    .from('events')
+                    .select('*', { count: 'exact' })
+                    .gte('date', startDate)
+                    .lte('date', endDate);
+                
+                log('calculation', `
+                    <div class="metric">
+                        <strong>今月のイベント数:</strong> ${eventCount || 0}
+                        <br>期間: ${startDate} 〜 ${endDate}
+                        ${events && events.length > 0 ? '<br>イベント: ' + events.map(e => e.title).join(', ') : ''}
+                    </div>
+                `, 'success');
+                
+                // 2. アクティブなメッセージ数
+                const { data: { user } } = await window.supabase.auth.getUser();
+                if (user) {
+                    // メッセージテーブルの構造を確認
+                    const { data: sampleMessage } = await window.supabase
+                        .from('messages')
+                        .select('*')
+                        .limit(1);
+                    
+                    if (sampleMessage && sampleMessage.length > 0) {
+                        log('calculation', `
+                            <div class="metric">
+                                <strong>メッセージテーブル構造:</strong>
+                                <pre>${JSON.stringify(Object.keys(sampleMessage[0]), null, 2)}</pre>
+                            </div>
+                        `, 'info');
+                    }
+                    
+                    // 全メッセージ数をカウント
+                    const { count: totalMessages } = await window.supabase
+                        .from('messages')
+                        .select('*', { count: 'exact', head: true });
+                    
+                    log('calculation', `
+                        <div class="metric">
+                            <strong>総メッセージ数:</strong> ${totalMessages || 0}
+                        </div>
+                    `, 'info');
+                }
+                
+                // 3. アクティビティの統計
+                const { data: recentActivities } = await window.supabase
+                    .from('user_activities')
+                    .select('activity_type, created_at')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (recentActivities && recentActivities.length > 0) {
+                    const activityTypes = {};
+                    recentActivities.forEach(a => {
+                        activityTypes[a.activity_type] = (activityTypes[a.activity_type] || 0) + 1;
+                    });
+                    
+                    log('calculation', `
+                        <div class="metric">
+                            <strong>最近のアクティビティ統計:</strong>
+                            <pre>${JSON.stringify(activityTypes, null, 2)}</pre>
+                        </div>
+                    `, 'info');
+                }
+                
+                // 4. 推奨される実装
+                log('calculation', `
+                    <div class="metric warning">
+                        <strong>推奨される実装:</strong>
+                        <ul>
+                            <li>dashboard_statsテーブルを定期的に更新するcron job</li>
+                            <li>実際のテーブルから集計する関数</li>
+                            <li>リアルタイムトリガーで統計を更新</li>
+                        </ul>
+                    </div>
+                `, 'warning');
+                
+            } catch (e) {
+                log('calculation', `Error: ${e.message}`, 'error');
+            }
+        }
+
+        // 起動時に自動実行
+        window.addEventListener('supabaseReady', () => {
+            testConnection();
+        });
+    </script>
+</body>
+</html>
