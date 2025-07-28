@@ -8,29 +8,6 @@
 
     console.log('[MembersSupabase] 初期化開始...');
 
-    // Supabaseの準備ができるまで待つ
-    function waitForSupabase() {
-        if (window.supabase) {
-            initializeMembersSupabase();
-        } else {
-            // supabaseReadyイベントを待つ
-            window.addEventListener('supabaseReady', initializeMembersSupabase);
-            // フォールバックとして1秒後に再チェック
-            setTimeout(() => {
-                if (!window.membersSupabase && window.supabase) {
-                    initializeMembersSupabase();
-                }
-            }, 1000);
-        }
-    }
-
-    function initializeMembersSupabase() {
-        if (window.membersSupabase) return; // 既に初期化済み
-        
-        console.log('[MembersSupabase] Supabase準備完了、マネージャー初期化...');
-        window.membersSupabase = new MembersSupabaseManager();
-    }
-
     class MembersSupabaseManager {
         constructor() {
             this.members = [];
@@ -43,10 +20,12 @@
                 role: '',
                 skills: []
             };
-            this.init();
+            this.initialized = false;
         }
 
         async init() {
+            if (this.initialized) return;
+            
             try {
                 // Supabase接続確認
                 if (!window.supabase) {
@@ -54,6 +33,8 @@
                     this.showFallbackUI();
                     return;
                 }
+
+                console.log('[MembersSupabase] Supabase接続確認OK');
 
                 // 認証状態を確認
                 const { data: { user } } = await window.supabase.auth.getUser();
@@ -63,7 +44,10 @@
                     return;
                 }
 
+                console.log('[MembersSupabase] 認証済みユーザー:', user.id);
                 this.currentUserId = user.id;
+                this.initialized = true;
+                
                 await this.loadMembers();
                 this.setupRealtimeSubscription();
                 
@@ -128,6 +112,8 @@
 
                 if (error) throw error;
 
+                console.log('[MembersSupabase] データ取得成功:', data?.length || 0, '件');
+                
                 this.members = data || [];
                 this.totalMembers = count || 0;
 
@@ -151,6 +137,8 @@
         async loadConnectionCounts() {
             try {
                 const memberIds = this.members.map(m => m.id);
+                
+                if (memberIds.length === 0) return;
                 
                 // 各メンバーのコネクション数を取得
                 const { data: connections, error } = await window.supabase
@@ -265,7 +253,7 @@
                     <div class="member-stats">
                         <div class="stat">
                             <i class="fas fa-users"></i>
-                            <span>${connection_count || 0} コネクション</span>
+                            <span>${member.connectionCount || 0} コネクション</span>
                         </div>
                     </div>
                     <div class="member-actions">
@@ -455,7 +443,7 @@
             `;
             
             const container = document.querySelector('.content-container');
-            if (container) {
+            if (container && !container.querySelector('.error-banner')) {
                 container.insertBefore(errorBanner, container.firstChild);
             }
         }
@@ -592,8 +580,29 @@
     `;
     document.head.appendChild(style);
 
-    // Supabaseの準備を待ってから初期化
-    waitForSupabase();
+    // Supabaseの準備ができるまで待つ
+    function initializeWhenReady() {
+        if (window.supabase) {
+            console.log('[MembersSupabase] Supabase準備完了、マネージャー作成');
+            window.membersSupabase = new MembersSupabaseManager();
+            window.membersSupabase.init();
+        } else {
+            console.log('[MembersSupabase] Supabaseの準備待ち...');
+            setTimeout(initializeWhenReady, 100);
+        }
+    }
+
+    // supabaseReadyイベントを待つ
+    if (window.supabase) {
+        initializeWhenReady();
+    } else {
+        window.addEventListener('supabaseReady', () => {
+            console.log('[MembersSupabase] supabaseReadyイベント受信');
+            initializeWhenReady();
+        });
+        // フォールバックとして500ms後に再チェック
+        setTimeout(initializeWhenReady, 500);
+    }
 
     // ページ離脱時のクリーンアップ
     window.addEventListener('beforeunload', () => {
@@ -602,5 +611,5 @@
         }
     });
 
-    console.log('[MembersSupabase] 初期化完了');
+    console.log('[MembersSupabase] セットアップ完了');
 })();
