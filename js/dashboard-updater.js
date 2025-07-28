@@ -152,7 +152,7 @@
 
                 // アクティビティ更新
                 if (activities && activities.length > 0) {
-                    window.dashboardUI.renderActivities(activities);
+                    window.dashboardUI.renderRecentActivities(activities);
                 } else {
                     window.dashboardUI.showEmptyState('.activity-list', '最近のアクティビティはありません');
                 }

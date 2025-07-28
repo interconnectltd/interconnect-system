@@ -50,6 +50,20 @@
         updateStatCards(stats) {
             console.log('[DashboardUI] Updating stat cards with:', stats);
 
+            // 統計コンテナのローディング状態をクリア
+            const statsContainer = document.querySelector('.stats-container');
+            if (statsContainer) {
+                this.clearLoadingState(statsContainer);
+                
+                // 統計カードが存在しない場合（ローディング後）、HTMLを再生成
+                const existingCards = statsContainer.querySelectorAll('.stat-card');
+                if (existingCards.length === 0 && window.dashboardStatRenderer) {
+                    console.log('[DashboardUI] Regenerating stat cards HTML');
+                    statsContainer.innerHTML = window.dashboardStatRenderer.generateStatCardsHTML(stats);
+                    return;
+                }
+            }
+
             // stats-container内のstat-cardを正確に選択
             const statCards = document.querySelectorAll('.stats-container .stat-card');
             console.log(`[DashboardUI] Found ${statCards.length} stat cards`);
