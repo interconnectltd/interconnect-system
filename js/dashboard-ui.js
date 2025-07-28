@@ -16,6 +16,35 @@
         }
 
         /**
+         * 通知バッジ更新
+         */
+        updateNotificationBadges(stats) {
+            // 通知バッジ（ベルアイコン）
+            const notificationBadges = document.querySelectorAll('.notification-badge');
+            notificationBadges.forEach(badge => {
+                const unreadCount = stats.unread_messages || 0;
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+
+            // メッセージバッジ（サイドバー）
+            const messageBadges = document.querySelectorAll('.badge.message-badge');
+            messageBadges.forEach(badge => {
+                const unreadCount = stats.unread_messages || 0;
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+
+        /**
          * 統計カード更新
          */
         updateStatCards(stats) {
@@ -472,6 +501,73 @@
         showToast(message, type = 'info') {
             console.log(`[DashboardUI] Toast (${type}):`, message);
             // 将来的にトースト通知システムを実装
+        }
+
+        /**
+         * イベント詳細を表示
+         */
+        viewEventDetails(eventId) {
+            console.log('[DashboardUI] Viewing event details:', eventId);
+            
+            // イベント詳細ページへ遷移
+            // TODO: イベント詳細ページが未実装の場合は、モーダルで表示
+            if (window.location.pathname.includes('dashboard.html')) {
+                // 簡易的にアラートで表示（後でモーダルに変更）
+                this.showEventModal(eventId);
+            } else {
+                window.location.href = `events.html?id=${eventId}`;
+            }
+        }
+
+        /**
+         * イベントモーダル表示（簡易版）
+         */
+        async showEventModal(eventId) {
+            try {
+                // Supabaseからイベント詳細を取得
+                if (window.supabase) {
+                    const { data: event, error } = await window.supabase
+                        .from('events')
+                        .select('*')
+                        .eq('id', eventId)
+                        .single();
+                    
+                    if (error) {
+                        alert('イベント情報の取得に失敗しました');
+                        return;
+                    }
+                    
+                    if (event) {
+                        const eventDate = new Date(event.event_date);
+                        const dateStr = eventDate.toLocaleDateString('ja-JP', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        
+                        alert(`イベント詳細\n\nタイトル: ${event.title}\n日付: ${dateStr}\n時間: ${event.time || '未定'}\n場所: ${event.location || '未定'}\n\n詳細: ${event.description || '詳細情報なし'}`);
+                    }
+                } else {
+                    alert('イベント詳細ページは準備中です');
+                }
+            } catch (error) {
+                console.error('[DashboardUI] Error showing event modal:', error);
+                alert('イベント詳細の表示中にエラーが発生しました');
+            }
+        }
+
+        /**
+         * ボタンハンドラーの初期化
+         */
+        initializeButtonHandlers() {
+            // イベント詳細ボタンのハンドラー（既に設定済みの場合はスキップ）
+            const eventButtons = document.querySelectorAll('[data-event-id]');
+            eventButtons.forEach(button => {
+                if (!button.hasAttribute('data-handler-set')) {
+                    button.setAttribute('data-handler-set', 'true');
+                    // onclickが既に設定されているので追加の処理は不要
+                }
+            });
         }
     }
 
