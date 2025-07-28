@@ -35,6 +35,26 @@
     <link rel="stylesheet" href="css/news-category-mobile-fix.css">
 </head>
 <body>
+    <!-- プリローディング画面（最初に表示） -->
+    <script>
+        // ローディング画面を即座に表示
+        document.write(`
+        <div id="instantLoadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;">
+                <div style="color:white;font-size:24px;font-weight:300;letter-spacing:0.2em;margin-bottom:20px;">INTER CONNECT</div>
+                <div style="width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin:0 auto;">
+                    <div id="loadingBar" style="height:100%;background:white;width:0%;transition:width 2s ease-out;"></div>
+                </div>
+            </div>
+        </div>
+        `);
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => {
+            const bar = document.getElementById('loadingBar');
+            if(bar) bar.style.width = '100%';
+        }, 10);
+    </script>
+    
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -707,8 +727,40 @@
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <script src="js/loading-screen.js"></script>
     <script src="js/main.js"></script>
     <script src="js/scroll-fade.js"></script>
+    
+    <!-- ローディング画面を非表示にする -->
+    <script>
+        // ページ読み込み完了時にローディング画面を非表示
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('instantLoadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.transition = 'opacity 0.8s ease-out';
+                    loadingScreen.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        loadingScreen.remove();
+                        document.body.style.overflow = '';
+                    }, 800);
+                }
+            }, 2000); // 最低2秒表示
+        });
+        
+        // フォールバック：5秒後には必ず非表示
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('instantLoadingScreen');
+            if (loadingScreen && loadingScreen.style.opacity !== '0') {
+                loadingScreen.style.transition = 'opacity 0.8s ease-out';
+                loadingScreen.style.opacity = '0';
+                
+                setTimeout(() => {
+                    loadingScreen.remove();
+                    document.body.style.overflow = '';
+                }, 800);
+            }
+        }, 5000);
+    </script>
 </body>
 </html>
