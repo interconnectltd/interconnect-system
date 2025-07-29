@@ -67,6 +67,9 @@
                 // 参加者数を取得
                 await this.fetchParticipantsCount(eventId);
 
+                // ユーザーの参加状況を確認
+                await this.checkUserParticipation(eventId);
+
             } catch (error) {
                 console.error('[EventModal] Error:', error);
                 this.showError('エラーが発生しました');
@@ -320,6 +323,33 @@
         }
 
         /**
+         * ユーザーの参加状況を確認
+         */
+        async checkUserParticipation(eventId) {
+            try {
+                const { data: { user } } = await window.supabase.auth.getUser();
+                if (!user) return;
+
+                const { data: participation } = await window.supabase
+                    .from('event_participants')
+                    .select('status')
+                    .eq('event_id', eventId)
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (participation && participation.status !== 'cancelled') {
+                    this.eventActionBtn.textContent = '参加登録済み';
+                    this.eventActionBtn.classList.remove('btn-primary');
+                    this.eventActionBtn.classList.add('btn-success');
+                    this.eventActionBtn.disabled = true;
+                }
+            } catch (error) {
+                // エラーは無視（未参加として扱う）
+                console.log('[EventModal] User not registered for this event');
+            }
+        }
+
+        /**
          * アクションボタンの更新
          */
         updateActionButton(event, status) {
@@ -329,11 +359,10 @@
                 this.eventActionBtn.classList.remove('btn-primary');
                 this.eventActionBtn.classList.add('btn-secondary');
             } else {
-                // TODO: ユーザーの参加状況を確認
                 this.eventActionBtn.textContent = '参加する';
                 this.eventActionBtn.disabled = false;
                 this.eventActionBtn.classList.add('btn-primary');
-                this.eventActionBtn.classList.remove('btn-secondary');
+                this.eventActionBtn.classList.remove('btn-secondary', 'btn-success');
             }
         }
 
@@ -344,14 +373,56 @@
             if (!this.currentEvent || this.eventActionBtn.disabled) return;
 
             try {
+                // ユーザー認証チェック
+                const { data: { user } } = await window.supabase.auth.getUser();
+                if (!user) {
+                    alert('ログインが必要です');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
                 this.eventActionBtn.disabled = true;
                 this.eventActionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
 
-                // TODO: 実際の参加登録処理を実装
-                console.log('[EventModal] Registering for event:', this.currentEvent.id);
+                // 既に参加登録しているかチェック
+                const { data: existing } = await window.supabase
+                    .from('event_participants')
+                    .select('id, status')
+                    .eq('event_id', this.currentEvent.id)
+                    .eq('user_id', user.id)
+                    .single();
 
-                // 仮の処理（実際にはevent_participantsテーブルに登録）
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                if (existing) {
+                    if (existing.status === 'cancelled') {
+                        // キャンセル済みの場合は再登録
+                        const { error: updateError } = await window.supabase
+                            .from('event_participants')
+                            .update({ 
+                                status: 'registered',
+                                registration_date: new Date().toISOString()
+                            })
+                            .eq('id', existing.id);
+
+                        if (updateError) throw updateError;
+                    } else {
+                        alert('既に参加登録済みです');
+                        this.eventActionBtn.textContent = '参加登録済み';
+                        this.eventActionBtn.classList.remove('btn-primary');
+                        this.eventActionBtn.classList.add('btn-success');
+                        return;
+                    }
+                } else {
+                    // 新規登録
+                    const { error: insertError } = await window.supabase
+                        .from('event_participants')
+                        .insert({
+                            event_id: this.currentEvent.id,
+                            user_id: user.id,
+                            status: 'registered'
+                        });
+
+                    if (insertError) throw insertError;
+                }
 
                 this.eventActionBtn.textContent = '参加登録済み';
                 this.eventActionBtn.classList.remove('btn-primary');

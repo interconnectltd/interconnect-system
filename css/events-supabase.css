@@ -1,0 +1,203 @@
+/* Events Supabase Styles */
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+    color: var(--gray-500);
+    min-height: 400px;
+}
+
+.loading-state i {
+    margin-bottom: var(--space-lg);
+    color: var(--primary-color);
+}
+
+.loading-state p {
+    font-size: var(--font-lg);
+    margin: 0;
+}
+
+/* Error State */
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+    min-height: 400px;
+}
+
+.error-state i {
+    color: var(--danger-color);
+    margin-bottom: var(--space-lg);
+}
+
+.error-state h3 {
+    font-size: var(--font-xl);
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.error-state p {
+    color: var(--gray-600);
+    margin-bottom: var(--space-lg);
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+    color: var(--gray-500);
+    min-height: 400px;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+    color: var(--gray-400);
+}
+
+.empty-state h3 {
+    font-size: var(--font-xl);
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.empty-state p {
+    color: var(--gray-600);
+}
+
+/* Event Card Enhancements */
+.event-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.event-card[data-event-id] {
+    position: relative;
+}
+
+/* Button States */
+.btn-success {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background: var(--success-dark);
+    border-color: var(--success-dark);
+}
+
+.btn-success:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Event Badge Variants */
+.event-badge {
+    background: var(--primary-color);
+}
+
+.event-badge-offline {
+    background: var(--secondary-color);
+}
+
+.event-badge-hybrid {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Truncated Text */
+.event-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Event Meta Icons */
+.event-meta .meta-item i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Filter Buttons (for future use) */
+.event-filters {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.filter-btn {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Search Input (for future use) */
+.event-search {
+    position: relative;
+    margin-bottom: var(--space-lg);
+}
+
+.event-search input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    padding-left: calc(var(--space-md) + 24px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--font-base);
+}
+
+.event-search i {
+    position: absolute;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-500);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .empty-state,
+    .loading-state,
+    .error-state {
+        min-height: 300px;
+        padding: var(--space-xl) var(--space-md);
+    }
+}
