@@ -305,7 +305,7 @@
                     if (connectionItem) {
                         const connectionId = connectionItem.dataset.connectionId;
                         // プロフィールページにIDを渡す
-                        window.location.href = `profile.html?id=${connectionId}`;
+                        window.location.href = `profile.html?user=${connectionId}`;
                     }
                 }
             });

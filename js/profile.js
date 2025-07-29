@@ -19,6 +19,8 @@ window.InterConnect.Profile = {
     // 初期化
     init: async function() {
         console.log('[Profile] 初期化開始...');
+        console.log('[Profile] 現在のURL:', window.location.href);
+        console.log('[Profile] URLパラメータ:', window.location.search);
         
         // 重複初期化を防ぐ
         if (this.initialized || this.isLoading) {
@@ -33,19 +35,30 @@ window.InterConnect.Profile = {
             // URLパラメータからユーザーIDを取得
             const urlParams = new URLSearchParams(window.location.search);
             const userId = urlParams.get('user');
+            console.log('[Profile] URLから取得したユーザーID:', userId);
             
             // 現在のユーザーIDを取得
             await this.getCurrentUser();
+            console.log('[Profile] 現在のユーザーID:', this.currentUserId);
         
-        if (userId && userId !== this.currentUserId) {
-            // 他のユーザーのプロフィール
-            console.log('[Profile] 他のユーザーのプロフィールを表示:', userId);
-            this.isOwnProfile = false;
-            this.targetUserId = userId;
-            await this.loadOtherUserProfile(userId);
+        if (userId) {
+            // userパラメータが指定されている場合
+            if (userId !== this.currentUserId) {
+                // 他のユーザーのプロフィール
+                console.log('[Profile] 他のユーザーのプロフィールを表示:', userId);
+                this.isOwnProfile = false;
+                this.targetUserId = userId;
+                await this.loadOtherUserProfile(userId);
+            } else {
+                // 自分のプロフィール（userパラメータで指定された場合）
+                console.log('[Profile] 自分のプロフィールを表示 (userパラメータ指定)');
+                this.isOwnProfile = true;
+                this.targetUserId = this.currentUserId;
+                await this.loadProfileData();
+            }
         } else {
-            // 自分のプロフィール
-            console.log('[Profile] 自分のプロフィールを表示');
+            // userパラメータがない場合は自分のプロフィール
+            console.log('[Profile] 自分のプロフィールを表示 (デフォルト)');
             this.isOwnProfile = true;
             this.targetUserId = this.currentUserId;
             await this.loadProfileData();
@@ -88,6 +101,7 @@ window.InterConnect.Profile = {
     
     // 他のユーザーのプロフィールを読み込む
     loadOtherUserProfile: async function(userId) {
+        console.log('[Profile] loadOtherUserProfile開始:', userId);
         try {
             // SQLインジェクション対策：UUIDの検証
             const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -124,12 +138,10 @@ window.InterConnect.Profile = {
                     email,
                     company,
                     position,
-                    title,
                     avatar_url,
                     industry,
                     skills,
                     bio,
-                    connection_count,
                     is_online,
                     last_login_at
                 `)
@@ -139,6 +151,12 @@ window.InterConnect.Profile = {
             
             if (error) {
                 console.error('[Profile] プロフィール取得エラー:', error);
+                console.error('[Profile] エラー詳細:', {
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint,
+                    code: error.code
+                });
                 this.showError('ユーザーが見つかりません');
                 return;
             }
@@ -157,15 +175,18 @@ window.InterConnect.Profile = {
                 email: data.email,
                 company: data.company || '未設定',
                 position: data.position || '未設定',
-                title: data.title || data.position || '役職未設定',
+                title: data.position || '役職未設定', // titleカラムは存在しないのでpositionを使用
                 profileImage: data.avatar_url || 'assets/user-placeholder.svg',
                 industry: data.industry || '未設定',
                 skills: data.skills || [],
                 bio: data.bio || '',
-                connectionCount: data.connection_count || 0,
+                connectionCount: 0, // 後で別途取得
                 isOnline: data.is_online || false,
                 lastLoginAt: data.last_login_at
             };
+            
+            // コネクション数を別途取得
+            await this.loadConnectionCount(userId);
             
             // キャッシュに保存
             this.saveToCache(userId, this.profileData);
@@ -179,6 +200,26 @@ window.InterConnect.Profile = {
         } catch (error) {
             console.error('[Profile] プロフィール読み込みエラー:', error);
             this.showError('プロフィールの読み込みに失敗しました');
+        }
+    },
+    
+    // コネクション数を取得
+    loadConnectionCount: async function(userId) {
+        try {
+            if (!window.supabase) return;
+            
+            const { data, error } = await window.supabase
+                .from('connections')
+                .select('id')
+                .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`)
+                .eq('status', 'accepted');
+            
+            if (!error && data) {
+                this.profileData.connectionCount = data.length;
+                console.log('[Profile] コネクション数:', data.length);
+            }
+        } catch (error) {
+            console.error('[Profile] コネクション数取得エラー:', error);
         }
     },
     
@@ -215,7 +256,7 @@ window.InterConnect.Profile = {
             if (window.supabase && this.currentUserId) {
                 const { data, error } = await window.supabase
                     .from('user_profiles')
-                    .select('*, connection_count')
+                    .select('*')
                     .eq('id', this.currentUserId)
                     .single();
                 
@@ -231,11 +272,11 @@ window.InterConnect.Profile = {
                         name: data.full_name || data.name || window.InterConnect.Profile.profileData.name,
                         company: data.company || window.InterConnect.Profile.profileData.company,
                         position: data.position || window.InterConnect.Profile.profileData.position,
-                        title: data.title || data.position || window.InterConnect.Profile.profileData.title,
+                        title: data.position || window.InterConnect.Profile.profileData.title, // titleカラムは存在しない
                         industry: data.industry || window.InterConnect.Profile.profileData.industry,
                         skills: data.skills || window.InterConnect.Profile.profileData.skills || [],
                         bio: data.bio || window.InterConnect.Profile.profileData.bio,
-                        connectionCount: data.connection_count || 0,
+                        connectionCount: 0, // 後で別途取得
                         isOnline: data.is_online || false
                     };
                 }
@@ -284,6 +325,11 @@ window.InterConnect.Profile = {
                 console.log('strategy-details:', window.InterConnect.Profile.profileData['strategy-details']);
             }
             
+            // コネクション数を取得
+            if (this.currentUserId) {
+                await this.loadConnectionCount(this.currentUserId);
+            }
+            
             window.InterConnect.Profile.updateProfileInfo();
             
         } catch (error) {
@@ -293,6 +339,10 @@ window.InterConnect.Profile = {
     
     // UIモードの更新
     updateUIMode: function() {
+        console.log('[Profile] UIモード更新 - isOwnProfile:', this.isOwnProfile);
+        console.log('[Profile] targetUserId:', this.targetUserId);
+        console.log('[Profile] connectionStatus:', this.connectionStatus);
+        
         const editButton = document.querySelector('.profile-details .btn-primary');
         const editAvatarBtn = document.querySelector('.btn-edit-avatar');
         const editCoverBtn = document.querySelector('.btn-edit-cover');
@@ -849,18 +899,29 @@ window.InterConnect.Profile = {
 // DOMContentLoadedイベントでプロフィール機能を初期化
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOMContentLoaded - initializing profile');
+    console.log('現在のURL:', window.location.href);
+    console.log('URLパラメータ:', window.location.search);
+    
+    // URLパラメータを早期に確認
+    const urlParams = new URLSearchParams(window.location.search);
+    const userParam = urlParams.get('user');
+    console.log('userパラメータ:', userParam);
     
     // Supabaseの準備を待つ
     function initWhenReady() {
         if (window.supabase) {
+            console.log('Supabase準備完了、初期化開始');
             window.InterConnect.Profile.init();
         } else {
+            console.log('Supabase未準備、イベント待機');
             window.addEventListener('supabaseReady', () => {
+                console.log('supabaseReadyイベント受信、初期化開始');
                 window.InterConnect.Profile.init();
             });
             // フォールバック
             setTimeout(() => {
-                if (!window.InterConnect.Profile.profileData) {
+                if (!window.InterConnect.Profile.initialized) {
+                    console.log('タイムアウトによる初期化');
                     window.InterConnect.Profile.init();
                 }
             }, 1000);
@@ -871,3 +932,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('profile.js loaded successfully');
+// Cache buster: 1753750334

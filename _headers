@@ -17,9 +17,11 @@
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate
   
-# JavaScript files - shorter cache for development
+# JavaScript files - no cache for development
 /js/*
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
   
 # CSS files - shorter cache for development
 /css/*

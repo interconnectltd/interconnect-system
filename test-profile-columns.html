@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Columns Test</title>
+    <script src="js/supabase-client.js"></script>
+</head>
+<body>
+    <h1>user_profiles テーブルのカラム確認</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function checkColumns() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                // Supabaseの準備を待つ
+                await new Promise(resolve => {
+                    if (window.supabase) {
+                        resolve();
+                    } else {
+                        window.addEventListener('supabaseReady', resolve);
+                    }
+                });
+                
+                // テーブル情報を取得
+                const { data, error } = await window.supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p style="color: red;">エラー: ${error.message}</p>`;
+                    console.error('エラー詳細:', error);
+                } else if (data && data.length > 0) {
+                    const columns = Object.keys(data[0]);
+                    resultDiv.innerHTML = `
+                        <h2>user_profiles テーブルのカラム:</h2>
+                        <ul>
+                            ${columns.map(col => `<li>${col}</li>`).join('')}
+                        </ul>
+                        <h3>titleカラムの存在: ${columns.includes('title') ? 'あり' : 'なし'}</h3>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p>データが見つかりません</p>';
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<p style="color: red;">エラー: ${err.message}</p>`;
+                console.error('エラー:', err);
+            }
+        }
+        
+        // ページ読み込み時に実行
+        checkColumns();
+    </script>
+</body>
+</html>

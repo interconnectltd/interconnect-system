@@ -256,6 +256,34 @@
                 
                 <div class="profile-content">
                     <!-- Tab content will be dynamically loaded here -->
+                    <div class="tab-content active" data-tab="about">
+                        <div class="profile-section">
+                            <h3 class="section-title">自己紹介</h3>
+                            <p id="profileBioDisplay">読み込み中...</p>
+                        </div>
+                        
+                        <div class="profile-section">
+                            <h3 class="section-title">事業課題</h3>
+                            <div class="business-challenges">
+                                <div class="challenge-category">
+                                    <h4><i class="fas fa-chart-line"></i> 売上向上</h4>
+                                    <p id="revenueDetailText">読み込み中...</p>
+                                </div>
+                                <div class="challenge-category">
+                                    <h4><i class="fas fa-users"></i> 人事・組織</h4>
+                                    <p id="hrDetailText">読み込み中...</p>
+                                </div>
+                                <div class="challenge-category">
+                                    <h4><i class="fas fa-laptop-code"></i> DX推進</h4>
+                                    <p id="dxDetailText">読み込み中...</p>
+                                </div>
+                                <div class="challenge-category">
+                                    <h4><i class="fas fa-chess-king"></i> 経営戦略</h4>
+                                    <p id="strategyDetailText">読み込み中...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -488,8 +516,14 @@
     <script>console.log('responsive-menu-simple.js loaded');</script>
     <script src="js/dashboard.js"></script>
     <script>console.log('dashboard.js loaded');</script>
-    <script src="js/profile.js"></script>
-    <script>console.log('profile.js should be loaded');</script>
+    <script src="js/profile.js?v=20250729-6-nocache"></script>
+    <script>
+        console.log('profile.js should be loaded');
+        // デバッグ用：URLパラメータを確認
+        const debugParams = new URLSearchParams(window.location.search);
+        console.log('[Debug] URL params:', debugParams.toString());
+        console.log('[Debug] user param:', debugParams.get('user'));
+    </script>
     <!-- <script src="js/notifications.js"></script> -->
     <script>
         console.log('All scripts should be loaded');
