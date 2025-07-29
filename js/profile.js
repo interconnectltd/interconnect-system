@@ -157,6 +157,36 @@ window.InterConnect.Profile = {
                 await window.ProfileSync.sync();
             }
             
+            // Supabaseから自分のプロフィールデータも取得
+            if (window.supabase && this.currentUserId) {
+                const { data, error } = await window.supabase
+                    .from('user_profiles')
+                    .select('*, connection_count')
+                    .eq('id', this.currentUserId)
+                    .single();
+                
+                if (data && !error) {
+                    console.log('[Profile] 自分のSupabaseデータ:', data);
+                    // Supabaseのデータを優先的に使用
+                    if (!window.InterConnect.Profile.profileData) {
+                        window.InterConnect.Profile.profileData = {};
+                    }
+                    window.InterConnect.Profile.profileData = {
+                        ...window.InterConnect.Profile.profileData,
+                        id: data.id,
+                        name: data.full_name || data.name || window.InterConnect.Profile.profileData.name,
+                        company: data.company || window.InterConnect.Profile.profileData.company,
+                        position: data.position || window.InterConnect.Profile.profileData.position,
+                        title: data.title || data.position || window.InterConnect.Profile.profileData.title,
+                        industry: data.industry || window.InterConnect.Profile.profileData.industry,
+                        skills: data.skills || window.InterConnect.Profile.profileData.skills || [],
+                        bio: data.bio || window.InterConnect.Profile.profileData.bio,
+                        connectionCount: data.connection_count || 0,
+                        isOnline: data.is_online || false
+                    };
+                }
+            }
+            
             // localStorageからユーザー情報を取得
             const userStr = localStorage.getItem('user');
             if (userStr) {
@@ -309,7 +339,18 @@ window.InterConnect.Profile = {
         
         // 役職
         const positionElement = document.querySelector('.profile-title');
-        if (positionElement) positionElement.textContent = data.position || '役職・肩書き';
+        if (positionElement) positionElement.textContent = data.title || data.position || '役職・肩書き';
+        
+        // 統計情報の更新
+        this.updateProfileStats(data);
+        
+        // オンラインステータスの更新
+        if (!this.isOwnProfile && data.isOnline !== undefined) {
+            const onlineIndicator = document.querySelector('.online-indicator');
+            if (onlineIndicator) {
+                onlineIndicator.style.display = data.isOnline ? 'block' : 'none';
+            }
+        }
         
         // プロフィール画像の更新
         if (data.profileImage) {
@@ -317,6 +358,9 @@ window.InterConnect.Profile = {
             const profileAvatar = document.querySelector('.profile-avatar img');
             if (profileAvatar) {
                 profileAvatar.src = data.profileImage;
+                profileAvatar.onerror = function() {
+                    this.src = 'assets/user-placeholder.svg';
+                };
                 console.log('Profile avatar updated:', data.profileImage);
             }
             
@@ -603,6 +647,29 @@ window.InterConnect.Profile = {
     // コネクションタブの更新
     updateConnectionsTab: function() {
         // 実装予定
+    },
+    
+    // プロフィール統計情報の更新
+    updateProfileStats: function(data) {
+        console.log('[Profile] 統計情報更新:', data);
+        
+        // コネクション数
+        const connectionCountEl = document.querySelector('.stat-value.connection-count');
+        if (connectionCountEl && data.connectionCount !== undefined) {
+            connectionCountEl.textContent = data.connectionCount;
+        }
+        
+        // メッセージ数（今は固定値）
+        const messageCountEl = document.querySelector('.stat-value.message-count');
+        if (messageCountEl) {
+            messageCountEl.textContent = data.messageCount || 0;
+        }
+        
+        // マッチング率（今は固定値）
+        const matchingRateEl = document.querySelector('.stat-value.matching-rate');
+        if (matchingRateEl) {
+            matchingRateEl.textContent = data.matchingRate || '0%';
+        }
     }
 };
 
