@@ -1,0 +1,255 @@
+/* Member Profile Preview Styles */
+
+.profile-preview {
+    position: fixed;
+    z-index: 1000;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    width: 360px;
+    max-width: 90vw;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.profile-preview.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.profile-preview-content {
+    padding: var(--space-lg);
+}
+
+/* Header */
+.profile-preview-header {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.preview-avatar {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.preview-avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.preview-avatar .status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.status-indicator.online {
+    background: var(--success-color);
+}
+
+.status-indicator.offline {
+    background: var(--gray-400);
+}
+
+.preview-info h4 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.preview-position {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+}
+
+.preview-company {
+    margin: 0;
+    font-size: var(--font-sm);
+    color: var(--gray-600);
+}
+
+/* Bio */
+.profile-preview-bio {
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    margin: var(--space-md) 0;
+}
+
+.profile-preview-bio p {
+    margin: 0;
+    font-size: var(--font-sm);
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+/* Skills */
+.profile-preview-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+
+.skill-tag {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--gray-100);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+}
+
+.skill-more {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--gray-600);
+    font-size: var(--font-xs);
+}
+
+/* Footer */
+.profile-preview-footer {
+    display: flex;
+    gap: var(--space-lg);
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.preview-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+}
+
+.preview-stat i {
+    font-size: var(--font-xs);
+}
+
+.preview-stat .fa-circle.online {
+    color: var(--success-color);
+}
+
+.preview-stat .fa-circle.offline {
+    color: var(--gray-400);
+}
+
+/* Actions */
+.profile-preview-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.profile-preview-actions .btn {
+    flex: 1;
+    font-size: var(--font-sm);
+    padding: var(--space-sm) var(--space-md);
+}
+
+.profile-preview-actions .btn i {
+    margin-right: var(--space-xs);
+}
+
+/* Loading State */
+.profile-preview-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-xl);
+    color: var(--gray-500);
+}
+
+.profile-preview-loading i {
+    font-size: var(--font-xl);
+}
+
+/* Error State */
+.profile-preview-error {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--danger-color);
+}
+
+.profile-preview-error i {
+    font-size: var(--font-2xl);
+    margin-bottom: var(--space-sm);
+}
+
+.profile-preview-error p {
+    margin: 0;
+    font-size: var(--font-sm);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .profile-preview {
+        background: var(--dark-bg-secondary);
+        color: var(--dark-text-primary);
+    }
+
+    .profile-preview-bio,
+    .profile-preview-footer {
+        border-color: var(--dark-border-color);
+    }
+
+    .skill-tag {
+        background: var(--dark-bg-tertiary);
+        color: var(--dark-text-secondary);
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-preview.visible {
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+/* Member card hover effect */
+.member-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    /* Disable preview on mobile */
+    .profile-preview {
+        display: none !important;
+    }
+    
+    .member-card:hover {
+        transform: none;
+    }
+}

@@ -227,7 +227,7 @@
             const hasMoreSkills = skills.length > 3;
 
             return `
-                <div class="member-card" data-member-id="${id}">
+                <div class="member-card" data-member-id="${id}" data-user-id="${id}">
                     <div class="member-header">
                         <div style="position: relative;">
                             <img src="${this.escapeHtml(avatar_url)}" 

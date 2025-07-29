@@ -43,6 +43,10 @@ ul {
     --primary-light: #3b82f6;
     --secondary-color: #10b981;
     --accent-color: #f59e0b;
+    --success-color: #10b981;
+    --success-dark: #059669;
+    --danger-color: #ef4444;
+    --danger-dark: #dc2626;
     --text-primary: #1f2937;
     --text-secondary: #6b7280;
     --bg-primary: #ffffff;
