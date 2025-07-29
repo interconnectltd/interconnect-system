@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/profile.css?v=20250729-1">
+    <link rel="stylesheet" href="css/profile.css?v=20250729-2">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/responsive-menu.css">
     <link rel="stylesheet" href="css/user-menu-zindex-only.css">
@@ -195,6 +195,7 @@
                         
                         <div class="user-dropdown">
                             <a href="profile.html">プロフィール</a>
+                            <a href="#" onclick="window.InterConnect?.Profile?.openEditModal(); return false;">プロフィール編集</a>
                             <a href="settings.html">設定</a>
                             <hr>
                             <a href="#" onclick="logout(); return false;">ログアウト</a>
@@ -242,7 +243,6 @@
                             </div>
                         </div>
                         
-                        <button class="btn btn-primary">プロフィールを編集</button>
                     </div>
                 </div>
                 
@@ -516,7 +516,7 @@
     <script>console.log('responsive-menu-simple.js loaded');</script>
     <script src="js/dashboard.js"></script>
     <script>console.log('dashboard.js loaded');</script>
-    <script src="js/profile.js?v=20250729-7"></script>
+    <script src="js/profile.js?v=20250729-8"></script>
     <script>
         console.log('profile.js should be loaded');
         // デバッグ用：URLパラメータを確認

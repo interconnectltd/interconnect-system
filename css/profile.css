@@ -112,14 +112,6 @@
     gap: var(--space-lg);
 }
 
-/* プロフィール編集ボタンのスタイル */
-.profile-details .btn-primary {
-    align-self: flex-start;
-    margin-top: var(--space-lg);
-    margin-left: calc(var(--space-xl) * -1); /* 左に移動 */
-    position: relative;
-    top: var(--space-md); /* 下に移動 */
-}
 
 .profile-details h2 {
     font-size: 2rem;
@@ -560,11 +552,6 @@
         align-items: center;
     }
     
-    .profile-details .btn-primary {
-        align-self: center;
-        margin-left: 0; /* モバイルでは左マージンをリセット */
-        top: 0; /* モバイルでは上下位置もリセット */
-    }
     
     .profile-stats {
         justify-content: center;

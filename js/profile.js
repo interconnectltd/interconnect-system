@@ -343,19 +343,11 @@ window.InterConnect.Profile = {
         console.log('[Profile] targetUserId:', this.targetUserId);
         console.log('[Profile] connectionStatus:', this.connectionStatus);
         
-        const editButton = document.querySelector('.profile-details .btn-primary');
         const editAvatarBtn = document.querySelector('.btn-edit-avatar');
         const editCoverBtn = document.querySelector('.btn-edit-cover');
         
         if (this.isOwnProfile) {
             // 自分のプロフィール
-            if (editButton) {
-                editButton.textContent = 'プロフィールを編集';
-                editButton.style.display = 'block';
-                editButton.disabled = false;
-                editButton.setAttribute('aria-label', 'プロフィールを編集する');
-                editButton.onclick = () => this.openEditModal();
-            }
             // 編集ボタンを表示
             if (editAvatarBtn) editAvatarBtn.style.display = 'flex';
             if (editCoverBtn) editCoverBtn.style.display = 'flex';
@@ -364,14 +356,6 @@ window.InterConnect.Profile = {
             // すべての編集ボタンを非表示
             if (editAvatarBtn) editAvatarBtn.style.display = 'none';
             if (editCoverBtn) editCoverBtn.style.display = 'none';
-            
-            if (editButton) {
-                // 他人のプロフィールでは編集ボタンを完全に非表示
-                editButton.style.display = 'none';
-                
-                // コネクションボタンは別途実装予定
-                // TODO: コネクションステータスに応じたボタンを別の場所に配置
-            }
         }
     },
     
@@ -541,14 +525,6 @@ window.InterConnect.Profile = {
     // 編集モーダルの初期化
     initializeEditModal: function() {
         if (!this.isOwnProfile) return; // 他人のプロフィールでは初期化しない
-        
-        // 編集ボタンのクリックイベント
-        const editButton = document.querySelector('.profile-details .btn-primary');
-        if (editButton) {
-            editButton.addEventListener('click', () => {
-                window.InterConnect.Profile.openEditModal();
-            });
-        }
         
         // モーダルの閉じるボタン
         const closeButtons = document.querySelectorAll('[data-close-modal]');
@@ -875,13 +851,6 @@ window.InterConnect.Profile = {
         };
         
         this.updateProfileInfo();
-        
-        // 編集ボタンを無効化
-        const editButton = document.querySelector('.profile-details .btn-primary');
-        if (editButton && !this.isOwnProfile) {
-            editButton.disabled = true;
-            editButton.textContent = '接続エラー';
-        }
     }
 };
 
