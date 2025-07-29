@@ -456,6 +456,9 @@
     });
 
     // 統一ログアウト関数
+    // NOTE: global-functions.js の window.logout を使用してください
+    // この実装は古いバージョンのため無効化されています
+    /*
     window.INTERCONNECT.logout = function() {
         if (confirm('ログアウトしますか？')) {
             window.INTERCONNECT.Utils.toast.show('ログアウトしています...', 'info');
@@ -469,6 +472,7 @@
             }, 1000);
         }
     };
+    */
 
     console.log('✅ INTERCONNECT Utils loaded');
 

@@ -379,6 +379,9 @@
     </div>
     
     <!-- Scripts -->
+    <!-- Core initialization (must be first) -->
+    <script src="js/interconnect-core.js"></script>
+    
     <script src="js/dashboard-load-order-optimizer.js"></script>
     <script src="js/dashboard-initial-loading.js"></script>
     <script src="js/error-prevention.js"></script>
@@ -406,9 +409,24 @@
     <script src="js/dashboard-ui.js"></script>
     <script src="js/dashboard-ui-fix.js"></script>
     <script src="js/dashboard-updater.js"></script>
-    <script src="js/dashboard-debug.js"></script>
-    <script src="js/dashboard-event-debug.js"></script>
-    <script src="js/dashboard-stats-debug.js"></script>
+    
+    <!-- Debug scripts (only load in development) -->
+    <script>
+        // デバッグモードの場合のみデバッグスクリプトを読み込む
+        if (window.location.search.includes('debug=true') || window.location.hostname === 'localhost') {
+            const debugScripts = [
+                'js/dashboard-debug.js',
+                'js/dashboard-event-debug.js',
+                'js/dashboard-stats-debug.js'
+            ];
+            debugScripts.forEach(src => {
+                const script = document.createElement('script');
+                script.src = src;
+                document.head.appendChild(script);
+            });
+        }
+    </script>
+    
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/event-modal.js"></script>
     <script src="js/dashboard.js"></script>
