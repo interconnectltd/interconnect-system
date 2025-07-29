@@ -150,8 +150,11 @@
             const ctx = document.getElementById('memberGrowthChart');
             if (!ctx) return;
 
-            // ダミーデータ（実際はSupabaseから取得）
-            const data = this.generateMemberGrowthData('month');
+            // ローディング表示
+            this.showChartLoading('memberGrowthChart');
+
+            // データを取得
+            const data = await this.fetchMemberGrowthData('month');
 
             this.charts.memberGrowth = new Chart(ctx, {
                 type: 'line',
@@ -218,8 +221,11 @@
             const ctx = document.getElementById('eventStatsChart');
             if (!ctx) return;
 
-            // ダミーデータ
-            const data = this.generateEventStatsData('month');
+            // ローディング表示
+            this.showChartLoading('eventStatsChart');
+
+            // データを取得
+            const data = await this.fetchEventStatsData('month');
 
             this.charts.eventStats = new Chart(ctx, {
                 type: 'bar',
@@ -280,11 +286,11 @@
             const ctx = document.getElementById('industryChart');
             if (!ctx) return;
 
-            // ダミーデータ（実際はSupabaseから集計）
-            const data = {
-                labels: ['IT/テクノロジー', '金融', '製造業', 'サービス業', 'その他'],
-                values: [35, 25, 20, 15, 5]
-            };
+            // ローディング表示
+            this.showChartLoading('industryChart');
+
+            // データを取得
+            const data = await this.fetchIndustryData();
 
             this.charts.industry = new Chart(ctx, {
                 type: 'doughnut',
@@ -336,8 +342,11 @@
             const ctx = document.getElementById('activityHeatmapChart');
             if (!ctx) return;
 
-            // ダミーデータ
-            const data = this.generateActivityHeatmapData();
+            // ローディング表示
+            this.showChartLoading('activityHeatmapChart');
+
+            // データを取得
+            const data = await this.fetchActivityHeatmapData();
 
             this.charts.activityHeatmap = new Chart(ctx, {
                 type: 'bar',
@@ -398,30 +407,34 @@
         /**
          * メンバー成長チャートを更新
          */
-        updateMemberGrowthChart(period) {
+        async updateMemberGrowthChart(period) {
             const chart = this.charts.memberGrowth;
             if (!chart) return;
 
-            const data = this.generateMemberGrowthData(period);
+            this.showChartLoading('memberGrowthChart');
+            const data = await this.fetchMemberGrowthData(period);
             chart.data.labels = data.labels;
             chart.data.datasets[0].data = data.total;
             chart.data.datasets[1].data = data.new;
             chart.update();
+            this.hideChartLoading('memberGrowthChart');
         }
 
         /**
          * イベント統計チャートを更新
          */
-        updateEventStatsChart(period) {
+        async updateEventStatsChart(period) {
             const chart = this.charts.eventStats;
             if (!chart) return;
 
-            const data = this.generateEventStatsData(period);
+            this.showChartLoading('eventStatsChart');
+            const data = await this.fetchEventStatsData(period);
             chart.data.labels = data.labels;
             chart.data.datasets[0].data = data.online;
             chart.data.datasets[1].data = data.offline;
             chart.data.datasets[2].data = data.hybrid;
             chart.update();
+            this.hideChartLoading('eventStatsChart');
         }
 
         /**
@@ -521,6 +534,252 @@
             } else {
                 return this.chartColors.gray + '30';
             }
+        }
+
+        /**
+         * チャートのローディングを表示
+         */
+        showChartLoading(chartId) {
+            const chartCard = document.getElementById(chartId)?.closest('.chart-card');
+            if (!chartCard) return;
+
+            let loading = chartCard.querySelector('.chart-loading');
+            if (!loading) {
+                loading = document.createElement('div');
+                loading.className = 'chart-loading';
+                loading.innerHTML = '<i class="fas fa-spinner"></i>';
+                chartCard.querySelector('.chart-body').appendChild(loading);
+            }
+            loading.style.display = 'flex';
+        }
+
+        /**
+         * チャートのローディングを非表示
+         */
+        hideChartLoading(chartId) {
+            const chartCard = document.getElementById(chartId)?.closest('.chart-card');
+            if (!chartCard) return;
+
+            const loading = chartCard.querySelector('.chart-loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        }
+
+        /**
+         * メンバー成長データを取得
+         */
+        async fetchMemberGrowthData(period) {
+            try {
+                if (window.supabase) {
+                    // Supabaseからメンバー成長データを取得
+                    const { data, error } = await window.supabase
+                        .from('member_growth_stats')
+                        .select('*')
+                        .order('date', { ascending: true });
+
+                    if (!error && data && data.length > 0) {
+                        return this.processMemberGrowthData(data, period);
+                    }
+                }
+            } catch (error) {
+                console.error('[DashboardCharts] Error fetching member growth data:', error);
+            }
+
+            // フォールバックとしてダミーデータを使用
+            return this.generateMemberGrowthData(period);
+        }
+
+        /**
+         * メンバー成長データを処理
+         */
+        processMemberGrowthData(rawData, period) {
+            const now = new Date();
+            let startDate = new Date();
+            
+            switch (period) {
+                case 'week':
+                    startDate.setDate(now.getDate() - 7);
+                    break;
+                case 'month':
+                    startDate.setDate(now.getDate() - 30);
+                    break;
+                case 'year':
+                    startDate.setDate(now.getDate() - 365);
+                    break;
+            }
+
+            const filteredData = rawData.filter(item => new Date(item.date) >= startDate);
+            
+            return {
+                labels: filteredData.map(item => new Date(item.date).toLocaleDateString('ja-JP', {
+                    month: 'numeric',
+                    day: 'numeric'
+                })),
+                total: filteredData.map(item => item.total_members),
+                new: filteredData.map(item => item.new_members)
+            };
+        }
+
+        /**
+         * イベント統計データを取得
+         */
+        async fetchEventStatsData(period) {
+            try {
+                if (window.supabase) {
+                    // Supabaseからイベント統計データを取得
+                    const { data, error } = await window.supabase
+                        .from('event_stats')
+                        .select('*')
+                        .order('week', { ascending: true });
+
+                    if (!error && data && data.length > 0) {
+                        return this.processEventStatsData(data, period);
+                    }
+                }
+            } catch (error) {
+                console.error('[DashboardCharts] Error fetching event stats data:', error);
+            }
+
+            // フォールバックとしてダミーデータを使用
+            return this.generateEventStatsData(period);
+        }
+
+        /**
+         * イベント統計データを処理
+         */
+        processEventStatsData(rawData, period) {
+            // イベントタイプ別に集計
+            const stats = {
+                labels: [],
+                online: [],
+                offline: [],
+                hybrid: []
+            };
+
+            // periodに応じてデータをグループ化
+            // ここでは簡略化のため、生データをそのまま使用
+            rawData.forEach(item => {
+                const weekDate = new Date(item.week);
+                const label = weekDate.toLocaleDateString('ja-JP', {
+                    month: 'numeric',
+                    day: 'numeric'
+                });
+                
+                if (!stats.labels.includes(label)) {
+                    stats.labels.push(label);
+                    stats.online.push(0);
+                    stats.offline.push(0);
+                    stats.hybrid.push(0);
+                }
+
+                const index = stats.labels.indexOf(label);
+                switch (item.event_type) {
+                    case 'online':
+                        stats.online[index] = item.event_count;
+                        break;
+                    case 'offline':
+                        stats.offline[index] = item.event_count;
+                        break;
+                    case 'hybrid':
+                        stats.hybrid[index] = item.event_count;
+                        break;
+                }
+            });
+
+            return stats;
+        }
+
+        /**
+         * 業界別データを取得
+         */
+        async fetchIndustryData() {
+            try {
+                if (window.supabase) {
+                    // Supabaseから業界別分布データを取得
+                    const { data, error } = await window.supabase
+                        .from('industry_distribution')
+                        .select('*')
+                        .order('member_count', { ascending: false });
+
+                    if (!error && data && data.length > 0) {
+                        return {
+                            labels: data.map(item => item.industry),
+                            values: data.map(item => item.member_count)
+                        };
+                    }
+                }
+            } catch (error) {
+                console.error('[DashboardCharts] Error fetching industry data:', error);
+            }
+
+            // フォールバックとしてダミーデータを使用
+            return {
+                labels: ['IT/テクノロジー', '金融', '製造業', 'サービス業', 'その他'],
+                values: [35, 25, 20, 15, 5]
+            };
+        }
+
+        /**
+         * アクティビティヒートマップデータを取得
+         */
+        async fetchActivityHeatmapData() {
+            try {
+                if (window.supabase) {
+                    // 過去1週間のアクティビティを取得
+                    const oneWeekAgo = new Date();
+                    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+                    const { data, error } = await window.supabase
+                        .from('activities')
+                        .select('created_at')
+                        .gte('created_at', oneWeekAgo.toISOString())
+                        .order('created_at', { ascending: true });
+
+                    if (!error && data && data.length > 0) {
+                        return this.processActivityHeatmapData(data);
+                    }
+                }
+            } catch (error) {
+                console.error('[DashboardCharts] Error fetching activity heatmap data:', error);
+            }
+
+            // フォールバックとしてダミーデータを使用
+            return this.generateActivityHeatmapData();
+        }
+
+        /**
+         * アクティビティヒートマップデータを処理
+         */
+        processActivityHeatmapData(activities) {
+            // 時間別・曜日別に集計
+            const heatmap = {};
+            const days = ['月', '火', '水', '木', '金', '土', '日'];
+            
+            // 初期化
+            for (let hour = 0; hour < 24; hour++) {
+                heatmap[hour] = days.map(() => 0);
+            }
+
+            // アクティビティを集計
+            activities.forEach(activity => {
+                const date = new Date(activity.created_at);
+                const hour = date.getHours();
+                const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1; // 日曜日を0から6に
+                heatmap[hour][dayIndex]++;
+            });
+
+            // Chart.js用のデータセットに変換
+            const datasets = Object.keys(heatmap).map(hour => ({
+                label: hour.toString(),
+                data: heatmap[hour],
+                backgroundColor: this.getHeatmapColor(parseInt(hour)),
+                borderWidth: 0,
+                barPercentage: 1,
+                categoryPercentage: 1
+            }));
+
+            return { datasets };
         }
     }
 
