@@ -361,27 +361,16 @@ window.InterConnect.Profile = {
             if (editCoverBtn) editCoverBtn.style.display = 'flex';
         } else {
             // 他人のプロフィール
-            // 編集ボタンを非表示
+            // すべての編集ボタンを非表示
             if (editAvatarBtn) editAvatarBtn.style.display = 'none';
             if (editCoverBtn) editCoverBtn.style.display = 'none';
             
             if (editButton) {
-                editButton.style.display = 'block';
-                if (this.connectionStatus === 'accepted') {
-                    editButton.textContent = 'メッセージを送る';
-                    editButton.disabled = false;
-                    editButton.setAttribute('aria-label', 'メッセージを送る');
-                    editButton.onclick = () => this.sendMessage();
-                } else if (this.connectionStatus === 'pending') {
-                    editButton.textContent = '申請中';
-                    editButton.disabled = true;
-                    editButton.setAttribute('aria-label', 'コネクト申請中');
-                } else {
-                    editButton.textContent = 'コネクト申請';
-                    editButton.disabled = false;
-                    editButton.setAttribute('aria-label', 'コネクト申請を送る');
-                    editButton.onclick = () => this.sendConnectionRequest();
-                }
+                // 他人のプロフィールでは編集ボタンを完全に非表示
+                editButton.style.display = 'none';
+                
+                // コネクションボタンは別途実装予定
+                // TODO: コネクションステータスに応じたボタンを別の場所に配置
             }
         }
     },
