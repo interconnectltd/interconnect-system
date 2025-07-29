@@ -9,9 +9,13 @@
     class EventsSupabase {
         constructor() {
             this.currentFilter = 'upcoming';
+            this.activeFilters = new Set(['all']);
+            this.searchQuery = '';
+            this.sortOrder = 'date_asc';
             this.eventsCache = new Map();
             this.participantsCache = new Map();
             this.cacheExpiry = 5 * 60 * 1000; // 5分
+            this.allEvents = [];
             this.init();
         }
 
@@ -27,18 +31,32 @@
         }
 
         setupEventListeners() {
-            // フィルターボタンのイベントリスナー（将来実装用）
+            // フィルターボタンのイベントリスナー
             document.addEventListener('click', (e) => {
                 if (e.target.classList.contains('filter-btn')) {
-                    this.handleFilterChange(e.target.dataset.filter);
+                    this.handleFilterChange(e.target);
                 }
             });
 
-            // 検索機能（将来実装用）
+            // 検索機能
             const searchInput = document.getElementById('eventSearchInput');
             if (searchInput) {
+                let searchTimeout;
                 searchInput.addEventListener('input', (e) => {
-                    this.handleSearch(e.target.value);
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        this.searchQuery = e.target.value.trim();
+                        this.applyFiltersAndSearch();
+                    }, 300); // 300ms debounce
+                });
+            }
+
+            // ソート機能
+            const sortSelect = document.getElementById('eventSortSelect');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', (e) => {
+                    this.sortOrder = e.target.value;
+                    this.applyFiltersAndSearch();
                 });
             }
         }
@@ -90,7 +108,11 @@
                 // 各イベントの参加者数を取得
                 await this.loadParticipantCounts(events);
 
-                this.renderEvents(events);
+                // 全イベントを保存
+                this.allEvents = events || [];
+
+                // フィルターと検索を適用
+                this.applyFiltersAndSearch();
 
             } catch (error) {
                 console.error('[EventsSupabase] Error:', error);
@@ -138,12 +160,15 @@
             const container = document.querySelector('.events-grid');
             if (!container) return;
 
+            // 検索結果の件数を表示
+            this.updateResultCount(events.length);
+
             if (!events || events.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-alt"></i>
                         <h3>イベントがありません</h3>
-                        <p>現在表示できるイベントはありません</p>
+                        <p>${this.searchQuery ? '検索条件に一致するイベントが見つかりませんでした' : '現在表示できるイベントはありません'}</p>
                     </div>
                 `;
                 return;
@@ -154,6 +179,29 @@
 
             // イベントカードにクリックイベントを追加
             this.attachCardEventListeners();
+        }
+
+        /**
+         * 検索結果件数を更新
+         */
+        updateResultCount(count) {
+            // 既存の結果カウントを探すか作成
+            let countElement = document.querySelector('.search-result-count');
+            if (!countElement) {
+                countElement = document.createElement('div');
+                countElement.className = 'search-result-count';
+                const section = document.querySelector('.events-section');
+                if (section) {
+                    section.insertBefore(countElement, section.querySelector('.events-grid'));
+                }
+            }
+
+            if (this.searchQuery || !this.activeFilters.has('all')) {
+                countElement.textContent = `${count}件のイベントが見つかりました`;
+                countElement.style.display = 'block';
+            } else {
+                countElement.style.display = 'none';
+            }
         }
 
         /**
@@ -401,19 +449,129 @@
         }
 
         /**
-         * フィルター変更処理（将来実装用）
+         * フィルター変更処理
          */
-        handleFilterChange(filter) {
-            this.currentFilter = filter;
-            this.loadEvents();
+        handleFilterChange(button) {
+            const filter = button.dataset.filter;
+            
+            // すべてのフィルターボタンから active クラスを削除
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 新しいフィルターセットを作成
+            this.activeFilters.clear();
+            
+            if (filter === 'all') {
+                this.activeFilters.add('all');
+                button.classList.add('active');
+            } else {
+                // 複数フィルターの選択を許可
+                if (button.classList.contains('active')) {
+                    button.classList.remove('active');
+                } else {
+                    button.classList.add('active');
+                }
+                
+                // アクティブなフィルターを収集
+                document.querySelectorAll('.filter-btn.active').forEach(btn => {
+                    if (btn.dataset.filter !== 'all') {
+                        this.activeFilters.add(btn.dataset.filter);
+                    }
+                });
+                
+                // フィルターが何もない場合は「すべて」を選択
+                if (this.activeFilters.size === 0) {
+                    this.activeFilters.add('all');
+                    document.querySelector('[data-filter="all"]').classList.add('active');
+                }
+            }
+            
+            this.applyFiltersAndSearch();
         }
 
         /**
-         * 検索処理（将来実装用）
+         * フィルターと検索を適用
          */
-        async handleSearch(query) {
-            // 検索機能の実装
-            console.log('[EventsSupabase] Search:', query);
+        applyFiltersAndSearch() {
+            let filteredEvents = [...this.allEvents];
+            
+            // フィルター適用
+            if (!this.activeFilters.has('all')) {
+                filteredEvents = filteredEvents.filter(event => {
+                    let matchesType = true;
+                    let matchesPrice = true;
+                    
+                    // オンライン/オフラインフィルター
+                    const hasTypeFilter = this.activeFilters.has('online') || this.activeFilters.has('offline');
+                    if (hasTypeFilter) {
+                        matchesType = false;
+                        if (this.activeFilters.has('online') && (event.event_type === 'online' || event.event_type === 'hybrid')) {
+                            matchesType = true;
+                        }
+                        if (this.activeFilters.has('offline') && (event.event_type === 'offline' || event.event_type === 'hybrid')) {
+                            matchesType = true;
+                        }
+                    }
+                    
+                    // 無料/有料フィルター
+                    const hasPriceFilter = this.activeFilters.has('free') || this.activeFilters.has('paid');
+                    if (hasPriceFilter) {
+                        matchesPrice = false;
+                        if (this.activeFilters.has('free') && event.price === 0) matchesPrice = true;
+                        if (this.activeFilters.has('paid') && event.price > 0) matchesPrice = true;
+                    }
+                    
+                    return matchesType && matchesPrice;
+                });
+            }
+            
+            // 検索フィルター適用
+            if (this.searchQuery) {
+                const query = this.searchQuery.toLowerCase();
+                filteredEvents = filteredEvents.filter(event => {
+                    return (
+                        event.title?.toLowerCase().includes(query) ||
+                        event.description?.toLowerCase().includes(query) ||
+                        event.location?.toLowerCase().includes(query) ||
+                        event.organizer_name?.toLowerCase().includes(query) ||
+                        event.tags?.some(tag => tag.toLowerCase().includes(query))
+                    );
+                });
+            }
+            
+            // ソート適用
+            filteredEvents = this.sortEvents(filteredEvents);
+            
+            // レンダリング
+            this.renderEvents(filteredEvents);
+        }
+
+        /**
+         * イベントをソート
+         */
+        sortEvents(events) {
+            const sorted = [...events];
+            
+            switch (this.sortOrder) {
+                case 'date_asc':
+                    sorted.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+                    break;
+                case 'date_desc':
+                    sorted.sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
+                    break;
+                case 'popular':
+                    sorted.sort((a, b) => (b.participant_count || 0) - (a.participant_count || 0));
+                    break;
+                case 'price_asc':
+                    sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+                    break;
+                case 'price_desc':
+                    sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+                    break;
+            }
+            
+            return sorted;
         }
 
         /**

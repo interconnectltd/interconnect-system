@@ -208,6 +208,32 @@
             
             <!-- Events Content -->
             <div class="content-container">
+                <!-- Event Filters and Search -->
+                <div class="events-controls">
+                    <div class="event-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="eventSearchInput" placeholder="イベントを検索...">
+                    </div>
+                    
+                    <div class="event-filters">
+                        <button class="filter-btn active" data-filter="all">すべて</button>
+                        <button class="filter-btn" data-filter="online">オンライン</button>
+                        <button class="filter-btn" data-filter="offline">オフライン</button>
+                        <button class="filter-btn" data-filter="free">無料</button>
+                        <button class="filter-btn" data-filter="paid">有料</button>
+                    </div>
+                    
+                    <div class="event-sort">
+                        <select id="eventSortSelect">
+                            <option value="date_asc">日付（近い順）</option>
+                            <option value="date_desc">日付（遠い順）</option>
+                            <option value="popular">人気順</option>
+                            <option value="price_asc">価格（安い順）</option>
+                            <option value="price_desc">価格（高い順）</option>
+                        </select>
+                    </div>
+                </div>
+                
                 <!-- Upcoming Events -->
                 <section class="events-section">
                     <h2 class="section-title">今後のイベント</h2>
