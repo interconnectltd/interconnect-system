@@ -7,8 +7,121 @@
     'use strict';
 
     class NotificationSender {
+        constructor() {
+            this.init();
+        }
+
+        async init() {
+            console.log('[NotificationSender] Initialized');
+        }
+
         /**
-         * 新着メッセージ通知を送信
+         * 通知を送信（インスタンスメソッド）
+         * @param {string} userId - 送信先ユーザーID
+         * @param {string} type - 通知タイプ
+         * @param {object} data - 通知データ
+         */
+        async sendNotification(userId, type, data) {
+            try {
+                if (!window.supabase) {
+                    console.error('[NotificationSender] Supabase not initialized');
+                    return { success: false, error: 'Supabase not initialized' };
+                }
+
+                // 通知タイプに応じたタイトルとメッセージを生成
+                const notificationContent = this.generateNotificationContent(type, data);
+
+                // 通知を作成
+                const { data: notification, error } = await window.supabase
+                    .from('notifications')
+                    .insert({
+                        user_id: userId,
+                        type: type,
+                        title: notificationContent.title,
+                        message: notificationContent.message,
+                        data: data,
+                        read: false
+                    })
+                    .select()
+                    .single();
+
+                if (error) {
+                    console.error('[NotificationSender] Error sending notification:', error);
+                    return { success: false, error };
+                }
+
+                console.log('[NotificationSender] Notification sent:', notification);
+                return { success: true, data: notification };
+
+            } catch (error) {
+                console.error('[NotificationSender] Error:', error);
+                return { success: false, error };
+            }
+        }
+
+        /**
+         * 通知コンテンツを生成
+         */
+        generateNotificationContent(type, data) {
+            const templates = {
+                message: {
+                    title: '新着メッセージ',
+                    message: `${data.senderName || '誰か'}からメッセージが届きました`
+                },
+                connection_request: {
+                    title: 'つながり申請',
+                    message: `${data.senderName || '誰か'}からつながり申請が届きました`
+                },
+                connection_accepted: {
+                    title: 'つながり申請承認',
+                    message: `${data.userName || '誰か'}があなたのつながり申請を承認しました`
+                },
+                event_reminder: {
+                    title: 'イベントリマインダー',
+                    message: `${data.eventTitle || 'イベント'}が${data.timeUntil || 'まもなく'}開始されます`
+                },
+                event_cancelled: {
+                    title: 'イベントキャンセル',
+                    message: `${data.eventTitle || 'イベント'}がキャンセルされました`
+                },
+                event_updated: {
+                    title: 'イベント更新',
+                    message: `${data.eventTitle || 'イベント'}の情報が更新されました`
+                },
+                system: {
+                    title: 'システム通知',
+                    message: data.message || 'システムからのお知らせです'
+                },
+                announcement: {
+                    title: 'お知らせ',
+                    message: data.message || '運営からのお知らせです'
+                }
+            };
+
+            return templates[type] || {
+                title: '通知',
+                message: 'お知らせがあります'
+            };
+        }
+
+        /**
+         * メッセージ送信時の通知（インスタンスメソッド）
+         */
+        async sendMessageNotification(recipientId, senderData, messagePreview) {
+            const data = {
+                senderName: senderData.name,
+                senderId: senderData.id,
+                senderAvatar: senderData.avatar,
+                messagePreview: messagePreview || 'メッセージが届きました',
+                timestamp: new Date().toISOString()
+            };
+
+            return await this.sendNotification(recipientId, 'message', data);
+        }
+
+        // 静的メソッドも互換性のために残す
+        /**
+         * 新着メッセージ通知を送信（静的メソッド）
          */
         static async sendMessageNotification(recipientId, senderName, messagePreview) {
             try {
@@ -283,5 +396,10 @@
 
     // グローバルに公開
     window.NotificationSender = NotificationSender;
+
+    // インスタンスをグローバルに作成
+    if (!window.notificationSender) {
+        window.notificationSender = new NotificationSender();
+    }
 
 })();

@@ -13,6 +13,9 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
@@ -385,34 +388,18 @@
     <!-- Core initialization (must be first) -->
     <script src="js/interconnect-core.js"></script>
     
-    <script src="js/dashboard-load-order-optimizer.js"></script>
-    <script src="js/dashboard-initial-loading.js"></script>
+    <!-- Core utilities (必須) -->
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
     <script src="js/supabase-client.js"></script>
-    <script src="js/supabase-schema-detector.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/realtime-notifications.js"></script>
-    <script src="js/dashboard-data.js"></script>
-    <script src="js/dashboard-data-fix.js"></script>
-    <script src="js/dashboard-stats-table-fix.js"></script>
-    <script src="js/dashboard-dynamic-calculator.js"></script>
-    <script src="js/dashboard-realtime-calculator.js"></script>
-    <script src="js/dashboard-event-calculator.js"></script>
-    <script src="js/dashboard-event-calculator-fix.js"></script>
-    <script src="js/dashboard-matching-calculator.js"></script>
-    <script src="js/dashboard-matching-calculator-fix.js"></script>
-    <script src="js/dashboard-message-calculator.js"></script>
-    <script src="js/dashboard-message-calculator-fix.js"></script>
-    <script src="js/dashboard-messages-complete-fix.js"></script>
-    <script src="js/dashboard-member-counter.js"></script>
-    <script src="js/dashboard-stat-renderer.js"></script>
-    <script src="js/dashboard-ui.js"></script>
-    <script src="js/dashboard-ui-fix.js"></script>
-    <script src="js/dashboard-updater.js"></script>
+    
+    <!-- Dashboard bundle (統合版) -->
+    <script src="js/dashboard-bundle.js"></script>
     
     <!-- Debug scripts (only load in development) -->
     <script>
@@ -432,22 +419,13 @@
         }
     </script>
     
+    <!-- Features -->
     <script src="js/responsive-menu-simple.js"></script>
-    <script src="js/event-modal.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/dashboard-stats-integrator.js"></script>
-    <script src="js/dashboard-error-complete-fix.js"></script>
-    <script src="js/dashboard-final-fixes.js"></script>
-    <script src="js/dashboard-activity-enhancer.js"></script>
     <script src="js/activity-event-filter.js"></script>
     <script src="js/dashboard-charts.js"></script>
-    <script src="js/dashboard-event-details.js"></script>
-    <script src="js/dashboard-modal-fix.js"></script>
-    <script src="js/dashboard-comprehensive-fix.js"></script>
-    <script src="js/dashboard-ultimate-fix.js"></script>
-    <script src="js/dashboard-modal-display-fix.js"></script>
-    <script src="js/dashboard-event-display-enhancer.js"></script>
-    <script src="js/dashboard-event-participation.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/notification-sender.js"></script>
+    <script src="js/message-integration.js"></script>
     <!-- 通知機能はJSを無効化 -->
     <!-- <script src="js/notifications.js"></script> -->
 </body>
