@@ -52,6 +52,14 @@
 
                 if (error) {
                     console.error('[EventModal] Error fetching event:', error);
+                    console.error('[EventModal] Error details:', {
+                        code: error.code,
+                        message: error.message,
+                        details: error.details,
+                        hint: error.hint,
+                        table: 'event_items',
+                        eventId: eventId
+                    });
                     this.showError('イベント情報の取得に失敗しました');
                     return;
                 }
@@ -292,7 +300,7 @@
             try {
                 const { data: participants, error } = await window.supabase
                     .from('event_participants')
-                    .select('user_id, users(name)')
+                    .select('user_id')
                     .eq('event_id', eventId)
                     .eq('status', 'confirmed')
                     .limit(5);
@@ -301,9 +309,10 @@
                     const participantListEl = document.getElementById('participantList');
                     if (participantListEl) {
                         const avatarsHTML = participants.map((p, index) => {
-                            const initial = p.users?.name?.charAt(0) || '?';
+                            // ユーザーIDの最初の2文字を使用
+                            const initial = p.user_id ? p.user_id.substring(0, 2).toUpperCase() : '?';
                             return `
-                                <div class="participant-avatar" title="${p.users?.name || 'ユーザー'}">
+                                <div class="participant-avatar" title="参加者">
                                     ${initial}
                                 </div>
                             `;

@@ -284,8 +284,13 @@
                     // ボタンクリックは除外
                     if (!e.target.closest('button')) {
                         const eventId = card.dataset.eventId;
+                        console.log('[EventsSupabase] Card clicked, eventId:', eventId);
+                        console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
                         if (eventId && window.eventModal) {
+                            console.log('[EventsSupabase] Calling eventModal.show()');
                             window.eventModal.show(eventId);
+                        } else {
+                            console.error('[EventsSupabase] Missing eventId or eventModal');
                         }
                     }
                 });
