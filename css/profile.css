@@ -572,6 +572,40 @@
     }
 }
 
+/* 警告バナー */
+.warning-banner {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffc107;
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
+}
+
+.warning-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.warning-content i {
+    color: #f39c12;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.warning-content span {
+    flex: 1;
+    color: #856404;
+    font-weight: 500;
+    min-width: 200px;
+}
+
+.warning-content .btn {
+    flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
     .profile-cover {
         height: 200px;

@@ -11,6 +11,8 @@ window.InterConnect.Profile = {
     isOwnProfile: true, // 自分のプロフィールかどうか
     targetUserId: null, // 表示対象のユーザーID
     currentUserId: null, // ログイン中のユーザーID
+    profileCache: {}, // プロフィールデータのキャッシュ
+    cacheExpiry: 5 * 60 * 1000, // 5分間のキャッシュ
     
     // 初期化
     init: async function() {
@@ -69,18 +71,49 @@ window.InterConnect.Profile = {
     // 他のユーザーのプロフィールを読み込む
     loadOtherUserProfile: async function(userId) {
         try {
-            if (!window.supabase) {
-                console.error('[Profile] Supabaseが初期化されていません');
-                this.showError('プロフィールを読み込めません');
+            // SQLインジェクション対策：UUIDの検証
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidRegex.test(userId)) {
+                console.error('[Profile] 無効なユーザーID:', userId);
+                this.showError('無効なユーザーIDです');
                 return;
             }
             
-            // user_profilesテーブルから他のユーザー情報を取得
+            // キャッシュをチェック
+            const cached = this.getFromCache(userId);
+            if (cached) {
+                console.log('[Profile] キャッシュからデータを使用:', userId);
+                this.profileData = cached;
+                await this.checkConnectionStatus(userId);
+                this.updateProfileInfo();
+                return;
+            }
+            
+            if (!window.supabase) {
+                console.error('[Profile] Supabaseが初期化されていません');
+                // フォールバック：localStorageから基本情報を取得
+                this.showFallbackProfile(userId);
+                return;
+            }
+            
+            // user_profilesテーブルから他のユーザー情報を取得（公開情報のみ）
             const { data, error } = await window.supabase
                 .from('user_profiles')
                 .select(`
-                    *,
-                    connection_count
+                    id,
+                    name,
+                    full_name,
+                    email,
+                    company,
+                    position,
+                    title,
+                    avatar_url,
+                    industry,
+                    skills,
+                    bio,
+                    connection_count,
+                    is_online,
+                    last_login_at
                 `)
                 .eq('id', userId)
                 .eq('is_active', true)
@@ -115,6 +148,9 @@ window.InterConnect.Profile = {
                 isOnline: data.is_online || false,
                 lastLoginAt: data.last_login_at
             };
+            
+            // キャッシュに保存
+            this.saveToCache(userId, this.profileData);
             
             // コネクションステータスを確認
             await this.checkConnectionStatus(userId);
@@ -240,24 +276,38 @@ window.InterConnect.Profile = {
     // UIモードの更新
     updateUIMode: function() {
         const editButton = document.querySelector('.profile-details .btn-primary');
+        const editAvatarBtn = document.querySelector('.btn-edit-avatar');
+        const editCoverBtn = document.querySelector('.btn-edit-cover');
         
         if (this.isOwnProfile) {
             // 自分のプロフィール
             if (editButton) {
                 editButton.textContent = 'プロフィールを編集';
+                editButton.style.display = 'block';
+                editButton.disabled = false;
                 editButton.onclick = () => this.openEditModal();
             }
+            // 編集ボタンを表示
+            if (editAvatarBtn) editAvatarBtn.style.display = 'flex';
+            if (editCoverBtn) editCoverBtn.style.display = 'flex';
         } else {
             // 他人のプロフィール
+            // 編集ボタンを非表示
+            if (editAvatarBtn) editAvatarBtn.style.display = 'none';
+            if (editCoverBtn) editCoverBtn.style.display = 'none';
+            
             if (editButton) {
+                editButton.style.display = 'block';
                 if (this.connectionStatus === 'accepted') {
                     editButton.textContent = 'メッセージを送る';
+                    editButton.disabled = false;
                     editButton.onclick = () => this.sendMessage();
                 } else if (this.connectionStatus === 'pending') {
                     editButton.textContent = '申請中';
                     editButton.disabled = true;
                 } else {
                     editButton.textContent = 'コネクト申請';
+                    editButton.disabled = false;
                     editButton.onclick = () => this.sendConnectionRequest();
                 }
             }
@@ -669,6 +719,77 @@ window.InterConnect.Profile = {
         const matchingRateEl = document.querySelector('.stat-value.matching-rate');
         if (matchingRateEl) {
             matchingRateEl.textContent = data.matchingRate || '0%';
+        }
+    },
+    
+    // キャッシュから取得
+    getFromCache: function(userId) {
+        const cached = this.profileCache[userId];
+        if (cached && (Date.now() - cached.timestamp < this.cacheExpiry)) {
+            return cached.data;
+        }
+        // 期限切れの場合は削除
+        if (cached) {
+            delete this.profileCache[userId];
+        }
+        return null;
+    },
+    
+    // キャッシュに保存
+    saveToCache: function(userId, data) {
+        this.profileCache[userId] = {
+            data: data,
+            timestamp: Date.now()
+        };
+    },
+    
+    // キャッシュをクリア
+    clearCache: function() {
+        this.profileCache = {};
+    },
+    
+    // フォールバックプロフィール表示
+    showFallbackProfile: function(userId) {
+        console.log('[Profile] フォールバックモードでプロフィール表示');
+        
+        // エラーバナーを表示
+        const container = document.querySelector('.content-container');
+        if (container && !container.querySelector('.warning-banner')) {
+            const warningBanner = document.createElement('div');
+            warningBanner.className = 'warning-banner';
+            warningBanner.innerHTML = `
+                <div class="warning-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>データベースに接続できません。一部の情報が表示されない可能性があります。</span>
+                    <button class="btn btn-small btn-outline" onclick="window.location.reload()">
+                        再読み込み
+                    </button>
+                </div>
+            `;
+            container.insertBefore(warningBanner, container.firstChild);
+        }
+        
+        // 基本的なダミーデータを設定
+        this.profileData = {
+            id: userId,
+            name: 'ユーザー情報を読み込み中...',
+            company: '---',
+            position: '---',
+            title: '---',
+            profileImage: 'assets/user-placeholder.svg',
+            skills: [],
+            bio: 'プロフィール情報を読み込めませんでした。',
+            connectionCount: 0,
+            isOnline: false
+        };
+        
+        this.updateProfileInfo();
+        
+        // 編集ボタンを無効化
+        const editButton = document.querySelector('.profile-details .btn-primary');
+        if (editButton && !this.isOwnProfile) {
+            editButton.disabled = true;
+            editButton.textContent = '接続エラー';
         }
     }
 };
