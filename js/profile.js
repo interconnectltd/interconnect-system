@@ -13,17 +13,29 @@ window.InterConnect.Profile = {
     currentUserId: null, // ログイン中のユーザーID
     profileCache: {}, // プロフィールデータのキャッシュ
     cacheExpiry: 5 * 60 * 1000, // 5分間のキャッシュ
+    isLoading: false, // ローディング状態
+    initialized: false, // 初期化済みフラグ
     
     // 初期化
     init: async function() {
         console.log('[Profile] 初期化開始...');
         
-        // URLパラメータからユーザーIDを取得
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('user');
+        // 重複初期化を防ぐ
+        if (this.initialized || this.isLoading) {
+            console.log('[Profile] 既に初期化済みまたは初期化中');
+            return;
+        }
         
-        // 現在のユーザーIDを取得
-        await this.getCurrentUser();
+        this.isLoading = true;
+        this.showLoadingState();
+        
+        try {
+            // URLパラメータからユーザーIDを取得
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user');
+            
+            // 現在のユーザーIDを取得
+            await this.getCurrentUser();
         
         if (userId && userId !== this.currentUserId) {
             // 他のユーザーのプロフィール
@@ -39,10 +51,16 @@ window.InterConnect.Profile = {
             await this.loadProfileData();
         }
         
-        // UIの初期化
-        this.updateUIMode();
-        this.initializeTabs();
-        this.initializeEditModal();
+            // UIの初期化
+            this.updateUIMode();
+            this.initializeTabs();
+            this.initializeEditModal();
+            
+            this.initialized = true;
+        } finally {
+            this.isLoading = false;
+            this.hideLoadingState();
+        }
     },
     
     // 現在のユーザー情報を取得
@@ -285,6 +303,7 @@ window.InterConnect.Profile = {
                 editButton.textContent = 'プロフィールを編集';
                 editButton.style.display = 'block';
                 editButton.disabled = false;
+                editButton.setAttribute('aria-label', 'プロフィールを編集する');
                 editButton.onclick = () => this.openEditModal();
             }
             // 編集ボタンを表示
@@ -301,13 +320,16 @@ window.InterConnect.Profile = {
                 if (this.connectionStatus === 'accepted') {
                     editButton.textContent = 'メッセージを送る';
                     editButton.disabled = false;
+                    editButton.setAttribute('aria-label', 'メッセージを送る');
                     editButton.onclick = () => this.sendMessage();
                 } else if (this.connectionStatus === 'pending') {
                     editButton.textContent = '申請中';
                     editButton.disabled = true;
+                    editButton.setAttribute('aria-label', 'コネクト申請中');
                 } else {
                     editButton.textContent = 'コネクト申請';
                     editButton.disabled = false;
+                    editButton.setAttribute('aria-label', 'コネクト申請を送る');
                     editButton.onclick = () => this.sendConnectionRequest();
                 }
             }
@@ -418,6 +440,9 @@ window.InterConnect.Profile = {
             const headerAvatar = document.querySelector('.user-menu-btn img');
             if (headerAvatar) {
                 headerAvatar.src = data.profileImage;
+                headerAvatar.onerror = function() {
+                    this.src = 'assets/user-placeholder.svg';
+                };
                 console.log('Header avatar updated:', data.profileImage);
             }
         }
@@ -427,6 +452,9 @@ window.InterConnect.Profile = {
             const coverImg = document.querySelector('.profile-cover img');
             if (coverImg) {
                 coverImg.src = data.coverImage;
+                coverImg.onerror = function() {
+                    this.style.display = 'none';
+                };
                 console.log('Cover image updated:', data.coverImage);
             }
         }
@@ -746,6 +774,30 @@ window.InterConnect.Profile = {
     // キャッシュをクリア
     clearCache: function() {
         this.profileCache = {};
+    },
+    
+    // ローディング状態を表示
+    showLoadingState: function() {
+        const container = document.querySelector('.profile-container');
+        if (container && !container.querySelector('.loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>プロフィールを読み込んでいます...</p>
+                </div>
+            `;
+            container.appendChild(overlay);
+        }
+    },
+    
+    // ローディング状態を非表示
+    hideLoadingState: function() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
     },
     
     // フォールバックプロフィール表示
