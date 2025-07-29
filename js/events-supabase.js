@@ -79,7 +79,7 @@
                 // Supabaseからイベントを取得
                 const now = new Date().toISOString();
                 let query = window.supabase
-                    .from('events')
+                    .from('event_items')
                     .select('*')
                     .eq('is_public', true)
                     .eq('is_cancelled', false)
@@ -593,7 +593,7 @@
                 // Supabaseから過去のイベントを取得
                 const now = new Date().toISOString();
                 const { data: events, error } = await window.supabase
-                    .from('events')
+                    .from('event_items')
                     .select('*')
                     .eq('is_public', true)
                     .lt('event_date', now)

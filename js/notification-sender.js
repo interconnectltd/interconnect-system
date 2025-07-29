@@ -33,7 +33,7 @@
 
                 // 通知を作成
                 const { data: notification, error } = await window.supabase
-                    .from('notifications')
+                    .from('system_notifications')
                     .insert({
                         user_id: userId,
                         type: type,
@@ -141,7 +141,7 @@
                 };
 
                 const { error } = await window.supabase
-                    .from('notifications')
+                    .from('system_notifications')
                     .insert(notification);
 
                 if (error) {
@@ -172,7 +172,7 @@
                 };
 
                 const { error } = await window.supabase
-                    .from('notifications')
+                    .from('system_notifications')
                     .insert(notification);
 
                 if (error) {
@@ -203,7 +203,7 @@
                 };
 
                 const { error } = await window.supabase
-                    .from('notifications')
+                    .from('system_notifications')
                     .insert(notification);
 
                 if (error) {
@@ -257,7 +257,7 @@
 
                     if (notifications.length > 0) {
                         await window.supabase
-                            .from('notifications')
+                            .from('system_notifications')
                             .insert(notifications);
                     }
                 }
@@ -284,7 +284,7 @@
 
                 if (notifications.length > 0) {
                     const { error } = await window.supabase
-                        .from('notifications')
+                        .from('system_notifications')
                         .insert(notifications);
 
                     if (error) {
@@ -322,7 +322,7 @@
 
                 if (notifications.length > 0) {
                     const { error } = await window.supabase
-                        .from('notifications')
+                        .from('system_notifications')
                         .insert(notifications);
 
                     if (error) {
@@ -348,7 +348,7 @@
                 };
 
                 const { error } = await window.supabase
-                    .from('notifications')
+                    .from('system_notifications')
                     .insert(notification);
 
                 if (error) {
@@ -381,7 +381,7 @@
 
                 if (notifications.length > 0) {
                     const { error } = await window.supabase
-                        .from('notifications')
+                        .from('system_notifications')
                         .insert(notifications);
 
                     if (error) {

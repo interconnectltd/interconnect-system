@@ -107,7 +107,7 @@
                 const currentYear = new Date().getFullYear();
                 
                 const { data: events } = await window.supabase
-                    .from('events')
+                    .from('event_items')
                     .select('*')
                     .gte('event_date', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-01`)
                     .lte('event_date', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-31`);
@@ -159,7 +159,7 @@
                 if (!window.supabase) return;
 
                 const { data: events } = await window.supabase
-                    .from('events')
+                    .from('event_items')
                     .select('*')
                     .eq('is_public', true)
                     .eq('is_cancelled', false)

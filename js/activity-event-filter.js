@@ -221,7 +221,7 @@
                 if (window.supabase) {
                     // イベントデータを取得
                     const { data: events, error } = await window.supabase
-                        .from('events')
+                        .from('event_items')
                         .select('*')
                         .eq('is_public', true)
                         .eq('is_cancelled', false)
