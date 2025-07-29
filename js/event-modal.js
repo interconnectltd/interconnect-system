@@ -45,7 +45,7 @@
 
                 // Supabaseからイベント詳細を取得
                 const { data: event, error } = await window.supabase
-                    .from('events')
+                    .from('event_items')
                     .select('*')
                     .eq('id', eventId)
                     .single();
@@ -62,6 +62,10 @@
                 }
 
                 this.currentEvent = event;
+                // モーダルにイベントIDを保存
+                if (this.modal) {
+                    this.modal.dataset.eventId = eventId;
+                }
                 this.displayEventDetails(event);
 
                 // 参加者数を取得
@@ -385,12 +389,17 @@
                 this.eventActionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
 
                 // 既に参加登録しているかチェック
-                const { data: existing } = await window.supabase
+                const { data: existing, error: checkError } = await window.supabase
                     .from('event_participants')
                     .select('id, status')
                     .eq('event_id', this.currentEvent.id)
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle();
+                
+                if (checkError && checkError.code !== 'PGRST116') {
+                    console.error('[EventModal] 参加状況確認エラー:', checkError);
+                    throw checkError;
+                }
 
                 if (existing) {
                     if (existing.status === 'cancelled') {
