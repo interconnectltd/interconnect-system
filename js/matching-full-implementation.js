@@ -158,25 +158,8 @@
             `;
             
             modal.innerHTML = `
-                <div style="
-                    background: white;
-                    border-radius: 12px;
-                    padding: 30px;
-                    max-width: 600px;
-                    width: 90%;
-                    max-height: 90vh;
-                    overflow-y: auto;
-                    position: relative;
-                ">
-                    <button onclick="this.closest('.profile-modal').remove()" style="
-                        position: absolute;
-                        top: 10px;
-                        right: 10px;
-                        background: none;
-                        border: none;
-                        font-size: 24px;
-                        cursor: pointer;
-                    ">×</button>
+                <div class="profile-modal-content">
+                    <button onclick="this.closest('.profile-modal').remove()" class="modal-close">×</button>
                     
                     <div style="text-align: center; margin-bottom: 30px;">
                         <img src="${profile.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profile.name)}" 
@@ -267,12 +250,25 @@
             const { data: { user } } = await window.supabase.auth.getUser();
             if (!user) throw new Error('ログインが必要です');
             
-            // connectionsテーブルに挿入
+            // 既存の接続を確認
+            const { data: existing } = await window.supabase
+                .from('connections')
+                .select('*')
+                .eq('user_id', user.id)
+                .eq('connected_user_id', profileId)
+                .single();
+            
+            if (existing) {
+                alert('既にコネクト申請を送信済みです');
+                return;
+            }
+            
+            // connectionsテーブルに挿入（connected_user_idカラムを使用）
             const { data, error } = await window.supabase
                 .from('connections')
                 .insert({
                     user_id: user.id,
-                    target_user_id: profileId,
+                    connected_user_id: profileId,
                     status: 'pending'
                 });
             
@@ -333,75 +329,50 @@
                 const avatarUrl = profile.avatar_url || 
                     `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}&background=random`;
                 
+                const scoreClass = profile.matchingScore >= 80 ? 'high' : profile.matchingScore >= 60 ? 'medium' : 'low';
+                
                 return `
-                    <div class="matching-card" data-profile-id="${profile.id}" style="
-                        background: white;
-                        border: 1px solid #e0e0e0;
-                        border-radius: 12px;
-                        padding: 20px;
-                        margin-bottom: 20px;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                        position: relative;
-                    ">
-                        <div style="
-                            position: absolute;
-                            top: 10px;
-                            right: 10px;
-                            background: ${profile.matchingScore >= 80 ? '#27ae60' : profile.matchingScore >= 60 ? '#3498db' : '#95a5a6'};
-                            color: white;
-                            padding: 5px 10px;
-                            border-radius: 20px;
-                            font-weight: bold;
-                        ">${profile.matchingScore}%</div>
+                    <div class="matching-card" data-profile-id="${profile.id}">
+                        <div class="matching-score-badge ${scoreClass}">${profile.matchingScore}%</div>
                         
-                        <div style="text-align: center;">
-                            <img src="${avatarUrl}" alt="${profile.name}" style="
-                                width: 80px;
-                                height: 80px;
-                                border-radius: 50%;
-                                margin-bottom: 15px;
-                            ">
-                            
-                            <h3 style="margin: 10px 0;">${profile.name || 'Unknown'}</h3>
-                            <p style="color: #666; margin: 5px 0;">
-                                ${profile.title || ''} ${profile.company ? '@' + profile.company : ''}
-                            </p>
-                            
-                            <!-- レーダーチャート -->
-                            <div class="radar-chart-mini" id="radar-${index}" style="
-                                width: 150px;
-                                height: 150px;
-                                margin: 20px auto;
-                            ">
-                                <canvas width="150" height="150"></canvas>
+                        <div class="profile-header">
+                            <img src="${avatarUrl}" alt="${profile.name}" class="profile-avatar">
+                            <div class="profile-info">
+                                <h3>${profile.name || 'Unknown'}</h3>
+                                <p class="profile-title">
+                                    ${profile.title || ''} ${profile.company ? '@' + profile.company : ''}
+                                </p>
                             </div>
-                            
+                        </div>
+                        
+                        <!-- レーダーチャート -->
+                        <div class="radar-chart-mini" id="radar-${index}">
+                            <canvas width="150" height="150"></canvas>
+                        </div>
+                        
+                        <div class="profile-details">
                             ${profile.skills && profile.skills.length > 0 ? `
-                                <div style="margin: 15px 0;">
-                                    ${profile.skills.slice(0, 3).map(skill => 
-                                        `<span style="
-                                            display: inline-block;
-                                            background: #e3f2fd;
-                                            color: #1976d2;
-                                            padding: 4px 12px;
-                                            border-radius: 16px;
-                                            font-size: 12px;
-                                            margin: 2px;
-                                        ">${skill}</span>`
-                                    ).join('')}
-                                </div>
+                                <p><strong>スキル:</strong>
+                                    <span class="skills-container">
+                                        ${profile.skills.map(skill => 
+                                            `<span class="skill-tag">${skill}</span>`
+                                        ).join('')}
+                                    </span>
+                                </p>
                             ` : ''}
-                            
-                            <div style="margin-top: 20px;">
-                                <button class="btn btn-outline" style="margin-right: 10px;" 
-                                    onclick="window.fullImplementation.showProfile('${profile.id}')">
-                                    詳細を見る
-                                </button>
-                                <button class="btn btn-primary" 
-                                    onclick="window.fullImplementation.sendConnect('${profile.id}')">
-                                    コネクト
-                                </button>
-                            </div>
+                            ${profile.location ? `<p><strong>地域:</strong> ${profile.location}</p>` : ''}
+                            ${profile.industry ? `<p><strong>業界:</strong> ${profile.industry}</p>` : ''}
+                        </div>
+                        
+                        <div class="profile-actions">
+                            <button class="btn-view" 
+                                onclick="window.fullImplementation.showProfile('${profile.id}')">
+                                詳細を見る
+                            </button>
+                            <button class="btn-connect" 
+                                onclick="window.fullImplementation.sendConnect('${profile.id}')">
+                                コネクト申請
+                            </button>
                         </div>
                     </div>
                 `;
