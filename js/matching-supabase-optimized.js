@@ -33,8 +33,8 @@
                     query = query.neq('id', user.id);
                 }
                 
-                // 公開プロフィールのみ
-                query = query.eq('is_public', true);
+                // is_publicカラムが存在しない場合はスキップ
+                // query = query.eq('is_public', true);
                 
                 // フィルター適用（サーバーサイド）
                 if (filters.industry) {

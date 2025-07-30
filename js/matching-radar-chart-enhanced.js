@@ -81,12 +81,19 @@
          * カードのIDを取得
          */
         getCardId(cardElement) {
-            // プロフィール名からIDを生成
+            // プロフィール名からIDを生成（日本語対応）
             const nameElement = cardElement.querySelector('h3');
             if (nameElement) {
-                return btoa(nameElement.textContent.trim());
+                try {
+                    // 日本語を含む文字列を安全にエンコード
+                    const text = nameElement.textContent.trim();
+                    return btoa(encodeURIComponent(text)).replace(/[=/+]/g, '');
+                } catch (error) {
+                    // エンコードに失敗した場合
+                    console.warn('[EnhancedRadarChart] Card ID encoding failed:', error);
+                }
             }
-            return `card-${Date.now()}-${Math.random()}`;
+            return `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         }
 
         /**
