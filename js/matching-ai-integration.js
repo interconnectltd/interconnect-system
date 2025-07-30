@@ -114,8 +114,20 @@
                                     <span>${Math.round(breakdown.solutionMatch || 0)}%</span>
                                 </div>
                                 <div class="score-item">
-                                    <span>共通の関心事</span>
-                                    <span>${Math.round(breakdown.commonInterests || 0)}%</span>
+                                    <span>ビジネストレンド</span>
+                                    <span>${Math.round(breakdown.businessTrends || 0)}%</span>
+                                </div>
+                                <div class="score-item">
+                                    <span>成長フェーズ適合</span>
+                                    <span>${Math.round(breakdown.growthPhaseMatch || 0)}%</span>
+                                </div>
+                                <div class="score-item">
+                                    <span>緊急度の一致</span>
+                                    <span>${Math.round(breakdown.urgencyAlignment || 0)}%</span>
+                                </div>
+                                <div class="score-item">
+                                    <span>リソース補完性</span>
+                                    <span>${Math.round(breakdown.resourceComplement || 0)}%</span>
                                 </div>`;
                     } else {
                         // 従来のスコア表示
@@ -149,9 +161,18 @@
                                     <h5>マッチング提案</h5>`;
                         
                         suggestions.forEach(suggestion => {
-                            const icon = suggestion.type === 'solution' ? '💡' : '🤝';
+                            const icons = {
+                                'solution': '💡',
+                                'trend': '📈',
+                                'phase': '🚀',
+                                'urgent': '⚡',
+                                'resource': '🔧',
+                                'synergy': '🤝'
+                            };
+                            const icon = icons[suggestion.type] || '💭';
+                            const priorityClass = suggestion.priority || 'medium';
                             tooltipContent += `
-                                    <div class="suggestion-item">
+                                    <div class="suggestion-item ${priorityClass}-priority">
                                         <span>${icon}</span>
                                         <span>${suggestion.message}</span>
                                     </div>`;
@@ -250,6 +271,31 @@
                 .suggestion-item span:first-child {
                     flex-shrink: 0;
                     font-size: 14px;
+                }
+                
+                .suggestion-item.high-priority {
+                    background: #fef3c7;
+                    padding: 8px;
+                    border-radius: 4px;
+                    margin: 4px 0;
+                }
+                
+                .suggestion-item.urgent-priority {
+                    background: #fee2e2;
+                    padding: 8px;
+                    border-radius: 4px;
+                    margin: 4px 0;
+                }
+                
+                @media (max-width: 768px) {
+                    .score-tooltip {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        max-height: 80vh;
+                        overflow-y: auto;
+                    }
                 }
             `;
             document.head.appendChild(style);
