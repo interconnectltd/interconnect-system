@@ -347,16 +347,28 @@
     
     // シンプルなマッチング度計算
     const calculateSimpleMatchingScore = (profile) => {
-        let score = 50;
+        // 基本スコアは25%スタート
+        let score = 25;
         
-        if (profile.skills && profile.skills.length > 0) score += 15;
-        if (profile.location) score += 10;
-        if (profile.industry) score += 10;
+        // プロフィールの充実度で加点
+        if (profile.skills && profile.skills.length > 0) {
+            score += Math.min(profile.skills.length * 3, 15); // 最大15点
+        }
+        if (profile.location) score += 8;
+        if (profile.industry) score += 8;
         if (profile.title) score += 5;
         if (profile.company) score += 5;
-        if (profile.bio && profile.bio.length > 50) score += 5;
+        if (profile.bio && profile.bio.length > 50) score += 7;
+        if (profile.interests && profile.interests.length > 0) {
+            score += Math.min(profile.interests.length * 2, 6); // 最大6点
+        }
         
-        return Math.min(score + Math.floor(Math.random() * 10), 99);
+        // ランダム要素（±5%）
+        const randomAdjustment = Math.floor((Math.random() - 0.5) * 10);
+        score += randomAdjustment;
+        
+        // 20%〜85%の範囲に収める
+        return Math.max(20, Math.min(85, score));
     };
     
     // シンプルなレーダーチャート
