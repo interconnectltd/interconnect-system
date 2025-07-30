@@ -58,7 +58,52 @@ WHERE table_schema = 'public'
     AND column_name IN ('company', 'title', 'skills', 'industry', 'location', 'interests', 'is_public', 'last_active_at')
 ORDER BY ordinal_position;
 
--- 12. サンプルデータを確認（デバッグ用）
+-- 12. RLSポリシーの更新（新しいカラムを含めるため）
+-- 既存のポリシーを削除して再作成
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
+CREATE POLICY "Public profiles are viewable by everyone" 
+ON public.profiles 
+FOR SELECT 
+USING (is_public = true OR auth.uid() = id);
+
+-- 13. 更新時に last_active_at を自動更新するトリガー
+CREATE OR REPLACE FUNCTION public.update_last_active_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.last_active_at = TIMEZONE('utc'::text, NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 既存のトリガーを削除して再作成
+DROP TRIGGER IF EXISTS update_profiles_last_active ON public.profiles;
+CREATE TRIGGER update_profiles_last_active
+    BEFORE UPDATE ON public.profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_last_active_at();
+
+-- 14. 全文検索用のインデックスを追加（pg_trgmエクステンションが必要）
+-- まずエクステンションを有効化
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- その後インデックスを作成
+CREATE INDEX IF NOT EXISTS profiles_name_trgm_idx ON public.profiles USING gin (name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS profiles_company_trgm_idx ON public.profiles USING gin (company gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS profiles_bio_trgm_idx ON public.profiles USING gin (bio gin_trgm_ops);
+
+-- 15. デフォルト値の設定（既存レコード用）
+UPDATE public.profiles 
+SET 
+    is_public = COALESCE(is_public, true),
+    last_active_at = COALESCE(last_active_at, updated_at, created_at, NOW()),
+    skills = COALESCE(skills, ARRAY[]::TEXT[]),
+    interests = COALESCE(interests, ARRAY[]::TEXT[])
+WHERE is_public IS NULL 
+    OR last_active_at IS NULL 
+    OR skills IS NULL 
+    OR interests IS NULL;
+
+-- 16. サンプルデータを確認（デバッグ用）
 SELECT 
     id,
     email,
@@ -68,6 +113,11 @@ SELECT
     skills,
     industry,
     location,
-    interests
+    interests,
+    is_public,
+    last_active_at
 FROM public.profiles
 LIMIT 5;
+
+-- 17. テーブル統計情報を更新（パフォーマンス最適化）
+ANALYZE public.profiles;
