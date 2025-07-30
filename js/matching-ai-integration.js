@@ -41,11 +41,10 @@
                                     }
                                 }
                                 
-                                // AIスコアを計算（エラーハンドリング付き）
-                                const aiResult = await window.aiMatchingScorer.calculateAdvancedScore(
-                                    user.id,
-                                    profile.id
-                                );
+                                // シンプルAIスコアを計算（感情分析なし）
+                                const aiResult = window.simpleAIMatchingScorer ? 
+                                    await window.simpleAIMatchingScorer.calculateSimpleScore(user.id, profile.id) :
+                                    await window.aiMatchingScorer.calculateAdvancedScore(user.id, profile.id);
                                 
                                 // 基本スコアとAIスコアを組み合わせる
                                 if (aiResult.score > 0) {
