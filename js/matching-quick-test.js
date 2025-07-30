@@ -202,3 +202,17 @@ console.log('quickTest.errors()    - エラーチェック');
 console.log('quickTest.addChart()  - チャートを手動追加');
 console.log('quickTest.verify()    - 完全な検証');
 console.log('quickTest.performance() - パフォーマンステスト');
+console.log('quickTest.runAll()    - すべてのテストを実行');
+
+// runAllメソッドを追加
+window.quickTest.runAll = async function() {
+    console.log('\n=== 全テスト実行開始 ===');
+    
+    await this.init();
+    await this.dataFlow();
+    await this.errors();
+    await this.verify();
+    await this.performance();
+    
+    console.log('\n=== 全テスト完了 ===');
+};

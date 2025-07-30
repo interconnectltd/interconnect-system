@@ -516,9 +516,12 @@ class ErrorDiagnostic {
 // グローバルに公開
 window.errorDiagnostic = new ErrorDiagnostic();
 
+// 簡易アクセス用の関数
+window.runDiagnostics = () => window.errorDiagnostic.runFullDiagnostic();
+
 // 診断コマンド
 console.log('\n🔍 エラー診断ツール');
-console.log('完全診断: await errorDiagnostic.runFullDiagnostic()');
+console.log('完全診断: runDiagnostics() または await errorDiagnostic.runFullDiagnostic()');
 console.log('自動修正: await errorDiagnostic.attemptAutoFix()');
 
 // 自動実行（デバッグモード時）
