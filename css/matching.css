@@ -511,6 +511,9 @@
     text-align: center;
     border: 1px solid rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
 }
 
 .matching-card::before {
@@ -621,7 +624,8 @@
 .matching-actions {
     display: flex;
     gap: var(--space-sm);
-    margin-top: var(--space-lg);
+    margin-top: auto;
+    padding-top: var(--space-lg);
 }
 
 .matching-actions .btn {

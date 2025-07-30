@@ -92,6 +92,15 @@
             window.matchingSupabase.createMatchingCard = function(profile, isConnected, index) {
                 let cardHTML = originalCreateCard(profile, isConnected, index);
                 
+                // カードをDOMに追加してからレーダーチャートを描画
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.matching-card');
+                    const currentCard = cards[index];
+                    if (currentCard && profile.scoreBreakdown && window.matchingRadarChart) {
+                        window.matchingRadarChart.addToMatchingCard(currentCard, profile.scoreBreakdown);
+                    }
+                }, 100);
+                
                 // スコア詳細がある場合はツールチップを追加
                 if (profile.scoreBreakdown) {
                     const breakdown = profile.scoreBreakdown;
