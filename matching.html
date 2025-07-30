@@ -258,8 +258,13 @@
                 </div>
             </div>
             
-            <!-- Matching Results -->
-            <div class="matching-grid">
+            <!-- Matching Container for Dynamic Content -->
+            <div id="matching-container">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            
+            <!-- Static Matching Results (Hidden by default) -->
+            <div class="matching-grid" style="display: none;">
                 <!-- Matching cards -->
                 <div class="matching-card">
                     <div class="matching-score">95%</div>
@@ -429,5 +434,8 @@
     <script src="js/matching-manual-test.js"></script>
     <script src="js/matching-test-data-generator.js"></script>
     <!-- <script src="js/notifications.js"></script> -->
+    
+    <!-- 完全修正システム -->
+    <script src="js/matching-complete-fix.js"></script>
 </body>
 </html>
