@@ -255,9 +255,10 @@ class MatchingRadarChartIntegration {
     /**
      * 保存されたチャートデータの取得
      */
-    getStoredChartData(userId) {
+    async getStoredChartData(userId) {
         try {
-            const scoreKey = `ai_score_${userId}_${window.supabase.auth.user()?.id}`;
+            const { data: { user } } = await window.supabase.auth.getUser();
+            const scoreKey = `ai_score_${userId}_${user?.id}`;
             const storedScore = localStorage.getItem(scoreKey);
             
             if (storedScore) {
@@ -487,9 +488,10 @@ class MatchingRadarChartIntegration {
         const userId = this.extractUserIdFromCard(card);
         if (userId && window.matchingAIScoring) {
             try {
+                const { data: { user } } = await window.supabase.auth.getUser();
                 const score = await window.matchingAIScoring.getOrCalculateScore(
                     userId,
-                    window.supabase.auth.user()?.id
+                    user?.id
                 );
                 if (score?.breakdown) {
                     return score.breakdown;
