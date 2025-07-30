@@ -43,7 +43,20 @@
 
         init() {
             if (!window.supabase) {
-                console.error('[MatchingSupabase] Supabase client not found');
+                console.warn('[MatchingSupabase] Supabase client not found, waiting...');
+                // Supabaseの準備を待つ
+                window.addEventListener('supabaseReady', () => {
+                    console.log('[MatchingSupabase] Supabase client ready, initializing...');
+                    this.initialize();
+                });
+                return;
+            }
+            this.initialize();
+        }
+        
+        initialize() {
+            if (!window.supabase) {
+                console.error('[MatchingSupabase] Supabase client still not found');
                 this.showError('データベース接続エラー', 'ページをリロードしてください');
                 return;
             }

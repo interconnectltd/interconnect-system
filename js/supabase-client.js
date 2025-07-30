@@ -25,6 +25,8 @@ script.onload = function() {
         }
     });
     
+    console.log('[SupabaseClient] Supabase initialized successfully');
+    
     // 初期化完了イベント
     window.dispatchEvent(new Event('supabaseReady'));
 };
