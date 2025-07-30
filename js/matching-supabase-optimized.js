@@ -15,6 +15,7 @@
         // サーバーサイドでフィルタリングとページネーションを行う新しいメソッド
         originalInstance.loadProfilesOptimized = async function(page = 1) {
             const { filters, sortOrder } = this;
+            const CONFIG = window.MATCHING_CONFIG || { ITEMS_PER_PAGE: 6 };
             const offset = (page - 1) * CONFIG.ITEMS_PER_PAGE;
             
             this.showLoading();
