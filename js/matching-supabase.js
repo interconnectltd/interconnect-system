@@ -6,8 +6,8 @@
 (function() {
     'use strict';
 
-    // 定数の定義
-    const CONFIG = {
+    // 定数の定義（外部設定ファイルがあればそれを使用、なければデフォルト値）
+    const CONFIG = window.MATCHING_CONFIG || {
         ITEMS_PER_PAGE: 6,
         MAX_RETRIES: 3,
         RETRY_DELAY: 1000,
