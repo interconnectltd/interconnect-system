@@ -37,14 +37,17 @@
                                     if (Date.now() - cachedData.timestamp < 7 * 24 * 60 * 60 * 1000) {
                                         profile.matchingScore = cachedData.score;
                                         profile.scoreBreakdown = cachedData.breakdown;
+                                        profile.matchingSuggestions = cachedData.suggestions;
                                         return profile;
                                     }
                                 }
                                 
-                                // シンプルAIスコアを計算（感情分析なし）
-                                const aiResult = window.simpleAIMatchingScorer ? 
-                                    await window.simpleAIMatchingScorer.calculateSimpleScore(user.id, profile.id) :
-                                    await window.aiMatchingScorer.calculateAdvancedScore(user.id, profile.id);
+                                // 議事録ベースのAIスコアを計算
+                                const aiResult = window.minutesBasedMatchingScorer ? 
+                                    await window.minutesBasedMatchingScorer.calculateMinutesBasedScore(user.id, profile.id) :
+                                    (window.simpleAIMatchingScorer ? 
+                                        await window.simpleAIMatchingScorer.calculateSimpleScore(user.id, profile.id) :
+                                        await window.aiMatchingScorer.calculateAdvancedScore(user.id, profile.id));
                                 
                                 // 基本スコアとAIスコアを組み合わせる
                                 if (aiResult.score > 0) {
@@ -53,11 +56,13 @@
                                         profile.matchingScore * 0.3 + aiResult.score * 0.7
                                     );
                                     profile.scoreBreakdown = aiResult.breakdown;
+                                    profile.matchingSuggestions = aiResult.suggestions;
                                     
                                     // キャッシュに保存
                                     localStorage.setItem(cacheKey, JSON.stringify({
                                         score: profile.matchingScore,
                                         breakdown: aiResult.breakdown,
+                                        suggestions: aiResult.suggestions,
                                         timestamp: Date.now()
                                     }));
                                 }
@@ -90,10 +95,31 @@
                 // スコア詳細がある場合はツールチップを追加
                 if (profile.scoreBreakdown) {
                     const breakdown = profile.scoreBreakdown;
-                    const tooltip = `
+                    const suggestions = profile.matchingSuggestions || [];
+                    
+                    let tooltipContent = `
                         <div class="score-tooltip">
                             <div class="tooltip-content">
-                                <h4>マッチング詳細</h4>
+                                <h4>マッチング詳細</h4>`;
+                    
+                    // 議事録ベースのスコアの場合
+                    if (breakdown.businessSynergy !== undefined) {
+                        tooltipContent += `
+                                <div class="score-item">
+                                    <span>事業の相性</span>
+                                    <span>${Math.round(breakdown.businessSynergy || 0)}%</span>
+                                </div>
+                                <div class="score-item">
+                                    <span>課題解決の可能性</span>
+                                    <span>${Math.round(breakdown.solutionMatch || 0)}%</span>
+                                </div>
+                                <div class="score-item">
+                                    <span>共通の関心事</span>
+                                    <span>${Math.round(breakdown.commonInterests || 0)}%</span>
+                                </div>`;
+                    } else {
+                        // 従来のスコア表示
+                        tooltipContent += `
                                 <div class="score-item">
                                     <span>共通の話題</span>
                                     <span>${Math.round(breakdown.commonTopics || 0)}%</span>
@@ -113,10 +139,34 @@
                                 <div class="score-item">
                                     <span>プロフィール一致度</span>
                                     <span>${Math.round(breakdown.profileMatch || 0)}%</span>
-                                </div>
+                                </div>`;
+                    }
+                    
+                    // マッチング提案を追加
+                    if (suggestions && suggestions.length > 0) {
+                        tooltipContent += `
+                                <div class="matching-suggestions">
+                                    <h5>マッチング提案</h5>`;
+                        
+                        suggestions.forEach(suggestion => {
+                            const icon = suggestion.type === 'solution' ? '💡' : '🤝';
+                            tooltipContent += `
+                                    <div class="suggestion-item">
+                                        <span>${icon}</span>
+                                        <span>${suggestion.message}</span>
+                                    </div>`;
+                        });
+                        
+                        tooltipContent += `
+                                </div>`;
+                    }
+                    
+                    tooltipContent += `
                             </div>
                         </div>
                     `;
+                    
+                    const tooltip = tooltipContent;
                     
                     // マッチングスコアの部分にツールチップを追加
                     cardHTML = cardHTML.replace(
@@ -148,7 +198,8 @@
                     padding: 16px;
                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                     z-index: 1000;
-                    min-width: 250px;
+                    min-width: 300px;
+                    max-width: 400px;
                     margin-top: 8px;
                 }
                 
@@ -162,6 +213,14 @@
                     color: #333;
                 }
                 
+                .tooltip-content h5 {
+                    margin: 16px 0 8px 0;
+                    font-size: 13px;
+                    color: #333;
+                    border-top: 1px solid #eee;
+                    padding-top: 12px;
+                }
+                
                 .score-item {
                     display: flex;
                     justify-content: space-between;
@@ -173,6 +232,24 @@
                 .score-item span:last-child {
                     font-weight: 600;
                     color: #3b82f6;
+                }
+                
+                .matching-suggestions {
+                    margin-top: 12px;
+                }
+                
+                .suggestion-item {
+                    display: flex;
+                    gap: 8px;
+                    padding: 6px 0;
+                    font-size: 12px;
+                    color: #444;
+                    line-height: 1.4;
+                }
+                
+                .suggestion-item span:first-child {
+                    flex-shrink: 0;
+                    font-size: 14px;
                 }
             `;
             document.head.appendChild(style);
