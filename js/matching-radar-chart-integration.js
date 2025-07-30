@@ -119,9 +119,6 @@ class MatchingRadarChartIntegration {
         if (!window.radarChartInstances) {
             window.radarChartInstances = new Map();
         }
-
-        // データ整合性チェックの強化
-        this.enhanceDataIntegrity();
         
         // パフォーマンスモニタリング
         this.setupPerformanceMonitoring();
@@ -147,13 +144,24 @@ class MatchingRadarChartIntegration {
      */
     interceptChartRendering() {
         // Enhanced チャートのrender メソッドを拡張
-        const originalRender = this.components.enhanced.prototype.render;
+        if (!this.components.enhanced || !this.components.enhanced.prototype) {
+            console.warn('[RadarChartIntegration] Enhanced component not properly initialized');
+            return;
+        }
         
-        this.components.enhanced.prototype.render = (container, data) => {
+        const originalRender = this.components.enhanced.prototype.render;
+        if (!originalRender) {
+            console.warn('[RadarChartIntegration] render method not found');
+            return;
+        }
+        
+        const integration = this;
+        
+        this.components.enhanced.prototype.render = function(container, data) {
             try {
                 // データを保存
-                const chartId = this.generateChartId(container);
-                this.dataStore.set(chartId, {
+                const chartId = integration.generateChartId(container);
+                integration.dataStore.set(chartId, {
                     data: data,
                     timestamp: Date.now(),
                     container: container
@@ -167,15 +175,17 @@ class MatchingRadarChartIntegration {
                 }
 
                 // オリジナルのレンダリングを実行
-                originalRender.call(this, container, data);
+                const result = originalRender.call(this, container, data);
 
                 // 後処理
-                this.postProcessChart(container, data);
+                integration.postProcessChart(container, data);
+                
+                return result;
 
             } catch (error) {
-                this.handleError('render', error);
+                integration.handleError('render', error);
                 // フォールバック
-                originalRender.call(this, container, data);
+                return originalRender.call(this, container, data);
             }
         };
     }
