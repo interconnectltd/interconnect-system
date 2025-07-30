@@ -195,6 +195,11 @@ class MatchingRadarChartIntegration {
      */
     extractChartData(canvas) {
         try {
+            // null チェック
+            if (!canvas) {
+                return this.getDefaultChartData();
+            }
+            
             // キャンバスの親要素からデータを取得
             const container = canvas.parentElement;
             const card = container?.closest('.matching-card');

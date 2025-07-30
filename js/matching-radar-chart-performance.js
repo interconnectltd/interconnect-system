@@ -236,13 +236,8 @@ class MatchingRadarChartPerformance {
      * チャートのレンダリング
      */
     async renderChart(data) {
-        if (this.worker && this.offscreenSupported) {
-            // Web Workerでレンダリング
-            return await this.renderWithWorker(data);
-        } else {
-            // メインスレッドでレンダリング
-            return await this.renderOnMainThread(data);
-        }
+        // Web Workerは現在未実装なので、常にメインスレッドでレンダリング
+        return await this.renderOnMainThread(data);
     }
 
     /**
