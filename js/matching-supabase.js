@@ -322,7 +322,8 @@
                 this.setCache(cacheKey, profiles);
                 
                 // マッチングスコアを計算
-                this.allProfiles = this.calculateMatchingScores(profiles);
+                const scoredProfiles = this.calculateMatchingScores(profiles);
+                this.allProfiles = Array.isArray(scoredProfiles) ? scoredProfiles : [];
                 this.filteredProfiles = [...this.allProfiles];
                 this.renderProfiles();
 
