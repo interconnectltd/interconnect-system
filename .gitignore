@@ -31,3 +31,24 @@ yarn-error.log*
 # Temporary files
 *.tmp
 *.temp
+*.bak
+*.old
+*.backup
+
+# Test files
+*.test.js
+*.spec.js
+test-*.js
+coverage/
+__tests__/
+
+# Archive folders
+sql-archive/
+backup/
+old/
+
+# Windows sync logs
+sync-*.log
+
+# Development specific
+*.sublime-*
