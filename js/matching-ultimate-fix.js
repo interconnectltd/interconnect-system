@@ -327,8 +327,10 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 送信中...';
                 
                 try {
-                    if (window.connectHandler) {
-                        await window.connectHandler.sendConnect(profileId);
+                    // window.connectHandlerが利用可能か確認
+                    if (window.connectHandler && typeof window.connectHandler.sendConnect === 'function') {
+                        // connectHandlerにボタンの参照を渡す
+                        await window.connectHandler.sendConnect(profileId, btn, originalText);
                     } else {
                         // フォールバック処理
                         const { data: { user } } = await window.supabase.auth.getUser();

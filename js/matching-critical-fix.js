@@ -43,12 +43,12 @@
                     const { data: { user } } = await window.supabase.auth.getUser();
                     if (!user) return [];
                     
-                    // connectionsテーブルのカラム名を確認して修正
+                    // connectionsテーブルのカラム名を修正（target_user_id → connected_user_id）
                     const { data, error } = await window.supabase
                         .from('connections')
-                        .select('target_user_id')
+                        .select('connected_user_id')
                         .eq('user_id', user.id)
-                        .in('target_user_id', profileIds);
+                        .in('connected_user_id', profileIds);
                     
                     if (error) {
                         console.warn('[MatchingFix] Connections query error:', error);
@@ -56,7 +56,7 @@
                         return [];
                     }
                     
-                    return data ? data.map(conn => conn.target_user_id) : [];
+                    return data ? data.map(conn => conn.connected_user_id) : [];
                 } catch (error) {
                     console.warn('[MatchingFix] Connections check error:', error);
                     return [];

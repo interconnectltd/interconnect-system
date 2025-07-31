@@ -289,7 +289,7 @@
                     ` : ''}
                     
                     <div style="text-align: center; margin-top: 30px;">
-                        <button onclick="window.finalComplete.sendConnect('${profileId}')" style="
+                        <button class="btn-connect-modal" data-profile-id="${profileId}" onclick="window.finalComplete.sendConnect('${profileId}')" style="
                             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
                             color: white;
                             border: none;
