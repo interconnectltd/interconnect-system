@@ -432,7 +432,11 @@
     
     // グローバル公開
     window.displayOverride = {
-        refresh: overrideAllDisplay
+        refresh: overrideAllDisplay,
+        generateOptimizedDisplay: generateOptimizedDisplay,
+        createOverrideCard: createOverrideCard,
+        drawSimpleRadar: drawSimpleRadar,
+        calculateSimpleMatchingScore: calculateSimpleMatchingScore
     };
     
     console.log('[DisplayOverride] 準備完了');
