@@ -1,0 +1,80 @@
+/**
+ * Hero Size Force Fix
+ * section-badgeとボタンのサイズを強制的に修正
+ */
+
+/* section-badgeの元のサイズを強制 */
+.hero .section-badge,
+.hero-content .section-badge,
+span.section-badge {
+    font-size: 0.875rem !important; /* 14px */
+    padding: 0.5rem 1.5rem !important;
+    letter-spacing: 0.05em !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+}
+
+/* hero-buttonsのボタンサイズを強制的に元に戻す */
+.hero-buttons .btn,
+.hero-buttons .btn-primary,
+.hero-buttons .btn-outline,
+.hero-buttons .btn-outline-light,
+.hero-buttons a.btn,
+.hero-buttons a[class*="btn-"] {
+    font-size: 1.125rem !important; /* 18px */
+    padding: 1rem 2.5rem !important;
+    font-weight: 600 !important;
+    line-height: 1.5 !important;
+}
+
+/* btn-lgクラスも強制的に修正 */
+.btn-lg,
+.hero .btn-lg,
+.hero-buttons .btn-lg,
+a.btn-lg {
+    font-size: 1.125rem !important;
+    padding: 1rem 2.5rem !important;
+}
+
+/* アイコンのサイズも強制 */
+.hero-buttons .btn i,
+.hero-buttons .btn-primary i,
+.hero-buttons .btn-outline i,
+.hero-buttons .btn-lg i {
+    font-size: 1.125rem !important;
+    margin-right: 0.5rem !important;
+}
+
+/* インラインスタイルを上書き */
+.hero-buttons a[style*="font-size"],
+.hero .section-badge[style*="font-size"] {
+    font-size: inherit !important;
+}
+
+/* アニメーション中のスタイルも強制 */
+.hero-content *[style*="opacity"],
+.hero-content *[style*="transform"] {
+    /* サイズは変更しない */
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .hero-buttons .btn,
+    .hero-buttons .btn-primary,
+    .hero-buttons .btn-outline,
+    .hero-buttons .btn-outline-light,
+    .hero-buttons a.btn,
+    .btn-lg,
+    .hero .btn-lg {
+        font-size: 1rem !important;
+        padding: 0.875rem 2rem !important;
+    }
+    
+    .hero .section-badge,
+    .hero-content .section-badge,
+    span.section-badge {
+        font-size: 0.75rem !important;
+        padding: 0.375rem 1rem !important;
+    }
+}
