@@ -49,10 +49,11 @@
         </div>
         `);
         document.body.style.overflow = 'hidden';
-        setTimeout(() => {
-            const bar = document.getElementById('loadingBar');
-            if(bar) bar.style.width = '100%';
-        }, 10);
+        // プログレスバーの制御は homepage-perfect-final.js に統合
+        // setTimeout(() => {
+        //     const bar = document.getElementById('loadingBar');
+        //     if(bar) bar.style.width = '100%';
+        // }, 10);
     </script>
     
     <!-- Navigation -->
@@ -728,8 +729,8 @@
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <!-- すべての競合を解決 -->
-    <script src="js/homepage-all-conflicts-fix.js"></script>
+    <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->
+    <script src="js/homepage-perfect-final.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
