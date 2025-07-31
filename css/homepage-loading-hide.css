@@ -1,0 +1,49 @@
+/**
+ * Homepage Loading Hide
+ * ローディング中のコンテンツ表示を防ぐスタイル
+ */
+
+/* 初期状態ですべてのメインコンテンツを非表示 */
+body:not(.loading-complete) .navbar,
+body:not(.loading-complete) .hero,
+body:not(.loading-complete) section,
+body:not(.loading-complete) footer,
+body:not(.loading-complete) .section-badge,
+body:not(.loading-complete) .hero-buttons,
+body:not(.loading-complete) .scroll-indicator {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* ヒーローセクションの要素を個別に非表示 */
+body:not(.loading-complete) .hero-title,
+body:not(.loading-complete) .hero-subtitle,
+body:not(.loading-complete) .hero-content,
+body:not(.loading-complete) .btn,
+body:not(.loading-complete) [class*="btn-"] {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* powered by ベテランAI を確実に非表示 */
+body:not(.loading-complete) .section-badge {
+    display: none !important;
+}
+
+/* ローディング画面は常に最前面 */
+#instantLoadingScreen {
+    z-index: 999999 !important;
+}
+
+/* ローディング完了後のトランジション */
+body.loading-complete .navbar,
+body.loading-complete .hero,
+body.loading-complete section,
+body.loading-complete footer {
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+}
+
+/* スムーズな表示のため、heroは少し遅延 */
+body.loading-complete .hero {
+    transition-delay: 0.2s;
+}

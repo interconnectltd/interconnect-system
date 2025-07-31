@@ -130,6 +130,7 @@
                 setTimeout(() => {
                     screen.style.display = 'none';
                     document.body.style.overflow = '';
+                    document.body.classList.add('loading-complete');
                     this.onComplete();
                 }, 800);
             };

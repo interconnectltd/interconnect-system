@@ -27,6 +27,20 @@
                 transition: opacity 0.8s ease-out;
             }
             
+            /* ヒーローセクション内のすべてのコンテンツを初期非表示 */
+            .hero-content,
+            .hero-content * {
+                opacity: 0 !important;
+                visibility: hidden !important;
+            }
+            
+            /* ローディング完了後に表示するクラス */
+            body.loading-complete .hero-content,
+            body.loading-complete .hero-content * {
+                opacity: inherit !important;
+                visibility: inherit !important;
+            }
+            
             /* ローディング画面のスタイル改善 */
             #instantLoadingScreen {
                 background: #000 !important;
@@ -126,7 +140,10 @@
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === 'style' && 
                     screen.style.opacity === '0') {
-                    // ローディング完了時にヒーローセクションを表示
+                    // ローディング完了時にbodyにクラス追加
+                    document.body.classList.add('loading-complete');
+                    
+                    // ヒーローセクションを表示
                     const hero = document.querySelector('.hero');
                     if (hero) {
                         setTimeout(() => {
