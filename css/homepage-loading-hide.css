@@ -30,6 +30,18 @@ body:not(.loading-complete) .section-badge {
     display: none !important;
 }
 
+/* より具体的なセレクタで確実に非表示 */
+body:not(.loading-complete) .hero .container,
+body:not(.loading-complete) .hero .container *,
+body:not(.loading-complete) .hero p,
+body:not(.loading-complete) .hero span,
+body:not(.loading-complete) .hero a,
+body:not(.loading-complete) .hero button {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    display: none !important;
+}
+
 /* ローディング画面は常に最前面 */
 #instantLoadingScreen {
     z-index: 999999 !important;
