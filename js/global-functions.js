@@ -151,9 +151,10 @@
         configurable: false
     });
     
+    // nextStep関数は後から上書き可能にする
     Object.defineProperty(window, 'nextStep', {
-        writable: false,
-        configurable: false
+        writable: true,
+        configurable: true
     });
     
     Object.defineProperty(window, 'prevStep', {
