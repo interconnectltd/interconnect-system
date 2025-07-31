@@ -332,12 +332,11 @@
                 </div>
                 
                 <div class="override-actions">
-                    <button class="override-btn override-btn-secondary" 
-                            onclick="alert('プロファイル詳細表示は準備中です')">
+                    <button class="override-btn override-btn-secondary btn-view">
                         詳細を見る
                     </button>
-                    <button class="override-btn override-btn-primary" 
-                            onclick="alert('コネクト申請機能は準備中です')">
+                    <button class="override-btn override-btn-primary btn-connect"
+                            data-profile-id="${profile.id}">
                         コネクト申請
                     </button>
                 </div>
