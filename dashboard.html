@@ -219,11 +219,11 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-value">1,234</div>
+                        <div class="stat-value">--</div>
                         <div class="stat-label">総メンバー数</div>
                         <div class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
-                            <span>12% 前月比</span>
+                            <span>読み込み中...</span>
                         </div>
                     </div>
                 </div>
@@ -233,11 +233,11 @@
                         <i class="fas fa-calendar-check"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-value">15</div>
+                        <div class="stat-value">--</div>
                         <div class="stat-label">今月のイベント</div>
                         <div class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
-                            <span>3イベント増加</span>
+                            <span>読み込み中...</span>
                         </div>
                     </div>
                 </div>
@@ -247,11 +247,11 @@
                         <i class="fas fa-handshake"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-value">89</div>
+                        <div class="stat-value">--</div>
                         <div class="stat-label">マッチング成功数</div>
                         <div class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
-                            <span>23% 増加</span>
+                            <span>読み込み中...</span>
                         </div>
                     </div>
                 </div>
@@ -388,9 +388,14 @@
     <!-- Dashboard bundle (統合版) -->
     <script src="js/dashboard-bundle.js"></script>
     
+    <!-- Dashboard stats initializer (読み込み中表示) -->
+    <script src="js/dashboard-stats-initializer.js"></script>
+    
     <!-- Dashboard calculators for accurate statistics -->
+    <script src="js/dashboard-member-calculator.js"></script>
     <script src="js/dashboard-event-calculator.js"></script>
     <script src="js/dashboard-matching-calculator.js"></script>
+    <script src="js/dashboard-upcoming-events.js"></script>
     
     <!-- Debug scripts (only load in development) -->
     <script>
