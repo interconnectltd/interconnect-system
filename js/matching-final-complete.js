@@ -24,7 +24,7 @@
                 const { data: pMinutes, error: pError } = await window.supabase
                     .from('meeting_minutes')
                     .select('*')
-                    .eq('user_id', profile.id)
+                    .eq('profile_id', profile.id)  // user_idではなくprofile_idを使用
                     .order('created_at', { ascending: false })
                     .limit(5);
                     
@@ -37,7 +37,7 @@
                 const { data: uMinutes, error: uError } = await window.supabase
                     .from('meeting_minutes')
                     .select('*')
-                    .eq('user_id', currentUser?.id)
+                    .eq('profile_id', currentUser?.id)  // user_idではなくprofile_idを使用
                     .order('created_at', { ascending: false })
                     .limit(5);
                     
