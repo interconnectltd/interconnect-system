@@ -1,0 +1,32 @@
+/**
+ * Register SNS Removal
+ * 新規登録ページのSNS登録セクションを削除
+ */
+
+/* SNS登録セクションを非表示 */
+.auth-card > .auth-divider:first-of-type,
+.auth-card > .auth-divider:first-of-type + .line-button,
+.auth-card > .auth-divider:nth-of-type(2) {
+    display: none !important;
+}
+
+/* LINEボタンを非表示 */
+#lineRegisterBtn,
+.line-button {
+    display: none !important;
+}
+
+/* auth-divider「または」も非表示 */
+.auth-divider {
+    display: none !important;
+}
+
+/* タイトルとプログレスの間のスペースを調整 */
+.auth-title {
+    margin-bottom: 30px !important;
+}
+
+/* プログレスインジケーターの位置調整 */
+.registration-progress {
+    margin-top: 0 !important;
+}
