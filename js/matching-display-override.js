@@ -275,7 +275,7 @@
         const isIncomplete = !hasSkills && !hasLocation && !hasIndustry;
         
         return `
-            <div class="override-matching-card">
+            <div class="override-matching-card" data-profile-id="${profile.id}">
                 <div class="override-score-badge ${scoreClass}">${profile.matchingScore}%</div>
                 
                 <div class="override-profile-header">
