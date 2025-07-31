@@ -73,9 +73,12 @@
                     width: 100%;
                     max-height: 90vh;
                     overflow-y: auto;
+                    overflow-x: hidden;
                     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
                     transform: translateY(20px);
                     transition: transform 0.3s ease;
+                    -webkit-overflow-scrolling: touch;
+                    position: relative;
                 }
                 
                 .profile-detail-modal.show .profile-detail-content {
@@ -387,13 +390,22 @@
                 
                 if (error) throw error;
                 
-                // tl;dvデータを取得
-                const { data: meetingMinutes } = await window.supabase
-                    .from('meeting_minutes')
-                    .select('*')
-                    .eq('user_id', profileId)
-                    .order('meeting_date', { ascending: false })
-                    .limit(3);
+                // tl;dvデータを取得（テーブルが存在しない場合はスキップ）
+                let meetingMinutes = null;
+                try {
+                    const { data, error } = await window.supabase
+                        .from('meeting_minutes')
+                        .select('*')
+                        .eq('user_id', profileId)
+                        .order('meeting_date', { ascending: false })
+                        .limit(3);
+                    
+                    if (!error) {
+                        meetingMinutes = data;
+                    }
+                } catch (e) {
+                    console.log('[ProfileDetailModal] meeting_minutesテーブルは存在しません');
+                }
                 
                 // マッチングスコアを計算
                 let matchingScore = 50;

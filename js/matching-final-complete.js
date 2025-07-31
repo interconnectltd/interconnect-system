@@ -17,19 +17,34 @@
         // tl;dvデータの確認
         try {
             // 議事録データの取得（meeting_minutesテーブルから）
-            const { data: profileMinutes } = await window.supabase
-                .from('meeting_minutes')
-                .select('*')
-                .eq('user_id', profile.id)
-                .order('created_at', { ascending: false })
-                .limit(5);
+            let profileMinutes = null;
+            let currentUserMinutes = null;
             
-            const { data: currentUserMinutes } = await window.supabase
-                .from('meeting_minutes')
-                .select('*')
-                .eq('user_id', currentUser?.id)
-                .order('created_at', { ascending: false })
-                .limit(5);
+            try {
+                const { data: pMinutes, error: pError } = await window.supabase
+                    .from('meeting_minutes')
+                    .select('*')
+                    .eq('user_id', profile.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                    
+                if (!pError) profileMinutes = pMinutes;
+            } catch (e) {
+                console.log('[FinalComplete] meeting_minutesテーブルは存在しません');
+            }
+            
+            try {
+                const { data: uMinutes, error: uError } = await window.supabase
+                    .from('meeting_minutes')
+                    .select('*')
+                    .eq('user_id', currentUser?.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                    
+                if (!uError) currentUserMinutes = uMinutes;
+            } catch (e) {
+                // エラーは無視
+            }
             
             if (profileMinutes?.length > 0 && currentUserMinutes?.length > 0) {
                 hasTldvData = true;

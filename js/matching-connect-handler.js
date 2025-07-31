@@ -8,11 +8,11 @@
     console.log('[ConnectHandler] 初期化開始');
     
     // コネクト申請機能
-    const sendConnectRequest = async (profileId) => {
+    const sendConnectRequest = async (profileId, button, originalText) => {
         try {
             const { data: { user } } = await window.supabase.auth.getUser();
             if (!user) {
-                alert('ログインが必要です');
+                showNotification('ログインが必要です', 'error');
                 return;
             }
             
@@ -26,20 +26,21 @@
             
             if (existing) {
                 if (existing.status === 'pending') {
-                    alert('既にコネクト申請を送信済みです（承認待ち）');
+                    showNotification('既にコネクト申請を送信済みです（承認待ち）', 'info');
                 } else if (existing.status === 'accepted') {
-                    alert('既にコネクト済みです');
+                    showNotification('既にコネクト済みです', 'info');
                 } else {
-                    alert('コネクト申請の状態: ' + existing.status);
+                    showNotification('コネクト申請の状態: ' + existing.status, 'info');
                 }
                 return;
             }
             
             // ローディング表示
-            const button = event.target;
-            const originalText = button.textContent;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 送信中...';
+            if (button) {
+                originalText = originalText || button.textContent;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 送信中...';
+            }
             
             // コネクト申請を送信
             const { error } = await window.supabase
@@ -54,8 +55,10 @@
             if (error) throw error;
             
             // 成功通知
-            button.innerHTML = '<i class="fas fa-check"></i> 申請済み';
-            button.classList.add('btn-success');
+            if (button) {
+                button.innerHTML = '<i class="fas fa-check"></i> 申請済み';
+                button.classList.add('btn-success');
+            }
             
             // 通知を表示
             showNotification('コネクト申請を送信しました！', 'success');
@@ -67,9 +70,9 @@
             showNotification('コネクト申請の送信に失敗しました', 'error');
             
             // ボタンを元に戻す
-            if (event.target) {
-                event.target.disabled = false;
-                event.target.innerHTML = originalText || 'コネクト申請';
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalText || 'コネクト申請';
             }
         }
     };
@@ -117,28 +120,36 @@
     
     // イベントリスナー設定
     document.addEventListener('click', async (e) => {
-        // コネクト申請ボタンのクリック
-        if (e.target.classList.contains('btn-connect') || 
+        // コネクト申請ボタンのクリック（ボタン内のアイコンがクリックされた場合も考慮）
+        const button = e.target.closest('.btn-connect');
+        if (button || e.target.classList.contains('btn-connect') || 
             (e.target.textContent && e.target.textContent.includes('コネクト申請'))) {
             
             e.preventDefault();
             e.stopPropagation();
             
+            // クリックされた要素から最も近いボタンを取得
+            const targetButton = button || e.target;
+            
             // プロファイルIDを取得
-            let profileId = e.target.dataset.profileId;
+            let profileId = targetButton.dataset.profileId;
             
             if (!profileId) {
                 // カードから取得を試みる
-                const card = e.target.closest('[data-profile-id]');
+                const card = targetButton.closest('[data-profile-id]');
                 if (card) {
                     profileId = card.dataset.profileId;
                 }
             }
             
+            console.log('[ConnectHandler] プロファイルID:', profileId);
+            
             if (profileId && profileId !== 'undefined') {
-                await sendConnectRequest(profileId);
+                // ボタンの参照を保存
+                const originalText = targetButton.textContent;
+                await sendConnectRequest(profileId, targetButton, originalText);
             } else {
-                console.error('[ConnectHandler] プロファイルIDが見つかりません');
+                console.error('[ConnectHandler] プロファイルIDが見つかりません', targetButton);
                 showNotification('エラー: プロファイル情報が見つかりません', 'error');
             }
         }
