@@ -80,8 +80,7 @@
             this.stats = {
                 totalMembers: 0,
                 monthlyEvents: 0,
-                matchingSuccess: 0,
-                unreadMessages: 0
+                matchingSuccess: 0
             };
             this.init();
         }
@@ -97,7 +96,7 @@
 
                 // メンバー数を取得
                 const { count: memberCount } = await window.supabase
-                    .from('user_profiles')
+                    .from('profiles')
                     .select('*', { count: 'exact', head: true });
                 
                 this.stats.totalMembers = memberCount || 1234;
@@ -107,7 +106,7 @@
                 const currentYear = new Date().getFullYear();
                 
                 const { data: events } = await window.supabase
-                    .from('event_items')
+                    .from('events')
                     .select('*')
                     .gte('event_date', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-01`)
                     .lte('event_date', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-31`);
@@ -116,7 +115,6 @@
 
                 // その他の統計はダミーデータ
                 this.stats.matchingSuccess = 89;
-                this.stats.unreadMessages = 42;
 
             } catch (error) {
                 console.error('[DashboardStats] Error loading stats:', error);
@@ -128,8 +126,7 @@
             const statElements = {
                 totalMembers: document.querySelector('.stat-card:nth-child(1) .stat-value'),
                 monthlyEvents: document.querySelector('.stat-card:nth-child(2) .stat-value'),
-                matchingSuccess: document.querySelector('.stat-card:nth-child(3) .stat-value'),
-                unreadMessages: document.querySelector('.stat-card:nth-child(4) .stat-value')
+                matchingSuccess: document.querySelector('.stat-card:nth-child(3) .stat-value')
             };
 
             Object.entries(statElements).forEach(([key, element]) => {
@@ -159,7 +156,7 @@
                 if (!window.supabase) return;
 
                 const { data: events } = await window.supabase
-                    .from('event_items')
+                    .from('events')
                     .select('*')
                     .eq('is_public', true)
                     .eq('is_cancelled', false)

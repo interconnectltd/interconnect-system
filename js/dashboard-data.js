@@ -152,7 +152,6 @@
                         total_members: await this.calculateTotalMembers(),
                         monthly_events: await this.calculateMonthlyEvents(),
                         matching_success: await this.calculateMatchingSuccess(),
-                        unread_messages: await this.calculateUnreadMessages(),
                         member_growth_percentage: 12.5,
                         event_increase: 3,
                         updated_at: new Date().toISOString()
@@ -343,7 +342,6 @@
                 total_members: await this.calculateTotalMembers(),
                 monthly_events: await this.calculateMonthlyEvents(),
                 matching_success: await this.calculateMatchingSuccess(),
-                unread_messages: await this.calculateUnreadMessages(),
                 member_growth_percentage: 12.5,
                 event_increase: 3,
                 updated_at: new Date().toISOString()
