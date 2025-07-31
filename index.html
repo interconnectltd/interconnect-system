@@ -728,41 +728,9 @@
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <script src="js/homepage-loading-integration.js"></script>
+    <!-- ローディング画面修正 -->
+    <script src="js/homepage-loading-fix.js"></script>
     <script src="js/main.js"></script>
     <script src="js/scroll-fade.js"></script>
-    
-    <!-- ローディング画面を非表示にする -->
-    <script>
-        // ページ読み込み完了時にローディング画面を非表示
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('instantLoadingScreen');
-                if (loadingScreen) {
-                    loadingScreen.style.transition = 'opacity 0.8s ease-out';
-                    loadingScreen.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        loadingScreen.remove();
-                        document.body.style.overflow = '';
-                    }, 800);
-                }
-            }, 2000); // 最低2秒表示
-        });
-        
-        // フォールバック：5秒後には必ず非表示
-        setTimeout(() => {
-            const loadingScreen = document.getElementById('instantLoadingScreen');
-            if (loadingScreen && loadingScreen.style.opacity !== '0') {
-                loadingScreen.style.transition = 'opacity 0.8s ease-out';
-                loadingScreen.style.opacity = '0';
-                
-                setTimeout(() => {
-                    loadingScreen.remove();
-                    document.body.style.overflow = '';
-                }, 800);
-            }
-        }, 5000);
-    </script>
 </body>
 </html>

@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/user-menu-zindex-only.css">
     <link rel="stylesheet" href="css/matching-mobile-fix.css">
     <link rel="stylesheet" href="css/matching-final-styles.css">
+    <link rel="stylesheet" href="css/matching-perfect.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -390,25 +391,35 @@
     </div>
     
     <!-- Scripts -->
+    <!-- Core utilities (必須) -->
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <!-- <script src="js/debug-logger.js"></script> -->
     <script src="js/supabase-client.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
-    <script src="js/matching-config.js"></script>
-    <script src="js/matching.js"></script>
+    
+    <!-- Matching Perfect Integration - 統合版 -->
+    <script src="js/matching-perfect-integration.js"></script>
+    
+    <!-- エラー修正 -->
+    <script src="js/matching-error-fix.js"></script>
+    
+    <!-- 以下のスクリプトはmatching-perfect-integrationによって無効化されます -->
+    <!-- <script src="js/matching-config.js"></script> -->
+    <!-- <script src="js/matching.js"></script> -->
+    <!-- 以下のスクリプトは全て無効化されています -->
+    <!--
     <script src="js/matching-supabase.js"></script>
     <script src="js/matching-supabase-optimized.js"></script>
     <script src="js/matching-ux-improvements.js"></script>
     <script src="js/matching-loading-fix.js"></script>
     <script src="js/matching-critical-fix.js"></script>
     <script src="js/matching-buttons-fix.js"></script>
-    <!-- <script src="js/matching-ai-scoring.js"></script> -->
+    <script src="js/matching-ai-scoring.js"></script>
     <script src="js/matching-ai-scoring-simple.js"></script>
     <script src="js/matching-ai-minutes-based.js"></script>
     <script src="js/matching-ai-llm-analyzer.js"></script>
@@ -424,7 +435,7 @@
     <script src="js/matching-ai-integration.js"></script>
     <script src="js/matching-initialization-fix.js"></script>
     <script src="js/matching-force-load.js"></script>
-    <!-- <script src="js/test-matching-functionality.js"></script> -->
+    <script src="js/test-matching-functionality.js"></script>
     <script src="js/matching-test-data.js"></script>
     <script src="js/matching-data-validation-test.js"></script>
     <script src="js/matching-radar-chart-test.js"></script>
@@ -434,61 +445,35 @@
     <script src="js/production-ready-check.js"></script>
     <script src="js/matching-manual-test.js"></script>
     <script src="js/matching-test-data-generator.js"></script>
-    <!-- <script src="js/notifications.js"></script> -->
+    <script src="js/notifications.js"></script>
+    -->
     
-    <!-- 完全修正システム -->
-    <script src="js/matching-complete-fix.js"></script>
-    
-    <!-- 緊急修正 - 最後に読み込む -->
-    <script src="js/matching-emergency-fix.js"></script>
-    
-    <!-- 完全実装版 - 最終 -->
-    <script src="js/matching-full-implementation.js"></script>
-    
-    <!-- エラー診断ツール -->
-    <script src="js/matching-error-diagnostic.js"></script>
-    
-    <!-- 最終修正スクリプト -->
-    <script src="js/matching-fix-all-issues.js"></script>
-    
-    <!-- 完璧な表示実装 -->
-    <script src="js/matching-perfect-display.js"></script>
-    
-    <!-- 表示の完全オーバーライド -->
-    <script src="js/matching-display-override.js"></script>
-    
-    <!-- 現実的なマッチングスコア計算 -->
-    <script src="js/matching-realistic-scoring.js"></script>
-    
-    <!-- 最終完成版（tl;dv対応） -->
-    <script src="js/matching-final-complete.js"></script>
-    
-    <!-- 競合解決とクリーンアップ -->
-    <script src="js/matching-conflict-resolver.js"></script>
-    <script src="js/matching-cleanup.js"></script>
-    
-    <!-- 検索機能 -->
-    <script src="js/matching-search.js"></script>
-    
-    <!-- スコア計算修正 -->
-    <script src="js/matching-score-fix.js"></script>
-    
-    <!-- プロファイルnullエラー修正 -->
-    <script src="js/matching-profile-null-fix.js"></script>
-    
-    <!-- プロファイル詳細モーダル -->
+    <!-- プロファイル詳細モーダル（必須） -->
     <script src="js/profile-detail-modal.js"></script>
     
-    <!-- コネクト申請ハンドラー -->
+    <!-- 完璧な統合のテスト -->
+    <script src="js/matching-perfect-test.js"></script>
+    
+    <!-- 以下のスクリプトは全て無効化されています -->
+    <!--
+    <script src="js/matching-complete-fix.js"></script>
+    <script src="js/matching-emergency-fix.js"></script>
+    <script src="js/matching-full-implementation.js"></script>
+    <script src="js/matching-error-diagnostic.js"></script>
+    <script src="js/matching-fix-all-issues.js"></script>
+    <script src="js/matching-perfect-display.js"></script>
+    <script src="js/matching-display-override.js"></script>
+    <script src="js/matching-realistic-scoring.js"></script>
+    <script src="js/matching-final-complete.js"></script>
+    <script src="js/matching-conflict-resolver.js"></script>
+    <script src="js/matching-cleanup.js"></script>
+    <script src="js/matching-search.js"></script>
+    <script src="js/matching-score-fix.js"></script>
+    <script src="js/matching-profile-null-fix.js"></script>
     <script src="js/matching-connect-handler.js"></script>
-    
-    <!-- 機能テストスクリプト -->
     <script src="js/matching-feature-test.js"></script>
-    
-    <!-- 最終動作確認 -->
     <script src="js/matching-final-verification.js"></script>
-    
-    <!-- 究極修正スクリプト -->
     <script src="js/matching-ultimate-fix.js"></script>
+    -->
 </body>
 </html>

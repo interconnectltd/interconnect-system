@@ -1,0 +1,336 @@
+/**
+ * Matching Perfect Styles
+ * 完璧なマッチングページのスタイル
+ */
+
+/* リセットと基本スタイル */
+.matching-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* 完璧なマッチングカード */
+.matching-card.perfect-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.matching-card.perfect-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: #d0d0d0;
+}
+
+/* スコアバッジ */
+.matching-card .score-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+/* プロファイルヘッダー */
+.matching-card .profile-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.matching-card .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+    border: 3px solid #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+.matching-card:hover .profile-avatar {
+    border-color: #3498db;
+    transform: scale(1.05);
+}
+
+.matching-card h3 {
+    margin: 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.matching-card .profile-title {
+    color: #7f8c8d;
+    font-size: 14px;
+    margin: 0;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* レーダーチャート */
+.matching-card .radar-container {
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    position: relative;
+}
+
+.matching-card .radar-container canvas {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+/* スキルタグ */
+.matching-card .skills-container {
+    margin: 16px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    min-height: 28px;
+}
+
+.matching-card .skill-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.matching-card:hover .skill-tag {
+    background: #bbdefb;
+}
+
+.matching-card .skill-more {
+    color: #999;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+/* カードアクション */
+.matching-card .card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.matching-card .card-actions button {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.matching-card .btn-view-profile {
+    background: #f0f0f0;
+    color: #2c3e50;
+}
+
+.matching-card .btn-view-profile:hover {
+    background: #e0e0e0;
+    transform: translateY(-1px);
+}
+
+.matching-card .btn-connect-perfect {
+    background: #3498db;
+    color: white;
+}
+
+.matching-card .btn-connect-perfect:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.matching-card .btn-connect-perfect:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* エラーメッセージ */
+.error-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: #e74c3c;
+}
+
+.error-message i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+
+.error-message p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.error-message button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.error-message button:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* ローディング状態 */
+.matching-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    color: #7f8c8d;
+}
+
+.matching-loading i {
+    font-size: 32px;
+    animation: spin 1s linear infinite;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    .matching-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .matching-card.perfect-card {
+        padding: 20px;
+    }
+    
+    .matching-card .profile-avatar {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .matching-card h3 {
+        font-size: 16px;
+    }
+    
+    .matching-card .radar-container {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .matching-card.perfect-card {
+        background: #2c3e50;
+        border-color: #34495e;
+        color: #ecf0f1;
+    }
+    
+    .matching-card h3 {
+        color: #ecf0f1;
+    }
+    
+    .matching-card .profile-title {
+        color: #bdc3c7;
+    }
+    
+    .matching-card .btn-view-profile {
+        background: #34495e;
+        color: #ecf0f1;
+    }
+    
+    .matching-card .btn-view-profile:hover {
+        background: #2c3e50;
+    }
+}
+
+/* パフォーマンス最適化 */
+.matching-card {
+    will-change: transform;
+}
+
+.matching-card canvas {
+    image-rendering: optimizeSpeed;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+/* アクセシビリティ */
+.matching-card:focus-within {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+.matching-card button:focus {
+    outline: 2px solid #2980b9;
+    outline-offset: 2px;
+}
+
+/* スクロールバー最適化 */
+#matching-container {
+    scrollbar-width: thin;
+    scrollbar-color: #bdc3c7 #ecf0f1;
+}
+
+#matching-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+#matching-container::-webkit-scrollbar-track {
+    background: #ecf0f1;
+}
+
+#matching-container::-webkit-scrollbar-thumb {
+    background: #bdc3c7;
+    border-radius: 4px;
+}
+
+#matching-container::-webkit-scrollbar-thumb:hover {
+    background: #95a5a6;
+}
