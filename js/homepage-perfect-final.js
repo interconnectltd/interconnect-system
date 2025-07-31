@@ -25,7 +25,7 @@
                 'hideLoadingScreen', 'checkLoadingComplete', 'initHeroAnimation',
                 'typewriterEffect', 'animateTitle', 'startPageAnimations',
                 'initScrollAnimations', 'digitalTextEffect', 'LoadingManager',
-                'UnifiedLoader', 'AllConflictsFix'
+                'UnifiedLoader', 'AllConflictsFix', 'initScrollEffects'
             ];
             
             conflictingFunctions.forEach(fn => {
@@ -69,10 +69,13 @@
                 return;
             }
             
-            // インラインスクリプトのプログレスバーアニメーションを確認
+            // プログレスバーアニメーションを開始（インラインスクリプトの代わり）
             const bar = document.getElementById('loadingBar');
-            if (bar && bar.style.width !== '100%') {
-                bar.style.width = '100%';
+            if (bar) {
+                // インラインスクリプトと同じタイミング
+                setTimeout(() => {
+                    bar.style.width = '100%';
+                }, 10);
             }
             
             // 動画の追加（重複チェック付き）
