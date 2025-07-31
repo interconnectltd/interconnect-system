@@ -36,6 +36,8 @@
     const container = instantLoadingScreen.querySelector('div');
     if (container) {
         container.style.position = 'relative';
+        container.style.width = '100%';
+        container.style.height = '100%';
         container.insertAdjacentHTML('afterbegin', videoHTML);
     }
     
@@ -104,7 +106,7 @@
                 if (index < text.length) {
                     heroTitle.textContent = text.substring(0, index + 1);
                     index++;
-                    setTimeout(typeNextChar, 50); // 元のスピード（50ms）
+                    setTimeout(typeNextChar, 20); // 2.5倍速（20ms）
                 } else {
                     // 最後に元のHTMLを復元（改行を含む）
                     heroTitle.innerHTML = originalHTML;
@@ -126,7 +128,7 @@
                             if (subIndex < subtitleText.length) {
                                 heroSubtitle.textContent = subtitleText.substring(0, subIndex + 1);
                                 subIndex++;
-                                setTimeout(typeSubtitle, 50);
+                                setTimeout(typeSubtitle, 20); // 2.5倍速
                             } else {
                                 heroSubtitle.innerHTML = subtitleHTML;
                             }

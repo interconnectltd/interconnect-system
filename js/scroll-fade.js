@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentHTML += originalText[currentIndex];
                     element.textContent = currentHTML;
                     currentIndex++;
-                    setTimeout(typeNextCharacter, 20); // 20ms間隔（4倍速）
+                    setTimeout(typeNextCharacter, 20); // 20ms間隔（2.5倍速）
                 } else {
                     // 最後に元のHTMLを設定して確実に改行を含める
                     element.innerHTML = originalHTML;
