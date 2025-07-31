@@ -42,8 +42,15 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(element);
     });
 
-    // ローディング完了チェック関数
+    // ローディング完了チェック関数（homepage-loading-integration.jsと連携）
     function checkLoadingComplete() {
+        // homepage-loading-integration.jsが処理を行うため、ここではスキップ
+        if (window.homepageLoadingIntegration) {
+            console.log('[ScrollFade] ローディング処理はhomepage-loading-integrationに委譲');
+            return;
+        }
+        
+        // フォールバック処理
         const loadingScreen = document.querySelector('.loading-screen');
         
         if (!loadingScreen || loadingScreen.style.display === 'none' || 
@@ -116,6 +123,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ローディング完了チェック開始
     checkLoadingComplete();
+    
+    // グローバルに公開（homepage-loading-integration.jsから呼び出し可能にする）
+    window.initScrollAnimations = function() {
+        // 既にobserverが設定されているので、要素の可視性をリセット
+        fadeElements.forEach(element => {
+            if (!element.classList.contains('visible')) {
+                observer.observe(element);
+            }
+        });
+    };
 
     // セクションタイトルのアニメーション
     const sectionTitles = document.querySelectorAll('.section-title');
