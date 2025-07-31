@@ -1,6 +1,6 @@
 /**
  * Messages Viewing History
- * 最近のコネクション → 閲覧履歴に変更
+ * プロフィール・マッチング詳細の閲覧履歴
  */
 
 (function() {
@@ -109,24 +109,70 @@
             // ページ読み込み時に履歴を表示
             this.updateHistoryUI();
             
-            // チャットを開いたときに履歴に追加するようにイベントを監視
-            const originalOpenChat = window.openChat;
-            if (originalOpenChat) {
-                window.openChat = (userId) => {
+            // プロフィール表示関数を監視
+            const originalViewProfile = window.viewProfile;
+            if (originalViewProfile) {
+                window.viewProfile = (userId) => {
                     // 元の関数を実行
-                    originalOpenChat(userId);
+                    originalViewProfile(userId);
                     
                     // ユーザー情報を取得して履歴に追加
-                    const userElement = document.querySelector(`[data-user-id="${userId}"]`);
-                    if (userElement) {
-                        const userName = userElement.querySelector('.chat-name')?.textContent || 
-                                       userElement.querySelector('.connection-name')?.textContent || 
-                                       'Unknown User';
-                        const avatarUrl = userElement.querySelector('img')?.src;
-                        
-                        this.addToHistory(userId, userName, avatarUrl);
-                    }
+                    this.saveUserToHistory(userId);
                 };
+            }
+            
+            // showDetailedReport関数を監視（マッチング詳細）
+            const originalShowDetailedReport = window.showDetailedReport;
+            if (originalShowDetailedReport) {
+                window.showDetailedReport = (profileId) => {
+                    // 元の関数を実行
+                    originalShowDetailedReport(profileId);
+                    
+                    // ユーザー情報を取得して履歴に追加
+                    this.saveUserToHistory(profileId);
+                };
+            }
+            
+            // プロフィールボタンのクリックイベントも監視
+            document.addEventListener('click', (e) => {
+                // プロフィールボタンまたはマッチング詳細ボタンをクリックした場合
+                if (e.target.closest('button[onclick*="viewProfile"]') || 
+                    e.target.closest('a[href*="profile.html"]') ||
+                    e.target.closest('button[onclick*="showDetailedReport"]')) {
+                    
+                    // ユーザーカードを探す
+                    const card = e.target.closest('.matching-card, .member-card, .chat-item');
+                    if (card) {
+                        const userId = card.dataset.profileId || card.dataset.userId;
+                        if (userId) {
+                            this.saveUserToHistory(userId);
+                        }
+                    }
+                }
+            });
+        },
+        
+        // ユーザー情報を取得して履歴に保存
+        saveUserToHistory(userId) {
+            // ユーザー要素を探す
+            const userElement = document.querySelector(`[data-profile-id="${userId}"], [data-user-id="${userId}"]`);
+            if (userElement) {
+                const userName = userElement.querySelector('.user-info h3')?.textContent || 
+                               userElement.querySelector('.matching-card h3')?.textContent ||
+                               userElement.querySelector('.member-name')?.textContent ||
+                               userElement.querySelector('.chat-name')?.textContent || 
+                               'Unknown User';
+                const avatarUrl = userElement.querySelector('img')?.src;
+                
+                this.addToHistory(userId, userName, avatarUrl);
+            } else {
+                // 要素が見つからない場合は、グローバルデータから探す
+                if (window.MPI && window.MPI.profiles) {
+                    const profile = window.MPI.profiles.find(p => p.id === userId);
+                    if (profile) {
+                        this.addToHistory(userId, profile.display_name || 'Unknown User', profile.avatar_url);
+                    }
+                }
             }
         }
     };
