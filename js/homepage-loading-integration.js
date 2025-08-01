@@ -121,7 +121,7 @@
         }, 300); // ローディング画面のフェードアウト後に開始
     }
     
-    // ヒーローセクションのアニメーション
+    // ヒーローセクションのアニメーション（無効化）
     function startHeroAnimations() {
         const heroContent = document.querySelector('.hero-content');
         const heroTitle = document.querySelector('.hero-title');
@@ -129,59 +129,22 @@
         const heroButtons = document.querySelector('.hero-buttons');
         const sectionBadge = document.querySelector('.section-badge');
         
-        // 初期状態を設定
+        // すべて即座に表示（アニメーションなし）
         const elements = [sectionBadge, heroTitle, heroSubtitle, heroButtons];
         elements.forEach(el => {
             if (el) {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(30px)';
+                el.style.opacity = '1';
+                el.style.transform = 'none';
                 el.style.transition = 'none';
+                el.style.visibility = 'visible';
             }
         });
         
-        // 順番にフェードイン
-        setTimeout(() => {
-            if (sectionBadge) {
-                sectionBadge.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-                sectionBadge.style.opacity = '1';
-                sectionBadge.style.transform = 'translateY(0)';
-            }
-        }, 200);
-        
-        setTimeout(() => {
-            if (heroTitle) {
-                heroTitle.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
-                heroTitle.style.opacity = '1';
-                heroTitle.style.transform = 'translateY(0)';
-            }
-        }, 500);
-        
-        setTimeout(() => {
-            if (heroSubtitle) {
-                heroSubtitle.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
-                heroSubtitle.style.opacity = '1';
-                heroSubtitle.style.transform = 'translateY(0)';
-            }
-        }, 800);
-        
-        setTimeout(() => {
-            if (heroButtons) {
-                heroButtons.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
-                heroButtons.style.opacity = '1';
-                heroButtons.style.transform = 'translateY(0)';
-            }
-        }, 1100);
-        
-        // スクロールインジケーターの表示
+        // スクロールインジケーターも即座に表示
         const scrollIndicator = document.querySelector('.scroll-indicator');
         if (scrollIndicator) {
-            setTimeout(() => {
-                scrollIndicator.style.opacity = '0';
-                scrollIndicator.style.transition = 'opacity 1s ease-out';
-                setTimeout(() => {
-                    scrollIndicator.style.opacity = '1';
-                }, 100);
-            }, 1500);
+            scrollIndicator.style.opacity = '1';
+            scrollIndicator.style.transition = 'none';
         }
     }
     

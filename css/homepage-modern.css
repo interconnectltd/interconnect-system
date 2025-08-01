@@ -264,7 +264,7 @@
 .hero::after {
     content: '';
     position: absolute;
-    bottom: -1px;
+    bottom: -50px; /* もっと下に移動 */
     left: 0;
     width: 100%;
     height: 100px;
