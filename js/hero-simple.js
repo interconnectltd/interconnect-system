@@ -17,9 +17,9 @@
             heroContent.style.visibility = 'visible';
         }
         
-        // すべての子要素も表示
-        const elements = document.querySelectorAll('.section-badge, .hero-title, .hero-subtitle, .hero-buttons, .hero-buttons .btn');
-        elements.forEach(el => {
+        // ボタンのみ表示（テキストはタイプライター効果で表示）
+        const buttons = document.querySelectorAll('.hero-buttons .btn');
+        buttons.forEach(el => {
             el.style.opacity = '1';
             el.style.visibility = 'visible';
         });

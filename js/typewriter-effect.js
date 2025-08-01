@@ -4,15 +4,41 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ローディング完了を待つ
-    const waitForLoadingComplete = setInterval(function() {
-        if (document.body.classList.contains('loading-complete')) {
-            clearInterval(waitForLoadingComplete);
-            startTypewriter();
-        }
-    }, 100);
+    console.log('[Typewriter] 初期化開始');
+    
+    // ローディング画面の監視
+    const loadingScreen = document.getElementById('instantLoadingScreen');
+    
+    if (loadingScreen) {
+        // ローディング画面の透明度を監視
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'style') {
+                    // opacity が 0 になったらローディング完了
+                    if (loadingScreen.style.opacity === '0' || 
+                        loadingScreen.style.display === 'none') {
+                        console.log('[Typewriter] ローディング完了を検知');
+                        observer.disconnect();
+                        // 少し遅延を入れてから開始
+                        setTimeout(startTypewriter, 500);
+                    }
+                }
+            });
+        });
+        
+        observer.observe(loadingScreen, { 
+            attributes: true,
+            attributeFilter: ['style']
+        });
+    } else {
+        // ローディング画面がない場合は即座に開始
+        console.log('[Typewriter] ローディング画面なし、即座に開始');
+        setTimeout(startTypewriter, 1000);
+    }
     
     function startTypewriter() {
+        console.log('[Typewriter] タイプライター開始');
+        
         // タイプライター効果を適用する要素
         const elements = [
             { selector: '.section-badge', delay: 0 },
@@ -90,15 +116,4 @@ document.addEventListener('DOMContentLoaded', function() {
         type();
     }
     
-    // ボタンの初期状態を設定
-    const style = document.createElement('style');
-    style.textContent = `
-        .hero-buttons {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-    `;
-    document.head.appendChild(style);
 });
