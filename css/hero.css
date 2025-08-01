@@ -115,15 +115,16 @@
 
 /* プライマリボタン */
 .hero-buttons .btn-primary {
-    background: #ffffff;
-    color: #1a1a1a;
+    background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+    color: #ffffff;
     border: 2px solid transparent;
+    box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
 }
 
 .hero-buttons .btn-primary:hover {
-    background: #f5f5f5;
+    background: linear-gradient(135deg, #0052cc 0%, #0040a0 100%);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
 }
 
 /* アウトラインボタン */

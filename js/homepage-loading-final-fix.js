@@ -27,18 +27,11 @@
                 transition: opacity 0.8s ease-out;
             }
             
-            /* ヒーローセクション内のすべてのコンテンツを初期非表示 */
+            /* ヒーローコンテンツはすぐ表示（競合解決） */
             .hero-content,
             .hero-content * {
-                opacity: 0 !important;
-                visibility: hidden !important;
-            }
-            
-            /* ローディング完了後に表示するクラス */
-            body.loading-complete .hero-content,
-            body.loading-complete .hero-content * {
-                opacity: inherit !important;
-                visibility: inherit !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
             
             /* ローディング画面のスタイル改善 */
