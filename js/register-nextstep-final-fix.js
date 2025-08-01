@@ -61,6 +61,11 @@
     function validateCurrentStep(step) {
         console.log('[RegisterNextStepFinalFix] ステップ', step, 'のバリデーション開始');
         
+        // window.validateStep が存在する場合はそちらを使用（register-enhanced-validation.js）
+        if (window.validateStep && typeof window.validateStep === 'function') {
+            return window.validateStep(step);
+        }
+        
         const stepElement = document.querySelector(`.form-step[data-step="${step}"]`);
         if (!stepElement) return true;
         
@@ -92,7 +97,7 @@
                 
                 // パスワードのバリデーション
                 const password = stepElement.querySelector('input[name="password"]');
-                const confirmPassword = stepElement.querySelector('input[name="confirmPassword"]');
+                const confirmPassword = stepElement.querySelector('input[name="password-confirm"]');
                 if (password && confirmPassword) {
                     if (password.value.length < 8) {
                         console.log('[RegisterNextStepFinalFix] パスワードが短すぎます');
@@ -111,7 +116,7 @@
                 }
                 break;
                 
-            case 4:
+            case 5:
                 // 利用規約の同意チェック
                 const agreeCheckbox = stepElement.querySelector('input[name="agree"]');
                 if (agreeCheckbox && !agreeCheckbox.checked) {
