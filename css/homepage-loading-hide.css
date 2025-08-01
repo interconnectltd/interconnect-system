@@ -25,12 +25,13 @@ body:not(.loading-complete) [class*="btn-"] {
     visibility: hidden !important;
 }
 
-/* powered by ベテランAI を確実に非表示 */
+/* powered by ベテランAI を確実に非表示（display: noneは使わない） */
 body:not(.loading-complete) .section-badge {
-    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
-/* より具体的なセレクタで確実に非表示 */
+/* より具体的なセレクタで確実に非表示（display: noneは使わない） */
 body:not(.loading-complete) .hero .container,
 body:not(.loading-complete) .hero .container *,
 body:not(.loading-complete) .hero p,
@@ -39,7 +40,6 @@ body:not(.loading-complete) .hero a,
 body:not(.loading-complete) .hero button {
     opacity: 0 !important;
     visibility: hidden !important;
-    display: none !important;
 }
 
 /* ローディング画面は常に最前面 */

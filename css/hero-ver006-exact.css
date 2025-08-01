@@ -1,0 +1,273 @@
+/**
+ * Hero Ver.006 Exact
+ * Ver.006と完全に一致するスタイル
+ */
+
+/* ヒーローセクション基本構造 */
+.hero {
+    position: relative !important;
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    display: block !important;
+}
+
+/* 動画コンテナと動画 */
+.hero-video-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 0 !important;
+}
+
+.hero-video {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    transform: translate(-50%, -50%) !important;
+    object-fit: cover !important;
+}
+
+/* オーバーレイ */
+.hero-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    z-index: 1 !important;
+}
+
+/* ヒーローコンテンツ - 重要：中央配置 */
+.hero-content {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    padding: 0 20px !important;
+    text-align: center !important;
+    z-index: 2 !important;
+    
+    /* flexを使わない */
+    display: block !important;
+    
+    /* アニメーション無効化 */
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: none !important;
+}
+
+/* コンテナ */
+.hero-content .container {
+    text-align: center !important;
+    padding: 0 !important;
+    display: block !important;
+}
+
+/* セクションバッジ - Ver.006の正確なサイズ */
+.section-badge {
+    display: inline-block !important;
+    padding: 8px 24px !important;
+    background: linear-gradient(135deg, #0066ff 0%, #00d4ff 100%) !important;
+    border: none !important;
+    border-radius: 50px !important;
+    color: white !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    margin: 0 0 20px 0 !important;
+    letter-spacing: 0.05em !important;
+    
+    /* 重要：幅の制限 */
+    width: auto !important;
+    white-space: nowrap !important;
+    
+    /* アニメーション無効化 */
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    transition: none !important;
+}
+
+/* ヒーロータイトル */
+.hero-title {
+    font-size: 3.5rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    margin: 0 0 20px 0 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.02em !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+    font-family: 'Inter', 'Noto Sans JP', sans-serif !important;
+    
+    /* アニメーション無効化 */
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    transition: none !important;
+}
+
+/* ヒーローサブタイトル */
+.hero-subtitle {
+    font-size: 1.25rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin: 0 0 32px 0 !important;
+    line-height: 1.6 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3) !important;
+    font-family: 'Noto Sans JP', sans-serif !important;
+    
+    /* アニメーション無効化 */
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    transition: none !important;
+}
+
+/* ボタングループ */
+.hero-buttons {
+    display: flex !important;
+    gap: 16px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    margin: 0 !important;
+    
+    /* アニメーション無効化 */
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    transition: none !important;
+}
+
+/* ボタン - Ver.006の正確なサイズ */
+.hero-buttons .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px 32px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    min-width: 180px !important;
+    gap: 8px !important;
+    
+    /* アニメーション無効化（ホバー以外） */
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+}
+
+/* プライマリボタン */
+.hero-buttons .btn-primary {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    border: 2px solid transparent !important;
+}
+
+.hero-buttons .btn-primary:hover {
+    background: #f0f0f0 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* アウトラインボタン */
+.hero-buttons .btn-outline-light {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+}
+
+.hero-buttons .btn-outline-light:hover {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* モバイルレスポンシブ */
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 0 16px !important;
+    }
+    
+    .hero-title {
+        font-size: 2rem !important;
+        margin-bottom: 16px !important;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem !important;
+        margin-bottom: 24px !important;
+    }
+    
+    .section-badge {
+        font-size: 12px !important;
+        padding: 6px 16px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .hero-buttons {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .hero-buttons .btn {
+        width: 100% !important;
+        max-width: 280px !important;
+        padding: 14px 24px !important;
+        font-size: 14px !important;
+        min-width: unset !important;
+    }
+}
+
+/* スクロールインジケーター */
+.scroll-indicator {
+    position: absolute !important;
+    bottom: 30px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 3 !important;
+    color: #ffffff !important;
+    opacity: 0.8 !important;
+}
+
+/* アニメーションクラスを無効化 */
+.hero .visible,
+.hero .animated,
+.hero .fadeIn,
+.hero .fadeInUp {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* インラインスタイルを上書き */
+.hero-content[style],
+.section-badge[style],
+.hero-title[style],
+.hero-subtitle[style],
+.hero-buttons[style] {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) !important;
+    visibility: visible !important;
+}
+
+/* hero-contentのみ特別な処理 */
+.hero-content[style] {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}

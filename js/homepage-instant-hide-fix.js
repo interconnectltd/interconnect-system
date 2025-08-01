@@ -9,7 +9,7 @@
     // 最速でスタイルを適用
     const style = document.createElement('style');
     style.textContent = `
-        /* ローディング完了まですべて非表示 */
+        /* ローディング完了まですべて非表示（display: noneは使わない） */
         .hero-content,
         .section-badge,
         .hero-subtitle,
@@ -18,7 +18,6 @@
         .btn-outline {
             opacity: 0 !important;
             visibility: hidden !important;
-            display: none !important;
         }
         
         /* ローディング完了フラグ */
@@ -28,7 +27,6 @@
         body.instant-loading-complete .hero-buttons,
         body.instant-loading-complete .btn-primary,
         body.instant-loading-complete .btn-outline {
-            display: block !important;
             opacity: 1 !important;
             visibility: visible !important;
         }
