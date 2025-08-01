@@ -1,0 +1,222 @@
+/**
+ * Hero Final Solution CSS
+ * Ver.006準拠の最終的なスタイル定義
+ */
+
+/* リセット */
+.hero,
+.hero * {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* ヒーローセクション */
+.hero {
+    position: relative !important;
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    display: block !important;
+    background: #000 !important;
+}
+
+/* ::afterを削除 */
+.hero::after,
+.hero::before {
+    display: none !important;
+    content: none !important;
+}
+
+/* 動画コンテナ */
+.hero-video-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 0 !important;
+}
+
+/* 動画 */
+.hero-video {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    transform: translate(-50%, -50%) !important;
+    object-fit: cover !important;
+}
+
+/* オーバーレイ */
+.hero-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    z-index: 1 !important;
+}
+
+/* ヒーローコンテンツ - 最重要 */
+.hero-content {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    -webkit-transform: translate(-50%, -50%) !important;
+    -moz-transform: translate(-50%, -50%) !important;
+    -ms-transform: translate(-50%, -50%) !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    padding: 0 20px !important;
+    text-align: center !important;
+    z-index: 10 !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* セクションバッジ */
+.section-badge {
+    display: inline-block !important;
+    padding: 8px 24px !important;
+    background: linear-gradient(135deg, #0066ff 0%, #00d4ff 100%) !important;
+    border: none !important;
+    border-radius: 50px !important;
+    color: white !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    margin: 0 0 20px 0 !important;
+    letter-spacing: 0.05em !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* タイトル */
+.hero-title {
+    display: block !important;
+    font-size: 3.5rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    margin: 0 0 24px 0 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.02em !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* サブタイトル */
+.hero-subtitle {
+    display: block !important;
+    font-size: 1.25rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin: 0 0 32px 0 !important;
+    line-height: 1.6 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* ボタンコンテナ */
+.hero-buttons {
+    display: flex !important;
+    gap: 16px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* ボタン共通 */
+.hero-buttons .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px 32px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    min-width: 180px !important;
+    gap: 8px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* プライマリボタン */
+.hero-buttons .btn-primary {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    border: 2px solid transparent !important;
+}
+
+.hero-buttons .btn-primary:hover {
+    background: #f5f5f5 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* アウトラインボタン */
+.hero-buttons .btn-outline-light {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+}
+
+.hero-buttons .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem !important;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem !important;
+    }
+    
+    .hero-buttons {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .hero-buttons .btn {
+        width: 100% !important;
+        max-width: 280px !important;
+    }
+}
+
+/* ローディング完了時の表示 */
+body.loading-complete .hero-content,
+body.loading-complete .section-badge,
+body.loading-complete .hero-title,
+body.loading-complete .hero-subtitle,
+body.loading-complete .hero-buttons,
+body.loading-complete .hero-buttons .btn {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
