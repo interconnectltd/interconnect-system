@@ -1,0 +1,231 @@
+/**
+ * Hero Restored Styles
+ * Ver.006の正しいヒーローセクションスタイルを復元
+ */
+
+/* ヒーローセクション基本設定 */
+.hero {
+    position: relative !important;
+    min-height: 100vh !important;
+    overflow: hidden !important;
+    margin-top: 64px !important; /* ナビゲーション分のマージン */
+}
+
+/* 動画コンテナ */
+.hero-video-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1 !important;
+}
+
+/* 動画要素 */
+.hero-video {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    transform: translate(-50%, -50%) !important;
+    object-fit: cover !important;
+}
+
+/* オーバーレイ */
+.hero-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    z-index: 2 !important;
+}
+
+/* ヒーローコンテンツ */
+.hero-content {
+    position: relative !important;
+    z-index: 3 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+    padding: 120px 20px 80px !important;
+}
+
+/* コンテナ内のコンテンツ */
+.hero-content .container {
+    text-align: center !important;
+    max-width: 1200px !important;
+    width: 100% !important;
+}
+
+/* セクションバッジ */
+.section-badge {
+    display: inline-block !important;
+    padding: 8px 20px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50px !important;
+    color: #ffffff !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    margin-bottom: 24px !important;
+    white-space: nowrap !important;
+    width: auto !important;
+}
+
+/* ヒーロータイトル */
+.hero-title {
+    font-size: clamp(2rem, 5vw, 4rem) !important;
+    font-weight: 800 !important;
+    color: white !important;
+    margin-bottom: 24px !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.02em !important;
+    text-transform: uppercase !important;
+    font-family: 'Inter', 'Noto Sans JP', sans-serif !important;
+}
+
+/* ヒーローサブタイトル */
+.hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.5rem) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin-bottom: 48px !important;
+    line-height: 1.6 !important;
+    font-family: 'Noto Sans JP', sans-serif !important;
+}
+
+/* ヒーローボタングループ */
+.hero-buttons {
+    display: flex !important;
+    gap: 16px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    margin-top: 32px !important;
+}
+
+/* ボタンスタイル */
+.hero-buttons .btn {
+    padding: 16px 32px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+    min-width: 200px !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+}
+
+.hero-buttons .btn-primary {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    border: none !important;
+}
+
+.hero-buttons .btn-primary:hover {
+    background: #f0f0f0 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.hero-buttons .btn-outline-light {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+}
+
+.hero-buttons .btn-outline-light:hover {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* スクロールインジケーター */
+.scroll-indicator {
+    position: absolute !important;
+    bottom: 40px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 4 !important;
+    animation: bounce 2s infinite !important;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .hero {
+        margin-top: 56px !important;
+    }
+    
+    .hero-content {
+        padding: 100px 16px 60px !important;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem !important;
+        margin-bottom: 16px !important;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9375rem !important;
+        margin-bottom: 28px !important;
+    }
+    
+    .hero-buttons {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    
+    .hero-buttons .btn {
+        width: 100% !important;
+        max-width: 300px !important;
+        min-height: 48px !important;
+        font-size: 0.875rem !important;
+        padding: 12px 24px !important;
+    }
+    
+    .section-badge {
+        font-size: 0.75rem !important;
+        padding: 6px 16px !important;
+        margin-bottom: 16px !important;
+    }
+}
+
+/* アニメーション */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* すべての競合するスタイルを上書き */
+.hero *,
+.hero-content * {
+    animation: none !important;
+    transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease !important;
+}
+
+/* transformとpositionの競合を解決 */
+.hero-content[style*="transform"] {
+    transform: none !important;
+}
+
+.hero-content[style*="position: absolute"] {
+    position: relative !important;
+}
