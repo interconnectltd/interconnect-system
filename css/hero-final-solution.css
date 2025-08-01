@@ -220,3 +220,29 @@ body.loading-complete .hero-buttons .btn {
     opacity: 1 !important;
     visibility: visible !important;
 }
+
+/* 最終的なヒーローコンテンツ（競合停止後） */
+.hero-content-final {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    -webkit-transform: translate(-50%, -50%) !important;
+    -moz-transform: translate(-50%, -50%) !important;
+    -ms-transform: translate(-50%, -50%) !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    padding: 0 20px !important;
+    text-align: center !important;
+    z-index: 10 !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.hero-content-final * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    animation: none !important;
+    transition: none !important;
+}

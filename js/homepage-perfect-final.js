@@ -173,17 +173,18 @@
         },
         
         animateHeroTitle() {
+            // タイプライター効果を無効化
             const title = document.querySelector('.hero-title');
             const subtitle = document.querySelector('.hero-subtitle');
             
-            if (!title) return;
-            
-            // タイトルのタイプライター効果
-            this.typewriter(title, () => {
-                if (subtitle) {
-                    this.typewriter(subtitle);
-                }
-            });
+            if (title) {
+                title.style.opacity = '1';
+                title.style.visibility = 'visible';
+            }
+            if (subtitle) {
+                subtitle.style.opacity = '1';
+                subtitle.style.visibility = 'visible';
+            }
         },
         
         typewriter(element, callback) {
