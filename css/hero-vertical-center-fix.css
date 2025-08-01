@@ -15,16 +15,15 @@
 
 /* ヒーローコンテンツを真ん中に配置 */
 .hero-content {
-    position: relative !important;
+    position: absolute !important;
     z-index: 2 !important;
     width: 100% !important;
     max-width: 1200px !important;
-    margin: 0 auto !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
     padding: 0 2rem !important;
     text-align: center !important;
-    /* 画面の真ん中に配置 */
-    top: 50% !important;
-    transform: translateY(-50%) !important;
 }
 
 /* コンテナも中央配置を確実に */

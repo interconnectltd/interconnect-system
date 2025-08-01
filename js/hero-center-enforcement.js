@@ -14,13 +14,12 @@
         
         if (!heroContent || !hero) return;
         
-        // 既存のtransformスタイルをクリア
-        const existingStyle = heroContent.getAttribute('style');
-        if (existingStyle && existingStyle.includes('transform') && !existingStyle.includes('translateY(-50%)')) {
-            console.log('[HeroCenterEnforcement] 不正なtransformを検出、修正します');
-            // transformだけを正しい値に置き換え
-            heroContent.style.transform = 'translateY(-50%)';
-            heroContent.style.top = '50%';
+        // transformスタイルを完全に削除
+        if (heroContent.style.transform) {
+            console.log('[HeroCenterEnforcement] transformを削除します');
+            heroContent.style.removeProperty('transform');
+            heroContent.style.removeProperty('top');
+            heroContent.style.removeProperty('left');
             heroContent.style.position = 'relative';
         }
         
