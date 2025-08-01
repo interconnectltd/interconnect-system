@@ -212,23 +212,20 @@
         },
         
         fadeInElements() {
+            // アニメーションを無効化
             const elements = [
                 '.section-badge',
                 '.hero-buttons',
                 '.scroll-indicator'
             ];
             
-            elements.forEach((selector, i) => {
+            elements.forEach((selector) => {
                 const el = document.querySelector(selector);
                 if (el) {
-                    el.style.opacity = '0';
-                    el.style.transform = 'translateY(20px)';
-                    el.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
-                    
-                    setTimeout(() => {
-                        el.style.opacity = '1';
-                        el.style.transform = 'translateY(0)';
-                    }, 1000 + (i * 300));
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.transition = 'none';
+                    el.style.visibility = 'visible';
                 }
             });
         }

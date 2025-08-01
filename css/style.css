@@ -261,10 +261,10 @@ ul {
     z-index: 0;
 }
 
-/* Video loading state */
+/* Video loading state - 無効化 */
 .hero-video.loading {
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    opacity: 1; /* 常に表示 */
+    transition: none;
 }
 
 .hero-video.loaded {
