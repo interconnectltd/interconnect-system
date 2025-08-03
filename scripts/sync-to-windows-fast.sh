@@ -1,8 +1,8 @@
 #!/bin/bash
-# Windows側のVer.008フォルダに高速同期するスクリプト
+# Windows側のVer.009フォルダに高速同期するスクリプト
 
 # 同期先のWindowsパス
-WINDOWS_PATH="/mnt/c/Users/ooxmi/Downloads/Ver.008【コード】INTERCONNECT"
+WINDOWS_PATH="/mnt/c/Users/ooxmi/Downloads/Ver.009【コード】INTERCONNECT"
 
 # 同期元
 SOURCE_PATH="/home/ooxmichaelxoo/INTERCONNECT_project"
@@ -15,7 +15,12 @@ echo "[INFO] 同期先: $WINDOWS_PATH"
 mkdir -p "$WINDOWS_PATH"
 
 # 必要なファイルのみをコピー（不要ファイルを除外）
-cp -r "$SOURCE_PATH"/{*.html,css,js,assets,sql} "$WINDOWS_PATH/" 2>/dev/null
+cp -r "$SOURCE_PATH"/{*.html,css,js,assets,sql,docs,config,includes} "$WINDOWS_PATH/" 2>/dev/null
+cp "$SOURCE_PATH"/{README.md,SETUP_GUIDE.md,SUPABASE_SETUP.md,LINE_SETUP_GUIDE.md,ENV_SETUP.md,netlify.toml,package.json,.env.example} "$WINDOWS_PATH/" 2>/dev/null
+
+# netlifyフォルダも必要な部分のみコピー
+mkdir -p "$WINDOWS_PATH/netlify/functions"
+cp -r "$SOURCE_PATH/netlify/functions" "$WINDOWS_PATH/netlify/" 2>/dev/null
 
 # 不要なファイルを削除
 find "$WINDOWS_PATH" -name "*.log" -delete 2>/dev/null

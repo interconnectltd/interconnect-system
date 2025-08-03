@@ -1,8 +1,8 @@
 #!/bin/bash
-# Windows側のVer.008フォルダに自動同期するスクリプト
+# Windows側のVer.009フォルダに自動同期するスクリプト
 
 # 同期先のWindowsパス（WSL2から見たパス）
-WINDOWS_PATH="/mnt/c/Users/ooxmi/Downloads/Ver.008【コード】INTERCONNECT"
+WINDOWS_PATH="/mnt/c/Users/ooxmi/Downloads/Ver.009【コード】INTERCONNECT"
 
 # 同期元（現在のプロジェクトディレクトリ）
 SOURCE_PATH="/home/ooxmichaelxoo/INTERCONNECT_project"
@@ -84,14 +84,10 @@ sync_files() {
         --exclude='Thumbs.db' \
         --exclude='__pycache__/' \
         --exclude='*.pyc' \
-        --exclude='.env' \
-        --exclude='.env.*' \
+        --exclude='.env.local' \
+        --exclude='.env.*.local' \
         --exclude='package-lock.json' \
         --exclude='yarn.lock' \
-        --exclude='.gitignore' \
-        --exclude='README.md' \
-        --exclude='scripts/' \
-        --exclude='sql-archive/' \
         --exclude='test/' \
         --exclude='tests/' \
         --exclude='*.test.js' \
@@ -99,6 +95,40 @@ sync_files() {
         --exclude='coverage/' \
         --exclude='.vscode/' \
         --exclude='.idea/' \
+        --exclude='*.test.html' \
+        --exclude='*-test.html' \
+        --exclude='test-*.html' \
+        --exclude='simple-*.html' \
+        --exclude='minimal-*.html' \
+        --exclude='direct-api-*.html' \
+        --exclude='fix-*.html' \
+        --exclude='initialize-*.html' \
+        --exclude='verify-*.html' \
+        --exclude='check-*.html' \
+        --exclude='supabase-diagnostic.html' \
+        --exclude='dashboard-test.html' \
+        --exclude='logs/' \
+        --exclude='*.log' \
+        --exclude='server-pagination-setup.md' \
+        --exclude='page-analysis-report.md' \
+        --exclude='null-check-*.md' \
+        --exclude='members-analysis-report.md' \
+        --exclude='dashboard-js-analysis.md' \
+        --exclude='js-cleanup-report.md' \
+        --exclude='events-unimplemented-features.md' \
+        --exclude='dashboard-unimplemented-features.md' \
+        --exclude='sql-cleanup-complete.md' \
+        --exclude='security-fixes-summary.md' \
+        --exclude='*-report.md' \
+        --exclude='*-analysis.md' \
+        --exclude='update-user-menu.sh' \
+        --exclude='test-local.sh' \
+        --exclude='get-supabase-service-key.sh' \
+        --exclude='complete-setup.sh' \
+        --exclude='setup-all.sh' \
+        --exclude='check-line-config.sh' \
+        --exclude='line-callback-setup.sh' \
+        --exclude='supabase-setup-guide.sh' \
         "$SOURCE_PATH/" "$WINDOWS_PATH/"
     
     if [ $? -eq 0 ]; then
