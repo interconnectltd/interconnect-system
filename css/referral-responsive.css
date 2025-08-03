@@ -1,0 +1,338 @@
+/* ===========================
+   紹介ページ専用レスポンシブ
+   =========================== */
+
+/* モバイルヘッダー */
+@media (max-width: 991px) {
+    .site-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 9999;
+        padding: 0 1rem;
+    }
+    
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+    }
+    
+    .logo {
+        display: flex;
+        align-items: center;
+    }
+    
+    .logo img {
+        height: 40px;
+    }
+    
+    .main-nav {
+        display: none;
+    }
+    
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .dashboard-main {
+        margin-top: 60px;
+        padding: 1rem;
+    }
+}
+
+/* タブレット (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .dashboard-container {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+    
+    .points-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* モバイル (600px以下) */
+@media (max-width: 600px) {
+    .page-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-header .subtitle {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    
+    /* ポイントサマリー */
+    .points-summary {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .points-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .point-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .point-icon {
+        font-size: 1.75rem;
+        color: var(--primary-color);
+        margin-right: 1rem;
+        min-width: 50px;
+        text-align: center;
+    }
+    
+    .point-info {
+        flex: 1;
+    }
+    
+    .point-info .label {
+        display: block;
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+    
+    .value-wrapper {
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+    }
+    
+    .value-wrapper .value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+    
+    .value-wrapper .unit {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    
+    /* アクションボタン */
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .action-button {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9375rem;
+    }
+    
+    /* タブセクション */
+    .tabs-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    .tab-navigation {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .tab-navigation::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .tab-button {
+        flex: 0 0 auto;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+    
+    /* 招待リンクセクション */
+    .invite-section {
+        padding: 1rem;
+    }
+    
+    .invite-link-container {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .invite-link-wrapper {
+        width: 100%;
+    }
+    
+    .invite-link-input {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .copy-button {
+        width: 100%;
+        padding: 0.75rem;
+    }
+    
+    .share-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .share-button {
+        padding: 0.625rem;
+        font-size: 0.875rem;
+    }
+    
+    /* 履歴リスト */
+    .history-list {
+        gap: 0.75rem;
+    }
+    
+    .history-item {
+        padding: 1rem;
+    }
+    
+    .history-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .history-meta {
+        font-size: 0.75rem;
+    }
+    
+    .history-stats {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+    
+    .stat-item {
+        padding: 0.5rem;
+        text-align: left;
+    }
+    
+    .stat-item .label {
+        font-size: 0.75rem;
+    }
+    
+    .stat-item .value {
+        font-size: 1rem;
+    }
+}
+
+/* 小型モバイル (480px以下) */
+@media (max-width: 480px) {
+    .dashboard-main {
+        padding: 0.75rem;
+    }
+    
+    .card {
+        padding: 0.875rem;
+        border-radius: 8px;
+    }
+    
+    .points-summary {
+        padding: 0.875rem;
+    }
+    
+    .point-item {
+        padding: 0.875rem;
+    }
+    
+    .point-icon {
+        font-size: 1.5rem;
+        min-width: 40px;
+    }
+    
+    .value-wrapper .value {
+        font-size: 1.25rem;
+    }
+    
+    /* モバイルナビゲーション */
+    .mobile-nav-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9000;
+    }
+}
+
+/* 横向きモバイル */
+@media (max-width: 767px) and (orientation: landscape) {
+    .site-header {
+        height: 50px;
+    }
+    
+    .dashboard-main {
+        margin-top: 50px;
+    }
+    
+    .points-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .page-header {
+        margin-bottom: 1rem;
+    }
+}
+
+/* プリント用スタイル */
+@media print {
+    .site-header,
+    .user-menu,
+    .action-buttons,
+    .share-buttons,
+    .tab-navigation {
+        display: none !important;
+    }
+    
+    .dashboard-main {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+        page-break-inside: avoid;
+    }
+}

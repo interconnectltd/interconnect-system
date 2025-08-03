@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="css/referral.css">
     <link rel="stylesheet" href="css/cashout-modal.css">
     <link rel="stylesheet" href="css/css-conflict-fix.css">
+    <link rel="stylesheet" href="css/responsive-complete.css">
+    <link rel="stylesheet" href="css/referral-responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -17,7 +19,8 @@
     <header class="site-header">
         <div class="header-container">
             <a href="index.html" class="logo">
-                <img src="logo.png" alt="INTERCONNECT">
+                <img src="logo.svg" alt="INTERCONNECT" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <span style="display:none; font-weight:bold; color:#2563eb;">INTERCONNECT</span>
             </a>
             <nav class="main-nav">
                 <ul>
@@ -35,7 +38,7 @@
                     <span class="badge" id="notification-badge">0</span>
                 </div>
                 <div class="user-profile">
-                    <img src="default-avatar.png" alt="Profile" id="user-avatar">
+                    <img src="default-avatar.svg" alt="Profile" id="user-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxOCIgZmlsbD0iI2U1ZTdlYiIvPgogIDxjaXJjbGUgY3g9IjIwIiBjeT0iMTYiIHI9IjYiIGZpbGw9IiM5Y2EzYWYiLz4KICA8ZWxsaXBzZSBjeD0iMjAiIGN5PSIyOCIgcng9IjEwIiByeT0iNiIgZmlsbD0iIzljYTNhZiIvPgo8L3N2Zz4='">
                     <span id="user-name">ゲスト</span>
                     <div class="dropdown-menu">
                         <a href="profile.html">プロフィール</a>
