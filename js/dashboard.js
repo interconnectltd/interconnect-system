@@ -206,4 +206,35 @@
     // グローバルに公開（デバッグ用）
     window.updateDashboardUserInfo = updateUserInfo;
 
+    // 初期化時に紹介ポイントも読み込む
+    loadReferralPoints();
+
+    // 紹介ポイントを読み込む関数
+    async function loadReferralPoints() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            // ユーザーのポイント残高を取得
+            const { data: points, error } = await supabase
+                .from('user_points')
+                .select('available_points')
+                .eq('user_id', user.id)
+                .single();
+
+            if (!error && points) {
+                const pointsElement = document.getElementById('referral-points');
+                if (pointsElement) {
+                    pointsElement.textContent = (points.available_points || 0).toLocaleString() + ' pt';
+                }
+            }
+        } catch (error) {
+            console.error('紹介ポイントの読み込みエラー:', error);
+            const pointsElement = document.getElementById('referral-points');
+            if (pointsElement) {
+                pointsElement.textContent = '0 pt';
+            }
+        }
+    }
+
 })();

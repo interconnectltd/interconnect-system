@@ -392,5 +392,72 @@
     }
 
     console.log('[RadarChartFix] 競合修正設定完了');
+    
+    // Step 8: クリックイベントの無効化
+    const disableChartInteractions = () => {
+        console.log('[RadarChartFix] チャートのインタラクションを無効化');
+        
+        // スタイルを追加してインタラクションを完全に無効化
+        const style = document.createElement('style');
+        style.textContent = `
+            /* レーダーチャートのクリック・タップを無効化 */
+            .radar-container,
+            .radar-container * {
+                pointer-events: none !important;
+                user-select: none !important;
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                cursor: default !important;
+            }
+            
+            /* ホバー効果を無効化 */
+            .radar-container:hover {
+                transform: none !important;
+            }
+            
+            /* ツールチップを非表示 */
+            .radar-chart-tooltip {
+                display: none !important;
+            }
+            
+            /* フルスクリーン機能を無効化 */
+            .radar-chart-fullscreen {
+                display: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 既存のイベントリスナーを削除
+        const removeInteractions = () => {
+            document.querySelectorAll('.radar-container canvas').forEach(canvas => {
+                // イベントリスナーを削除するため要素を複製
+                const newCanvas = canvas.cloneNode(true);
+                if (canvas.parentNode) {
+                    canvas.parentNode.replaceChild(newCanvas, canvas);
+                }
+            });
+        };
+        
+        // 初回実行
+        removeInteractions();
+        
+        // 動的に追加される要素も処理
+        const observer = new MutationObserver(() => {
+            removeInteractions();
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    };
+    
+    // インタラクション無効化を実行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', disableChartInteractions);
+    } else {
+        setTimeout(disableChartInteractions, 500);
+    }
 
 })();

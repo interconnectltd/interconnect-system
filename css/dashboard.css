@@ -267,6 +267,45 @@
     color: #ef4444;
 }
 
+/* Referral Card */
+.stat-card.referral-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.referral-card .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.referral-card .stat-value,
+.referral-card .stat-label {
+    color: white;
+}
+
+.stat-action {
+    margin-top: 1rem;
+}
+
+.btn-primary-small {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-primary-small:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
 /* ===========================
    Content Grid
    =========================== */

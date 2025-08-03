@@ -3,347 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>招待 - INTERCONNECT</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
+    <title>INTERCONNECTへようこそ - 招待</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/buttons.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/invite.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
+    <style>
+        .invite-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .invite-header {
+            margin-bottom: 3rem;
+        }
+
+        .invite-header h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+
+        .invite-info {
+            background: #f7fafc;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .inviter-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .inviter-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .inviter-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .invite-message {
+            font-size: 1.125rem;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .invite-code {
+            display: inline-block;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #667eea;
+            border: 1px solid #e2e8f0;
+        }
+
+        .benefits-section {
+            margin: 3rem 0;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .benefit-item {
+            text-align: center;
+        }
+
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: #edf2f7;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: #667eea;
+        }
+
+        .benefit-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .benefit-description {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .cta-section {
+            margin-top: 3rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: #667eea;
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.2s;
+        }
+
+        .cta-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .already-member {
+            margin-top: 2rem;
+            color: #718096;
+        }
+
+        .already-member a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .already-member a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            color: #718096;
+            margin: 2rem 0;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-        <button class="mobile-menu-toggle" id="inviteSidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        <h1>INTERCONNECT</h1>
-        <div class="mobile-header-actions">
-            <a href="notifications.html" class="notification-btn">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge">3</span>
-            </a>
-        </div>
-    </header>
-
-    <!-- Mobile Navigation -->
-    <nav class="mobile-nav">
-        <div class="mobile-nav-header">
-            <h1>INTERCONNECT</h1>
-            <button class="mobile-nav-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="mobile-nav-menu">
-            <ul>
-                <li>
-                    <a href="dashboard.html" class="mobile-nav-link">
-                        <i class="fas fa-home"></i>
-                        <span>ダッシュボード</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="members.html" class="mobile-nav-link">
-                        <i class="fas fa-users"></i>
-                        <span>メンバー</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="events.html" class="mobile-nav-link">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>イベント</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="messages.html" class="mobile-nav-link">
-                        <i class="fas fa-envelope"></i>
-                        <span>メッセージ</span>
-                        <span class="badge">3</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="matching.html" class="mobile-nav-link">
-                        <i class="fas fa-handshake"></i>
-                        <span>マッチング</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="profile.html" class="mobile-nav-link">
-                        <i class="fas fa-user"></i>
-                        <span>プロフィール</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="settings.html" class="mobile-nav-link">
-                        <i class="fas fa-cog"></i>
-                        <span>設定</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="mobile-nav-link active">
-                        <i class="fas fa-user-plus"></i>
-                        <span>招待</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-        <div class="mobile-nav-footer">
-            <a href="#" class="mobile-nav-link" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>ログアウト</span>
-            </a>
-        </div>
-    </nav>
-    
-    <!-- Mobile Backdrop -->
-    <div class="mobile-backdrop"></div>
-
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="inviteSidebar">
-            <div class="sidebar-header">
-                <h1>INTERCONNECT</h1>
-                <button class="sidebar-toggle" id="sidebarToggle" aria-label="メニュー">
-                    <i class="fas fa-bars"></i>
-                </button>
+    <div class="auth-container">
+        <div class="auth-box invite-container">
+            <div class="invite-header">
+                <h1>INTERCONNECTへようこそ</h1>
+                <p>ビジネスコミュニティで新しいつながりを</p>
             </div>
+
+            <div class="error-message" id="error-message"></div>
             
-            <nav class="sidebar-nav">
-                <ul>
-                    <li>
-                        <a href="dashboard.html" class="sidebar-link">
-                            <i class="fas fa-home"></i>
-                            <span>ダッシュボード</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="members.html" class="sidebar-link">
-                            <i class="fas fa-users"></i>
-                            <span>メンバー</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="events.html" class="sidebar-link">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>イベント</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="messages.html" class="sidebar-link">
-                            <i class="fas fa-envelope"></i>
-                            <span>メッセージ</span>
-                            <span class="badge">3</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="matching.html" class="sidebar-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>マッチング</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="profile.html" class="sidebar-link">
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i>
+                <p>招待情報を読み込んでいます...</p>
+            </div>
+
+            <div id="invite-content" style="display: none;">
+                <div class="invite-info">
+                    <div class="inviter-info">
+                        <div class="inviter-avatar" id="inviter-avatar">
                             <i class="fas fa-user"></i>
-                            <span>プロフィール</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="settings.html" class="sidebar-link">
-                            <i class="fas fa-cog"></i>
-                            <span>設定</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-divider"></li>
-                    <li>
-                        <a href="#" class="sidebar-link active">
-                            <i class="fas fa-user-plus"></i>
-                            <span>友達を招待</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <a href="#" class="sidebar-link" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>ログアウト</span>
-                </a>
-            </div>
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            <header class="dashboard-header">
-                <div class="header-left">
-                    <h1>友達を招待</h1>
-                    <p>INTERCONNECTに友達を招待しましょう</p>
-                </div>
-                
-                <div class="header-right">
-                    <a href="notifications.html" class="notification-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </a>
+                        </div>
+                        <div>
+                            <div class="inviter-name" id="inviter-name">読み込み中...</div>
+                            <div>から招待されています</div>
+                        </div>
+                    </div>
                     
-                    <div class="user-menu">
-                        <button class="user-menu-btn">
-                            <img src="assets/user-placeholder.svg" alt="User">
-                            <span class="user-name">ユーザー名</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        
-                        <div class="user-dropdown">
-                            <a href="profile.html">プロフィール</a>
-                            <a href="settings.html">設定</a>
-                            <hr>
-                            <a href="#" onclick="logout()">ログアウト</a>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            
-            <!-- Invite Content -->
-            <div class="invite-container">
-                <!-- Invite Stats -->
-                <div class="invite-stats">
-                    <div class="invite-stat">
-                        <i class="fas fa-paper-plane"></i>
-                        <div class="stat-content">
-                            <div class="stat-value">15</div>
-                            <div class="stat-label">送信済み招待</div>
-                        </div>
-                    </div>
-                    <div class="invite-stat">
-                        <i class="fas fa-user-check"></i>
-                        <div class="stat-content">
-                            <div class="stat-value">8</div>
-                            <div class="stat-label">参加済み</div>
-                        </div>
-                    </div>
-                    <div class="invite-stat">
-                        <i class="fas fa-gift"></i>
-                        <div class="stat-content">
-                            <div class="stat-value">800</div>
-                            <div class="stat-label">獲得ポイント</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Invite Methods -->
-                <div class="invite-methods">
-                    <h2>招待方法を選択</h2>
+                    <p class="invite-message">
+                        INTERCONNECTは、ビジネスプロフェッショナルのための
+                        革新的なネットワーキングプラットフォームです。
+                    </p>
                     
-                    <div class="invite-method-grid">
-                        <div class="invite-method">
-                            <i class="fas fa-envelope"></i>
-                            <h3>メールで招待</h3>
-                            <p>友達のメールアドレスに招待状を送信します</p>
-                            <button class="btn btn-primary" onclick="showEmailInvite()">メールで招待</button>
+                    <div class="invite-code" id="invite-code">招待コード: ----</div>
+                </div>
+
+                <div class="benefits-section">
+                    <h2>INTERCONNECTでできること</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="benefit-title">ネットワーキング</div>
+                            <div class="benefit-description">
+                                同じ志を持つビジネスパーソンとつながる
+                            </div>
                         </div>
-                        
-                        <div class="invite-method">
-                            <i class="fas fa-link"></i>
-                            <h3>リンクを共有</h3>
-                            <p>専用の招待リンクをコピーして共有します</p>
-                            <button class="btn btn-outline" onclick="copyInviteLink()">リンクをコピー</button>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="benefit-title">イベント参加</div>
+                            <div class="benefit-description">
+                                限定イベントやセミナーに参加できる
+                            </div>
                         </div>
-                        
-                        <div class="invite-method">
-                            <i class="fab fa-whatsapp"></i>
-                            <h3>SNSで共有</h3>
-                            <p>各種SNSで招待リンクを共有します</p>
-                            <div class="social-share">
-                                <button class="btn-icon"><i class="fab fa-facebook"></i></button>
-                                <button class="btn-icon"><i class="fab fa-twitter"></i></button>
-                                <button class="btn-icon"><i class="fab fa-linkedin"></i></button>
-                                <button class="btn-icon"><i class="fab fa-line"></i></button>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="benefit-title">マッチング</div>
+                            <div class="benefit-description">
+                                AIが最適なビジネスパートナーを提案
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Email Invite Form -->
-                <div class="email-invite-form" id="emailInviteForm" style="display: none;">
-                    <h2>メールで招待</h2>
-                    <form>
-                        <div class="form-group">
-                            <label>メールアドレス（複数可）</label>
-                            <textarea class="form-textarea" rows="4" placeholder="example1@email.com&#10;example2@email.com"></textarea>
-                            <small>複数のメールアドレスは改行で区切ってください</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>カスタムメッセージ（オプション）</label>
-                            <textarea class="form-textarea" rows="3" placeholder="友達に送るメッセージを入力..."></textarea>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="hideEmailInvite()">キャンセル</button>
-                            <button type="submit" class="btn btn-primary">招待を送信</button>
-                        </div>
-                    </form>
-                </div>
-                
-                <!-- Invite History -->
-                <div class="invite-history">
-                    <h2>招待履歴</h2>
-                    <div class="invite-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>招待した人</th>
-                                    <th>送信日</th>
-                                    <th>ステータス</th>
-                                    <th>獲得ポイント</th>
-                                    <th>アクション</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>example@email.com</td>
-                                    <td>2024-01-15</td>
-                                    <td><span class="status-badge success">参加済み</span></td>
-                                    <td>100pt</td>
-                                    <td><button class="btn-text">詳細</button></td>
-                                </tr>
-                                <tr>
-                                    <td>test@email.com</td>
-                                    <td>2024-01-10</td>
-                                    <td><span class="status-badge pending">保留中</span></td>
-                                    <td>-</td>
-                                    <td><button class="btn-text">再送信</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                <div class="cta-section">
+                    <a href="#" id="register-button" class="cta-button">
+                        <i class="fas fa-user-plus"></i> 無料で登録する
+                    </a>
+                    
+                    <div class="already-member">
+                        すでにアカウントをお持ちですか？
+                        <a href="/login.html">ログイン</a>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
-    
-    <!-- Scripts -->
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
-    <script src="js/debug-logger.js"></script>
-    <script src="js/responsive-menu-simple.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/invite.js"></script>
-    <script src="js/notifications.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase初期化
+        const supabaseUrl = 'https://smpmnkypzblmmlnwgmsj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtcG1ua3lwemJsbW1sbndnbXNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MDA2OTAsImV4cCI6MjA0OTQ3NjY5MH0.JBJfkpe98hEIs_oOPd3CvP9T5CiTAEPZ6SgHYMxOmWA';
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        // URLパラメータから招待コードを取得
+        const pathParts = window.location.pathname.split('/');
+        const inviteCode = pathParts[pathParts.length - 1] || new URLSearchParams(window.location.search).get('code');
+
+        if (!inviteCode) {
+            showError('招待リンクが無効です');
+        } else {
+            loadInviteInfo(inviteCode);
+        }
+
+        async function loadInviteInfo(code) {
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('invite-content');
+            
+            loading.style.display = 'block';
+
+            try {
+                // 招待リンク情報を取得
+                const { data: inviteLink, error: linkError } = await supabaseClient
+                    .from('invite_links')
+                    .select(`
+                        *,
+                        creator:profiles!invite_links_created_by_fkey(name, company)
+                    `)
+                    .eq('link_code', code)
+                    .eq('is_active', true)
+                    .single();
+
+                if (linkError || !inviteLink) {
+                    throw new Error('招待リンクが見つかりません');
+                }
+
+                // 使用回数チェック
+                if (inviteLink.max_uses && inviteLink.used_count >= inviteLink.max_uses) {
+                    throw new Error('この招待リンクは使用上限に達しています');
+                }
+
+                // 有効期限チェック
+                if (inviteLink.expires_at && new Date(inviteLink.expires_at) < new Date()) {
+                    throw new Error('この招待リンクは有効期限が切れています');
+                }
+
+                // 招待者情報を表示
+                const inviterName = inviteLink.creator?.name || '招待者';
+                document.getElementById('inviter-name').textContent = inviterName;
+                
+                // アバターに頭文字を表示
+                const avatar = document.getElementById('inviter-avatar');
+                if (inviterName && inviterName !== '招待者') {
+                    avatar.textContent = inviterName.charAt(0).toUpperCase();
+                }
+
+                // 招待コードを表示
+                document.getElementById('invite-code').textContent = `招待コード: ${code}`;
+
+                // 登録ボタンに招待コードを設定
+                const registerButton = document.getElementById('register-button');
+                registerButton.href = `/register.html?invite=${code}`;
+
+                // セッションストレージに招待情報を保存
+                sessionStorage.setItem('inviteCode', code);
+                sessionStorage.setItem('inviterId', inviteLink.created_by);
+
+                loading.style.display = 'none';
+                content.style.display = 'block';
+
+            } catch (error) {
+                showError(error.message || '招待情報の読み込みに失敗しました');
+                loading.style.display = 'none';
+            }
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    </script>
 </body>
 </html>

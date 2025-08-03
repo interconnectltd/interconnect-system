@@ -259,6 +259,39 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStep = 1;
     const totalSteps = 5;
     
+    // 招待コードの処理
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteCode = urlParams.get('invite') || sessionStorage.getItem('inviteCode');
+    const inviterId = sessionStorage.getItem('inviterId');
+    
+    if (inviteCode) {
+        console.log('招待コードが検出されました:', inviteCode);
+        // 招待情報を表示
+        const inviteNotice = document.createElement('div');
+        inviteNotice.className = 'invite-notice';
+        inviteNotice.innerHTML = `
+            <i class="fas fa-gift"></i>
+            <span>招待コードが適用されています: <strong>${inviteCode}</strong></span>
+        `;
+        inviteNotice.style.cssText = `
+            background: #f0f9ff;
+            border: 1px solid #667eea;
+            color: #667eea;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        `;
+        
+        const authForm = document.querySelector('.auth-form');
+        if (authForm && authForm.parentElement) {
+            authForm.parentElement.insertBefore(inviteNotice, authForm);
+        }
+    }
+    
     // 初期化時に非アクティブなステップのrequired属性を無効化
     document.querySelectorAll('.form-step:not(.active)').forEach(step => {
         step.querySelectorAll('[required]').forEach(field => {
@@ -396,6 +429,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // フォームデータの収集
         const formData = collectFormData();
         
+        // 招待コード情報を追加
+        if (inviteCode) {
+            formData.inviteCode = inviteCode;
+            formData.inviterId = inviterId || null;
+        }
+        
         // 送信ボタンをローディング状態に
         const submitButton = form.querySelector('button[type="submit"]');
         submitButton.classList.add('loading');
@@ -404,6 +443,35 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // 実際のAPIコールをシミュレート
             await simulateRegistration(formData);
+            
+            // 招待コードがある場合、招待記録を作成
+            if (inviteCode && window.supabase) {
+                try {
+                    // 招待リンクの使用回数を更新
+                    const { data: inviteLink, error: linkError } = await window.supabase
+                        .from('invite_links')
+                        .select('id, used_count')
+                        .eq('link_code', inviteCode)
+                        .single();
+                    
+                    if (!linkError && inviteLink) {
+                        // 使用回数をインクリメント
+                        await window.supabase
+                            .from('invite_links')
+                            .update({ used_count: (inviteLink.used_count || 0) + 1 })
+                            .eq('id', inviteLink.id);
+                        
+                        console.log('招待リンクの使用回数を更新しました');
+                    }
+                    
+                    // セッションストレージをクリア
+                    sessionStorage.removeItem('inviteCode');
+                    sessionStorage.removeItem('inviterId');
+                } catch (error) {
+                    console.error('招待記録の作成エラー:', error);
+                    // エラーが発生しても登録処理は継続
+                }
+            }
             
             // 成功時の処理
             window.InterConnect.Registration.showToast('登録が完了しました！', 'success');
