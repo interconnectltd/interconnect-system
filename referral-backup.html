@@ -13,16 +13,18 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Core Styles (順序重要) -->
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/responsive-menu.css">
+    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
     <link rel="stylesheet" href="css/referral.css">
     <link rel="stylesheet" href="css/cashout-modal.css">
-    
-    <!-- 統合CSS (最後に読み込んで競合を解決) -->
-    <link rel="stylesheet" href="css/referral-unified.css">
+    <link rel="stylesheet" href="css/responsive-complete.css">
 </head>
-<body class="referral-page">
+<body>
     <!-- Mobile Header -->
     <header class="mobile-header">
         <button class="mobile-menu-toggle" id="referralSidebarToggle">
@@ -38,7 +40,7 @@
     </header>
 
     <!-- Mobile Navigation -->
-    <nav class="mobile-nav" id="mobileNav">
+    <nav class="mobile-nav">
         <ul>
             <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> ダッシュボード</a></li>
             <li><a href="members.html"><i class="fas fa-users"></i> メンバー</a></li>
@@ -309,9 +311,6 @@
         </main>
     </div>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <!-- キャッシュアウトモーダル -->
     <div id="cashout-modal" class="modal">
         <div class="modal-content">
@@ -430,6 +429,11 @@
                 });
                 document.getElementById(`${tab}-tab`).classList.add('active');
             });
+        });
+
+        // サイドバートグル
+        document.getElementById('referralSidebarToggle').addEventListener('click', () => {
+            document.getElementById('referralSidebar').classList.toggle('active');
         });
     </script>
 </body>
