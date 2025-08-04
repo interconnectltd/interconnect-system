@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無料相談予約 - INTERCONNECT</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    
+    <style>
+        /* 予約ページ専用スタイル */
+        .booking-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8f2ff 100%);
+        }
+        
+        .booking-header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .booking-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .booking-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: #1f2937;
+        }
+        
+        .booking-logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .booking-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .booking-nav a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .booking-nav a:hover {
+            color: #3b82f6;
+        }
+        
+        .booking-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .booking-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .booking-info {
+            padding: 3rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .booking-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .booking-title h2 {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .booking-title p {
+            color: #6b7280;
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .booking-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .booking-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .booking-feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        .booking-feature-content h3 {
+            font-size: 1.125rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .booking-feature-content p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .booking-calendar {
+            padding: 2rem;
+            background: #f9fafb;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .booking-iframe-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .booking-iframe {
+            width: 100%;
+            height: 700px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .booking-loading {
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        .booking-loading i {
+            font-size: 3rem;
+            color: #3b82f6;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .booking-cta {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .booking-cta h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .booking-cta p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .booking-cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .booking-cta-btn {
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .booking-cta-btn.primary {
+            background: white;
+            color: #3b82f6;
+        }
+        
+        .booking-cta-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+        
+        .booking-cta-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .booking-cta-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .booking-header-content {
+                padding: 1rem;
+            }
+            
+            .booking-nav {
+                display: none;
+            }
+            
+            .booking-container {
+                padding: 2rem 1rem;
+            }
+            
+            .booking-info {
+                padding: 2rem 1.5rem;
+            }
+            
+            .booking-title h2 {
+                font-size: 1.5rem;
+            }
+            
+            .booking-iframe {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="booking-page">
+        <!-- Header -->
+        <header class="booking-header">
+            <div class="booking-header-content">
+                <a href="index.html" class="booking-logo">
+                    <i class="fas fa-network-wired"></i>
+                    <h1>INTERCONNECT</h1>
+                </a>
+                <nav class="booking-nav">
+                    <a href="index.html#features">特徴</a>
+                    <a href="index.html#benefits">メリット</a>
+                    <a href="index.html#testimonials">お客様の声</a>
+                    <a href="login.html" class="booking-cta-btn secondary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        ログイン
+                    </a>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="booking-container">
+            <div class="booking-content">
+                <!-- Info Section -->
+                <section class="booking-info">
+                    <div class="booking-title">
+                        <h2>無料相談を予約する</h2>
+                        <p>ビジネスの課題や目標について、専門家と1対1で相談できます。<br>まずは30分の無料相談からお気軽にどうぞ。</p>
+                    </div>
+                    
+                    <div class="booking-features">
+                        <div class="booking-feature">
+                            <div class="booking-feature-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="booking-feature-content">
+                                <h3>オンライン面談</h3>
+                                <p>Google Meetを使用した快適なオンライン面談。場所を選ばずご参加いただけます。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-feature">
+                            <div class="booking-feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="booking-feature-content">
+                                <h3>30分間の無料相談</h3>
+                                <p>初回は完全無料。じっくりとご相談内容をお聞きし、最適なソリューションをご提案します。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-feature">
+                            <div class="booking-feature-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="booking-feature-content">
+                                <h3>専門家が対応</h3>
+                                <p>各分野のエキスパートが、あなたのビジネス課題に合わせて的確なアドバイスを提供します。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-feature">
+                            <div class="booking-feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="booking-feature-content">
+                                <h3>プライバシー保護</h3>
+                                <p>ご相談内容は厳重に管理。安心してビジネスの課題をお話しください。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Calendar Section -->
+                <section class="booking-calendar">
+                    <div class="booking-iframe-container">
+                        <div class="booking-loading" id="booking-loading">
+                            <i class="fas fa-spinner"></i>
+                            <p>予約カレンダーを読み込んでいます...</p>
+                        </div>
+                        <!-- TimeRexのiframeがここに挿入されます -->
+                        <div id="timerex-embed"></div>
+                    </div>
+                </section>
+                
+                <!-- CTA Section -->
+                <section class="booking-cta">
+                    <h3>予約に関するお問い合わせ</h3>
+                    <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+                    <div class="booking-cta-buttons">
+                        <a href="mailto:support@interconnect.jp" class="booking-cta-btn primary">
+                            <i class="fas fa-envelope"></i>
+                            メールで問い合わせ
+                        </a>
+                        <a href="register.html" class="booking-cta-btn secondary">
+                            <i class="fas fa-user-plus"></i>
+                            アカウント登録
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // TimeRexの埋め込みスクリプト
+        document.addEventListener('DOMContentLoaded', function() {
+            // URLパラメータから紹介コードを取得
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralCode = urlParams.get('ref') || sessionStorage.getItem('referralCode') || 'DIRECT';
+            
+            // TimeRexの埋め込みコードを生成
+            const timerexPageId = 'interconnect-consultation'; // TimeRexで作成した予約ページID
+            const timerexBaseUrl = 'https://timerex.jp';
+            
+            // iframeのパラメータを構築
+            const iframeParams = new URLSearchParams({
+                'custom_referral_code': referralCode,
+                'source': 'landing_page',
+                'embed': 'true'
+            });
+            
+            // iframeを作成
+            const iframe = document.createElement('iframe');
+            iframe.src = `${timerexBaseUrl}/book/${timerexPageId}?${iframeParams.toString()}`;
+            iframe.className = 'booking-iframe';
+            iframe.onload = function() {
+                // ローディング表示を非表示
+                document.getElementById('booking-loading').style.display = 'none';
+            };
+            
+            // iframeを挿入
+            document.getElementById('timerex-embed').appendChild(iframe);
+            
+            // postMessageで予約完了を受信
+            window.addEventListener('message', function(event) {
+                if (event.origin !== timerexBaseUrl) return;
+                
+                if (event.data.type === 'booking_completed') {
+                    // 予約完了時の処理
+                    handleBookingCompleted(event.data);
+                }
+            });
+        });
+        
+        function handleBookingCompleted(data) {
+            // 予約完了の処理
+            console.log('予約が完了しました:', data);
+            
+            // サンクスページへリダイレクト（または完了メッセージを表示）
+            const bookingInfo = {
+                date: data.scheduledDate,
+                time: data.scheduledTime,
+                staff: data.staffName,
+                referralCode: data.customFields?.referral_code || 'DIRECT'
+            };
+            
+            // セッションストレージに保存
+            sessionStorage.setItem('latestBooking', JSON.stringify(bookingInfo));
+            
+            // サンクスページへリダイレクト
+            window.location.href = 'booking-complete.html';
+        }
+    </script>
+</body>
+</html>
