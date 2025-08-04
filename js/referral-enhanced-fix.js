@@ -10,14 +10,15 @@ async function createReferralLinkFixed(description = null) {
     console.log('[Referral] 紹介リンク作成開始...', { description });
     try {
         // パラメータを明示的に指定
+        const { data: { user } } = await supabaseClient.auth.getUser();
         const params = {
-            p_user_id: supabase.auth.user()?.id,
+            p_user_id: user?.id,
             p_description: description || null
         };
         
         console.log('[Referral] RPC呼び出しパラメータ:', params);
         
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .rpc('create_invite_link', params);
             
         console.log('[Referral] リンク作成結果:', { data, error });

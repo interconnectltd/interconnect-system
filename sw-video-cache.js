@@ -6,6 +6,16 @@
 const CACHE_NAME = 'interconnect-video-v1';
 const VIDEO_CACHE_NAME = 'interconnect-video-cache-v1';
 
+// URL検証関数
+function isValidUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+        return false;
+    }
+}
+
 // キャッシュする動画ファイル
 const VIDEO_URLS = [
     '/assets/interconnect-top.mp4'
@@ -60,8 +70,8 @@ self.addEventListener('fetch', (event) => {
                     
                     // キャッシュにない場合はネットワークから取得
                     return fetch(request).then(networkResponse => {
-                        // レスポンスが正常な場合のみキャッシュ
-                        if (networkResponse && networkResponse.status === 200) {
+                        // レスポンスが正常で、かつ有効なURLの場合のみキャッシュ
+                        if (networkResponse && networkResponse.status === 200 && isValidUrl(request.url)) {
                             cache.put(request, networkResponse.clone());
                         }
                         return networkResponse;
@@ -82,6 +92,12 @@ self.addEventListener('fetch', (event) => {
                 
                 return fetch(request).then(networkResponse => {
                     if (!networkResponse || networkResponse.status !== 200) {
+                        return networkResponse;
+                    }
+                    
+                    // URL検証: chrome-extension スキームはキャッシュしない
+                    if (!isValidUrl(request.url)) {
+                        console.log('[SW] Skipping cache for invalid URL scheme:', request.url);
                         return networkResponse;
                     }
                     
