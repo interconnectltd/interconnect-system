@@ -68,7 +68,7 @@ serve(async (req) => {
     
     // セッション情報をデータベースに保存
     const { error: dbError } = await supabase.from('booking_sessions').insert({
-      session_id: session.id,
+      timerex_session_id: session.id, // カラム名修正
       user_id: userId,
       user_email: userEmail,
       referral_code: referralCode || 'DIRECT',
