@@ -18,8 +18,10 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Video will be loaded when needed, not preloaded -->
-    <!-- <link rel="preload" href="assets/interconnect-top.mp4" as="video" crossorigin="anonymous"> -->
+    <!-- Video Preload Optimization -->
+    <link rel="preload" href="assets/interconnect-top.mp4" as="video" type="video/mp4" crossorigin="anonymous">
+    <link rel="prefetch" href="assets/interconnect-top.mp4" as="video" type="video/mp4">
+    <link rel="dns-prefetch" href="assets/">
     
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
@@ -35,6 +37,8 @@
     <link rel="stylesheet" href="css/news-category-mobile-fix.css">
     <!-- 動画プリロード修正 -->
     <link rel="stylesheet" href="css/homepage-video-preload-fix.css">
+    <!-- 動画読み込み最適化 -->
+    <link rel="stylesheet" href="css/video-loading-optimize.css">
     <!-- ヒーローセクション -->
     <link rel="stylesheet" href="css/hero.css">
     <!-- タイプライター初期状態 -->
@@ -742,6 +746,8 @@
     <!-- ローディング動画修正 -->
     <script src="js/homepage-loading-final-fix.js"></script>
     <script src="js/homepage-loading-video-fix.js"></script>
+    <!-- 動画プリロード最適化 -->
+    <script src="js/video-preload-optimize.js"></script>
     <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->
     <script src="js/homepage-perfect-final.js"></script>
     <script src="js/main.js"></script>
