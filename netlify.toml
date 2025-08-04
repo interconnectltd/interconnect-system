@@ -25,3 +25,9 @@
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
+
+# 紹介リンクのリダイレクト
+[[redirects]]
+  from = "/invite/*"
+  to = "/index.html"
+  status = 200
