@@ -207,16 +207,33 @@
     window.updateDashboardUserInfo = updateUserInfo;
 
     // 初期化時に紹介ポイントも読み込む
-    loadReferralPoints();
+    // supabaseが定義されるまで待つ
+    if (typeof supabase !== 'undefined') {
+        loadReferralPoints();
+    } else {
+        // supabaseが読み込まれたら実行
+        window.addEventListener('load', () => {
+            if (typeof supabase !== 'undefined') {
+                loadReferralPoints();
+            }
+        });
+    }
 
     // 紹介ポイントを読み込む関数
     async function loadReferralPoints() {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
+            // supabaseClientを使用（supabase-client.jsで定義）
+            const supabaseInstance = window.supabaseClient || window.supabase;
+            if (!supabaseInstance) {
+                console.log('Supabase not initialized yet');
+                return;
+            }
+            
+            const { data: { user } } = await supabaseInstance.auth.getUser();
             if (!user) return;
 
             // ユーザーのポイント残高を取得
-            const { data: points, error } = await supabase
+            const { data: points, error } = await supabaseInstance
                 .from('user_points')
                 .select('available_points')
                 .eq('user_id', user.id)

@@ -106,7 +106,7 @@
     // 6. Service Workerを使用したキャッシュ戦略（別ファイルで実装）
     function setupServiceWorker() {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw-video-cache.js')
+            navigator.serviceWorker.register('/sw-video-cache-fixed.js')
                 .then(registration => {
                     console.log('[VideoOptimize] Service Worker登録成功');
                 })
