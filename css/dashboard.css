@@ -494,16 +494,21 @@
 /* ===========================
    Responsive
    =========================== */
-@media (max-width: 1024px) {
+@media (max-width: 991px) {
     .sidebar {
         position: fixed;
-        left: -250px;
+        left: 0;
+        top: 0;
+        width: 260px;
         height: 100vh;
-        z-index: 2000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 400;
     }
     
-    .sidebar.show {
-        left: 0;
+    .sidebar.show,
+    .sidebar.active {
+        transform: translateX(0);
     }
     
     .sidebar-toggle {
