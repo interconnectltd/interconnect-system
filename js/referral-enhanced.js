@@ -219,6 +219,11 @@ class ReferralManager {
             console.log('[Referral] リンク取得結果:', { links, error });
             console.log('[Referral] ユーザーID:', this.user.id);
             console.log('[Referral] SQLクエリ:', `SELECT * FROM invite_links WHERE created_by = '${this.user.id}'`);
+            console.log('[Referral] links配列の詳細:', links);
+            console.log('[Referral] links配列の長さ:', links ? links.length : 'null');
+            if (links && links.length > 0) {
+                console.log('[Referral] 最初のリンク:', links[0]);
+            }
 
             if (error) {
                 console.error('[Referral] リンク取得エラー:', error);
@@ -272,6 +277,8 @@ class ReferralManager {
             }
             
             console.log('[Referral] 作成されたリンク:', data);
+            console.log('[Referral] データの型:', typeof data);
+            console.log('[Referral] データの詳細:', JSON.stringify(data, null, 2));
             
             // リンクリストを再読み込み
             await this.loadReferralLinks();
