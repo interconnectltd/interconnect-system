@@ -232,7 +232,7 @@
                             <div class="user-dropdown">
                                 <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
                                 <a href="settings.html"><i class="fas fa-cog"></i> 設定</a>
-                                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+                                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
                             </div>
                         </div>
                     </div>
@@ -475,6 +475,22 @@
                 });
                 document.getElementById(`${tab}-tab`).classList.add('active');
             });
+        });
+        
+        // ログアウト機能
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                // ログインページへリダイレクト
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('ログアウトエラー:', error);
+                alert('ログアウトに失敗しました');
+            }
         });
     </script>
 </body>
