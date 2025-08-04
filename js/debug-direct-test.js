@@ -9,18 +9,18 @@ window.testDirectDB = async function() {
     console.log('=== 直接データベーステスト ===');
     
     try {
-        const { data: { user } } = await supabaseClient.auth.getUser();
+        const { data: { user } } = await window.window.supabaseClient.auth.getUser();
         console.log('現在のユーザー:', user);
         
         // すべてのリンクを取得（RLS無視）
-        const { data: allLinks, error: allError } = await supabaseClient
+        const { data: allLinks, error: allError } = await window.supabaseClient
             .from('invite_links')
             .select('*');
         console.log('全てのリンク:', allLinks);
         console.log('全てのリンクエラー:', allError);
         
         // ユーザー指定リンク取得
-        const { data: userLinks, error: userError } = await supabaseClient
+        const { data: userLinks, error: userError } = await window.supabaseClient
             .from('invite_links')
             .select('*')
             .eq('created_by', user.id);
@@ -37,10 +37,10 @@ window.testCreateLink = async function(description = '手動テストリンク')
     console.log('=== 手動リンク作成テスト ===');
     
     try {
-        const { data: { user } } = await supabaseClient.auth.getUser();
+        const { data: { user } } = await window.window.supabaseClient.auth.getUser();
         console.log('ユーザー:', user);
         
-        const { data, error } = await supabaseClient
+        const { data, error } = await window.supabaseClient
             .rpc('create_invite_link', {
                 p_user_id: user.id,
                 p_description: description
@@ -61,7 +61,7 @@ window.testTableStructure = async function() {
     
     try {
         // RLSポリシー確認
-        const { data: policies, error: policyError } = await supabaseClient
+        const { data: policies, error: policyError } = await window.supabaseClient
             .rpc('execute_sql', { 
                 sql: `SELECT policyname, cmd, permissive, roles, qual FROM pg_policies WHERE tablename = 'invite_links'`
             });
