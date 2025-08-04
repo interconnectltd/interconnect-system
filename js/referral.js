@@ -9,11 +9,23 @@ class ReferralManager {
 
     async init() {
         // ユーザー認証確認
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
+        console.log('紹介システム初期化中...');
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error) {
+            console.error('認証エラー:', error);
+            this.showNotification('認証エラーが発生しました', 'error');
             window.location.href = '/login.html';
             return;
         }
+        
+        if (!user) {
+            console.log('未ログイン - ログインページへリダイレクト');
+            window.location.href = '/login.html';
+            return;
+        }
+        
+        console.log('ログインユーザー:', user.email);
         this.user = user;
 
         // イベントリスナー設定
@@ -94,6 +106,12 @@ class ReferralManager {
             }
         } catch (error) {
             console.error('統計の読み込みエラー:', error);
+            console.error('エラー詳細:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
             this.showNotification('統計の読み込みに失敗しました', 'error');
         }
     }
