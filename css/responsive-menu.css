@@ -200,7 +200,7 @@
 }
 
 /* Responsive Behavior */
-@media (max-width: 1024px) {
+@media (max-width: 991px) {
     /* Show mobile header */
     .mobile-header {
         display: flex !important;
