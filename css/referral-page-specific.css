@@ -12,10 +12,21 @@
     margin-bottom: 2rem;
 }
 
+/* 大画面での最適化 */
+@media (min-width: 1200px) {
+    .points-summary {
+        padding: 2.5rem;
+    }
+    
+    .points-grid {
+        gap: 2.5rem;
+    }
+}
+
 .points-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
     margin-bottom: 2rem;
 }
 
@@ -23,6 +34,16 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.point-item:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .point-icon {
@@ -35,6 +56,7 @@
     justify-content: center;
     color: white;
     font-size: 1.25rem;
+    flex-shrink: 0;
 }
 
 .point-info {
@@ -234,6 +256,13 @@
 }
 
 /* レスポンシブデザイン */
+@media (max-width: 1199px) {
+    .points-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .points-grid {
         grid-template-columns: 1fr;
@@ -259,6 +288,14 @@
 @media (max-width: 479px) {
     .points-summary {
         padding: 1rem;
+    }
+    
+    .points-grid {
+        gap: 0.75rem;
+    }
+    
+    .point-item {
+        padding: 0.75rem;
     }
     
     .point-icon {
