@@ -13,26 +13,20 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Styles (ダッシュボードと同じ順序) -->
+    <!-- Core Styles (順序重要) -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/dashboard-states.css">
-    <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/realtime-notifications.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
     <link rel="stylesheet" href="css/referral.css">
     <link rel="stylesheet" href="css/cashout-modal.css">
-    <link rel="stylesheet" href="css/css-conflict-fix.css">
-    <link rel="stylesheet" href="css/responsive-complete.css">
+    
+    <!-- 統合CSS (最後に読み込んで競合を解決) -->
     <link rel="stylesheet" href="css/referral-unified.css">
     <link rel="stylesheet" href="css/referral-responsive-perfect.css">
 </head>
-<body>
-    <!-- Mobile Header (ダッシュボードと同じ) -->
+<body class="referral-page">
+    <!-- Mobile Header -->
     <header class="mobile-header">
-        <button class="mobile-menu-toggle" id="dashboardSidebarToggle">
+        <button class="mobile-menu-toggle" id="referralSidebarToggle">
             <i class="fas fa-bars"></i>
         </button>
         <h1>INTERCONNECT</h1>
@@ -44,197 +38,108 @@
         </div>
     </header>
 
-    <!-- Mobile Navigation (ダッシュボードと同じ) -->
-    <nav class="mobile-nav">
-        <div class="mobile-nav-header">
-            <h1>INTERCONNECT</h1>
-            <button class="mobile-nav-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="mobile-nav-menu">
-            <ul>
-                <li>
-                    <a href="dashboard.html" class="mobile-nav-link">
-                        <i class="fas fa-home"></i>
-                        <span>ダッシュボード</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="members.html" class="mobile-nav-link">
-                        <i class="fas fa-users"></i>
-                        <span>メンバー</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="events.html" class="mobile-nav-link">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>イベント</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="messages.html" class="mobile-nav-link">
-                        <i class="fas fa-envelope"></i>
-                        <span>メッセージ</span>
-                        <span class="badge message-badge" style="display: none;">0</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="matching.html" class="mobile-nav-link">
-                        <i class="fas fa-handshake"></i>
-                        <span>マッチング</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="referral.html" class="mobile-nav-link active">
-                        <i class="fas fa-user-plus"></i>
-                        <span>紹介プログラム</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="profile.html" class="mobile-nav-link">
-                        <i class="fas fa-user"></i>
-                        <span>プロフィール</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="settings.html" class="mobile-nav-link">
-                        <i class="fas fa-cog"></i>
-                        <span>設定</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-        <div class="mobile-nav-footer">
-            <a href="#" class="mobile-nav-link" onclick="logout(); return false;">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>ログアウト</span>
-            </a>
-        </div>
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> ダッシュボード</a></li>
+            <li><a href="members.html"><i class="fas fa-users"></i> メンバー</a></li>
+            <li><a href="events.html"><i class="fas fa-calendar-alt"></i> イベント</a></li>
+            <li><a href="matching.html"><i class="fas fa-handshake"></i> マッチング</a></li>
+            <li><a href="messages.html"><i class="fas fa-envelope"></i> メッセージ</a></li>
+            <li class="active"><a href="referral.html"><i class="fas fa-user-plus"></i> 紹介プログラム</a></li>
+        </ul>
     </nav>
-    
-    <!-- Mobile Backdrop -->
-    <div class="mobile-backdrop"></div>
 
-    <div class="dashboard">
-        <!-- Sidebar (ダッシュボードと同じ構造) -->
-        <aside class="sidebar" id="dashboardSidebar">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="referralSidebar">
             <div class="sidebar-header">
-                <h1>INTERCONNECT</h1>
-                <button class="sidebar-toggle" aria-label="メニュー">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <a href="index.html" class="logo">INTERCONNECT</a>
             </div>
             
             <nav class="sidebar-nav">
                 <ul>
                     <li>
-                        <a href="dashboard.html" class="sidebar-link">
-                            <i class="fas fa-home"></i>
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
                             <span>ダッシュボード</span>
                         </a>
                     </li>
                     <li>
-                        <a href="members.html" class="sidebar-link">
+                        <a href="members.html">
                             <i class="fas fa-users"></i>
                             <span>メンバー</span>
                         </a>
                     </li>
                     <li>
-                        <a href="events.html" class="sidebar-link">
+                        <a href="events.html">
                             <i class="fas fa-calendar-alt"></i>
                             <span>イベント</span>
                         </a>
                     </li>
                     <li>
-                        <a href="messages.html" class="sidebar-link">
-                            <i class="fas fa-envelope"></i>
-                            <span>メッセージ</span>
-                            <span class="badge message-badge" style="display: none;">0</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="matching.html" class="sidebar-link">
+                        <a href="matching.html">
                             <i class="fas fa-handshake"></i>
                             <span>マッチング</span>
                         </a>
                     </li>
                     <li>
-                        <a href="referral.html" class="sidebar-link active">
+                        <a href="messages.html">
+                            <i class="fas fa-envelope"></i>
+                            <span>メッセージ</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="referral.html">
                             <i class="fas fa-user-plus"></i>
                             <span>紹介プログラム</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="profile.html" class="sidebar-link">
-                            <i class="fas fa-user"></i>
-                            <span>プロフィール</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="settings.html" class="sidebar-link">
-                            <i class="fas fa-cog"></i>
-                            <span>設定</span>
                         </a>
                     </li>
                 </ul>
             </nav>
             
             <div class="sidebar-footer">
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>ログアウト</span>
-                </button>
+                <div class="user-menu">
+                    <img src="images/default-avatar.svg" alt="User Avatar" class="user-avatar" id="sidebarUserAvatar">
+                    <div class="user-info">
+                        <span class="user-name" id="sidebarUserName">ゲスト</span>
+                        <span class="user-email" id="sidebarUserEmail">guest@example.com</span>
+                    </div>
+                    <button class="user-menu-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-menu-dropdown">
+                        <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
+                        <a href="settings.html"><i class="fas fa-cog"></i> 設定</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+                    </div>
+                </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="content-header">
+        <main class="dashboard-main">
+            <!-- Header -->
+            <header class="dashboard-header">
                 <div class="header-left">
                     <h1 class="page-title">
                         <i class="fas fa-user-plus"></i>
                         紹介プログラム
                     </h1>
-                    <p class="page-description">友達を紹介して、1,000ポイントを獲得しよう！</p>
+                    <p class="page-subtitle">友達を紹介して、1,000ポイントを獲得しよう！</p>
                 </div>
                 <div class="header-right">
-                    <div class="user-menu">
-                        <div class="notification-wrapper">
-                            <button class="notification-btn">
-                                <i class="fas fa-bell"></i>
-                                <span class="notification-badge" style="display: none;">0</span>
-                            </button>
-                            <div class="notification-dropdown">
-                                <div class="notification-header">
-                                    <h3>通知</h3>
-                                    <button class="mark-all-read">すべて既読にする</button>
-                                </div>
-                                <div class="notification-list">
-                                    <div class="empty-notifications">
-                                        <i class="fas fa-bell-slash"></i>
-                                        <p>新しい通知はありません</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="user-profile">
-                            <img src="images/default-avatar.svg" alt="User Avatar" class="user-avatar" id="userAvatar">
-                            <span class="user-name" id="userName">ゲスト</span>
-                            <i class="fas fa-chevron-down"></i>
-                            <div class="user-dropdown">
-                                <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
-                                <a href="settings.html"><i class="fas fa-cog"></i> 設定</a>
-                                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
-                            </div>
-                        </div>
+                    <div class="header-actions">
+                        <button class="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" style="display: none;">0</span>
+                        </button>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <div class="content-body">
+            <!-- Content -->
+            <div class="dashboard-content">
                 <!-- ポイント概要 -->
                 <section class="points-summary card">
                     <div class="points-grid">
@@ -405,6 +310,9 @@
         </main>
     </div>
 
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- キャッシュアウトモーダル -->
     <div id="cashout-modal" class="modal">
         <div class="modal-content">
@@ -503,10 +411,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/common.js"></script>
-    <script src="js/sidebar.js"></script>
-    <script src="js/notifications.js"></script>
-    <script src="js/user-menu-dropdown.js"></script>
-    <script src="js/realtime-notifications.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
+    <script src="js/user-menu.js"></script>
     <script src="js/referral-enhanced.js"></script>
     <script src="js/cashout-modal.js"></script>
     <script>
