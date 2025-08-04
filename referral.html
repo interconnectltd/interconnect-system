@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="css/sidebar-unified.css">
     <!-- ヘッダー修正 -->
     <link rel="stylesheet" href="css/referral-header-fix.css">
+    <!-- モーダルスタイル -->
+    <link rel="stylesheet" href="css/referral-modal-styles.css">
 </head>
 <body>
     <!-- Mobile Header (ダッシュボードと同じ) -->
@@ -492,6 +494,34 @@
                 alert('ログアウトに失敗しました');
             }
         });
+        
+        // モーダル関数
+        window.closeShareModal = function() {
+            document.getElementById('share-modal').classList.remove('active');
+        };
+        
+        window.shareToTwitter = function() {
+            const text = document.getElementById('share-message').value;
+            const url = window.currentShareLink;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        };
+        
+        window.shareToLine = function() {
+            const text = document.getElementById('share-message').value;
+            const url = window.currentShareLink;
+            window.open(`https://line.me/R/msg/text/?${encodeURIComponent(text + '\n' + url)}`, '_blank');
+        };
+        
+        window.shareToFacebook = function() {
+            const url = window.currentShareLink;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        };
+        
+        window.shareByEmail = function() {
+            const text = document.getElementById('share-message').value;
+            const url = window.currentShareLink;
+            window.location.href = `mailto:?subject=INTERCONNECTへの招待&body=${encodeURIComponent(text + '\n\n' + url)}`;
+        };
     </script>
 </body>
 </html>
