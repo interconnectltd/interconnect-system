@@ -96,7 +96,7 @@ class ReferralManager {
 
                 // キャッシュアウトボタンの有効化
                 const cashoutBtn = document.getElementById('cashout-btn');
-                if (stats.available_points >= 3000) {
+                if (stats.available_points >= 5000) {
                     cashoutBtn.disabled = false;
                     cashoutBtn.classList.add('enabled');
                 } else {

@@ -1,0 +1,600 @@
+/* ===========================
+   紹介ページ完全レスポンシブ最適化
+   320px～1024pxまで全サイズ対応
+   =========================== */
+
+/* ポイントサマリーの文字色修正 */
+.points-summary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.points-summary .point-item {
+    color: white; /* 文字色を白に */
+}
+
+.points-summary .label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.points-summary .value,
+.points-summary .unit {
+    color: white;
+}
+
+/* レスポンシブ時の文字色修正 */
+@media (max-width: 991px) {
+    .point-item {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white !important;
+    }
+    
+    .point-info .label,
+    .point-info .value,
+    .point-info .unit {
+        color: white !important;
+    }
+}
+
+/* ===== 320px - 最小スマートフォン ===== */
+@media (max-width: 359px) {
+    /* 基本設定 */
+    body {
+        font-size: 13px;
+    }
+    
+    /* ヘッダー */
+    .dashboard-header {
+        padding: 0.75rem;
+    }
+    
+    .page-title {
+        font-size: 1.25rem;
+    }
+    
+    .page-subtitle {
+        font-size: 0.75rem;
+    }
+    
+    /* コンテンツエリア */
+    .dashboard-content {
+        padding: 0.75rem;
+    }
+    
+    /* カード */
+    .card {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+    }
+    
+    /* ポイントサマリー */
+    .points-summary {
+        padding: 1rem;
+    }
+    
+    .points-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .point-item {
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .point-icon {
+        font-size: 1.5rem;
+        min-width: 40px;
+    }
+    
+    .point-info {
+        flex: 1;
+    }
+    
+    .point-info .label {
+        font-size: 0.75rem;
+    }
+    
+    .value {
+        font-size: 1.25rem !important;
+    }
+    
+    .unit {
+        font-size: 0.75rem !important;
+    }
+    
+    /* ボタン */
+    .btn {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.75rem;
+    }
+    
+    .cashout-button {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    /* 紹介の流れ */
+    .steps-container {
+        flex-direction: column;
+    }
+    
+    .step {
+        width: 100%;
+        padding: 0.75rem;
+    }
+    
+    .step-arrow {
+        transform: rotate(90deg);
+        margin: 0.5rem 0;
+    }
+}
+
+/* ===== 360px～479px - 一般的なスマートフォン ===== */
+@media (min-width: 360px) and (max-width: 479px) {
+    /* 基本設定 */
+    body {
+        font-size: 14px;
+    }
+    
+    /* ヘッダー */
+    .dashboard-header {
+        padding: 1rem;
+    }
+    
+    .page-title {
+        font-size: 1.375rem;
+    }
+    
+    .page-subtitle {
+        font-size: 0.8125rem;
+    }
+    
+    /* コンテンツエリア */
+    .dashboard-content {
+        padding: 1rem;
+    }
+    
+    /* カード */
+    .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* ポイントサマリー */
+    .points-summary {
+        padding: 1.25rem;
+    }
+    
+    .points-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .point-item {
+        padding: 1rem;
+    }
+    
+    .point-icon {
+        font-size: 1.75rem;
+    }
+    
+    .value {
+        font-size: 1.5rem !important;
+    }
+    
+    .unit {
+        font-size: 0.875rem !important;
+    }
+    
+    /* ボタン */
+    .btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+    }
+    
+    .cashout-button {
+        padding: 0.875rem;
+        font-size: 0.9375rem;
+    }
+}
+
+/* ===== 480px～599px - 大型スマートフォン ===== */
+@media (min-width: 480px) and (max-width: 599px) {
+    /* 基本設定 */
+    body {
+        font-size: 15px;
+    }
+    
+    /* ヘッダー */
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .page-subtitle {
+        font-size: 0.875rem;
+    }
+    
+    /* ポイントサマリー */
+    .points-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .point-item {
+        padding: 1.25rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .point-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .value {
+        font-size: 1.75rem !important;
+    }
+    
+    /* ボタン */
+    .btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+    }
+    
+    /* 紹介の流れ */
+    .steps-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .step-arrow {
+        display: none;
+    }
+}
+
+/* ===== 600px～767px - 小型タブレット ===== */
+@media (min-width: 600px) and (max-width: 767px) {
+    /* 基本設定 */
+    body {
+        font-size: 15px;
+    }
+    
+    /* ヘッダー */
+    .page-title {
+        font-size: 1.625rem;
+    }
+    
+    /* コンテンツエリア */
+    .dashboard-content {
+        padding: 1.5rem;
+    }
+    
+    /* カード */
+    .card {
+        padding: 1.5rem;
+    }
+    
+    /* ポイントサマリー */
+    .points-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+    
+    .point-item {
+        padding: 1.5rem;
+    }
+    
+    .point-icon {
+        font-size: 2.25rem;
+    }
+    
+    .value {
+        font-size: 2rem !important;
+    }
+    
+    /* ボタン */
+    .btn {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9375rem;
+    }
+    
+    /* 紹介の流れ */
+    .steps-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+    
+    .step {
+        flex: 0 0 45%;
+        margin-bottom: 1rem;
+    }
+}
+
+/* ===== 768px～991px - タブレット ===== */
+@media (min-width: 768px) and (max-width: 991px) {
+    /* 基本設定 */
+    body {
+        font-size: 16px;
+    }
+    
+    /* サイドバー */
+    .dashboard-main {
+        margin-left: 0;
+    }
+    
+    /* ヘッダー */
+    .page-title {
+        font-size: 1.75rem;
+    }
+    
+    /* コンテンツエリア */
+    .dashboard-content {
+        padding: 2rem;
+    }
+    
+    /* ポイントサマリー */
+    .points-summary {
+        padding: 2rem;
+    }
+    
+    .points-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .point-item {
+        padding: 1rem;
+        flex-direction: column;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+    }
+    
+    .point-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .value {
+        font-size: 2.25rem !important;
+    }
+    
+    /* ボタン */
+    .btn {
+        padding: 0.875rem 1.75rem;
+        font-size: 1rem;
+    }
+    
+    .cashout-button {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    /* 紹介の流れ */
+    .steps-container {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .step {
+        flex: 1;
+        padding: 1.5rem 1rem;
+    }
+    
+    .step-arrow {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+    }
+}
+
+/* ===== 992px～1024px - 小型デスクトップ ===== */
+@media (min-width: 992px) and (max-width: 1024px) {
+    /* 基本設定 */
+    body {
+        font-size: 16px;
+    }
+    
+    /* サイドバー */
+    .sidebar {
+        width: 240px;
+    }
+    
+    .dashboard-main {
+        margin-left: 240px;
+    }
+    
+    /* コンテンツエリア */
+    .dashboard-content {
+        padding: 1.5rem;
+    }
+    
+    /* ポイントサマリー */
+    .points-grid {
+        gap: 1.5rem;
+    }
+    
+    .point-item {
+        padding: 1.25rem;
+    }
+    
+    .point-icon {
+        font-size: 2.25rem;
+    }
+    
+    .value {
+        font-size: 2rem !important;
+    }
+    
+    /* ボタン */
+    .btn {
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* ===== 共通のレスポンシブ調整 ===== */
+
+/* モバイルメニュー */
+@media (max-width: 991px) {
+    .mobile-header {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 1000;
+        height: 56px;
+        align-items: center;
+        padding: 0 1rem;
+    }
+    
+    .mobile-header h1 {
+        font-size: 1.25rem;
+        margin: 0;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .dashboard-main {
+        padding-top: 56px;
+    }
+}
+
+/* タブナビゲーション */
+@media (max-width: 599px) {
+    .tab-navigation {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    
+    .tab-navigation::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .tab-button {
+        flex: 0 0 auto;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+}
+
+/* リンク管理セクション */
+@media (max-width: 767px) {
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.25rem;
+        margin: 0;
+    }
+    
+    #create-link-btn {
+        width: 100%;
+    }
+    
+    .link-item {
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .link-url {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    .link-url input {
+        width: 100%;
+    }
+    
+    .copy-button {
+        width: 100%;
+        padding: 0.625rem;
+    }
+    
+    .link-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+}
+
+/* フォーム要素 */
+@media (max-width: 599px) {
+    .form-input {
+        padding: 0.75rem;
+        font-size: 16px; /* iOS zoom防止 */
+    }
+    
+    .form-select {
+        padding: 0.75rem;
+        font-size: 16px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+
+/* エンプティステート */
+@media (max-width: 479px) {
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .empty-state i {
+        font-size: 2.5rem;
+    }
+    
+    .empty-state p {
+        font-size: 0.875rem;
+    }
+}
+
+/* 履歴アイテム */
+@media (max-width: 599px) {
+    .history-item,
+    .referral-item,
+    .cashout-item {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .referral-info {
+        margin-bottom: 0.75rem;
+    }
+    
+    .referral-email {
+        font-size: 0.875rem;
+    }
+    
+    .referral-date {
+        font-size: 0.75rem;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+    }
+}
