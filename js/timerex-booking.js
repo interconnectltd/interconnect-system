@@ -28,6 +28,15 @@ class TimeRexBooking {
   
   async startBooking() {
     try {
+      // supabaseClientが存在するかチェック
+      if (!window.supabaseClient) {
+        console.log('Supabaseクライアントが利用できません。ゲストとして処理します。');
+        const referralCode = this.getReferralCode();
+        const bookingUrl = this.buildFallbackUrl(null, referralCode);
+        this.openBookingWindow(bookingUrl);
+        return;
+      }
+      
       // 現在のユーザー情報を取得（ログインしていない場合はゲストとして処理）
       const { data: { user } } = await window.supabaseClient.auth.getUser().catch(() => ({ data: { user: null } }));
       
@@ -39,7 +48,9 @@ class TimeRexBooking {
       // ログインユーザーの場合はEdge Functionを使用
       if (user && window.supabaseClient) {
         try {
-          showNotification('予約ページを準備中...', 'info');
+          if (typeof showNotification !== 'undefined') {
+            showNotification('予約ページを準備中...', 'info');
+          }
           
           const response = await window.supabaseClient.functions.invoke('timerex-booking', {
             body: {
@@ -68,24 +79,14 @@ class TimeRexBooking {
         bookingUrl = this.buildFallbackUrl(null, referralCode);
       }
       
-      // ポップアップで開く
-      const popup = window.open(
-        bookingUrl, 
-        'timerex-booking',
-        'width=600,height=700,left=100,top=100'
-      );
-      
-      if (!popup) {
-        showNotification('ポップアップがブロックされました。ブラウザの設定を確認してください。', 'error');
-        return;
-      }
-      
-      // 予約完了を監視
-      this.watchBookingCompletion(popup);
+      // 予約ウィンドウを開く
+      this.openBookingWindow(bookingUrl);
       
     } catch (error) {
       console.error('予約エラー:', error);
-      showNotification('予約ページを開けませんでした', 'error');
+      if (typeof showNotification !== 'undefined') {
+        showNotification('予約ページを開けませんでした', 'error');
+      }
     }
   }
   
@@ -136,6 +137,25 @@ class TimeRexBooking {
     return url;
   }
   
+  openBookingWindow(bookingUrl) {
+    // ポップアップで開く
+    const popup = window.open(
+      bookingUrl, 
+      'timerex-booking',
+      'width=600,height=700,left=100,top=100'
+    );
+    
+    if (!popup) {
+      if (typeof showNotification !== 'undefined') {
+        showNotification('ポップアップがブロックされました。ブラウザの設定を確認してください。', 'error');
+      }
+      return;
+    }
+    
+    // 予約完了を監視
+    this.watchBookingCompletion(popup);
+  }
+  
   watchBookingCompletion(popup) {
     // postMessageで予約完了を受信
     const messageHandler = (event) => {
@@ -166,7 +186,9 @@ class TimeRexBooking {
     console.log('予約完了:', data);
     
     // 予約完了通知
-    showNotification('予約が完了しました！確認メールをご確認ください。', 'success');
+    if (typeof showNotification !== 'undefined') {
+      showNotification('予約が完了しました！確認メールをご確認ください。', 'success');
+    }
     
     // ローカルに予約情報を保存
     const booking = {
