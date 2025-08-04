@@ -16,7 +16,7 @@ class ReferralManager {
         try {
             // ユーザー認証確認
             console.log('[Referral] ユーザー認証確認中...');
-            const { data: { user }, error } = await supabase.auth.getUser();
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
             
             if (error) {
                 console.error('[Referral] 認証エラー:', error);
@@ -158,7 +158,7 @@ class ReferralManager {
         console.log('[Referral] 統計情報読み込み中...');
         try {
             // 統計情報を取得
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .rpc('get_referral_stats', { p_user_id: this.user.id });
 
             console.log('[Referral] 統計取得結果:', { data, error });
@@ -210,13 +210,15 @@ class ReferralManager {
     async loadReferralLinks() {
         console.log('[Referral] 紹介リンク読み込み中...');
         try {
-            const { data: links, error } = await supabase
+            const { data: links, error } = await supabaseClient
                 .from('invite_links')
                 .select('*')
                 .eq('created_by', this.user.id)
                 .order('created_at', { ascending: false });
 
             console.log('[Referral] リンク取得結果:', { links, error });
+            console.log('[Referral] ユーザーID:', this.user.id);
+            console.log('[Referral] SQLクエリ:', `SELECT * FROM invite_links WHERE created_by = '${this.user.id}'`);
 
             if (error) {
                 console.error('[Referral] リンク取得エラー:', error);
