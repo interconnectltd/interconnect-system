@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="css/referral-page-specific.css">
     <!-- サイドバー統一スタイル -->
     <link rel="stylesheet" href="css/sidebar-unified.css">
+    <!-- ヘッダー修正 -->
+    <link rel="stylesheet" href="css/referral-header-fix.css">
 </head>
 <body>
     <!-- Mobile Header (ダッシュボードと同じ) -->
@@ -191,11 +193,17 @@
         <main class="main-content">
             <div class="content-header">
                 <div class="header-left">
-                    <h1 class="page-title">
-                        <i class="fas fa-user-plus"></i>
-                        紹介プログラム
-                    </h1>
-                    <p class="page-description">友達を紹介して、1,000ポイントを獲得しよう！</p>
+                    <div>
+                        <h1 class="page-title">
+                            <i class="fas fa-user-plus"></i>
+                            紹介プログラム
+                        </h1>
+                        <nav class="breadcrumb">
+                            <a href="/dashboard">ダッシュボード</a>
+                            <i class="fas fa-chevron-right"></i>
+                            <span>紹介プログラム</span>
+                        </nav>
+                    </div>
                 </div>
                 <div class="header-right">
                     <div class="user-menu">
@@ -232,6 +240,14 @@
             </div>
 
             <div class="content-body">
+                <!-- ページ説明 -->
+                <div class="page-intro">
+                    <p class="page-description">
+                        <i class="fas fa-gift"></i>
+                        友達を紹介して、1,000ポイントを獲得しよう！紹介された方が面談を完了すると、あなたに報酬が入ります。
+                    </p>
+                </div>
+                
                 <!-- ポイント概要 -->
                 <section class="points-summary card">
                     <div class="points-grid">

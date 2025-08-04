@@ -3,6 +3,30 @@
    ダッシュボードと異なる部分のみ定義
    =========================== */
 
+/* ページ説明 */
+.page-intro {
+    margin-bottom: 2rem;
+}
+
+.page-description {
+    background: linear-gradient(135deg, #e0eaff 0%, #f0f4ff 100%);
+    border-left: 4px solid #0066ff;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.page-description i {
+    font-size: 1.25rem;
+    color: #0066ff;
+    flex-shrink: 0;
+}
+
 /* ポイントサマリーセクション */
 .points-summary {
     background: white;
