@@ -13,30 +13,60 @@ class TimeRexBooking {
       dashboardBtn.addEventListener('click', () => this.startBooking());
     }
     
-    // 紹介ページの予約ボタン
+    // 紹介ページの予約ボタン（IDを修正）
     const referralBtn = document.getElementById('book-referral-btn');
     if (referralBtn) {
       referralBtn.addEventListener('click', () => this.startBooking());
+    }
+    
+    // 旧IDとの互換性も保持
+    const oldReferralBtn = document.getElementById('book-consultation-btn');
+    if (oldReferralBtn && !document.getElementById('book-referral-btn')) {
+      oldReferralBtn.addEventListener('click', () => this.startBooking());
     }
   }
   
   async startBooking() {
     try {
-      // 現在のユーザー情報を取得
-      const { data: { user } } = await window.supabaseClient.auth.getUser();
-      if (!user) {
-        showNotification('ログインが必要です', 'error');
-        setTimeout(() => {
-          window.location.href = '/login.html';
-        }, 2000);
-        return;
-      }
+      // 現在のユーザー情報を取得（ログインしていない場合はゲストとして処理）
+      const { data: { user } } = await window.supabaseClient.auth.getUser().catch(() => ({ data: { user: null } }));
       
-      // 紹介コードを取得（セッションまたはURLパラメータから）
+      // 紹介コードを取得
       const referralCode = this.getReferralCode();
       
-      // TimeRex予約URLを構築
-      const bookingUrl = this.buildBookingUrl(user, referralCode);
+      let bookingUrl;
+      
+      // ログインユーザーの場合はEdge Functionを使用
+      if (user && window.supabaseClient) {
+        try {
+          showNotification('予約ページを準備中...', 'info');
+          
+          const response = await window.supabaseClient.functions.invoke('timerex-booking', {
+            body: {
+              referralCode: referralCode,
+              userId: user.id,
+              userEmail: user.email,
+              userName: user.user_metadata?.name || user.user_metadata?.full_name || ''
+            }
+          });
+          
+          if (response.error) {
+            console.error('Edge Function error:', response.error);
+            throw new Error('予約セッションの作成に失敗しました');
+          }
+          
+          bookingUrl = response.data.bookingUrl;
+          console.log('Edge Function成功:', response.data);
+          
+        } catch (edgeFunctionError) {
+          console.error('Edge Function失敗、フォールバックを使用:', edgeFunctionError);
+          // フォールバック：直接TimeRexのURLを使用
+          bookingUrl = this.buildFallbackUrl(user, referralCode);
+        }
+      } else {
+        // ゲストユーザーまたはログイン機能が利用できない場合
+        bookingUrl = this.buildFallbackUrl(null, referralCode);
+      }
       
       // ポップアップで開く
       const popup = window.open(
@@ -44,6 +74,11 @@ class TimeRexBooking {
         'timerex-booking',
         'width=600,height=700,left=100,top=100'
       );
+      
+      if (!popup) {
+        showNotification('ポップアップがブロックされました。ブラウザの設定を確認してください。', 'error');
+        return;
+      }
       
       // 予約完了を監視
       this.watchBookingCompletion(popup);
@@ -79,16 +114,16 @@ class TimeRexBooking {
     return 'DIRECT'; // 直接アクセスの場合
   }
   
-  buildBookingUrl(user, referralCode) {
-    // ユーザー情報をパラメータに含める
+  buildFallbackUrl(user, referralCode) {
+    // フォールバック用のTimeRex URLを生成
     const params = new URLSearchParams({
-      // 基本情報
-      name: user.user_metadata?.name || user.user_metadata?.full_name || '',
-      email: user.email,
+      // 基本情報（ユーザーがいる場合のみ）
+      name: user?.user_metadata?.name || user?.user_metadata?.full_name || '',
+      email: user?.email || '',
       
       // カスタムフィールド（TimeRexで設定したフィールドID）
       'custom_referral_code': referralCode,
-      'custom_user_id': user.id,
+      'custom_user_id': user?.id || '',
       
       // その他のメタデータ
       source: 'interconnect',
@@ -97,7 +132,7 @@ class TimeRexBooking {
     
     // TimeRex予約ページのURL
     const url = `${this.baseUrl}/book/${this.pageId}?${params.toString()}`;
-    console.log('予約URL:', url);
+    console.log('フォールバック予約URL:', url);
     return url;
   }
   
