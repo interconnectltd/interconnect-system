@@ -286,6 +286,12 @@ select:focus,
     box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1) !important;
 }
 
+/* リンクアイコンの色調整 */
+.fas.fa-link,
+.link-stats .fa-link {
+    color: #60a5fa !important; /* 明るい青 */
+}
+
 /* 新規作成ボタン（セカンダリ） */
 .btn-secondary {
     background: #e0e7ff !important;
