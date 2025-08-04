@@ -33,6 +33,10 @@
     <link rel="stylesheet" href="css/referral-sidebar-complete-fix.css">
     <!-- フォームデザイン改善 -->
     <link rel="stylesheet" href="css/referral-form-design.css">
+    <!-- ユーザードロップダウン最前面修正 -->
+    <link rel="stylesheet" href="css/user-dropdown-fix-final.css">
+    <!-- セレクトボックスUI改善 -->
+    <link rel="stylesheet" href="css/referral-select-ui.css">
 </head>
 <body>
     <!-- Mobile Header (ダッシュボードと同じ) -->
@@ -44,7 +48,6 @@
         <div class="mobile-header-actions">
             <a href="notifications.html" class="notification-btn">
                 <i class="fas fa-bell"></i>
-                <span class="notification-badge" style="display: none;">0</span>
             </a>
         </div>
     </header>
@@ -85,7 +88,6 @@
                     <a href="messages.html" class="mobile-nav-link">
                         <i class="fas fa-envelope"></i>
                         <span>メッセージ</span>
-                        <span class="badge message-badge" style="display: none;">0</span>
                     </a>
                 </li>
                 <li>
@@ -160,7 +162,6 @@
                         <a href="messages.html" class="sidebar-link">
                             <i class="fas fa-envelope"></i>
                             <span>メッセージ</span>
-                            <span class="badge message-badge" style="display: none;">0</span>
                         </a>
                     </li>
                     <li>
@@ -219,7 +220,6 @@
                         <div class="notification-wrapper">
                             <button class="notification-btn">
                                 <i class="fas fa-bell"></i>
-                                <span class="notification-badge" style="display: none;">0</span>
                             </button>
                             <div class="notification-dropdown">
                                 <div class="notification-header">
@@ -403,13 +403,19 @@
                     <!-- 紹介履歴 -->
                     <div id="history-tab" class="tab-content active">
                         <div class="filter-section">
-                            <select id="status-filter" class="form-select">
-                                <option value="all">すべて</option>
-                                <option value="pending">登録待ち</option>
-                                <option value="registered">登録済み</option>
-                                <option value="completed">面談完了</option>
-                                <option value="cancelled">キャンセル</option>
-                            </select>
+                            <div class="filter-wrapper">
+                                <label class="filter-label">
+                                    <i class="fas fa-filter"></i>
+                                    ステータスで絞り込み
+                                </label>
+                                <select id="status-filter" class="form-select">
+                                    <option value="all">すべて表示</option>
+                                    <option value="pending">⏳ 登録待ち</option>
+                                    <option value="registered">✅ 登録済み</option>
+                                    <option value="completed">🎉 面談完了</option>
+                                    <option value="cancelled">❌ キャンセル</option>
+                                </select>
+                            </div>
                         </div>
                         <div id="referral-list" class="history-list">
                             <!-- 動的に生成 -->
