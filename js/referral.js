@@ -126,6 +126,30 @@ class ReferralManager {
             console.error('リンク読み込みエラー:', error);
         }
     }
+    
+    async createReferralLink(description = null) {
+        try {
+            const { data, error } = await supabase
+                .rpc('create_invite_link', {
+                    p_user_id: this.user.id,
+                    p_description: description
+                });
+                
+            if (error) throw error;
+            
+            // リンクリストを再読み込み
+            await this.loadReferralLinks();
+            
+            // フォームを隠す
+            document.getElementById('link-form').style.display = 'none';
+            document.getElementById('link-description').value = '';
+            
+            this.showNotification('紹介リンクを作成しました', 'success');
+        } catch (error) {
+            console.error('リンク作成エラー:', error);
+            this.showNotification('リンク作成に失敗しました', 'error');
+        }
+    }
 
     renderLinkItem(link) {
         const url = `${window.location.origin}/invite/${link.link_code}`;
@@ -575,7 +599,8 @@ window.deleteLink = async function(linkId) {
 };
 
 window.createReferralLink = function() {
-    window.referralManager.createReferralLink();
+    const description = document.getElementById('link-description').value;
+    window.referralManager.createReferralLink(description);
 };
 
 window.cancelLinkCreation = function() {
