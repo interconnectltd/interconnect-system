@@ -80,7 +80,7 @@ class ReferralManager {
                 document.getElementById('referral-count').textContent = 
                     stats.total_completions || 0;
                 document.getElementById('conversion-rate').textContent = 
-                    stats.conversion_rate || '0.00';
+                    (stats.conversion_rate || 0).toFixed(2);
 
                 // キャッシュアウトボタンの有効化
                 const cashoutBtn = document.getElementById('cashout-btn');
