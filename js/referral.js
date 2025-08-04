@@ -122,7 +122,6 @@ class ReferralManager {
                 .from('invite_links')
                 .select('*')
                 .eq('created_by', this.user.id)
-                .eq('is_active', true)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -264,10 +263,7 @@ class ReferralManager {
         try {
             let query = supabase
                 .from('invitations')
-                .select(`
-                    *,
-                    invitee:profiles!invitations_invitee_email_fkey(name, company)
-                `)
+                .select('*')
                 .eq('inviter_id', this.user.id)
                 .order('created_at', { ascending: false })
                 .limit(20);
@@ -285,7 +281,7 @@ class ReferralManager {
 
             if (error) throw error;
 
-            const referralsList = document.getElementById('referrals-list');
+            const referralsList = document.getElementById('referral-list');
             
             if (!referrals || referrals.length === 0) {
                 referralsList.innerHTML = `

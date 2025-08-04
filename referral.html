@@ -4,251 +4,356 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>紹介プログラム - INTERCONNECT</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/responsive-menu.css">
+    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
     <link rel="stylesheet" href="css/referral.css">
     <link rel="stylesheet" href="css/cashout-modal.css">
-    <link rel="stylesheet" href="css/css-conflict-fix.css">
     <link rel="stylesheet" href="css/responsive-complete.css">
-    <link rel="stylesheet" href="css/referral-responsive.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- ヘッダー -->
-    <header class="site-header">
-        <div class="header-container">
-            <a href="index.html" class="logo">
-                <img src="logo.svg" alt="INTERCONNECT" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <span style="display:none; font-weight:bold; color:#2563eb;">INTERCONNECT</span>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button class="mobile-menu-toggle" id="referralSidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1>INTERCONNECT</h1>
+        <div class="mobile-header-actions">
+            <a href="notifications.html" class="notification-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" style="display: none;">0</span>
             </a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="dashboard.html">ダッシュボード</a></li>
-                    <li><a href="members.html">メンバー</a></li>
-                    <li><a href="events.html">イベント</a></li>
-                    <li><a href="matching.html">マッチング</a></li>
-                    <li><a href="messages.html">メッセージ</a></li>
-                    <li class="active"><a href="referral.html">紹介プログラム</a></li>
-                </ul>
-            </nav>
-            <div class="user-menu">
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge" id="notification-badge">0</span>
-                </div>
-                <div class="user-profile">
-                    <img src="default-avatar.svg" alt="Profile" id="user-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxOCIgZmlsbD0iI2U1ZTdlYiIvPgogIDxjaXJjbGUgY3g9IjIwIiBjeT0iMTYiIHI9IjYiIGZpbGw9IiM5Y2EzYWYiLz4KICA8ZWxsaXBzZSBjeD0iMjAiIGN5PSIyOCIgcng9IjEwIiByeT0iNiIgZmlsbD0iIzljYTNhZiIvPgo8L3N2Zz4='">
-                    <span id="user-name">ゲスト</span>
-                    <div class="dropdown-menu">
-                        <a href="profile.html">プロフィール</a>
-                        <a href="settings.html">設定</a>
-                        <a href="#" onclick="logout()">ログアウト</a>
-                    </div>
-                </div>
-            </div>
         </div>
     </header>
 
-    <!-- メインコンテンツ -->
-    <main class="dashboard-main">
-        <div class="dashboard-container">
-            <!-- ヘッダー部分 -->
-            <div class="page-header">
-                <h1><i class="fas fa-user-plus"></i> 紹介プログラム</h1>
-                <p class="subtitle">友達を紹介して、1,000ポイントを獲得しよう！</p>
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> ダッシュボード</a></li>
+            <li><a href="members.html"><i class="fas fa-users"></i> メンバー</a></li>
+            <li><a href="events.html"><i class="fas fa-calendar-alt"></i> イベント</a></li>
+            <li><a href="matching.html"><i class="fas fa-handshake"></i> マッチング</a></li>
+            <li><a href="messages.html"><i class="fas fa-envelope"></i> メッセージ</a></li>
+            <li class="active"><a href="referral.html"><i class="fas fa-user-plus"></i> 紹介プログラム</a></li>
+        </ul>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="referralSidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">INTERCONNECT</a>
             </div>
-
-            <!-- ポイント概要 -->
-            <section class="points-summary card glass-effect">
-                <div class="points-grid">
-                    <div class="point-item">
-                        <div class="point-icon">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="point-info">
-                            <span class="label">利用可能ポイント</span>
-                            <div class="value-wrapper">
-                                <span class="value" id="available-points">0</span>
-                                <span class="unit">pt</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="point-item">
-                        <div class="point-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="point-info">
-                            <span class="label">累計獲得</span>
-                            <div class="value-wrapper">
-                                <span class="value" id="total-earned">0</span>
-                                <span class="unit">pt</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="point-item">
-                        <div class="point-icon">
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>ダッシュボード</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="members.html">
                             <i class="fas fa-users"></i>
-                        </div>
-                        <div class="point-info">
-                            <span class="label">紹介人数</span>
-                            <div class="value-wrapper">
-                                <span class="value" id="referral-count">0</span>
-                                <span class="unit">人</span>
-                            </div>
-                        </div>
+                            <span>メンバー</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="events.html">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>イベント</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="matching.html">
+                            <i class="fas fa-handshake"></i>
+                            <span>マッチング</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="messages.html">
+                            <i class="fas fa-envelope"></i>
+                            <span>メッセージ</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="referral.html">
+                            <i class="fas fa-user-plus"></i>
+                            <span>紹介プログラム</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-menu">
+                    <img src="images/default-avatar.svg" alt="User Avatar" class="user-avatar" id="sidebarUserAvatar">
+                    <div class="user-info">
+                        <span class="user-name" id="sidebarUserName">ゲスト</span>
+                        <span class="user-email" id="sidebarUserEmail">guest@example.com</span>
                     </div>
-                    <div class="point-item">
-                        <div class="point-icon">
-                            <i class="fas fa-percentage"></i>
-                        </div>
-                        <div class="point-info">
-                            <span class="label">成約率</span>
-                            <div class="value-wrapper">
-                                <span class="value" id="conversion-rate">0</span>
-                                <span class="unit">%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button id="cashout-btn" class="cashout-button" disabled>
-                    <i class="fas fa-money-check-alt"></i>
-                    ポイントを現金化する（最低3,000pt）
-                </button>
-            </section>
-
-            <!-- 紹介の流れ -->
-            <section class="referral-steps card">
-                <h2><i class="fas fa-route"></i> 紹介の流れ</h2>
-                <div class="steps-container">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-icon">
-                            <i class="fas fa-link"></i>
-                        </div>
-                        <h3>リンクを作成</h3>
-                        <p>あなた専用の紹介リンクを作成します</p>
-                    </div>
-                    <div class="step-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-icon">
-                            <i class="fas fa-share-alt"></i>
-                        </div>
-                        <h3>友達に共有</h3>
-                        <p>SNSやメールでリンクを共有します</p>
-                    </div>
-                    <div class="step-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-icon">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                        <h3>友達が登録</h3>
-                        <p>友達があなたのリンクから登録します</p>
-                    </div>
-                    <div class="step-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-icon">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <h3>報酬獲得</h3>
-                        <p>面談完了で1,000ポイント獲得！</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 紹介リンク管理 -->
-            <section class="referral-links card">
-                <div class="section-header">
-                    <h2><i class="fas fa-link"></i> 紹介リンク</h2>
-                    <button id="create-link-btn" class="primary-button">
-                        <i class="fas fa-plus"></i> 新しいリンクを作成
+                    <button class="user-menu-toggle">
+                        <i class="fas fa-chevron-down"></i>
                     </button>
+                    <div class="user-menu-dropdown">
+                        <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
+                        <a href="settings.html"><i class="fas fa-cog"></i> 設定</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+                    </div>
                 </div>
-                
-                <div class="link-create-form" id="link-form" style="display: none;">
-                    <input type="text" id="link-description" placeholder="リンクの説明（例：Twitter用、LINE用など）" maxlength="50">
-                    <div class="form-actions">
-                        <button onclick="createReferralLink()" class="primary-button">
-                            <i class="fas fa-check"></i> 作成
-                        </button>
-                        <button onclick="cancelLinkCreation()" class="secondary-button">
-                            <i class="fas fa-times"></i> キャンセル
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1 class="page-title">
+                        <i class="fas fa-user-plus"></i>
+                        紹介プログラム
+                    </h1>
+                    <p class="page-subtitle">友達を紹介して、1,000ポイントを獲得しよう！</p>
+                </div>
+                <div class="header-right">
+                    <div class="header-actions">
+                        <button class="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" style="display: none;">0</span>
                         </button>
                     </div>
                 </div>
-                
-                <div id="links-list" class="links-list">
-                    <!-- 動的に生成 -->
-                </div>
-            </section>
+            </header>
 
-            <!-- 紹介履歴 -->
-            <section class="referral-history card">
-                <div class="section-header">
-                    <h2><i class="fas fa-history"></i> 紹介履歴</h2>
-                    <select id="status-filter" class="filter-select">
-                        <option value="all">すべて</option>
-                        <option value="pending">招待中</option>
-                        <option value="accepted">登録済み</option>
-                        <option value="earned">報酬獲得</option>
-                    </select>
-                </div>
-                <div id="referrals-list" class="referrals-list">
-                    <!-- 動的に生成 -->
-                </div>
-            </section>
+            <!-- Content -->
+            <div class="dashboard-content">
+                <!-- ポイント概要 -->
+                <section class="points-summary card">
+                    <div class="points-grid">
+                        <div class="point-item">
+                            <div class="point-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="point-info">
+                                <span class="label">利用可能ポイント</span>
+                                <div class="value-wrapper">
+                                    <span class="value" id="available-points">0</span>
+                                    <span class="unit">pt</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="point-info">
+                                <span class="label">累計獲得</span>
+                                <div class="value-wrapper">
+                                    <span class="value" id="total-earned">0</span>
+                                    <span class="unit">pt</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="point-info">
+                                <span class="label">紹介人数</span>
+                                <div class="value-wrapper">
+                                    <span class="value" id="referral-count">0</span>
+                                    <span class="unit">人</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="point-item">
+                            <div class="point-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="point-info">
+                                <span class="label">成約率</span>
+                                <div class="value-wrapper">
+                                    <span class="value" id="conversion-rate">0</span>
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="cashout-btn" class="btn btn-primary cashout-button" disabled>
+                        <i class="fas fa-money-check-alt"></i>
+                        ポイントを現金化する（最低3,000pt）
+                    </button>
+                </section>
 
-            <!-- キャッシュアウト履歴 -->
-            <section class="cashout-history card">
-                <h2><i class="fas fa-money-bill-wave"></i> キャッシュアウト履歴</h2>
-                <div id="cashout-list" class="cashout-list">
-                    <!-- 動的に生成 -->
-                </div>
-            </section>
-        </div>
-    </main>
+                <!-- 紹介の流れ -->
+                <section class="referral-steps card">
+                    <h2><i class="fas fa-route"></i> 紹介の流れ</h2>
+                    <div class="steps-container">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <h3>リンクを作成</h3>
+                            <p>あなた専用の紹介リンクを作成します</p>
+                        </div>
+                        <div class="step-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-icon">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <h3>友達に共有</h3>
+                            <p>SNSやメールでリンクを共有します</p>
+                        </div>
+                        <div class="step-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <h3>友達が登録</h3>
+                            <p>友達があなたのリンクから登録します</p>
+                        </div>
+                        <div class="step-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <h3>報酬獲得</h3>
+                            <p>面談完了で1,000ポイント獲得！</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 紹介リンク管理 -->
+                <section class="referral-links card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-link"></i> 紹介リンク</h2>
+                        <button id="create-link-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 新しいリンクを作成
+                        </button>
+                    </div>
+                    
+                    <div class="link-create-form" id="link-form" style="display: none;">
+                        <input type="text" id="link-description" class="form-input" placeholder="リンクの説明（例：Twitter用、LINE用など）" maxlength="50">
+                        <div class="form-actions">
+                            <button onclick="createReferralLink()" class="btn btn-primary">
+                                <i class="fas fa-check"></i> 作成
+                            </button>
+                            <button onclick="cancelLinkCreation()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> キャンセル
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="links-list" class="links-list">
+                        <!-- 動的に生成 -->
+                    </div>
+                </section>
+
+                <!-- タブセクション -->
+                <section class="tabs-section card">
+                    <div class="tab-navigation">
+                        <button class="tab-button active" data-tab="history">
+                            <i class="fas fa-history"></i> 紹介履歴
+                        </button>
+                        <button class="tab-button" data-tab="cashout">
+                            <i class="fas fa-money-check-alt"></i> キャッシュアウト履歴
+                        </button>
+                    </div>
+
+                    <!-- 紹介履歴 -->
+                    <div id="history-tab" class="tab-content active">
+                        <div class="filter-section">
+                            <select id="status-filter" class="form-select">
+                                <option value="all">すべて</option>
+                                <option value="pending">登録待ち</option>
+                                <option value="registered">登録済み</option>
+                                <option value="completed">面談完了</option>
+                                <option value="cancelled">キャンセル</option>
+                            </select>
+                        </div>
+                        <div id="referral-list" class="history-list">
+                            <!-- 動的に生成 -->
+                        </div>
+                    </div>
+
+                    <!-- キャッシュアウト履歴 -->
+                    <div id="cashout-tab" class="tab-content">
+                        <div id="cashout-list" class="history-list">
+                            <!-- 動的に生成 -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 
     <!-- キャッシュアウトモーダル -->
     <div id="cashout-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-money-check-alt"></i> ポイントを現金化</h3>
+                <h2><i class="fas fa-money-check-alt"></i> ポイント現金化申請</h2>
                 <button class="close-button" onclick="closeCashoutModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <form id="cashout-form">
                 <div class="form-group">
-                    <label>交換ポイント数</label>
-                    <div class="input-with-unit">
-                        <input type="number" id="cashout-points" min="3000" step="100" required>
-                        <span class="unit">pt</span>
-                    </div>
-                    <span class="help-text">最低3,000ポイントから、100ポイント単位で交換できます</span>
+                    <label>現金化ポイント数</label>
+                    <input type="number" id="cashout-points" min="3000" step="100" required>
+                    <p class="form-help">最低3,000ポイント、100ポイント単位</p>
                 </div>
                 
                 <div class="form-group">
-                    <label>振込先情報</label>
-                    <div class="bank-form">
-                        <input type="text" id="bank-name" placeholder="銀行名" required>
-                        <input type="text" id="branch-name" placeholder="支店名" required>
-                        <select id="account-type" required>
-                            <option value="">口座種別を選択</option>
-                            <option value="普通">普通</option>
-                            <option value="当座">当座</option>
-                        </select>
-                        <input type="text" id="account-number" placeholder="口座番号（7桁）" pattern="[0-9]{7}" required>
-                        <input type="text" id="account-holder" placeholder="口座名義（カタカナ）" required>
-                    </div>
+                    <label>振込先銀行</label>
+                    <input type="text" id="bank-name" placeholder="例：三菱UFJ銀行" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>支店名</label>
+                    <input type="text" id="branch-name" placeholder="例：渋谷支店" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>口座種別</label>
+                    <select id="account-type" required>
+                        <option value="">選択してください</option>
+                        <option value="普通">普通</option>
+                        <option value="当座">当座</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>口座番号</label>
+                    <input type="text" id="account-number" placeholder="7桁の数字" pattern="[0-9]{7}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>口座名義（カタカナ）</label>
+                    <input type="text" id="account-holder" placeholder="例：ヤマダ タロウ" pattern="[ァ-ヴー\s]+" required>
                 </div>
                 
                 <div class="tax-info">
@@ -260,10 +365,10 @@
                 </div>
                 
                 <div class="modal-actions">
-                    <button type="submit" class="primary-button">
+                    <button type="submit" class="btn btn-primary">
                         <i class="fas fa-paper-plane"></i> 申請する
                     </button>
-                    <button type="button" class="secondary-button" onclick="closeCashoutModal()">
+                    <button type="button" class="btn btn-secondary" onclick="closeCashoutModal()">
                         キャンセル
                     </button>
                 </div>
@@ -300,11 +405,36 @@
         </div>
     </div>
 
-    <!-- スクリプト -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/common.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
+    <script src="js/user-menu.js"></script>
     <script src="js/referral.js"></script>
     <script src="js/cashout-modal.js"></script>
+    <script>
+        // タブ切り替え
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+                
+                // タブボタンのアクティブ状態を切り替え
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                
+                // タブコンテンツの表示を切り替え
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tab}-tab`).classList.add('active');
+            });
+        });
+
+        // サイドバートグル
+        document.getElementById('referralSidebarToggle').addEventListener('click', () => {
+            document.getElementById('referralSidebar').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
