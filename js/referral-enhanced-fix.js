@@ -5,32 +5,33 @@
 
 // 既存のreferral-enhanced.jsの修正箇所のみ
 
-// createReferralLink関数の修正
+// createReferralLink関数の修正（シンプル版）
 async function createReferralLinkFixed(description = null) {
     console.log('[Referral] 紹介リンク作成開始...', { description });
     try {
-        // パラメータを明示的に指定
+        // ユーザー認証確認
         const { data: { user } } = await supabaseClient.auth.getUser();
-        const params = {
-            p_user_id: user?.id,
-            p_description: description || null
-        };
+        if (!user) {
+            throw new Error('ログインが必要です');
+        }
         
-        console.log('[Referral] RPC呼び出しパラメータ:', params);
-        
+        // シンプルなパラメータ
         const { data, error } = await supabaseClient
-            .rpc('create_invite_link', params);
+            .rpc('create_invite_link', {
+                p_user_id: user.id,
+                p_description: description || 'マイ紹介リンク'
+            });
             
         console.log('[Referral] リンク作成結果:', { data, error });
             
         if (error) {
             console.error('[Referral] リンク作成エラー:', error);
-            
-            // エラーメッセージを分かりやすく
-            if (error.code === 'PGRST203') {
-                throw new Error('関数の呼び出しに失敗しました。データベースの更新が必要です。');
-            }
-            throw error;
+            throw new Error(error.message || 'リンク作成に失敗しました');
+        }
+        
+        // JSONレスポンスの処理
+        if (data && typeof data === 'object' && data.success === false) {
+            throw new Error(data.error || 'リンク作成に失敗しました');
         }
         
         return data;
