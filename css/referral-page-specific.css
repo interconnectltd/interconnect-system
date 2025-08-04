@@ -29,7 +29,7 @@
 
 /* ポイントサマリーセクション */
 .points-summary {
-    background: white;
+    /* background: white; 青系グラデーションを適用するためコメントアウト */
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -204,7 +204,7 @@
 
 /* 紹介リンク管理セクション */
 .referral-links {
-    background: white;
+    /* background: white; プレミアムUIで設定するためコメントアウト */
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

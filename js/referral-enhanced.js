@@ -210,15 +210,32 @@ class ReferralManager {
     async loadReferralLinks() {
         console.log('[Referral] 紹介リンク読み込み中...');
         try {
-            const { data: links, error } = await supabaseClient
-                .from('invite_links')
-                .select('*')
-                .eq('created_by', this.user.id)
-                .order('created_at', { ascending: false });
+            // まずRPC関数で取得を試みる
+            const { data: rpcLinks, error: rpcError } = await supabaseClient
+                .rpc('get_user_invite_links', {
+                    p_user_id: this.user.id
+                });
+            
+            console.log('[Referral] RPC取得結果:', { rpcLinks, rpcError });
+            
+            let links = rpcLinks;
+            let error = rpcError;
+            
+            // RPCが失敗した場合は通常のSELECTを試す
+            if (rpcError || !rpcLinks) {
+                const { data: selectLinks, error: selectError } = await supabaseClient
+                    .from('invite_links')
+                    .select('*')
+                    .eq('created_by', this.user.id)
+                    .order('created_at', { ascending: false });
+                
+                console.log('[Referral] SELECT取得結果:', { selectLinks, selectError });
+                links = selectLinks;
+                error = selectError;
+            }
 
-            console.log('[Referral] リンク取得結果:', { links, error });
+            console.log('[Referral] 最終リンク取得結果:', { links, error });
             console.log('[Referral] ユーザーID:', this.user.id);
-            console.log('[Referral] SQLクエリ:', `SELECT * FROM invite_links WHERE created_by = '${this.user.id}'`);
             console.log('[Referral] links配列の詳細:', links);
             console.log('[Referral] links配列の長さ:', links ? links.length : 'null');
             if (links && links.length > 0) {
@@ -263,7 +280,7 @@ class ReferralManager {
     async createReferralLink(description = null) {
         console.log('[Referral] 紹介リンク作成開始...', { description });
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .rpc('create_invite_link', {
                     p_user_id: this.user.id,
                     p_description: description || null
