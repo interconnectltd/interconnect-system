@@ -147,13 +147,17 @@ class ReferralManager {
     
     async createReferralLink(description = null) {
         try {
+            console.log('紹介リンク作成中...', { description });
+            
             const { data, error } = await supabase
                 .rpc('create_invite_link', {
                     p_user_id: this.user.id,
-                    p_description: description
+                    p_description: description || null
                 });
                 
             if (error) throw error;
+            
+            console.log('作成されたリンク:', data);
             
             // リンクリストを再読み込み
             await this.loadReferralLinks();
@@ -165,6 +169,12 @@ class ReferralManager {
             this.showNotification('紹介リンクを作成しました', 'success');
         } catch (error) {
             console.error('リンク作成エラー:', error);
+            console.error('エラー詳細:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
             this.showNotification('リンク作成に失敗しました', 'error');
         }
     }

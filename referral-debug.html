@@ -376,13 +376,19 @@
                 if (error) throw error;
                 
                 resultDiv.innerHTML = `<p class="success">✓ create_invite_link成功</p>
-                    <p>作成されたリンクID: ${data}</p>`;
-                log('create_invite_link成功: ' + data, 'success');
+                    <div class="json-view">${JSON.stringify(data, null, 2)}</div>`;
+                log('create_invite_link成功: ' + JSON.stringify(data), 'success');
                 
                 // リンク一覧も更新
                 await listInviteLinks();
             } catch (error) {
-                resultDiv.innerHTML = `<p class="error">✗ create_invite_linkエラー: ${error.message}</p>`;
+                resultDiv.innerHTML = `<p class="error">✗ create_invite_linkエラー: ${error.message}</p>
+                    <div class="json-view">詳細: ${JSON.stringify({
+                        message: error.message,
+                        details: error.details,
+                        hint: error.hint,
+                        code: error.code
+                    }, null, 2)}</div>`;
                 log('create_invite_linkエラー: ' + error.message, 'error');
             }
         }
