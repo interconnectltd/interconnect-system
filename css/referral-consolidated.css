@@ -207,17 +207,60 @@
 /* =========================
    PC画面用余白調整（referral-pc-padding.cssから）
    ========================= */
+/* ダッシュボードレイアウト全体 */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
 @media (min-width: 1024px) {
-    .content-body {
-        padding: 2rem 3rem;
+    /* メインコンテンツ全体の余白 */
+    .main-content {
+        padding: 2rem !important;
+        width: 100%;
+        max-width: 100%;
     }
     
+    .content-body {
+        padding: 0 3rem !important;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* 各セクションの余白 */
+    .card,
     .section {
         margin-bottom: 3rem;
     }
     
-    .dashboard-container {
-        padding: 2rem 3rem;
+    /* ポイントサマリー、紹介の流れ、紹介リンク、タブセクション */
+    .points-summary,
+    .referral-steps,
+    .referral-links,
+    .tabs-section {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* 大画面での追加調整 */
+@media (min-width: 1440px) {
+    .main-content {
+        padding: 2rem 4rem !important;
+    }
+    
+    .content-body {
+        padding: 0 4rem !important;
+        max-width: 1600px;
+    }
+}
+
+/* 超大画面での最大幅制限 */
+@media (min-width: 1920px) {
+    .content-body {
+        max-width: 1800px;
+        padding: 0 5rem !important;
     }
 }
 

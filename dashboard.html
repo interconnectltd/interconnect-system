@@ -497,5 +497,17 @@
     <script src="js/google-calendar-booking.js?v=1.0"></script>
     <!-- 通知機能はJSを無効化 -->
     <!-- <script src="js/notifications.js"></script> -->
+    
+    <!-- 面談予約ボタンのリダイレクト -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookingBtn = document.getElementById('book-consultation-btn');
+            if (bookingBtn) {
+                bookingBtn.addEventListener('click', function() {
+                    window.location.href = '/book-consultation.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
