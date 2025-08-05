@@ -45,12 +45,9 @@
 }
 
 .section-header h2 i {
-    background: linear-gradient(45deg, #ffffff 0%, #a8edea 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 2rem;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    /* referral-icon-style.cssで定義済み - 競合を避けるためコメントアウト */
+    /* color: #ffffff !important; */
+    /* background: #1e40af; */
 }
 
 /* 新しいリンク作成ボタン */

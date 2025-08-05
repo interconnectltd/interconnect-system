@@ -28,13 +28,13 @@
 
 /* セクションヘッダーのアイコン */
 .section-header h2 i.fa-link {
-    color: #ffffff;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff !important;
+    background: #1e40af;
     padding: 10px;
     border-radius: 12px;
     margin-right: 12px;
     font-size: 1.2rem;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -141,7 +141,7 @@
     }
     
     .section-header h2 i.fa-link {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        background: #1e40af;
     }
     
     .link-item .link-stats i.fa-link {
