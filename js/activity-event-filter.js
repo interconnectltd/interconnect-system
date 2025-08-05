@@ -23,6 +23,12 @@
         }
 
         async init() {
+            // DOM要素の存在確認
+            if (!document.querySelector('.activity-list') && !document.querySelector('.event-list')) {
+                console.warn('[ActivityEventFilter] Required DOM elements not found, skipping initialization');
+                return;
+            }
+            
             // フィルターUI を作成
             this.createFilterUI();
             
@@ -41,7 +47,7 @@
          */
         createFilterUI() {
             // アクティビティフィルター
-            const activityCard = document.querySelector('.recent-activity').closest('.content-card');
+            const activityCard = document.querySelector('.activity-list')?.closest('.content-card');
             if (activityCard) {
                 const filterContainer = document.createElement('div');
                 filterContainer.className = 'activity-filters';
@@ -67,7 +73,7 @@
             }
 
             // イベントフィルター
-            const eventCard = document.querySelector('.event-list').closest('.content-card');
+            const eventCard = document.querySelector('.event-list')?.closest('.content-card');
             if (eventCard) {
                 const filterContainer = document.createElement('div');
                 filterContainer.className = 'event-filters';
@@ -99,12 +105,12 @@
         async loadActivities() {
             try {
                 // ローディング表示
-                const container = document.querySelector('.recent-activity');
+                const container = document.querySelector('.activity-list');
                 if (container) {
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabase) {
+                if (window.supabase && window.supabase.from) {
                     // Supabaseからアクティビティを取得
                     const { data, error } = await window.supabase
                         .from('activities')
@@ -218,7 +224,7 @@
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabase) {
+                if (window.supabase && window.supabase.from) {
                     // イベントデータを取得
                     const { data: events, error } = await window.supabase
                         .from('event_items')
@@ -332,7 +338,7 @@
          * アクティビティをレンダリング
          */
         renderActivities() {
-            const container = document.querySelector('.recent-activity');
+            const container = document.querySelector('.activity-list');
             if (!container) return;
 
             // フィルタリング
