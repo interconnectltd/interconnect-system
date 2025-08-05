@@ -1,0 +1,224 @@
+/**
+ * 紹介ページ統合CSS
+ * 複数の小さなCSSファイルを1つに統合
+ */
+
+/* =========================
+   アイコンスタイル（referral-icon-style.cssから）
+   ========================= */
+.link-actions .btn i {
+    color: #ffffff !important;
+}
+
+.copy-btn i,
+.delete-btn i {
+    color: #ffffff !important;
+}
+
+/* =========================
+   共有ボタンスタイル（referral-share-buttons.cssから）
+   ========================= */
+.share-options {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1.5rem 0;
+}
+
+.share-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f3f4f6;
+    color: #6b7280;
+    position: relative;
+    overflow: hidden;
+}
+
+.share-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Twitter */
+.share-button.twitter {
+    background: #e8f3fd;
+    color: #1DA1F2;
+}
+
+.share-button.twitter:hover {
+    background: #d6eafc;
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.15);
+}
+
+/* LINE */
+.share-button.line {
+    background: #e8f7e8;
+    color: #00B900;
+}
+
+.share-button.line:hover {
+    background: #d6f0d6;
+    box-shadow: 0 4px 12px rgba(0, 185, 0, 0.15);
+}
+
+/* Facebook */
+.share-button.facebook {
+    background: #e8f0fe;
+    color: #1877F2;
+}
+
+.share-button.facebook:hover {
+    background: #d6e4fd;
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.15);
+}
+
+/* Email */
+.share-button.email {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.share-button.email:hover {
+    background: #e9d5ff;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+/* =========================
+   モーダルスタイル（referral-modal-styles.cssから）
+   ========================= */
+.share-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+}
+
+.share-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.share-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.share-modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.3s ease;
+    padding: 0.5rem;
+}
+
+.close-modal:hover {
+    color: #1f2937;
+}
+
+/* =========================
+   PC画面用余白調整（referral-pc-padding.cssから）
+   ========================= */
+@media (min-width: 1024px) {
+    .content-body {
+        padding: 2rem 3rem;
+    }
+    
+    .section {
+        margin-bottom: 3rem;
+    }
+    
+    .dashboard-container {
+        padding: 2rem 3rem;
+    }
+}
+
+/* =========================
+   z-index管理（z-index-priority.cssから必要な部分のみ）
+   ========================= */
+.share-modal {
+    z-index: 10000;
+}
+
+.mobile-sidebar,
+.dashboard-sidebar {
+    z-index: 9999;
+}
+
+.user-dropdown {
+    z-index: 9998;
+}
+
+/* =========================
+   最終調整
+   ========================= */
+
+/* 紹介リンクセクションの背景色を薄い色に */
+.referral-links {
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* セクションヘッダーのテキスト色調整 */
+.referral-links .section-header h2 {
+    color: #212529 !important;
+    text-shadow: none !important;
+}
+
+/* 新しいリンク作成ボタン */
+#create-link-btn {
+    background: linear-gradient(45deg, #ffffff 0%, #e8f8ff 100%) !important;
+    border: none !important;
+    color: #1e40af !important;
+}
+
+#create-link-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(255,255,255,0.5) !important;
+    background: linear-gradient(45deg, #ffffff 0%, #dbeafe 100%) !important;
+}
