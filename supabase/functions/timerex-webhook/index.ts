@@ -91,7 +91,8 @@ async function handleBookingCreated(supabase: any, booking: any) {
   try {
     // 予約情報をデータベースに保存
     const { data, error } = await supabase.from('bookings').insert({
-      timerex_id: booking.id,
+      booking_id: booking.id, // カラム名を修正
+      session_ref: booking.sessionId || booking.session_id, // カラム名を修正
       user_email: booking.customer?.email || booking.email,
       user_name: booking.customer?.name || booking.name,
       staff_name: booking.staff?.name || 'INTERCONNECT担当者',
@@ -100,7 +101,7 @@ async function handleBookingCreated(supabase: any, booking: any) {
       consultation_type: booking.customFields?.consultation_type || '無料相談',
       consultation_details: booking.customFields?.consultation_details || '',
       referral_code: booking.customFields?.referral_code || 'DIRECT',
-      google_meet_url: booking.meetingUrl || booking.meeting_url,
+      meeting_url: booking.meetingUrl || booking.meeting_url, // カラム名を修正
       status: 'confirmed',
       created_at: new Date().toISOString()
     })
