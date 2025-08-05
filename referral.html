@@ -29,6 +29,8 @@
     <link rel="stylesheet" href="css/referral-header-fix.css">
     <!-- アイコンスタイル -->
     <link rel="stylesheet" href="css/referral-icon-style.css">
+    <!-- 共有ボタンスタイル -->
+    <link rel="stylesheet" href="css/referral-share-buttons.css">
     <!-- モーダルスタイル -->
     <link rel="stylesheet" href="css/referral-modal-styles.css">
     <!-- サイドバー完全修正 -->
@@ -473,7 +475,11 @@
                 </button>
             </div>
             <div class="share-text">
-                <textarea id="share-message" rows="3">INTERCONNECTに参加しませんか？私の紹介リンクから登録できます。</textarea>
+                <textarea id="share-message" rows="5">経営者向けAI活用コミュニティ「INTERCONNECT」をご存知ですか？
+
+AIを活用した次世代のビジネスマッチングサービスで、経営者同士の出会いから新しいビジネスチャンスが生まれています。
+
+今なら無料面談を受けられるので、ぜひこちらのリンクからご登録ください。</textarea>
             </div>
         </div>
     </div>
@@ -553,7 +559,7 @@
         window.shareByEmail = function() {
             const text = document.getElementById('share-message').value;
             const url = window.currentShareLink;
-            window.location.href = `mailto:?subject=INTERCONNECTへの招待&body=${encodeURIComponent(text + '\n\n' + url)}`;
+            window.location.href = `mailto:?subject=経営者向けAI活用コミュニティ「INTERCONNECT」のご紹介&body=${encodeURIComponent(text + '\n\n' + url)}`;
         };
     </script>
     <script src="js/fix-delete-link.js"></script>
