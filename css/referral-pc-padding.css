@@ -1,0 +1,95 @@
+/**
+ * 紹介ページ PC画面用余白調整
+ * 全セクションに適切な横幅の余白を追加
+ */
+
+/* PC画面（1024px以上）での余白設定 */
+@media (min-width: 1024px) {
+    /* メインコンテンツエリア */
+    .content-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    /* 各セクション共通の余白 */
+    .content-body {
+        padding: 2rem 3rem;
+    }
+    
+    /* ページヘッダー */
+    .page-header {
+        padding: 2rem 3rem;
+    }
+    
+    /* カードセクション */
+    .points-summary,
+    .referral-steps,
+    .referral-links,
+    .cashout-section,
+    .referral-history,
+    .card {
+        margin-left: 2rem;
+        margin-right: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    /* ステップセクション内の余白 */
+    .steps-container {
+        padding: 0 2rem;
+    }
+    
+    /* リンクセクション内の余白 */
+    .links-container,
+    .links-list {
+        padding: 0 1.5rem;
+    }
+    
+    /* モーダル内の余白 */
+    .modal-content {
+        margin: 2rem;
+        max-width: 600px;
+    }
+}
+
+/* より大きな画面（1440px以上）でのさらなる余白 */
+@media (min-width: 1440px) {
+    .content-wrapper {
+        max-width: 1600px;
+        padding: 0 4rem;
+    }
+    
+    .content-body {
+        padding: 2rem 4rem;
+    }
+    
+    .page-header {
+        padding: 2rem 4rem;
+    }
+    
+    .points-summary,
+    .referral-steps,
+    .referral-links,
+    .cashout-section,
+    .referral-history,
+    .card {
+        margin-left: 3rem;
+        margin-right: 3rem;
+    }
+}
+
+/* 超大画面（1920px以上）での最大幅制限 */
+@media (min-width: 1920px) {
+    .content-wrapper {
+        max-width: 1800px;
+        padding: 0 6rem;
+    }
+    
+    .content-body {
+        padding: 3rem 6rem;
+    }
+    
+    .page-header {
+        padding: 3rem 6rem;
+    }
+}

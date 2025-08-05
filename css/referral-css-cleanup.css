@@ -44,6 +44,19 @@
     margin: 0;
 }
 
+/* 紹介リンクセクションの背景色を薄い色に変更 */
+.referral-links {
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* セクションヘッダーのテキスト色を調整 */
+.referral-links .section-header h2 {
+    color: #212529 !important;
+    text-shadow: none !important;
+}
+
 /* モバイル対応 */
 @media (max-width: 768px) {
     .referral-links .section-header {
