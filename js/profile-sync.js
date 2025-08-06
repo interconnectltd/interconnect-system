@@ -191,8 +191,10 @@
                     localStorage.setItem('user', JSON.stringify(userData));
                 }
                 
-                // DOM要素を即座に更新（準備完了を待たない）
-                const immediateUpdate = () => {
+                // DOM要素を即座に更新（重複防止機能付き）
+                if (!window._profileSyncLastUpdate || Date.now() - window._profileSyncLastUpdate > 1000) {
+                    window._profileSyncLastUpdate = Date.now();
+                    
                     const userNameElements = document.querySelectorAll('.user-name');
                     console.log('[ProfileSync] Immediate update - found elements:', userNameElements.length);
                     userNameElements.forEach((element, index) => {
@@ -202,10 +204,7 @@
                             console.log(`[ProfileSync] Updated element ${index}: ${oldText} -> ${element.textContent}`);
                         }
                     });
-                };
-                
-                // 即座に実行
-                immediateUpdate();
+                }
                 
                 // DOMが準備できたらもう一度実行
                 if (document.readyState === 'complete' || document.readyState === 'interactive') {

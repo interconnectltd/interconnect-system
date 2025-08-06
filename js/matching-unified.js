@@ -78,10 +78,7 @@
             // 自分以外のユーザーを取得
             const { data: users, error } = await window.supabaseClient
                 .from('user_profiles')
-                .select(`
-                    *,
-                    skills
-                `)
+                .select('*')
                 .neq('id', currentUserId)
                 .limit(50);
 

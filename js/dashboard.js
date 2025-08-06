@@ -5,15 +5,33 @@
 (function() {
     'use strict';
 
-    // updateUserInfoの実行を管理
-    let userInfoUpdated = false;
+    // updateUserInfoの実行を管理（グローバルフラグでシングルトン化）
+    if (!window._updateUserInfoState) {
+        window._updateUserInfoState = {
+            isRunning: false,
+            lastRun: 0,
+            minInterval: 5000 // 5秒間隔
+        };
+    }
+    
     let updateUserInfoSafe = function() {
-        if (!userInfoUpdated) {
-            userInfoUpdated = true;
-            updateUserInfo();
-            // 2秒後にフラグをリセット（必要に応じて再実行可能にする）
-            setTimeout(() => { userInfoUpdated = false; }, 2000);
+        const now = Date.now();
+        const state = window._updateUserInfoState;
+        
+        // 実行中または最小間隔内の場合はスキップ
+        if (state.isRunning || (now - state.lastRun < state.minInterval)) {
+            console.log('[Dashboard] updateUserInfo スキップ (実行中または間隔内)');
+            return;
         }
+        
+        state.isRunning = true;
+        state.lastRun = now;
+        updateUserInfo();
+        
+        // 実行完了後にフラグをリセット
+        setTimeout(() => { 
+            state.isRunning = false;
+        }, 100);
     };
 
     document.addEventListener('DOMContentLoaded', function() {
