@@ -2,6 +2,79 @@
    マッチングシステム統一CSS
    =========================== */
 
+/* マッチングフィルター */
+.matching-filters {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: white;
+    transition: border-color 0.2s ease;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* マッチング統計 */
+.matching-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 0 8px;
+}
+
+.results-count {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sort-options label {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.sort-options .form-select {
+    width: auto;
+    min-width: 180px;
+}
+
 /* マッチンググリッド */
 .matching-grid {
     display: grid;
@@ -123,11 +196,45 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    margin-top: 16px;
 }
 
 .matching-actions .btn {
     font-size: 14px;
     padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+/* ボタンスタイル */
+.btn-primary {
+    background: #4a90e2;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #357abd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.btn-outline {
+    background: white;
+    color: #4a90e2;
+    border: 2px solid #4a90e2;
+}
+
+.btn-outline:hover {
+    background: #4a90e2;
+    color: white;
 }
 
 /* ブックマークボタン */

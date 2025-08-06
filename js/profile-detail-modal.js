@@ -19,8 +19,15 @@
         async init() {
             // 現在のユーザー情報を取得
             try {
-                if (!window.supabaseClient) {
-                    console.log('[ProfileDetailModal] Supabase not initialized yet');
+                // Supabase初期化を待つ
+                if (typeof window.waitForSupabase === 'function') {
+                    await window.waitForSupabase();
+                }
+                
+                if (!window.supabaseClient || !window.supabaseClient.auth) {
+                    console.log('[ProfileDetailModal] Waiting for Supabase initialization...');
+                    // 初期化をスキップして後で再試行
+                    window.addEventListener('supabaseReady', () => this.init());
                     return;
                 }
                 const { data: { user } } = await window.supabaseClient.auth.getUser();

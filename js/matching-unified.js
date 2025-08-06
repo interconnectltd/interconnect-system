@@ -218,6 +218,11 @@
 
         // カード内のイベントリスナー設定
         setupCardEventListeners();
+        
+        // レーダーチャートを描画
+        filteredUsers.forEach(user => {
+            drawRadarChartForUser(user);
+        });
     }
 
     // マッチングカードの作成
@@ -247,6 +252,10 @@
                 <p class="matching-company">${escapeHtml(user.company || '会社名未設定')}</p>
                 <div class="matching-tags">
                     ${skills.map(skill => `<span class="tag">${escapeHtml(skill)}</span>`).join('')}
+                </div>
+                <!-- レーダーチャート追加 -->
+                <div class="matching-radar">
+                    <canvas id="radar-${user.id}" width="200" height="200"></canvas>
                 </div>
                 ${user.matchReasons && user.matchReasons.length > 0 ? `
                     <div class="match-reasons">
@@ -631,6 +640,110 @@
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
         }, 3000);
+    }
+
+    // レーダーチャートを描画
+    function drawRadarChartForUser(user) {
+        const canvas = document.getElementById(`radar-${user.id}`);
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = 100;
+        const centerY = 100;
+        const radius = 80;
+        const sides = 6;
+        
+        // クリア
+        ctx.clearRect(0, 0, 200, 200);
+        
+        // 背景の六角形グリッドを描画
+        ctx.strokeStyle = '#e0e0e0';
+        ctx.lineWidth = 1;
+        
+        // 5段階のグリッド
+        for (let i = 1; i <= 5; i++) {
+            ctx.beginPath();
+            for (let j = 0; j <= sides; j++) {
+                const angle = (Math.PI * 2 / sides) * j - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * (radius * i / 5);
+                const y = centerY + Math.sin(angle) * (radius * i / 5);
+                if (j === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+        
+        // 軸線を描画
+        ctx.strokeStyle = '#d0d0d0';
+        for (let i = 0; i < sides; i++) {
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        
+        // ラベル
+        const labels = ['スキル', '経験', '業界', '地域', '活動', '興味'];
+        ctx.fillStyle = '#666';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        labels.forEach((label, i) => {
+            const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+            const x = centerX + Math.cos(angle) * (radius + 15);
+            const y = centerY + Math.sin(angle) * (radius + 15);
+            ctx.fillText(label, x, y);
+        });
+        
+        // データポイントを計算
+        const values = [
+            Math.min((user.skills?.length || 0) * 20, 100), // スキル
+            Math.random() * 80 + 20, // 経験（ダミー）
+            user.industry ? 80 : 40, // 業界
+            user.location ? 80 : 40, // 地域
+            Math.random() * 80 + 20, // 活動（ダミー）
+            Math.min((user.interests?.length || 0) * 25, 100) // 興味
+        ];
+        
+        // データポリゴンを描画
+        ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
+        ctx.strokeStyle = '#4a90e2';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        values.forEach((value, i) => {
+            const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+            const x = centerX + Math.cos(angle) * (radius * value / 100);
+            const y = centerY + Math.sin(angle) * (radius * value / 100);
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // データポイントを描画
+        ctx.fillStyle = '#4a90e2';
+        values.forEach((value, i) => {
+            const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+            const x = centerX + Math.cos(angle) * (radius * value / 100);
+            const y = centerY + Math.sin(angle) * (radius * value / 100);
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
     }
 
     // 初期化実行
