@@ -77,12 +77,10 @@
         try {
             // 自分以外のユーザーを取得
             const { data: users, error } = await window.supabaseClient
-                .from('users')
+                .from('user_profiles')
                 .select(`
                     *,
-                    skills,
-                    interests,
-                    business_challenges
+                    skills
                 `)
                 .neq('id', currentUserId)
                 .limit(50);
@@ -106,7 +104,7 @@
         try {
             // 現在のユーザーのプロフィール取得
             const { data: currentUser } = await window.supabaseClient
-                .from('users')
+                .from('user_profiles')
                 .select('skills, interests, business_challenges')
                 .eq('id', currentUserId)
                 .single();

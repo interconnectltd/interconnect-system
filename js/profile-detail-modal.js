@@ -19,7 +19,7 @@
         async init() {
             // 現在のユーザー情報を取得
             try {
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (user) {
                     const { data } = await window.supabase
                         .from('profiles')
@@ -734,7 +734,7 @@
         
         async sendConnect(profileId) {
             try {
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     alert('ログインが必要です');
                     return;
@@ -780,7 +780,7 @@
         
         async bookmark(profileId) {
             try {
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     alert('ログインが必要です');
                     return;
