@@ -423,6 +423,10 @@
     </div>
     
     <!-- Scripts -->
+    <!-- Supabase統一初期化（最初に読み込む） -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- Supabase参照修正 -->
+    <script src="js/supabase-wait-fix.js"></script>
     <!-- Core initialization (must be first) -->
     <script src="js/interconnect-core.js"></script>
     <!-- 統一トースト通知 (must be loaded early) -->
@@ -443,7 +447,6 @@
     <script src="js/dashboard.js"></script>
     <!-- <script src="js/event-registration.js"></script> Disabled: Duplicate functionality with events-supabase.js -->
     <!-- <script src="js/notifications.js"></script> -->
-    <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ja.js"></script>

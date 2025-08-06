@@ -207,25 +207,28 @@
     window.updateDashboardUserInfo = updateUserInfo;
 
     // 初期化時に紹介ポイントも読み込む
-    // supabaseClientが定義されるまで待つ
+    // supabaseReadyイベントを待つ
+    window.addEventListener('supabaseReady', function() {
+        console.log('[Dashboard] supabaseReady event received, loading referral points');
+        setTimeout(() => loadReferralPoints(), 500);
+    });
+    
+    // 既にsupabaseClientが初期化されている場合
     if (window.supabaseClient) {
         loadReferralPoints();
-    } else {
-        // supabaseClientが読み込まれたら実行
-        window.addEventListener('load', () => {
-            if (window.supabaseClient) {
-                loadReferralPoints();
-            }
-        });
     }
 
     // 紹介ポイントを読み込む関数
     async function loadReferralPoints() {
         try {
-            // supabaseClientを使用（supabase-client.jsで定義）
-            const supabaseInstance = window.supabaseClient || window.supabase;
+            // waitForSupabaseを使用して確実に初期化を待つ
+            if (typeof window.waitForSupabase === 'function') {
+                await window.waitForSupabase();
+            }
+            
+            const supabaseInstance = window.supabaseClient;
             if (!supabaseInstance) {
-                console.log('Supabase not initialized yet');
+                console.log('[Dashboard] Supabase not initialized yet');
                 return;
             }
             

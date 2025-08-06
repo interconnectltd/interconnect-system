@@ -425,10 +425,12 @@
     </div>
     
     <!-- Scripts -->
-    <!-- Core initialization (must be first) -->
-    <script src="js/interconnect-core.js"></script>
-    <!-- Supabase参照修正 (他のスクリプトより先に読み込む) -->
+    <!-- Supabase統一初期化（最初に読み込む） -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- Supabase参照修正 -->
     <script src="js/supabase-wait-fix.js"></script>
+    <!-- Core initialization -->
+    <script src="js/interconnect-core.js"></script>
     <!-- ゲストモード管理 -->
     <script src="js/guest-mode-manager.js"></script>
     

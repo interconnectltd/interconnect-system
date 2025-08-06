@@ -455,7 +455,10 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase統一初期化（最初に読み込む） -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- Supabase参照修正 -->
+    <script src="js/supabase-wait-fix.js"></script>
     <script src="js/common.js"></script>
     <script src="js/sidebar-toggle-fixed.js"></script>
     <script src="js/notifications.js"></script>

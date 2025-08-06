@@ -22,5 +22,30 @@
         configurable: true
     });
 
+    // waitForSupabaseが定義されていない場合のフォールバック
+    if (typeof window.waitForSupabase === 'undefined') {
+        window.waitForSupabase = function() {
+            return new Promise((resolve) => {
+                if (window.supabaseClient) {
+                    resolve(window.supabaseClient);
+                    return;
+                }
+
+                let checkCount = 0;
+                const checkInterval = setInterval(() => {
+                    checkCount++;
+                    if (window.supabaseClient) {
+                        clearInterval(checkInterval);
+                        resolve(window.supabaseClient);
+                    } else if (checkCount > 100) { // 10秒後にタイムアウト
+                        clearInterval(checkInterval);
+                        console.error('[SupabaseWaitFix] Supabase初期化タイムアウト');
+                        resolve(null);
+                    }
+                }, 100);
+            });
+        };
+    }
+
     console.log('[SupabaseWaitFix] Supabase参照の修正を適用しました');
 })();

@@ -401,6 +401,10 @@
     </div>
     
     <!-- Scripts -->
+    <!-- Supabase統一初期化（最初に読み込む） -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- Supabase参照修正 -->
+    <script src="js/supabase-wait-fix.js"></script>
     <!-- Core utilities (必須) -->
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
@@ -457,35 +461,7 @@
     <script src="js/notifications.js"></script>
     -->
     
-    <!-- Supabase参照修正 (他のスクリプトより先に読み込む) -->
-    <script src="js/supabase-wait-fix.js"></script>
-    
     <!-- プロファイル詳細モーダル（必須） -->
     <script src="js/profile-detail-modal.js"></script>
-    
-    <!-- プロファイル詳細モーダルは統合版に含まれています -->
-    
-    <!-- 以下のスクリプトは全て無効化されています -->
-    <!--
-    <script src="js/matching-complete-fix.js"></script>
-    <script src="js/matching-emergency-fix.js"></script>
-    <script src="js/matching-full-implementation.js"></script>
-    <script src="js/matching-error-diagnostic.js"></script>
-    <script src="js/matching-fix-all-issues.js"></script>
-    <script src="js/matching-perfect-display.js"></script>
-    <script src="js/matching-display-override.js"></script>
-    <script src="js/matching-realistic-scoring.js"></script>
-    <script src="js/matching-final-complete.js"></script>
-    <script src="js/matching-conflict-resolver.js"></script>
-    <script src="js/matching-cleanup.js"></script>
-    <script src="js/matching-search.js"></script>
-    <script src="js/matching-score-fix.js"></script>
-    <script src="js/matching-profile-null-fix.js"></script>
-    <script src="js/matching-connect-handler.js"></script>
-    <script src="js/matching-feature-test.js"></script>
-    <script src="js/matching-final-verification.js"></script>
-    <script src="js/matching-ultimate-fix.js"></script>
-    -->
-    <script src="js/supabase-unified.js?v=1.0"></script>
 </body>
 </html>
