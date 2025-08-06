@@ -145,12 +145,9 @@
     async function loadReferralHistory() {
         try {
             const { data, error } = await window.supabaseClient
-                .from('referrals')
-                .select(`
-                    *,
-                    referred_user:referred_user_id(name, email)
-                `)
-                .eq('referrer_id', currentUserId)
+                .from('v_referral_history')
+                .select('*')
+                .eq('inviter_id', currentUserId)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -270,8 +267,8 @@
                         <div class="user-info">
                             <i class="fas fa-user-circle"></i>
                             <div>
-                                <p class="user-name">${escapeHtml(referral.referred_user?.name || '未設定')}</p>
-                                <p class="user-email">${escapeHtml(referral.referred_user?.email || '')}</p>
+                                <p class="user-name">${escapeHtml(referral.invitee_name || '未設定')}</p>
+                                <p class="user-email">${escapeHtml(referral.invitee_email || '')}</p>
                             </div>
                         </div>
                         <div class="status-badge ${statusInfo.class}">
@@ -281,12 +278,12 @@
                     <div class="history-details">
                         <p class="date">
                             <i class="fas fa-calendar"></i>
-                            ${formatDate(referral.created_at)}
+                            ${formatDate(referral.sent_at || referral.created_at)}
                         </p>
-                        ${referral.completed_at ? `
+                        ${referral.accepted_at ? `
                             <p class="completed-date">
                                 <i class="fas fa-check-circle"></i>
-                                完了日: ${formatDate(referral.completed_at)}
+                                登録日: ${formatDate(referral.accepted_at)}
                             </p>
                         ` : ''}
                     </div>

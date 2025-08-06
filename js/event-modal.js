@@ -340,10 +340,10 @@
          */
         async checkUserParticipation(eventId) {
             try {
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) return;
 
-                const { data: participation } = await window.supabase
+                const { data: participation } = await window.supabaseClient
                     .from('event_participants')
                     .select('status')
                     .eq('event_id', eventId)
@@ -387,7 +387,7 @@
 
             try {
                 // ユーザー認証チェック
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     alert('ログインが必要です');
                     window.location.href = 'login.html';

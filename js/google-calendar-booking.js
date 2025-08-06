@@ -18,6 +18,12 @@ class GoogleCalendarBooking {
       referralBtn.addEventListener('click', () => this.startBooking());
     }
     
+    // 予約ページの予約ボタン
+    const bookingPageBtn = document.getElementById('open-booking-btn');
+    if (bookingPageBtn) {
+      bookingPageBtn.addEventListener('click', () => this.startBooking());
+    }
+    
     // 旧IDとの互換性も保持
     const oldReferralBtn = document.getElementById('book-consultation-btn');
     if (oldReferralBtn && !document.getElementById('book-referral-btn')) {
@@ -145,12 +151,12 @@ class GoogleCalendarBooking {
   
   async recordBookingIntent(referralCode) {
     // Supabaseが利用可能な場合は予約意図を記録
-    if (window.supabase) {
+    if (window.supabaseClient) {
       try {
-        const { data: { user } } = await window.supabase.auth.getUser();
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
         
         if (user) {
-          const { error } = await window.supabase
+          const { error } = await window.supabaseClient
             .from('booking_intents')
             .insert({
               user_id: user.id,

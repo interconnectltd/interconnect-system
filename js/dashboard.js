@@ -207,13 +207,13 @@
     window.updateDashboardUserInfo = updateUserInfo;
 
     // 初期化時に紹介ポイントも読み込む
-    // supabaseが定義されるまで待つ
-    if (typeof supabase !== 'undefined') {
+    // supabaseClientが定義されるまで待つ
+    if (window.supabaseClient) {
         loadReferralPoints();
     } else {
-        // supabaseが読み込まれたら実行
+        // supabaseClientが読み込まれたら実行
         window.addEventListener('load', () => {
-            if (typeof supabase !== 'undefined') {
+            if (window.supabaseClient) {
                 loadReferralPoints();
             }
         });

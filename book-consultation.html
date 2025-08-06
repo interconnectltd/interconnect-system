@@ -183,9 +183,12 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-flex;
+            display: inline-flex !important;
             align-items: center;
             gap: 0.5rem;
+            margin-top: 1rem;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         
         .temp-booking-btn:hover {
@@ -466,24 +469,20 @@
     <script src="js/google-calendar-booking.js?v=1.0"></script>
     
     <script>
-        // 予約ボタンのクリックハンドラー
-        document.getElementById('open-booking-btn').addEventListener('click', function() {
-            // google-calendar-booking.jsの機能を使用
-            if (window.googleCalendarBooking) {
-                window.googleCalendarBooking.startBooking();
-            } else {
-                // フォールバック
-                window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0PKjmYY3I2CqKLa8I_YRoGkC1fnuGZTQ2uQ5UiNJM9BJfP5oR-z7dkV8XPRr_2vDZdEeRV_uw', '_blank');
-            }
-        });
-        
         // カレンダーのプレースホルダーを表示
-        setTimeout(() => {
+        window.addEventListener('DOMContentLoaded', function() {
+            // 読み込み完了後すぐに表示を変更
             const placeholder = document.querySelector('.calendar-placeholder p');
             if (placeholder) {
                 placeholder.textContent = 'カレンダーを表示するには、下のボタンをクリックしてください';
             }
-        }, 2000);
+            
+            // ボタンの表示を確認
+            const btn = document.getElementById('open-booking-btn');
+            if (btn) {
+                btn.style.display = 'inline-flex'; // 明示的に表示
+            }
+        });
     </script>
 </body>
 </html>
