@@ -5,21 +5,32 @@
 (function() {
     'use strict';
 
+    // updateUserInfoの実行を管理
+    let userInfoUpdated = false;
+    let updateUserInfoSafe = function() {
+        if (!userInfoUpdated) {
+            userInfoUpdated = true;
+            updateUserInfo();
+            // 2秒後にフラグをリセット（必要に応じて再実行可能にする）
+            setTimeout(() => { userInfoUpdated = false; }, 2000);
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
         checkAuth();
         initSidebar();
         initUserMenu();
-        updateUserInfo();
+        updateUserInfoSafe();
         
         // ProfileSyncが準備できたら再度更新
         if (window.ProfileSync) {
-            setTimeout(() => updateUserInfo(), 1000);
+            setTimeout(() => updateUserInfoSafe(), 1000);
         }
         
         // supabaseReadyイベントでも更新
         window.addEventListener('supabaseReady', function() {
             console.log('Dashboard: supabaseReady event received, updating user info');
-            setTimeout(() => updateUserInfo(), 500);
+            setTimeout(() => updateUserInfoSafe(), 500);
             
             // ダッシュボード更新システムを初期化
             if (window.dashboardUpdater) {
@@ -31,7 +42,7 @@
         });
         
         // ダッシュボード更新システムが既に準備できている場合
-        if (window.dashboardUpdater && window.supabase) {
+        if (window.dashboardUpdater && window.supabaseClient) {
             console.log('Dashboard: Dashboard updater already available, initializing...');
             setTimeout(() => {
                 window.dashboardUpdater.init();
@@ -252,11 +263,14 @@
     // supabaseReadyイベントを待つ
     window.addEventListener('supabaseReady', function() {
         console.log('[Dashboard] supabaseReady event received, loading referral points');
-        setTimeout(() => loadReferralPoints(), 500);
+        if (window.supabaseClient) {
+            setTimeout(() => loadReferralPoints(), 500);
+        }
     });
     
     // 既にsupabaseClientが初期化されている場合
-    if (window.supabaseClient) {
+    if (window.supabaseClient && !window.referralPointsLoaded) {
+        window.referralPointsLoaded = true;
         setTimeout(() => loadReferralPoints(), 100);
     }
 
