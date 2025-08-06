@@ -192,7 +192,7 @@
 
             // ユーザー情報を更新
             const { error: updateError } = await window.supabaseClient
-                .from('users')
+                .from('user_profiles')
                 .update({ 
                     picture_url: publicUrl,
                     updated_at: new Date().toISOString()
@@ -251,7 +251,7 @@
 
             // ユーザー情報を更新
             const { error: updateError } = await window.supabaseClient
-                .from('users')
+                .from('user_profiles')
                 .update({ 
                     cover_url: publicUrl,
                     updated_at: new Date().toISOString()

@@ -23,12 +23,9 @@ const VIDEO_URLS = [
 
 // インストール時に動画をプリキャッシュ
 self.addEventListener('install', (event) => {
-    console.log('[SW] Installing Service Worker');
-    
     event.waitUntil(
         caches.open(VIDEO_CACHE_NAME)
             .then(cache => {
-                console.log('[SW] Caching video files');
                 return cache.addAll(VIDEO_URLS);
             })
             .then(() => self.skipWaiting())
@@ -37,14 +34,11 @@ self.addEventListener('install', (event) => {
 
 // アクティベート時に古いキャッシュを削除
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activating Service Worker');
-    
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheName !== CACHE_NAME && cacheName !== VIDEO_CACHE_NAME) {
-                        console.log('[SW] Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
@@ -64,7 +58,7 @@ self.addEventListener('fetch', (event) => {
             caches.open(VIDEO_CACHE_NAME).then(cache => {
                 return cache.match(request).then(cachedResponse => {
                     if (cachedResponse) {
-                        console.log('[SW] Serving video from cache:', request.url);
+                        // ビデオキャッシュヒットのログを削除
                         return cachedResponse;
                     }
                     
@@ -97,7 +91,7 @@ self.addEventListener('fetch', (event) => {
                     
                     // URL検証: chrome-extension スキームはキャッシュしない
                     if (!isValidUrl(request.url)) {
-                        console.log('[SW] Skipping cache for invalid URL scheme:', request.url);
+                        // ログ出力を削除してスパムを防ぐ
                         return networkResponse;
                     }
                     
@@ -116,8 +110,6 @@ self.addEventListener('fetch', (event) => {
 
 // バックグラウンドフェッチ（実験的機能）
 self.addEventListener('backgroundfetch', (event) => {
-    console.log('[SW] Background fetch event:', event.registration.id);
-    
     event.waitUntil(
         (async () => {
             const registration = event.registration;

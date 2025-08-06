@@ -184,7 +184,7 @@
 
         // 送信者情報を取得
         const { data: sender } = await window.supabaseClient
-            .from('users')
+            .from('user_profiles')
             .select('name')
             .eq('id', message.sender_id)
             .single();
@@ -211,7 +211,7 @@
                 : payload.new.user1_id;
 
             const { data: otherUser } = await window.supabaseClient
-                .from('users')
+                .from('user_profiles')
                 .select('name, company')
                 .eq('id', otherUserId)
                 .single();
@@ -264,7 +264,7 @@
         if (payload.eventType === 'UPDATE' && payload.new.status === 'completed') {
             // 紹介された人の情報を取得
             const { data: referredUser } = await window.supabaseClient
-                .from('users')
+                .from('user_profiles')
                 .select('name')
                 .eq('id', payload.new.referred_user_id)
                 .single();

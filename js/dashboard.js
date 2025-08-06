@@ -206,18 +206,6 @@
     // グローバルに公開（デバッグ用）
     window.updateDashboardUserInfo = updateUserInfo;
 
-    // 初期化時に紹介ポイントも読み込む
-    // supabaseReadyイベントを待つ
-    window.addEventListener('supabaseReady', function() {
-        console.log('[Dashboard] supabaseReady event received, loading referral points');
-        setTimeout(() => loadReferralPoints(), 500);
-    });
-    
-    // 既にsupabaseClientが初期化されている場合
-    if (window.supabaseClient) {
-        loadReferralPoints();
-    }
-
     // 紹介ポイントを読み込む関数
     async function loadReferralPoints() {
         try {
@@ -255,6 +243,21 @@
                 pointsElement.textContent = '0 pt';
             }
         }
+    }
+
+    // グローバルに公開
+    window.loadReferralPoints = loadReferralPoints;
+
+    // 初期化時に紹介ポイントも読み込む
+    // supabaseReadyイベントを待つ
+    window.addEventListener('supabaseReady', function() {
+        console.log('[Dashboard] supabaseReady event received, loading referral points');
+        setTimeout(() => loadReferralPoints(), 500);
+    });
+    
+    // 既にsupabaseClientが初期化されている場合
+    if (window.supabaseClient) {
+        setTimeout(() => loadReferralPoints(), 100);
     }
 
 })();
