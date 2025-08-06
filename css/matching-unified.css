@@ -91,6 +91,9 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: relative;
     transition: all 0.3s ease;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
 }
 
 .matching-card:hover {
@@ -459,15 +462,20 @@
 
 /* レーダーチャート（6角形グラフ） */
 .matching-radar {
-    width: 200px;
+    width: 100%;
     height: 200px;
-    margin: 20px auto;
+    margin: 16px 0;
     position: relative;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .matching-radar canvas {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 180px !important;
+    display: block;
 }
 
 .radar-chart-container {
@@ -524,6 +532,23 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+/* 共通スキル表示 */
+.common-skills {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.common-skills i {
+    color: #4caf50;
+    margin-right: 6px;
 }
 
 /* レスポンシブ */

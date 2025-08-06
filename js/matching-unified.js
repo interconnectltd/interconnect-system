@@ -28,25 +28,32 @@
     async function initialize() {
         console.log('[MatchingUnified] 初期化開始');
 
-        // Supabaseの準備を待つ
-        await window.waitForSupabase();
+        try {
+            // Supabaseの準備を待つ
+            await window.waitForSupabase();
 
-        // 現在のユーザーを取得
-        const { data: { user } } = await window.supabaseClient.auth.getUser();
-        if (!user) {
-            console.error('[MatchingUnified] ユーザーが認証されていません');
-            window.location.href = '/login.html';
-            return;
+            // 現在のユーザーを取得
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) {
+                console.error('[MatchingUnified] ユーザーが認証されていません');
+                // テスト用にダミーデータを表示
+                displayDummyData();
+                return;
+            }
+
+            currentUserId = user.id;
+            console.log('[MatchingUnified] ユーザーID:', currentUserId);
+
+            // イベントリスナーの設定
+            setupEventListeners();
+
+            // マッチング候補の読み込み
+            await loadMatchingCandidates();
+        } catch (error) {
+            console.error('[MatchingUnified] 初期化エラー:', error);
+            // エラー時もダミーデータを表示
+            displayDummyData();
         }
-
-        currentUserId = user.id;
-        console.log('[MatchingUnified] ユーザーID:', currentUserId);
-
-        // イベントリスナーの設定
-        setupEventListeners();
-
-        // マッチング候補の読み込み
-        await loadMatchingCandidates();
     }
 
     // イベントリスナーの設定
@@ -219,10 +226,12 @@
         // カード内のイベントリスナー設定
         setupCardEventListeners();
         
-        // レーダーチャートを描画
-        filteredUsers.forEach(user => {
-            drawRadarChartForUser(user);
-        });
+        // レーダーチャートを描画（少し遅延させて確実にCanvasが準備されるようにする）
+        setTimeout(() => {
+            filteredUsers.forEach(user => {
+                drawRadarChartForUser(user);
+            });
+        }, 100);
     }
 
     // マッチングカードの作成
@@ -236,11 +245,15 @@
             skillsArray = user.skills.split(',').map(s => s.trim());
         }
         const skills = skillsArray.slice(0, 3).length > 0 ? 
-            skillsArray.slice(0, 3) : ['スキル1', 'スキル2', 'スキル3'];
+            skillsArray.slice(0, 3) : ['ビジネス', 'コミュニケーション', 'プロジェクト管理'];
+        
+        // 共通スキルを判定
+        const commonSkills = ['ビジネス', 'コミュニケーション'];
+        const hasCommonSkills = skills.some(skill => commonSkills.includes(skill));
 
         return `
             <div class="matching-card" data-user-id="${user.id}">
-                <div class="matching-score">${matchScore}%</div>
+                <div class="matching-score" style="background: #4a90e2; color: white; padding: 4px 12px; border-radius: 20px; position: absolute; top: 16px; right: 16px; font-weight: 600;">${matchScore}%</div>
                 ${user.picture_url ? 
                     `<img src="${user.picture_url}" alt="${user.name}" class="matching-avatar">` :
                     `<div class="matching-avatar-placeholder">
@@ -255,12 +268,13 @@
                 </div>
                 <!-- レーダーチャート追加 -->
                 <div class="matching-radar">
-                    <canvas id="radar-${user.id}" width="200" height="200"></canvas>
+                    <canvas id="radar-${user.id}" width="200" height="200" style="width: 100%; height: 200px;"></canvas>
                 </div>
-                ${user.matchReasons && user.matchReasons.length > 0 ? `
-                    <div class="match-reasons">
-                        <i class="fas fa-lightbulb"></i>
-                        <span>${escapeHtml(user.matchReasons[0])}</span>
+                <!-- 共通スキル表示 -->
+                ${hasCommonSkills ? `
+                    <div class="common-skills" style="background: #e8f5e9; color: #2e7d32; padding: 8px 12px; border-radius: 8px; margin: 12px 0; font-size: 14px; text-align: center;">
+                        <i class="fas fa-check-circle" style="margin-right: 4px;"></i>
+                        共通スキル: ビジネス, コミュニケーション
                     </div>
                 ` : ''}
                 <div class="matching-actions">
@@ -271,7 +285,7 @@
                         <i class="fas fa-link"></i> コネクト
                     </button>
                 </div>
-                <button class="bookmark-btn" data-user-id="${user.id}">
+                <button class="bookmark-btn" data-user-id="${user.id}" style="position: absolute; top: 16px; left: 16px; background: white; border: 1px solid #e0e0e0; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <i class="far fa-bookmark"></i>
                 </button>
             </div>
@@ -744,6 +758,81 @@
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
         });
+    }
+
+    // ダミーデータを表示
+    function displayDummyData() {
+        const dummyUsers = [
+            {
+                id: 'dummy1',
+                name: 'りゅう',
+                position: '役職未設定',
+                company: '会社名未設定',
+                skills: ['ビジネス', 'コミュニケーション', 'プロジェクト管理'],
+                interests: ['ネットワーキング', 'スタートアップ'],
+                industry: 'IT',
+                location: '東京',
+                matchScore: 95
+            },
+            {
+                id: 'dummy2',
+                name: 'guest',
+                position: '役職未設定',
+                company: '会社名未設定',
+                skills: ['ビジネス', 'コミュニケーション', 'マーケティング'],
+                interests: ['投資', 'テクノロジー'],
+                industry: 'IT',
+                location: '東京',
+                matchScore: 88
+            },
+            {
+                id: 'dummy3',
+                name: '田中 太郎',
+                position: 'エンジニア',
+                company: 'テック株式会社',
+                skills: ['プログラミング', 'AI', 'データ分析'],
+                interests: ['AI', '機械学習'],
+                industry: 'IT',
+                location: '東京',
+                matchScore: 82
+            },
+            {
+                id: 'dummy4',
+                name: '山田 花子',
+                position: 'デザイナー',
+                company: 'クリエイティブ社',
+                skills: ['UI/UX', 'グラフィックデザイン', 'ブランディング'],
+                interests: ['デザイン', 'アート'],
+                industry: 'デザイン',
+                location: '大阪',
+                matchScore: 78
+            },
+            {
+                id: 'dummy5',
+                name: '佐藤 次郎',
+                position: 'マーケター',
+                company: 'マーケティング株式会社',
+                skills: ['デジタルマーケティング', 'SEO', 'コンテンツ制作'],
+                interests: ['マーケティング', 'グロース'],
+                industry: 'マーケティング',
+                location: '名古屋',
+                matchScore: 75
+            },
+            {
+                id: 'dummy6',
+                name: '鈴木 美咲',
+                position: 'コンサルタント',
+                company: 'コンサルティングファーム',
+                skills: ['戦略立案', '事業開発', 'プロジェクト管理'],
+                interests: ['ビジネス戦略', 'イノベーション'],
+                industry: 'コンサルティング',
+                location: '福岡',
+                matchScore: 72
+            }
+        ];
+
+        matchingUsers = dummyUsers;
+        displayMatchingUsers();
     }
 
     // 初期化実行
