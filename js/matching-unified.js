@@ -835,11 +835,23 @@
         displayMatchingUsers();
     }
 
-    // 初期化実行
+    // 初期化実行（Supabase初期化を待つ）
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Supabase初期化完了を待つ
+            if (window.supabaseClient) {
+                initialize();
+            } else {
+                window.addEventListener('supabaseReady', initialize, { once: true });
+            }
+        });
     } else {
-        initialize();
+        // 既にDOMが読み込まれている場合
+        if (window.supabaseClient) {
+            initialize();
+        } else {
+            window.addEventListener('supabaseReady', initialize, { once: true });
+        }
     }
 
 })();
