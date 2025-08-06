@@ -286,7 +286,7 @@
 
             // プロフィールデータ取得
             const { data: user, error } = await window.supabaseClient
-                .from('users')
+                .from('user_profiles')
                 .select('*')
                 .eq('id', userId)
                 .single();
