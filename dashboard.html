@@ -438,11 +438,10 @@
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/supabase-init-wait.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
-    <script src="js/realtime-notifications.js"></script>
+    <!-- リアルタイム通知システム -->
+    <script src="js/notifications-realtime-unified.js?v=1.0"></script>
     
     <!-- Dashboard bundle (統合版) -->
     <script src="js/dashboard-bundle.js"></script>
@@ -487,7 +486,8 @@
     <script src="js/activity-event-filter-fix.js?v=2.0"></script>
     <script src="js/dashboard-charts.js"></script>
     <script src="js/dashboard.js"></script>
-    <script src="js/notification-sender.js"></script>
+    <!-- 通知送信機能は統一版に含まれています -->
+    <!-- <script src="js/notification-sender.js"></script> -->
     <script src="js/message-integration.js"></script>
     
     <!-- グローバル閲覧履歴 -->
@@ -509,5 +509,6 @@
             }
         });
     </script>
+    <script src="js/supabase-unified.js?v=1.0"></script>
 </body>
 </html>

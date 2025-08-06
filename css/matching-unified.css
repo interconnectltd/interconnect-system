@@ -1,0 +1,373 @@
+/* ===========================
+   マッチングシステム統一CSS
+   =========================== */
+
+/* マッチンググリッド */
+.matching-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+/* マッチングカード */
+.matching-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.matching-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* マッチングスコア */
+.matching-score {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #4a90e2;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* アバター */
+.matching-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    display: block;
+    object-fit: cover;
+}
+
+.matching-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #8e8e93;
+}
+
+/* カード情報 */
+.matching-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.matching-title {
+    font-size: 14px;
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.matching-company {
+    font-size: 14px;
+    color: #495057;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+/* タグ */
+.matching-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    justify-content: center;
+}
+
+.tag {
+    background: #e8f0fe;
+    color: #1967d2;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    white-space: nowrap;
+}
+
+/* マッチ理由 */
+.match-reasons {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.match-reasons i {
+    color: #ffc107;
+}
+
+/* アクションボタン */
+.matching-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.matching-actions .btn {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+/* ブックマークボタン */
+.bookmark-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bookmark-btn:hover {
+    background: #f8f9fa;
+    border-color: #4a90e2;
+}
+
+.bookmark-btn i {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+.bookmark-btn i.fas {
+    color: #4a90e2;
+}
+
+/* プロフィールモーダル */
+.profile-modal .modal-content {
+    max-width: 600px;
+}
+
+.profile-header {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #8e8e93;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h3 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.profile-title {
+    font-size: 16px;
+    color: #6c757d;
+    margin-bottom: 16px;
+}
+
+.profile-email,
+.profile-phone,
+.profile-line {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.profile-email i,
+.profile-phone i,
+.profile-line i {
+    width: 20px;
+    margin-right: 8px;
+    color: #6c757d;
+}
+
+/* プロフィールセクション */
+.profile-section {
+    margin-bottom: 24px;
+}
+
+.profile-section h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #212529;
+}
+
+.profile-section p {
+    color: #495057;
+    line-height: 1.6;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.challenges-list {
+    list-style: none;
+    padding: 0;
+}
+
+.challenges-list li {
+    padding: 8px 0;
+    color: #495057;
+    position: relative;
+    padding-left: 20px;
+}
+
+.challenges-list li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #4a90e2;
+}
+
+/* メッセージモーダル */
+.message-modal textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* 空の状態 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+/* ボタン状態 */
+.btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-success {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+/* トースト通知 */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 10000;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-success {
+    border-left: 4px solid #28a745;
+}
+
+.toast-success i {
+    color: #28a745;
+}
+
+.toast-error {
+    border-left: 4px solid #dc3545;
+}
+
+.toast-error i {
+    color: #dc3545;
+}
+
+.toast-info {
+    border-left: 4px solid #17a2b8;
+}
+
+.toast-info i {
+    color: #17a2b8;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    .matching-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-avatar,
+    .profile-avatar-placeholder {
+        margin: 0 auto;
+    }
+
+    .matching-actions {
+        grid-template-columns: 1fr;
+    }
+}

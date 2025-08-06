@@ -456,20 +456,14 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/supabase-init-wait.js"></script>
     <script src="js/common.js"></script>
     <script src="js/sidebar-toggle-fixed.js"></script>
     <script src="js/notifications.js"></script>
     <script src="js/user-menu.js"></script>
     <script src="js/realtime-notifications.js"></script>
     <script src="js/cashout-modal.js"></script>
-    <script src="js/referral-security-fix.js"></script>
-    <script src="js/referral-enhanced.js"></script>
-    <script src="js/referral-enhanced-fix.js"></script>
-    <script src="js/referral-table-fix.js"></script>
-    <!-- 紹介リンク修正 -->
-    <script src="js/force-correct-userid.js"></script>
+    <!-- 紹介システム統一JavaScript（12ファイルを1つに統合） -->
+    <script src="js/referral-unified.js?v=1.0"></script>
     <script>
         // タブ切り替え
         document.querySelectorAll('.tab-button').forEach(button => {
@@ -536,5 +530,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
     <!-- TimeRex予約システム -->
     <!-- TimeRexサイトアクセス不可のため一時的にGoogle Calendar使用 -->
     <script src="js/google-calendar-booking.js?v=1.0"></script>
+    <script src="js/supabase-unified.js?v=1.0"></script>
 </body>
 </html>

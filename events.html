@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/events.css">
     <link rel="stylesheet" href="css/events-supabase.css">
-    <link rel="stylesheet" href="css/calendar.css">
     <link rel="stylesheet" href="css/event-modal.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/realtime-notifications.css">
@@ -27,6 +26,12 @@
     <link rel="stylesheet" href="css/user-menu-zindex-only.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
+    <!-- カレンダー連携 -->
+    <link rel="stylesheet" href="css/calendar-integration.css">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <!-- 統一トースト通知 -->
+    <link rel="stylesheet" href="css/toast-unified.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -234,14 +239,13 @@
                         <button class="filter-btn" data-filter="paid">有料</button>
                     </div>
                     
-                    <div class="event-sort">
-                        <select id="eventSortSelect">
-                            <option value="date_asc">日付（近い順）</option>
-                            <option value="date_desc">日付（遠い順）</option>
-                            <option value="popular">人気順</option>
-                            <option value="price_asc">価格（安い順）</option>
-                            <option value="price_desc">価格（高い順）</option>
-                        </select>
+                    <div class="event-actions">
+                        <button class="btn btn-outline" id="show-calendar-view">
+                            <i class="fas fa-calendar"></i> カレンダー表示
+                        </button>
+                        <button class="btn btn-outline" id="export-calendar">
+                            <i class="fas fa-download"></i> エクスポート
+                        </button>
                     </div>
                 </div>
                 
@@ -345,6 +349,21 @@
                     </div>
                 </section>
                 
+                <!-- Calendar View -->
+                <section class="events-section" id="calendar-view">
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <h2>カレンダー表示</h2>
+                            <div class="calendar-actions">
+                                <button class="btn btn-outline btn-sm" id="google-calendar-sync">
+                                    <i class="fab fa-google"></i> Googleカレンダー連携
+                                </button>
+                            </div>
+                        </div>
+                        <div id="calendar"></div>
+                    </div>
+                </section>
+                
                 <!-- Past Events -->
                 <section class="events-section">
                     <h2 class="section-title">過去のイベント</h2>
@@ -406,13 +425,14 @@
     <!-- Scripts -->
     <!-- Core initialization (must be first) -->
     <script src="js/interconnect-core.js"></script>
+    <!-- 統一トースト通知 (must be loaded early) -->
+    <script src="js/toast-unified.js"></script>
     
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
     <!-- <script src="js/debug-logger.js"></script> -->
-    <script src="js/supabase-client.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/realtime-notifications.js"></script>
@@ -420,9 +440,16 @@
     <script src="js/event-modal.js"></script>
     <script src="js/events-supabase.js?v=3"></script>
     <script src="js/events-supabase-fix.js"></script>
-    <script src="js/calendar.js"></script>
     <script src="js/dashboard.js"></script>
     <!-- <script src="js/event-registration.js"></script> Disabled: Duplicate functionality with events-supabase.js -->
     <!-- <script src="js/notifications.js"></script> -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ja.js"></script>
+    <!-- カレンダー連携 -->
+    <script src="js/calendar-integration.js"></script>
+    <!-- Google API (オプション) -->
+    <script async defer src="https://apis.google.com/js/api.js"></script>
 </body>
 </html>

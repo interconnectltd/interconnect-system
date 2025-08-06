@@ -18,15 +18,12 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/matching.css">
+    <!-- マッチングシステム統一CSS -->
+    <link rel="stylesheet" href="css/matching-unified.css?v=1.0">
     <link rel="stylesheet" href="css/responsive-menu.css">
     <link rel="stylesheet" href="css/user-menu-zindex-only.css">
     <!-- ユーザードロップダウン最前面修正 -->
     <link rel="stylesheet" href="css/user-dropdown-fix-final.css">
-    <link rel="stylesheet" href="css/matching-mobile-fix.css">
-    <link rel="stylesheet" href="css/matching-final-styles.css">
-    <link rel="stylesheet" href="css/matching-perfect.css">
-    <link rel="stylesheet" href="css/matching-loading.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
 </head>
@@ -409,26 +406,13 @@
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <script src="js/supabase-client.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
     
-    <!-- Matching Perfect Integration - 統合版 -->
-    <script src="js/matching-perfect-integration.js"></script>
-    
-    <!-- エラー修正 -->
-    <script src="js/matching-error-fix.js"></script>
-    
-    <!-- カード表示修正 -->
-    <script src="js/matching-card-display-fix.js"></script>
-    
-    <!-- ローディングアニメーション -->
-    <script src="js/matching-loading-animation.js"></script>
-    
-    <!-- 競合解決（最終） -->
-    <script src="js/matching-conflict-final-resolution.js"></script>
+    <!-- マッチングシステム統合JavaScript（47ファイルを1つに統合） -->
+    <script src="js/matching-unified.js?v=1.0"></script>
     
     <!-- グローバル閲覧履歴 -->
     <script src="js/global-viewing-history.js"></script>
@@ -476,12 +460,7 @@
     <!-- プロファイル詳細モーダル（必須） -->
     <script src="js/profile-detail-modal.js"></script>
     
-    <!-- 完璧な統合のテスト -->
-    <script src="js/matching-perfect-test.js"></script>
-    
-    <!-- ホバーアニメーション無効化 -->
-    <script src="js/matching-hover-fix.js"></script>
-    <script src="js/matching-hover-complete-fix.js"></script>
+    <!-- プロファイル詳細モーダルは統合版に含まれています -->
     
     <!-- 以下のスクリプトは全て無効化されています -->
     <!--
@@ -504,5 +483,6 @@
     <script src="js/matching-final-verification.js"></script>
     <script src="js/matching-ultimate-fix.js"></script>
     -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
 </body>
 </html>

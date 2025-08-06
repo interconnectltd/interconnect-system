@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="css/user-dropdown-fix-final.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
+    <!-- プロフィール画像アップロード -->
+    <link rel="stylesheet" href="css/profile-image-upload.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -361,7 +363,7 @@
         <div class="modal-content modal-small">
             <div class="modal-header">
                 <h2>カバー画像を変更</h2>
-                <button class="modal-close" onclick="window.InterConnect.Profile.closeCoverModal()">
+                <button class="modal-close" onclick="window.ProfileImageUpload.closeCoverModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -377,8 +379,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="window.InterConnect.Profile.closeCoverModal()">キャンセル</button>
-                <button type="button" class="btn btn-primary" onclick="window.InterConnect.Profile.saveCoverImage()">保存</button>
+                <button type="button" class="btn btn-outline" onclick="window.ProfileImageUpload.closeCoverModal()">キャンセル</button>
+                <button type="button" class="btn btn-primary" onclick="window.ProfileImageUpload.saveCoverImage()">保存</button>
             </div>
         </div>
     </div>
@@ -388,7 +390,7 @@
         <div class="modal-content modal-small">
             <div class="modal-header">
                 <h2>プロフィール画像を変更</h2>
-                <button class="modal-close" onclick="window.InterConnect.Profile.closeAvatarModal()">
+                <button class="modal-close" onclick="window.ProfileImageUpload.closeAvatarModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -404,8 +406,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="window.InterConnect.Profile.closeAvatarModal()">キャンセル</button>
-                <button type="button" class="btn btn-primary" onclick="window.InterConnect.Profile.saveAvatarImage()">保存</button>
+                <button type="button" class="btn btn-outline" onclick="window.ProfileImageUpload.closeAvatarModal()">キャンセル</button>
+                <button type="button" class="btn btn-primary" onclick="window.ProfileImageUpload.saveAvatarImage()">保存</button>
             </div>
         </div>
     </div>
@@ -521,7 +523,6 @@
     <script src="js/safe-storage.js"></script>
     <script>console.log('safe-storage.js loaded');</script>
     <!-- <script src="js/debug-logger.js"></script> -->
-    <script src="js/supabase-client.js"></script>
     <script>console.log('supabase-client.js loaded');</script>
     <script src="js/global-functions.js"></script>
     <script>console.log('global-functions.js loaded');</script>
@@ -547,5 +548,8 @@
         console.log('window.InterConnect:', window.InterConnect);
         console.log('window.loadTabContent:', window.loadTabContent);
     </script>
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- プロフィール画像アップロード -->
+    <script src="js/profile-image-upload.js"></script>
 </body>
 </html>

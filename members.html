@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="css/responsive-complete.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
+    <!-- 高度な検索機能 -->
+    <link rel="stylesheet" href="css/advanced-search.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -219,45 +221,9 @@
             
             <!-- Members Content -->
             <div class="content-container">
-                <!-- Results Info -->
-                <div class="results-info">
-                    <div class="results-count">
-                        <span>156</span>名のメンバー
-                    </div>
-                    <div class="view-mode">
-                        <button class="active" title="グリッド表示">
-                            <i class="fas fa-th"></i>
-                        </button>
-                        <button title="リスト表示">
-                            <i class="fas fa-list"></i>
-                        </button>
-                    </div>
-                </div>
-                <!-- Search and Filter -->
-                <div class="members-controls">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="メンバーを検索..." class="search-input">
-                    </div>
-                    
-                    <div class="filter-controls">
-                        <select class="filter-select">
-                            <option value="">業界で絞る</option>
-                            <option value="it">IT・テクノロジー</option>
-                            <option value="finance">金融・保険</option>
-                            <option value="manufacturing">製造業</option>
-                            <option value="retail">小売・流通</option>
-                            <option value="healthcare">医療・ヘルスケア</option>
-                        </select>
-                        
-                        <select class="filter-select">
-                            <option value="">役職で絞る</option>
-                            <option value="executive">経営者・役員</option>
-                            <option value="manager">管理職</option>
-                            <option value="specialist">専門職</option>
-                            <option value="general">一般社員</option>
-                        </select>
-                    </div>
+                <!-- Advanced Search Container -->
+                <div class="advanced-search-container">
+                    <!-- 高度な検索UIがここに動的に生成されます -->
                 </div>
                 
                 <!-- Members Grid -->
@@ -302,7 +268,6 @@
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
     <script src="js/debug-logger.js"></script>
-    <script src="js/supabase-client.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/realtime-notifications.js"></script>
@@ -319,5 +284,8 @@
     <!-- グローバル閲覧履歴 -->
     <script src="js/global-viewing-history.js"></script>
     <!-- <script src="js/notifications.js"></script> -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- 高度な検索機能 -->
+    <script src="js/advanced-search.js"></script>
 </body>
 </html>
