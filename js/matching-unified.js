@@ -102,7 +102,7 @@
             // 現在のユーザーのプロフィール取得
             const { data: currentUser } = await window.supabaseClient
                 .from('user_profiles')
-                .select('skills, interests, business_challenges')
+                .select('*')
                 .eq('id', currentUserId)
                 .single();
 
@@ -113,10 +113,15 @@
                 let score = 0;
                 const reasons = [];
 
-                // スキルの一致度
-                if (currentUser.skills && user.skills) {
-                    const commonSkills = currentUser.skills.filter(skill => 
-                        user.skills.includes(skill)
+                // スキルの一致度（文字列型の場合も考慮）
+                const userSkills = Array.isArray(user.skills) ? user.skills : 
+                    (user.skills ? user.skills.split(',').map(s => s.trim()) : []);
+                const currentSkills = Array.isArray(currentUser.skills) ? currentUser.skills : 
+                    (currentUser.skills ? currentUser.skills.split(',').map(s => s.trim()) : []);
+                
+                if (currentSkills.length > 0 && userSkills.length > 0) {
+                    const commonSkills = currentSkills.filter(skill => 
+                        userSkills.includes(skill)
                     );
                     if (commonSkills.length > 0) {
                         score += commonSkills.length * 10;
@@ -124,10 +129,15 @@
                     }
                 }
 
-                // 興味の一致度
-                if (currentUser.interests && user.interests) {
-                    const commonInterests = currentUser.interests.filter(interest => 
-                        user.interests.includes(interest)
+                // 興味の一致度（文字列型の場合も考慮）
+                const userInterests = Array.isArray(user.interests) ? user.interests : 
+                    (user.interests ? user.interests.split(',').map(s => s.trim()) : []);
+                const currentInterests = Array.isArray(currentUser.interests) ? currentUser.interests : 
+                    (currentUser.interests ? currentUser.interests.split(',').map(s => s.trim()) : []);
+                
+                if (currentInterests.length > 0 && userInterests.length > 0) {
+                    const commonInterests = currentInterests.filter(interest => 
+                        userInterests.includes(interest)
                     );
                     if (commonInterests.length > 0) {
                         score += commonInterests.length * 8;
@@ -135,10 +145,13 @@
                     }
                 }
 
-                // ビジネス課題の補完性
-                if (currentUser.business_challenges && user.skills) {
-                    const complementary = currentUser.business_challenges.some(challenge =>
-                        user.skills.some(skill => isComplementary(challenge, skill))
+                // ビジネス課題の補完性（存在する場合のみ）
+                const currentChallenges = Array.isArray(currentUser.business_challenges) ? currentUser.business_challenges : 
+                    (currentUser.business_challenges ? currentUser.business_challenges.split(',').map(s => s.trim()) : []);
+                
+                if (currentChallenges.length > 0 && userSkills.length > 0) {
+                    const complementary = currentChallenges.some(challenge =>
+                        userSkills.some(skill => isComplementary(challenge, skill))
                     );
                     if (complementary) {
                         score += 15;
@@ -210,7 +223,15 @@
     // マッチングカードの作成
     function createMatchingCard(user) {
         const matchScore = user.matchScore || Math.floor(Math.random() * 30 + 70);
-        const skills = user.skills?.slice(0, 3) || ['スキル1', 'スキル2', 'スキル3'];
+        // スキルデータの処理（配列または文字列）
+        let skillsArray = [];
+        if (Array.isArray(user.skills)) {
+            skillsArray = user.skills;
+        } else if (user.skills && typeof user.skills === 'string') {
+            skillsArray = user.skills.split(',').map(s => s.trim());
+        }
+        const skills = skillsArray.slice(0, 3).length > 0 ? 
+            skillsArray.slice(0, 3) : ['スキル1', 'スキル2', 'スキル3'];
 
         return `
             <div class="matching-card" data-user-id="${user.id}">
