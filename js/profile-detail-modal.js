@@ -19,10 +19,14 @@
         async init() {
             // 現在のユーザー情報を取得
             try {
+                if (!window.supabaseClient) {
+                    console.log('[ProfileDetailModal] Supabase not initialized yet');
+                    return;
+                }
                 const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (user) {
-                    const { data } = await window.supabase
-                        .from('profiles')
+                    const { data } = await window.supabaseClient
+                        .from('user_profiles')
                         .select('*')
                         .eq('id', user.id)
                         .single();
