@@ -386,8 +386,8 @@
             
             try {
                 // プロファイルデータを取得
-                const { data: profile, error } = await window.supabase
-                    .from('profiles')
+                const { data: profile, error } = await window.supabaseClient
+                    .from('user_profiles')
                     .select('*')
                     .eq('id', profileId)
                     .single();
@@ -745,7 +745,7 @@
                 }
                 
                 // 既存のコネクションをチェック
-                const { data: existing } = await window.supabase
+                const { data: existing } = await window.supabaseClient
                     .from('connections')
                     .select('*')
                     .eq('user_id', user.id)
@@ -758,7 +758,7 @@
                 }
                 
                 // コネクト申請
-                const { error } = await window.supabase
+                const { error } = await window.supabaseClient
                     .from('connections')
                     .insert({
                         user_id: user.id,
