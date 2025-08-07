@@ -216,7 +216,7 @@
                         console.log('[ProfileSync] DOMContentLoaded fired - updating display');
                         updateUserDisplay(userData);
                         // さらに確実にするため、少し遅延して再実行
-                        setTimeout(() => immediateUpdate(), 100);
+                        setTimeout(() => updateUserDisplay(userData), 100);
                     });
                 }
             } catch (e) {
