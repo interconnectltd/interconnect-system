@@ -90,6 +90,11 @@
         
         const isValid = isStepValid(stepNum);
         
+        console.log(`[RegisterStrictValidation] Step ${stepNum} validation:`, {
+            isValid,
+            state: validationState[`step${stepNum}`]
+        });
+        
         if (isValid) {
             nextButton.disabled = false;
             nextButton.classList.remove('disabled');
@@ -355,10 +360,18 @@
         
         // 初期バリデーション実行
         document.querySelectorAll('.form-step.active input, .form-step.active textarea').forEach(field => {
-            if (field.value) {
-                validateField(field);
-            }
+            // フィールドに値がある場合、またはrequired属性がない場合はバリデーション実行
+            validateField(field);
         });
+        
+        // チェックボックスの初期状態も確認
+        const activeStep = document.querySelector('.form-step.active');
+        if (activeStep) {
+            const stepNum = parseInt(activeStep.getAttribute('data-step'));
+            if (stepNum === 2 || stepNum === 5) {
+                validateCheckboxes(stepNum);
+            }
+        }
     }
     
     // DOMContentLoadedで初期化
