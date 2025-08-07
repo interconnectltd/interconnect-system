@@ -228,6 +228,7 @@
         
         // レーダーチャートを描画（少し遅延させて確実にCanvasが準備されるようにする）
         setTimeout(() => {
+            console.log('[MatchingUnified] レーダーチャート描画を開始します。ユーザー数:', filteredUsers.length);
             filteredUsers.forEach(user => {
                 drawRadarChartForUser(user);
             });
@@ -268,7 +269,7 @@
                 </div>
                 <!-- レーダーチャート追加 -->
                 <div class="matching-radar">
-                    <canvas id="radar-${user.id}" width="200" height="200" style="width: 100%; height: 200px;"></canvas>
+                    <canvas id="radar-${user.id}" width="200" height="200"></canvas>
                 </div>
                 <!-- 共通スキル表示 -->
                 ${hasCommonSkills ? `
@@ -684,10 +685,15 @@
 
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
+        console.log('[MatchingUnified] レーダーチャート描画開始:', user.id);
         const canvas = document.getElementById(`radar-${user.id}`);
-        if (!canvas) return;
+        if (!canvas) {
+            console.error('[MatchingUnified] Canvas要素が見つかりません:', `radar-${user.id}`);
+            return;
+        }
         
         const ctx = canvas.getContext('2d');
+        console.log('[MatchingUnified] Canvas取得成功:', canvas.width, 'x', canvas.height);
         const centerX = 100;
         const centerY = 100;
         const radius = 80;
@@ -784,6 +790,8 @@
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
         });
+        
+        console.log('[MatchingUnified] レーダーチャート描画完了:', user.id);
     }
 
     // ダミーデータを表示
