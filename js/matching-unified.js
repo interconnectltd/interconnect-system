@@ -13,6 +13,13 @@
     'use strict';
 
     console.log('[MatchingUnified] マッチングシステム初期化');
+    
+    // 他のレーダーチャート関数との競合を防ぐ
+    if (window.drawRadarChart || window.drawRadarChartForUser) {
+        console.warn('[MatchingUnified] 既存のレーダーチャート関数を検出。上書きします。');
+        delete window.drawRadarChart;
+        delete window.drawRadarChartForUser;
+    }
 
     // グローバル変数
     let currentUserId = null;
@@ -93,6 +100,7 @@
 
             // マッチングスコアを計算
             matchingUsers = await calculateMatchingScores(users || []);
+            console.log('[MatchingUnified] マッチング候補数:', matchingUsers.length);
 
             // 表示
             displayMatchingUsers();
@@ -193,8 +201,12 @@
 
     // マッチングユーザーの表示
     function displayMatchingUsers() {
+        console.log('[MatchingUnified] displayMatchingUsers開始, ユーザー数:', matchingUsers.length);
         const container = document.getElementById('matching-container');
-        if (!container) return;
+        if (!container) {
+            console.error('[MatchingUnified] matching-containerが見つかりません');
+            return;
+        }
 
         // フィルタリング
         let filteredUsers = filterUsers(matchingUsers);
@@ -229,10 +241,15 @@
         // レーダーチャートを描画（少し遅延させて確実にCanvasが準備されるようにする）
         setTimeout(() => {
             console.log('[MatchingUnified] レーダーチャート描画を開始します。ユーザー数:', filteredUsers.length);
-            filteredUsers.forEach(user => {
+            // 全てのCanvas要素が存在するか確認
+            const canvasElements = container.querySelectorAll('canvas[id^="radar-"]');
+            console.log('[MatchingUnified] Canvas要素数:', canvasElements.length);
+            
+            filteredUsers.forEach((user, index) => {
+                console.log(`[MatchingUnified] ユーザー ${index + 1}/${filteredUsers.length} のレーダーチャート描画:`, user.id);
                 drawRadarChartForUser(user);
             });
-        }, 100);
+        }, 300);
     }
 
     // マッチングカードの作成
@@ -269,7 +286,7 @@
                 </div>
                 <!-- レーダーチャート追加 -->
                 <div class="matching-radar">
-                    <canvas id="radar-${user.id}" width="200" height="200"></canvas>
+                    <canvas id="radar-${user.id}" width="200" height="200" style="display: block;"></canvas>
                 </div>
                 <!-- 共通スキル表示 -->
                 ${hasCommonSkills ? `
@@ -489,7 +506,7 @@
             `;
 
             document.body.appendChild(modal);
-            modal.classList.add('active');
+            // activeクラスは追加しない（インラインスタイルで制御）
 
             // イベントリスナー
             modal.querySelector('#send-connect-btn').addEventListener('click', () => {
@@ -689,18 +706,35 @@
         const canvas = document.getElementById(`radar-${user.id}`);
         if (!canvas) {
             console.error('[MatchingUnified] Canvas要素が見つかりません:', `radar-${user.id}`);
+            // 再試行
+            setTimeout(() => {
+                const retryCanvas = document.getElementById(`radar-${user.id}`);
+                if (retryCanvas) {
+                    console.log('[MatchingUnified] Canvas要素が見つかりました（再試行）');
+                    drawRadarChartForUser(user);
+                }
+            }, 500);
             return;
         }
         
         const ctx = canvas.getContext('2d');
         console.log('[MatchingUnified] Canvas取得成功:', canvas.width, 'x', canvas.height);
-        const centerX = 100;
-        const centerY = 100;
-        const radius = 80;
+        
+        // Canvasのサイズを確認
+        if (canvas.width === 0 || canvas.height === 0) {
+            console.error('[MatchingUnified] Canvasのサイズが0です');
+            // サイズを強制的に設定
+            canvas.width = 200;
+            canvas.height = 200;
+        }
+        
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(canvas.width, canvas.height) * 0.4;
         const sides = 6;
         
         // クリア
-        ctx.clearRect(0, 0, 200, 200);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // 背景の六角形グリッドを描画
         ctx.strokeStyle = '#e0e0e0';
@@ -792,10 +826,22 @@
         });
         
         console.log('[MatchingUnified] レーダーチャート描画完了:', user.id);
+        
+        // Canvasの表示状態を検証
+        const canvasRect = canvas.getBoundingClientRect();
+        console.log('[MatchingUnified] Canvas表示状態:', {
+            userId: user.id,
+            visible: canvasRect.width > 0 && canvasRect.height > 0,
+            width: canvasRect.width,
+            height: canvasRect.height,
+            display: window.getComputedStyle(canvas).display,
+            visibility: window.getComputedStyle(canvas).visibility
+        });
     }
 
     // ダミーデータを表示
     function displayDummyData() {
+        console.log('[MatchingUnified] ダミーデータを表示します');
         const dummyUsers = [
             {
                 id: 'dummy1',

@@ -517,12 +517,9 @@
 }
 
 .matching-radar canvas {
-    width: 100%;
-    height: 100%;
     display: block;
-    max-width: 200px;
-    max-height: 200px;
     margin: 0 auto;
+    /* width/heightはHTML属性で指定するため、CSSでは設定しない */
 }
 
 .radar-chart-container {
