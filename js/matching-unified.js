@@ -375,16 +375,16 @@
         
         const modal = document.createElement('div');
         modal.className = 'modal profile-modal';
-        modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
         modal.innerHTML = `
-            <div class="modal-content" style="background: white; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-                <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="margin: 0; font-size: 24px;">プロフィール詳細</h2>
-                    <button class="close-button" onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>プロフィール詳細</h2>
+                    <button class="modal-close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body" style="padding: 24px;">
+                <div class="modal-body">
                     <div class="profile-header" style="display: flex; gap: 24px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e0e0e0;">
                         ${user.picture_url ? 
                             `<img src="${user.picture_url}" alt="${user.name}" class="profile-avatar">` :
@@ -435,9 +435,9 @@
                         </div>
                     ` : ''}
                 </div>
-                <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 12px;">
-                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()" style="padding: 10px 24px; border: 1px solid #ddd; background: white; color: #666; border-radius: 8px; cursor: pointer;">閉じる</button>
-                    <button class="btn btn-primary" onclick="sendConnectRequest('${user.id}')" style="padding: 10px 24px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                <div class="modal-footer">
+                    <button class="btn btn-secondary">閉じる</button>
+                    <button class="btn btn-primary" data-user-id="${user.id}">
                         <i class="fas fa-link"></i> コネクト申請
                     </button>
                 </div>
@@ -446,11 +446,27 @@
 
         document.body.appendChild(modal);
         
+        // イベントハンドラーの設定
+        // 閉じるボタン
+        modal.querySelector('.modal-close').addEventListener('click', () => {
+            modal.remove();
+        });
+        
+        // 二次閉じるボタン
+        modal.querySelector('.btn-secondary').addEventListener('click', () => {
+            modal.remove();
+        });
+        
+        // コネクト申請ボタン
+        modal.querySelector('.btn-primary').addEventListener('click', (e) => {
+            const userId = e.target.dataset.userId;
+            sendConnectRequest(userId);
+            modal.remove();
+        });
+        
         // 背景クリックで閉じる
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-            }
+        modal.querySelector('.modal-overlay').addEventListener('click', () => {
+            modal.remove();
         });
         
         // ESCキーで閉じる
@@ -521,14 +537,10 @@
         });
     }
 
-    // プロフィール閲覧履歴の記録（テーブルが存在しない場合は無視）
+    // プロフィール閲覧履歴の記録（削除済み - profile_viewsテーブルは使用しない）
     async function recordProfileView(viewedUserId) {
-        try {
-            // profile_viewsテーブルが存在しない場合があるのでエラーを無視
-            console.log('[MatchingUnified] プロフィール閲覧を記録（profile_viewsテーブルが存在しない場合はスキップ）');
-        } catch (error) {
-            console.log('[MatchingUnified] profile_viewsテーブルは存在しません');
-        }
+        // profile_viewsテーブルは存在しないため、この機能は無効化
+        return;
     }
 
     // ブックマーク切り替え
