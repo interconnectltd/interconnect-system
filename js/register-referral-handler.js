@@ -33,7 +33,7 @@ console.log('=== 登録ページ紹介コード処理 ===');
             hiddenInput.name = 'referral_code';
             hiddenInput.value = referralCode;
             
-            const form = document.querySelector('.register-form');
+            const form = document.getElementById('registerForm');
             if (form) {
                 form.appendChild(hiddenInput);
             }
@@ -70,7 +70,7 @@ function showReferralInfo(code) {
     `;
     
     // フォームの上に挿入
-    const form = document.querySelector('.register-form');
+    const form = document.getElementById('registerForm');
     if (form) {
         form.insertAdjacentHTML('beforebegin', infoHTML);
     }

@@ -89,25 +89,78 @@
     // マッチング候補の読み込み
     async function loadMatchingCandidates() {
         try {
-            // 自分以外のユーザーを取得
+            console.log('[MatchingUnified] マッチング候補読み込み開始');
+            
+            const container = document.getElementById('matching-container');
+            if (!container) {
+                console.error('[MatchingUnified] matching-containerが見つかりません');
+                return;
+            }
+            
+            // 読み込み中表示
+            container.innerHTML = '<div class="loading">読み込み中...</div>';
+            
+            // 現在のユーザーID取得
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>ログインが必要です</h3></div>';
+                return;
+            }
+            
+            currentUserId = user.id;
+            
+            // user_profilesテーブルから他のユーザーを取得
             const { data: users, error } = await window.supabaseClient
                 .from('user_profiles')
                 .select('*')
-                .neq('id', currentUserId)
-                .limit(50);
-
-            if (error) throw error;
-
+                .neq('user_id', currentUserId);
+            
+            if (error) {
+                console.error('[MatchingUnified] ユーザー取得エラー:', error);
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>データの取得に失敗しました</h3><p>' + error.message + '</p></div>';
+                return;
+            }
+            
+            console.log('[MatchingUnified] 取得したユーザー数:', users ? users.length : 0);
+            
+            if (!users || users.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><h3>マッチング候補が見つかりません</h3><p>条件を変更して再度お試しください</p></div>';
+                return;
+            }
+            
+            // 各ユーザーのコネクションステータスを取得
+            const userIds = users.map(u => u.user_id);
+            const { data: connections } = await window.supabaseClient
+                .from('connections')
+                .select('*')
+                .or(`and(user_id.eq.${currentUserId},connected_user_id.in.(${userIds.join(',')})),and(user_id.in.(${userIds.join(',')}),connected_user_id.eq.${currentUserId})`);
+            
+            // コネクションステータスをマップに格納
+            const connectionMap = {};
+            if (connections) {
+                connections.forEach(conn => {
+                    const otherUserId = conn.user_id === currentUserId ? conn.connected_user_id : conn.user_id;
+                    connectionMap[otherUserId] = conn.status;
+                });
+            }
+            
             // マッチングスコアを計算
-            matchingUsers = await calculateMatchingScores(users || []);
-            console.log('[MatchingUnified] マッチング候補数:', matchingUsers.length);
-
+            matchingUsers = await calculateMatchingScores(users);
+            
+            // connectionMapを各ユーザーに追加
+            matchingUsers.forEach(user => {
+                user.connectionStatus = connectionMap[user.user_id] || null;
+            });
+            
             // 表示
             displayMatchingUsers();
 
         } catch (error) {
-            console.error('[MatchingUnified] マッチング候補読み込みエラー:', error);
-            showError('マッチング候補の読み込みに失敗しました');
+            console.error('[MatchingUnified] エラー:', error);
+            const container = document.getElementById('matching-container');
+            if (container) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>エラーが発生しました</h3><p>' + error.message + '</p></div>';
+            }
         }
     }
 
@@ -118,7 +171,7 @@
             const { data: currentUser } = await window.supabaseClient
                 .from('user_profiles')
                 .select('*')
-                .eq('id', currentUserId)
+                .eq('user_id', currentUserId)
                 .single();
 
             if (!currentUser) return users;
@@ -246,10 +299,28 @@
             console.log('[MatchingUnified] Canvas要素数:', canvasElements.length);
             
             filteredUsers.forEach((user, index) => {
-                console.log(`[MatchingUnified] ユーザー ${index + 1}/${filteredUsers.length} のレーダーチャート描画:`, user.id);
+                const userId = user.user_id || user.id;
+                console.log(`[MatchingUnified] ユーザー ${index + 1}/${filteredUsers.length} のレーダーチャート描画:`, userId);
                 drawRadarChartForUser(user);
             });
         }, 300);
+    }
+
+    // コネクトボタンのレンダリング
+    function renderConnectButton(userId, connectionStatus) {
+        if (connectionStatus === 'accepted') {
+            return `<button class="btn btn-success connect-btn" disabled data-user-id="${userId}">
+                        <i class="fas fa-check"></i> コネクト済み
+                    </button>`;
+        } else if (connectionStatus === 'pending') {
+            return `<button class="btn btn-secondary connect-btn" disabled data-user-id="${userId}">
+                        <i class="fas fa-clock"></i> 申請中
+                    </button>`;
+        } else {
+            return `<button class="btn btn-primary connect-btn" data-user-id="${userId}">
+                        <i class="fas fa-link"></i> コネクト
+                    </button>`;
+        }
     }
 
     // マッチングカードの作成
@@ -269,8 +340,9 @@
         const commonSkills = ['ビジネス', 'コミュニケーション'];
         const hasCommonSkills = skills.some(skill => commonSkills.includes(skill));
 
+        const userId = user.user_id || user.id;
         return `
-            <div class="matching-card" data-user-id="${user.id}">
+            <div class="matching-card" data-user-id="${userId}">
                 <div class="matching-score">${matchScore}%</div>
                 ${user.picture_url ? 
                     `<img src="${user.picture_url}" alt="${user.name}" class="matching-avatar">` :
@@ -286,7 +358,7 @@
                 </div>
                 <!-- レーダーチャート追加 -->
                 <div class="matching-radar">
-                    <canvas id="radar-${user.id}" width="200" height="200"></canvas>
+                    <canvas id="radar-${userId}" width="200" height="200"></canvas>
                 </div>
                 <!-- 共通スキル表示 -->
                 ${hasCommonSkills ? `
@@ -296,14 +368,12 @@
                     </div>
                 ` : ''}
                 <div class="matching-actions">
-                    <button class="btn btn-outline view-profile-btn" data-user-id="${user.id}">
+                    <button class="btn btn-outline view-profile-btn" data-user-id="${userId}">
                         <i class="fas fa-user"></i> プロフィール
                     </button>
-                    <button class="btn btn-primary connect-btn" data-user-id="${user.id}">
-                        <i class="fas fa-link"></i> コネクト
-                    </button>
+                    ${renderConnectButton(userId, user.connectionStatus)}
                 </div>
-                <button class="bookmark-btn" data-user-id="${user.id}">
+                <button class="bookmark-btn" data-user-id="${userId}">
                     <i class="far fa-bookmark"></i>
                 </button>
             </div>
@@ -351,7 +421,7 @@
             const { data: user, error } = await window.supabaseClient
                 .from('user_profiles')
                 .select('*')
-                .eq('id', userId)
+                .eq('user_id', userId)
                 .single();
 
             if (error) throw error;
@@ -437,7 +507,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary">閉じる</button>
-                    <button class="btn btn-primary" data-user-id="${user.id}">
+                    <button class="btn btn-primary" data-user-id="${user.user_id || user.id}">
                         <i class="fas fa-link"></i> コネクト申請
                     </button>
                 </div>
@@ -479,21 +549,66 @@
         document.addEventListener('keydown', handleEsc);
     }
 
-    // コネクト申請送信（簡易版）
+    // コネクト申請送信
     async function sendConnectRequest(recipientId) {
         try {
-            // match_requestsテーブルが存在しない場合のフォールバック
-            showSuccess('コネクト機能は準備中です');
+            console.log('[MatchingUnified] コネクト申請送信:', recipientId);
             
-            // 通知だけ送信
-            await sendNotification(recipientId, 'match', 'コネクト申請が届きました', 'コネクト申請を受け取りました');
+            // 既存のコネクトを確認
+            const { data: existingConnection, error: checkError } = await window.supabaseClient
+                .from('connections')
+                .select('*')
+                .or(`and(user_id.eq.${currentUserId},connected_user_id.eq.${recipientId}),and(user_id.eq.${recipientId},connected_user_id.eq.${currentUserId})`)
+                .single();
+
+            if (checkError && checkError.code !== 'PGRST116') {
+                throw checkError;
+            }
+
+            if (existingConnection) {
+                if (existingConnection.status === 'pending') {
+                    showInfo('既にコネクト申請が送信されています');
+                } else if (existingConnection.status === 'accepted') {
+                    showInfo('既にコネクト済みです');
+                }
+                return;
+            }
+
+            // メッセージ入力モーダルを表示
+            const message = await showMessageModal();
+            if (message === null) return; // キャンセル
+
+            // コネクト申請を作成
+            const { error: insertError } = await window.supabaseClient
+                .from('connections')
+                .insert({
+                    user_id: currentUserId,
+                    connected_user_id: recipientId,
+                    status: 'pending'
+                });
+
+            if (insertError) throw insertError;
+
+            // 通知を送信
+            await sendNotification(
+                recipientId, 
+                'connect_request', 
+                '新しいコネクト申請', 
+                message || 'コネクト申請が届いています',
+                currentUserId,
+                'connection'
+            );
+
+            // アクティビティを記録
+            await recordActivity('connect_request', 'コネクト申請を送信しました', recipientId);
 
             // UIを更新
             updateConnectButton(recipientId, 'pending');
+            showSuccess('コネクト申請を送信しました');
 
         } catch (error) {
             console.error('[MatchingUnified] コネクト申請エラー:', error);
-            showInfo('コネクト機能は準備中です');
+            showError('コネクト申請の送信に失敗しました');
         }
     }
 
@@ -676,10 +791,69 @@
     }
 
     // 通知送信
-    async function sendNotification(userId, type, title, message) {
-        if (window.sendNotification) {
-            await window.sendNotification(userId, type, title, message);
+    async function sendNotification(userId, type, title, content, relatedId = null, relatedType = null) {
+        try {
+            console.log('[MatchingUnified] 通知送信:', { userId, type, title });
+            
+            const { error } = await window.supabaseClient
+                .from('notifications')
+                .insert({
+                    user_id: userId,
+                    type: type,
+                    category: 'matching',
+                    title: title,
+                    content: content,
+                    icon: 'fas fa-user-plus',
+                    priority: 'normal',
+                    related_id: relatedId,
+                    related_type: relatedType,
+                    is_read: false
+                });
+
+            if (error) throw error;
+            console.log('[MatchingUnified] 通知送信成功');
+            
+        } catch (error) {
+            console.error('[MatchingUnified] 通知送信エラー:', error);
         }
+    }
+
+    // アクティビティを記録
+    async function recordActivity(type, title, relatedUserId = null) {
+        try {
+            const { error } = await window.supabaseClient
+                .from('activities')
+                .insert({
+                    type: type,
+                    title: title,
+                    user_id: currentUserId,
+                    related_user_id: relatedUserId
+                });
+
+            if (error) throw error;
+            console.log('[MatchingUnified] アクティビティ記録成功');
+            
+        } catch (error) {
+            console.error('[MatchingUnified] アクティビティ記録エラー:', error);
+        }
+    }
+
+    // コネクトボタンの状態を更新
+    function updateConnectButton(userId, status) {
+        const buttons = document.querySelectorAll(`.connect-btn[data-user-id="${userId}"]`);
+        buttons.forEach(button => {
+            if (status === 'pending') {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-clock"></i> 申請中';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-secondary');
+            } else if (status === 'accepted') {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-check"></i> コネクト済み';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+            }
+        });
     }
 
     // ユーティリティ関数
@@ -719,13 +893,14 @@
 
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
-        console.log('[MatchingUnified] レーダーチャート描画開始:', user.id);
-        const canvas = document.getElementById(`radar-${user.id}`);
+        const userId = user.user_id || user.id;
+        console.log('[MatchingUnified] レーダーチャート描画開始:', userId);
+        const canvas = document.getElementById(`radar-${userId}`);
         if (!canvas) {
-            console.error('[MatchingUnified] Canvas要素が見つかりません:', `radar-${user.id}`);
+            console.error('[MatchingUnified] Canvas要素が見つかりません:', `radar-${userId}`);
             // 再試行
             setTimeout(() => {
-                const retryCanvas = document.getElementById(`radar-${user.id}`);
+                const retryCanvas = document.getElementById(`radar-${userId}`);
                 if (retryCanvas) {
                     console.log('[MatchingUnified] Canvas要素が見つかりました（再試行）');
                     drawRadarChartForUser(user);
@@ -842,12 +1017,12 @@
             ctx.fill();
         });
         
-        console.log('[MatchingUnified] レーダーチャート描画完了:', user.id);
+        console.log('[MatchingUnified] レーダーチャート描画完了:', userId);
         
         // Canvasの表示状態を検証
         const canvasRect = canvas.getBoundingClientRect();
         console.log('[MatchingUnified] Canvas表示状態:', {
-            userId: user.id,
+            userId: userId,
             visible: canvasRect.width > 0 && canvasRect.height > 0,
             width: canvasRect.width,
             height: canvasRect.height,

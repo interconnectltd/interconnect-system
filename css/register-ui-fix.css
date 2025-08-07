@@ -1,0 +1,372 @@
+/**
+ * 登録ページUI修正
+ * 招待リンクから遷移した際の表示問題を解決
+ */
+
+/* 文字カウントのスタイル修正 */
+.char-count {
+    color: #6c757d !important;
+    font-size: 0.875rem;
+    margin-top: 5px;
+    display: block;
+}
+
+/* 文字数が不足している場合 */
+.char-count.error {
+    color: #ef4444 !important;
+}
+
+/* 文字数が十分な場合 */
+.char-count.success {
+    color: #10b981 !important;
+}
+
+/* ボタンの無効化スタイルを修正 */
+.auth-button:disabled,
+.auth-button.disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    background: #94a3b8 !important;
+}
+
+/* ボタンが有効な場合 */
+.auth-button:not(:disabled):not(.disabled) {
+    opacity: 1 !important;
+    cursor: pointer !important;
+    background: linear-gradient(135deg, #0066ff 0%, #004fc4 100%) !important;
+}
+
+/* フォームナビゲーションボタンの修正 */
+.form-navigation .auth-button {
+    width: auto;
+    flex: 1;
+}
+
+/* 紹介情報の表示位置修正 */
+.referral-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+    animation: slideIn 0.5s ease-out;
+    flex-direction: column;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .referral-info {
+        flex-direction: row;
+        text-align: left;
+    }
+}
+
+.referral-info i {
+    font-size: 1.5rem;
+    opacity: 0.9;
+}
+
+.referral-info strong {
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-family: monospace;
+}
+
+.referral-info small {
+    display: block;
+    opacity: 0.9;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* フォーム要素の間隔調整 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* チャレンジグループの詳細テキストエリア */
+.challenge-group textarea {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* チェックボックスラベルのホバー効果 */
+.checkbox-label:hover {
+    background: #f0f7ff;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+/* 必須フィールドマーク */
+.required {
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+/* ファイルアップロードエリアの改善 */
+.file-upload-wrapper {
+    position: relative;
+    margin-top: 0.5rem;
+}
+
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    border: 2px dashed #e5e7eb;
+    border-radius: 12px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-upload-label:hover {
+    border-color: #0066ff;
+    background: #f0f7ff;
+}
+
+.file-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.file-preview {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.file-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* アニメーション */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* エラーメッセージ */
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.error-message i {
+    font-size: 1rem;
+}
+
+/* 成功メッセージ */
+.success-message {
+    color: #10b981;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.success-message i {
+    font-size: 1rem;
+}
+
+/* プログレスステップの改善 */
+.registration-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .step-number {
+    background: #0066ff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+}
+
+.progress-step.completed .step-number {
+    background: #10b981;
+    color: white;
+}
+
+.step-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    white-space: nowrap;
+}
+
+.progress-line {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 1;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 640px) {
+    .registration-progress {
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+    
+    .step-label {
+        font-size: 0.625rem;
+    }
+    
+    .auth-card {
+        padding: 30px 20px;
+    }
+    
+    .auth-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* フォームステップの表示/非表示アニメーション */
+.form-step {
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* スキル・興味選択のグリッドレイアウト改善 */
+.skills-checkbox-grid,
+.interests-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.skill-checkbox,
+.interest-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.skill-checkbox:hover,
+.interest-checkbox:hover {
+    background: #f0f7ff;
+}
+
+.skill-checkbox input[type="checkbox"],
+.interest-checkbox input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+/* カテゴリーセクションのスタイル */
+.skill-category-section,
+.interest-category-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.skill-category-section h4,
+.interest-category-section h4 {
+    margin: 0 0 1rem 0;
+    color: #1e293b;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+/* フォームオプション（チェックボックス）のスタイル */
+.form-options {
+    margin: 1rem 0;
+}
+
+.form-options .checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.form-options .checkbox-label:hover {
+    background: #f0f7ff;
+}
+
+.form-options .checkbox-label input[type="checkbox"] {
+    margin-right: 0.75rem;
+}
+
+/* 利用規約リンク */
+.form-options a {
+    color: #0066ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.form-options a:hover {
+    text-decoration: underline;
+}
