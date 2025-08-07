@@ -1,0 +1,324 @@
+/**
+ * ヘッダーユーザーメニューのリデザイン
+ * モダンで洗練されたデザインに改善
+ */
+
+/* ヘッダー右側 */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* ユーザーメニュー全体 */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* 通知ボタンラッパー */
+.notification-wrapper {
+    position: relative;
+}
+
+/* 通知ボタン */
+.notification-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    background: #f8f9fa;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.notification-btn:hover {
+    background: #e9ecef;
+    color: #2d3748;
+    transform: translateY(-1px);
+}
+
+.notification-btn i {
+    font-size: 1.25rem;
+}
+
+/* 通知バッジ */
+.notification-btn::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: #ff4757;
+    border-radius: 50%;
+    display: none;
+}
+
+.notification-btn.has-notifications::after {
+    display: block;
+}
+
+/* 通知ドロップダウン */
+.notification-dropdown {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: 0;
+    width: 360px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.notification-wrapper:hover .notification-dropdown,
+.notification-dropdown:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* 通知ヘッダー */
+.notification-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin: 0;
+}
+
+.mark-all-read {
+    font-size: 0.875rem;
+    color: #0066ff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.mark-all-read:hover {
+    color: #0052cc;
+    text-decoration: underline;
+}
+
+/* 通知リスト */
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.empty-notifications {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: #a0aec0;
+}
+
+.empty-notifications i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-notifications p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* ユーザープロフィールセクション */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.user-profile:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+/* ユーザーアバター */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ユーザー名 */
+.user-name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #2d3748;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ドロップダウン矢印 */
+.user-profile > i {
+    font-size: 0.75rem;
+    color: #718096;
+    transition: transform 0.2s ease;
+}
+
+.user-profile:hover > i {
+    transform: rotate(180deg);
+}
+
+/* ユーザードロップダウン */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: 0;
+    min-width: 220px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.user-profile:hover .user-dropdown,
+.user-dropdown:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* ドロップダウンリンク */
+.user-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #4a5568;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.user-dropdown a:hover {
+    background: #f8f9fa;
+    color: #2d3748;
+    transform: translateX(4px);
+}
+
+.user-dropdown a i {
+    width: 20px;
+    text-align: center;
+    color: #718096;
+}
+
+/* ログアウトリンク */
+.user-dropdown a#logoutBtn {
+    color: #e53e3e;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+}
+
+.user-dropdown a#logoutBtn:hover {
+    background: #fff5f5;
+}
+
+.user-dropdown a#logoutBtn i {
+    color: #e53e3e;
+}
+
+/* ドロップダウン矢印（ツールチップ風） */
+.notification-dropdown::before,
+.user-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 24px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    transform: rotate(45deg);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* モバイルレスポンシブ */
+@media (max-width: 768px) {
+    .user-name {
+        display: none;
+    }
+    
+    .user-profile {
+        padding: 0.5rem;
+        background: transparent;
+    }
+    
+    .notification-dropdown,
+    .user-dropdown {
+        position: fixed;
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+    }
+}
+
+/* アニメーション */
+@keyframes bellRing {
+    0%, 100% { transform: rotate(0); }
+    10%, 30% { transform: rotate(-10deg); }
+    20%, 40% { transform: rotate(10deg); }
+}
+
+.notification-btn.new-notification {
+    animation: bellRing 0.5s ease-in-out;
+}
+
+/* スクロールバー美化 */
+.notification-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 2px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
