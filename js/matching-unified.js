@@ -141,18 +141,25 @@
             
             // 各ユーザーのコネクションステータスを取得（user_profilesではidカラムを使用）
             const userIds = users.map(u => u.id).filter(id => id); // null/undefinedを除外
+            console.log('[MatchingUnified] フィルタリング後のuserIds:', userIds);
+            
             let connections = [];
             
             if (userIds.length > 0) {
-                const { data: connectionsData } = await window.supabaseClient
+                const { data: connectionsData, error: connError } = await window.supabaseClient
                     .from('connections')
                     .select('*');
                 
-                // JavaScriptでフィルタリング
-                connections = connectionsData ? connectionsData.filter(conn => 
-                    (conn.user_id === currentUserId && userIds.includes(conn.connected_user_id)) ||
-                    (userIds.includes(conn.user_id) && conn.connected_user_id === currentUserId)
-                ) : [];
+                if (connError) {
+                    console.error('[MatchingUnified] コネクション取得エラー:', connError);
+                } else {
+                    // JavaScriptでフィルタリング
+                    connections = connectionsData ? connectionsData.filter(conn => 
+                        (conn.user_id === currentUserId && userIds.includes(conn.connected_user_id)) ||
+                        (userIds.includes(conn.user_id) && conn.connected_user_id === currentUserId)
+                    ) : [];
+                    console.log('[MatchingUnified] 取得したconnections:', connections);
+                }
             }
             
             // コネクションステータスをマップに格納
@@ -174,6 +181,9 @@
             
             // 表示
             displayMatchingUsers();
+            
+            // カード内のイベントリスナーを設定
+            setupCardEventListeners();
 
         } catch (error) {
             console.error('[MatchingUnified] エラー:', error);
@@ -417,8 +427,13 @@
         // コネクトボタン
         document.querySelectorAll('.connect-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const userId = e.target.dataset.userId;
-                sendConnectRequest(userId);
+                e.preventDefault();
+                e.stopPropagation();
+                const userId = btn.dataset.userId || e.target.closest('.connect-btn').dataset.userId;
+                console.log('[MatchingUnified] コネクトボタンクリック:', userId);
+                if (userId) {
+                    sendConnectRequest(userId);
+                }
             });
         });
 
@@ -589,10 +604,9 @@
                 (conn.user_id === recipientId && conn.connected_user_id === currentUserId)
             ) : null;
             
-            const checkError = !allConnections ? new Error('Failed to fetch connections') : null;
-
-            if (checkError && checkError.code !== 'PGRST116') {
-                throw checkError;
+            // エラーハンドリングを簡素化
+            if (!allConnections) {
+                console.error('[MatchingUnified] コネクションデータの取得に失敗');
             }
 
             if (existingConnection) {
