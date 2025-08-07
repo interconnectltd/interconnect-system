@@ -830,6 +830,120 @@
     background: #f8f9fa;
 }
 
+/* マッチングカードの追加スタイル */
+.matching-score {
+    background: #4a90e2;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.common-skills {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.common-skills i {
+    margin-right: 4px;
+}
+
+.bookmark-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 1;
+}
+
+.bookmark-btn:hover {
+    background: #f5f7fa;
+    border-color: #4a90e2;
+    color: #4a90e2;
+}
+
+/* プロフィールモーダルのプロフィールヘッダー */
+.profile-modal .profile-header {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.profile-modal .profile-avatar,
+.profile-modal .profile-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.profile-modal .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-modal .profile-avatar-placeholder {
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #999;
+}
+
+.profile-modal .profile-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.profile-modal .profile-section {
+    margin-top: 24px;
+}
+
+.profile-modal .profile-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.profile-modal .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.profile-modal .tag {
+    background: #e8f0fe;
+    color: #1967d2;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
 /* ページネーションボタンの完璧なスタイル */
 .pagination .page-number {
     width: 40px;

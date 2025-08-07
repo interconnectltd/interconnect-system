@@ -271,7 +271,7 @@
 
         return `
             <div class="matching-card" data-user-id="${user.id}">
-                <div class="matching-score" style="background: #4a90e2; color: white; padding: 4px 12px; border-radius: 20px; position: absolute; top: 16px; right: 16px; font-weight: 600;">${matchScore}%</div>
+                <div class="matching-score">${matchScore}%</div>
                 ${user.picture_url ? 
                     `<img src="${user.picture_url}" alt="${user.name}" class="matching-avatar">` :
                     `<div class="matching-avatar-placeholder">
@@ -286,12 +286,12 @@
                 </div>
                 <!-- レーダーチャート追加 -->
                 <div class="matching-radar">
-                    <canvas id="radar-${user.id}" width="200" height="200" style="display: block;"></canvas>
+                    <canvas id="radar-${user.id}" width="200" height="200"></canvas>
                 </div>
                 <!-- 共通スキル表示 -->
                 ${hasCommonSkills ? `
-                    <div class="common-skills" style="background: #e8f5e9; color: #2e7d32; padding: 8px 12px; border-radius: 8px; margin: 12px 0; font-size: 14px; text-align: center;">
-                        <i class="fas fa-check-circle" style="margin-right: 4px;"></i>
+                    <div class="common-skills">
+                        <i class="fas fa-check-circle"></i>
                         共通スキル: ビジネス, コミュニケーション
                     </div>
                 ` : ''}
@@ -303,7 +303,7 @@
                         <i class="fas fa-link"></i> コネクト
                     </button>
                 </div>
-                <button class="bookmark-btn" data-user-id="${user.id}" style="position: absolute; top: 16px; left: 16px; background: white; border: 1px solid #e0e0e0; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <button class="bookmark-btn" data-user-id="${user.id}">
                     <i class="far fa-bookmark"></i>
                 </button>
             </div>
@@ -385,7 +385,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="profile-header" style="display: flex; gap: 24px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e0e0e0;">
+                    <div class="profile-header">
                         ${user.picture_url ? 
                             `<img src="${user.picture_url}" alt="${user.name}" class="profile-avatar">` :
                             `<div class="profile-avatar-placeholder">
@@ -506,7 +506,7 @@
                 <div class="modal-content compact">
                     <div class="modal-header">
                         <h3>コネクト申請メッセージ</h3>
-                        <button class="close-button" onclick="this.closest('.modal').remove()">
+                        <button class="modal-close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -515,14 +515,13 @@
                         <textarea id="connect-message" rows="4" placeholder="はじめまして。ぜひコネクトさせていただければと思います。"></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">キャンセル</button>
+                        <button class="btn btn-secondary">キャンセル</button>
                         <button class="btn btn-primary" id="send-connect-btn">送信</button>
                     </div>
                 </div>
             `;
 
             document.body.appendChild(modal);
-            // activeクラスは追加しない（インラインスタイルで制御）
 
             // イベントリスナー
             modal.querySelector('#send-connect-btn').addEventListener('click', () => {
@@ -531,7 +530,13 @@
                 resolve(message);
             });
 
-            modal.querySelector('.close-button').addEventListener('click', () => {
+            modal.querySelector('.modal-close').addEventListener('click', () => {
+                modal.remove();
+                resolve(null);
+            });
+            
+            modal.querySelector('.btn-secondary').addEventListener('click', () => {
+                modal.remove();
                 resolve(null);
             });
         });
