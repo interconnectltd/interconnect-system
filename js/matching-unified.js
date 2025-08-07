@@ -109,11 +109,10 @@
             
             currentUserId = user.id;
             
-            // user_profilesテーブルから他のユーザーを取得
-            const { data: users, error } = await window.supabaseClient
+            // user_profilesテーブルから全ユーザーを取得
+            const { data: allUsers, error } = await window.supabaseClient
                 .from('user_profiles')
-                .select('*')
-                .neq('user_id', currentUserId);
+                .select('*');
             
             if (error) {
                 console.error('[MatchingUnified] ユーザー取得エラー:', error);
@@ -121,7 +120,10 @@
                 return;
             }
             
-            console.log('[MatchingUnified] 取得したユーザー数:', users ? users.length : 0);
+            // 自分以外のユーザーをフィルタリング
+            const users = allUsers ? allUsers.filter(user => user.user_id !== currentUserId) : [];
+            
+            console.log('[MatchingUnified] 取得したユーザー数:', users.length);
             
             if (!users || users.length === 0) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><h3>マッチング候補が見つかりません</h3><p>条件を変更して再度お試しください</p></div>';

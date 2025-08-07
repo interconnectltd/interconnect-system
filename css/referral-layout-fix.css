@@ -1,0 +1,172 @@
+/**
+ * 紹介ページレイアウト修正
+ * 幅の問題を解決
+ */
+
+/* メインコンテンツの幅を正常化 - 最高優先度 */
+body .dashboard .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+}
+
+/* サイドバーが表示されている場合のみマージンを適用 */
+body .dashboard .sidebar + .main-content {
+    margin-left: 260px !important;
+    width: calc(100% - 260px) !important;
+}
+
+/* コンテンツボディの幅制限を解除 */
+body .dashboard .main-content .content-body {
+    max-width: none !important;
+    padding: 0 2rem !important;
+    margin: 0 !important;
+}
+
+/* コンテンツヘッダーの幅を100%に */
+.content-header {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ポイントサマリーカードの幅調整 */
+.points-summary {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    box-sizing: border-box;
+}
+
+/* 紹介ステップセクション */
+.referral-steps {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    box-sizing: border-box;
+}
+
+/* 紹介リンクセクション */
+.referral-links {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    box-sizing: border-box;
+}
+
+/* タブセクション */
+.tabs-section {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    box-sizing: border-box;
+}
+
+/* カード要素の基本スタイル */
+.card {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* デスクトップ表示時 */
+@media (min-width: 1024px) {
+    /* サイドバーが表示されている場合 */
+    .dashboard {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 0;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 260px;
+    }
+    
+    body .dashboard .main-content {
+        margin-left: 260px !important;
+        width: calc(100% - 260px) !important;
+        padding: 0 !important;
+    }
+    
+    body .dashboard .main-content .content-body {
+        padding: 0 3rem !important;
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* タブレット表示時 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .sidebar {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    .content-body {
+        padding: 0 2rem !important;
+        max-width: 100% !important;
+    }
+    
+    /* ポイントグリッドを2列に */
+    .points-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* モバイル表示時 */
+@media (max-width: 767px) {
+    .sidebar {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    .content-body {
+        padding: 0 1rem !important;
+        max-width: 100% !important;
+    }
+    
+    /* ポイントグリッドを1列に */
+    .points-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    /* ステップを縦並びに */
+    .steps-container {
+        flex-direction: column !important;
+    }
+    
+    .step-arrow {
+        transform: rotate(90deg);
+        margin: 1rem 0;
+    }
+}
+
+/* box-sizingを全要素に適用 */
+* {
+    box-sizing: border-box;
+}
+
+/* ページ全体の最小幅を設定 */
+body {
+    min-width: 320px;
+}
+
+/* ダッシュボードコンテナの調整 */
+.dashboard {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
