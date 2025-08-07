@@ -65,7 +65,6 @@ function showReferralInfo(code) {
         <div id="referral-info" class="referral-info">
             <i class="fas fa-gift"></i>
             <span>紹介コード適用中: <strong>${code}</strong></span>
-            <small>登録完了で紹介者に特典が付与されます</small>
         </div>
     `;
     
@@ -103,13 +102,6 @@ function showReferralInfo(code) {
                     padding: 0.25rem 0.5rem;
                     border-radius: 6px;
                     font-family: monospace;
-                }
-                
-                .referral-info small {
-                    display: block;
-                    opacity: 0.9;
-                    font-size: 0.875rem;
-                    margin-top: 0.25rem;
                 }
                 
                 @keyframes slideIn {
