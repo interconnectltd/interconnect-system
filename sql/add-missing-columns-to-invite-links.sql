@@ -9,36 +9,25 @@ ADD COLUMN IF NOT EXISTS referral_count INTEGER DEFAULT 0;
 ALTER TABLE invite_links 
 ADD COLUMN IF NOT EXISTS conversion_count INTEGER DEFAULT 0;
 
--- created_byカラムを追加（user_idのエイリアス）
-ALTER TABLE invite_links 
-ADD COLUMN IF NOT EXISTS created_by UUID;
-
--- 既存のuser_idデータをcreated_byにコピー
-UPDATE invite_links 
-SET created_by = user_id 
-WHERE created_by IS NULL AND user_id IS NOT NULL;
-
--- RLSポリシーを更新（created_byとuser_idの両方をサポート）
+-- RLSポリシーを更新（created_byカラムを使用）
 DROP POLICY IF EXISTS "Users can view their own invite links" ON invite_links;
 CREATE POLICY "Users can view their own invite links" ON invite_links
-    FOR SELECT USING (
-        auth.uid() = user_id OR 
-        auth.uid() = created_by
-    );
+    FOR SELECT USING (auth.uid() = created_by);
 
 DROP POLICY IF EXISTS "Users can create their own invite links" ON invite_links;
 CREATE POLICY "Users can create their own invite links" ON invite_links
-    FOR INSERT WITH CHECK (
-        auth.uid() = user_id OR 
-        auth.uid() = created_by
-    );
+    FOR INSERT WITH CHECK (auth.uid() = created_by);
 
 DROP POLICY IF EXISTS "Users can update their own invite links" ON invite_links;
 CREATE POLICY "Users can update their own invite links" ON invite_links
-    FOR UPDATE USING (
-        auth.uid() = user_id OR 
-        auth.uid() = created_by
-    );
+    FOR UPDATE USING (auth.uid() = created_by);
+
+DROP POLICY IF EXISTS "Users can delete their own invite links" ON invite_links;
+CREATE POLICY "Users can delete their own invite links" ON invite_links
+    FOR DELETE USING (auth.uid() = created_by);
+
+-- RLSを有効化（まだ有効でない場合）
+ALTER TABLE invite_links ENABLE ROW LEVEL SECURITY;
 
 -- テーブル構造を確認
 SELECT column_name, data_type, is_nullable, column_default 

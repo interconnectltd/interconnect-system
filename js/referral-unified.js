@@ -372,8 +372,7 @@
             const { data, error } = await window.supabaseClient
                 .from('invite_links')
                 .insert({
-                    user_id: currentUserId,
-                    created_by: currentUserId, // 両方のカラムに同じ値を設定
+                    created_by: currentUserId, // created_byカラムのみ使用
                     link_code: linkCode,
                     description: description,
                     is_active: true,
