@@ -297,8 +297,12 @@
         // プロフィール表示ボタン
         document.querySelectorAll('.view-profile-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const userId = e.target.dataset.userId;
-                showUserProfile(userId);
+                e.preventDefault();
+                e.stopPropagation();
+                const userId = btn.dataset.userId || e.target.closest('.view-profile-btn').dataset.userId;
+                if (userId) {
+                    showUserProfile(userId);
+                }
             });
         });
 
@@ -345,18 +349,25 @@
 
     // プロフィールモーダル表示
     function showProfileModal(user) {
+        // 既存のモーダルがあれば削除
+        const existingModal = document.querySelector('.profile-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
         const modal = document.createElement('div');
         modal.className = 'modal profile-modal';
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
         modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>プロフィール詳細</h2>
-                    <button class="close-button" onclick="this.closest('.modal').remove()">
+            <div class="modal-content" style="background: white; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; font-size: 24px;">プロフィール詳細</h2>
+                    <button class="close-button" onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="profile-header">
+                <div class="modal-body" style="padding: 24px;">
+                    <div class="profile-header" style="display: flex; gap: 24px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e0e0e0;">
                         ${user.picture_url ? 
                             `<img src="${user.picture_url}" alt="${user.name}" class="profile-avatar">` :
                             `<div class="profile-avatar-placeholder">
@@ -406,9 +417,9 @@
                         </div>
                     ` : ''}
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">閉じる</button>
-                    <button class="btn btn-primary" onclick="sendConnectRequest('${user.id}')">
+                <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()" style="padding: 10px 24px; border: 1px solid #ddd; background: white; color: #666; border-radius: 8px; cursor: pointer;">閉じる</button>
+                    <button class="btn btn-primary" onclick="sendConnectRequest('${user.id}')" style="padding: 10px 24px; background: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer;">
                         <i class="fas fa-link"></i> コネクト申請
                     </button>
                 </div>
@@ -416,7 +427,22 @@
         `;
 
         document.body.appendChild(modal);
-        modal.classList.add('active');
+        
+        // 背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+        
+        // ESCキーで閉じる
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', handleEsc);
+            }
+        };
+        document.addEventListener('keydown', handleEsc);
     }
 
     // コネクト申請送信（簡易版）
