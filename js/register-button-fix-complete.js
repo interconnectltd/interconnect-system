@@ -32,6 +32,13 @@
     };
     
     // prevStep関数も定義
+    try {
+        if (window.prevStep) {
+            delete window.prevStep;
+        }
+    } catch (e) {
+        console.log('[RegisterButtonFix] 既存のprevStep削除時のエラー（無視）:', e);
+    }
     window.prevStep = function() {
         console.log('[RegisterButtonFix] prevStep() が呼び出されました');
         

@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="css/responsive-menu.css">
     <!-- 紹介ページ統一CSS（全ての紹介ページスタイルを統合） -->
     <link rel="stylesheet" href="css/referral-unified.css?v=1.0">
+    <!-- デスクトップ表示修正 -->
+    <link rel="stylesheet" href="css/referral-desktop-fix.css">
 </head>
 <body>
     <!-- Mobile Header (ダッシュボードと同じ) -->
@@ -542,6 +544,15 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
         };
     </script>
     <script src="js/fix-delete-link.js"></script>
+    <!-- レスポンシブメニュー -->
+    <script src="js/responsive-menu-simple.js"></script>
+    <!-- サイドバートグルが既に読み込まれている場合は二重読み込みを防ぐ -->
+    <script>
+        // サイドバートグルの初期化確認
+        if (!window.toggleSidebar) {
+            console.log('[Referral] サイドバートグル機能を初期化します');
+        }
+    </script>
     <!-- TimeRex予約システム -->
     <!-- TimeRexサイトアクセス不可のため一時的にGoogle Calendar使用 -->
     <script src="js/google-calendar-booking.js?v=1.0"></script>

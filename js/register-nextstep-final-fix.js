@@ -253,17 +253,19 @@
     
     // prevStep関数も置き換え
     try {
-        if (Object.getOwnPropertyDescriptor(window, 'prevStep')) {
-            Object.defineProperty(window, 'prevStep', {
-                value: newPrevStep,
-                writable: true,
-                configurable: true
-            });
-        } else {
-            window.prevStep = newPrevStep;
+        // 既存のprevStepを削除してから再定義
+        if (window.prevStep) {
+            delete window.prevStep;
         }
+        window.prevStep = newPrevStep;
     } catch (e) {
         console.error('[RegisterNextStepFinalFix] prevStep関数の置き換えに失敗:', e);
+        // フォールバック: 直接上書き
+        try {
+            window.prevStep = newPrevStep;
+        } catch (e2) {
+            console.error('[RegisterNextStepFinalFix] prevStep関数の上書きも失敗:', e2);
+        }
     }
     
     // CSS追加

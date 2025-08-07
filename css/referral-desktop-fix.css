@@ -1,0 +1,244 @@
+/**
+ * 紹介ページのデスクトップ表示修正
+ * 1440px以上での表示問題を解決
+ * referral-unified.cssの後に読み込まれるため、より高い優先度を持つ
+ */
+
+/* サイドバーとメインコンテンツのレイアウト修正 */
+@media (min-width: 1440px) {
+    /* ダッシュボードレイアウト */
+    .dashboard {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: 100vh;
+        gap: 0;
+    }
+    
+    /* サイドバー固定 */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        height: 100vh;
+        z-index: 100;
+        overflow-y: auto;
+    }
+    
+    /* メインコンテンツ - referral-unified.cssをオーバーライド */
+    .dashboard .main-content {
+        margin-left: 280px !important;
+        width: calc(100% - 280px) !important;
+        max-width: none !important;
+        padding: 2rem 3rem !important;
+    }
+    
+    /* コンテンツボディ - referral-unified.cssをオーバーライド */
+    .main-content .content-body {
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+    }
+    
+    /* サイドバートグルボタンを非表示 */
+    .sidebar-toggle {
+        display: none;
+    }
+    
+    /* モバイルヘッダーを非表示 */
+    .mobile-header {
+        display: none;
+    }
+    
+    /* 紹介カードのグリッドレイアウト */
+    .referral-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    /* 招待リンクセクション */
+    .invite-links-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    
+    /* 統計カード */
+    .referral-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    /* ヘッダーレイアウト */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    /* ボタンサイズ調整 */
+    .btn-primary {
+        padding: 12px 32px;
+        font-size: 1rem;
+    }
+}
+
+/* 超大画面（1920px以上） */
+@media (min-width: 1920px) {
+    /* コンテンツボディの最大幅を拡大 */
+    .main-content .content-body {
+        max-width: 1400px !important;
+    }
+    
+    /* 紹介カードを4列に */
+    .referral-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    /* メインコンテンツのパディング増加 */
+    .dashboard .main-content {
+        padding: 3rem 4rem !important;
+    }
+}
+
+/* サイドバーのスクロールバー美化 */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* モバイルメニュー関連のスタイルを整理 */
+@media (max-width: 1439px) {
+    /* デスクトップ以外ではモバイルレイアウト */
+    .dashboard {
+        display: block;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        transition: left 0.3s ease;
+    }
+    
+    .sidebar.active {
+        left: 0;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .mobile-header {
+        display: flex;
+    }
+    
+    .sidebar-toggle {
+        display: flex;
+    }
+}
+
+/* サイドバーアクティブ時のスタイル */
+.sidebar.active {
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* モバイルバックドロップ - responsive-menu.cssで定義済みのため削除 */
+
+/* ボディのスクロール制御 */
+body.menu-open {
+    overflow: hidden;
+}
+
+/* サイドバー内のリンクホバー効果 */
+.sidebar-link {
+    transition: all 0.3s ease;
+}
+
+.sidebar-link:hover {
+    background: rgba(0, 102, 255, 0.1);
+    padding-left: 24px;
+}
+
+/* アクティブリンクのスタイル */
+.sidebar-link.active {
+    background: linear-gradient(90deg, rgba(0, 102, 255, 0.1) 0%, transparent 100%);
+    border-left: 4px solid #0066ff;
+}
+
+/* コンテンツのアニメーション */
+.main-content {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* レスポンシブテーブル */
+@media (max-width: 768px) {
+    .referral-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .referral-table thead {
+        display: none;
+    }
+    
+    .referral-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    .referral-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border: none;
+    }
+    
+    .referral-table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #666;
+    }
+}
+
+/* タブレット向け調整 */
+@media (min-width: 768px) and (max-width: 1439px) {
+    .referral-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .referral-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
