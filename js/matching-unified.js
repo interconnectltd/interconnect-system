@@ -129,8 +129,8 @@
                 return;
             }
             
-            // 自分以外のユーザーをフィルタリング
-            const users = allUsers ? allUsers.filter(user => user.user_id !== currentUserId) : [];
+            // 自分以外のユーザーをフィルタリング（user_profilesではidカラムを使用）
+            const users = allUsers ? allUsers.filter(user => user.id !== currentUserId) : [];
             
             console.log('[MatchingUnified] 取得したユーザー数:', users.length);
             
@@ -139,8 +139,8 @@
                 return;
             }
             
-            // 各ユーザーのコネクションステータスを取得
-            const userIds = users.map(u => u.user_id).filter(id => id); // null/undefinedを除外
+            // 各ユーザーのコネクションステータスを取得（user_profilesではidカラムを使用）
+            const userIds = users.map(u => u.id).filter(id => id); // null/undefinedを除外
             let connections = [];
             
             if (userIds.length > 0) {
@@ -169,7 +169,7 @@
             
             // connectionMapを各ユーザーに追加
             matchingUsers.forEach(user => {
-                user.connectionStatus = connectionMap[user.user_id] || null;
+                user.connectionStatus = connectionMap[user.id] || null;
             });
             
             // 表示
@@ -319,7 +319,7 @@
             console.log('[MatchingUnified] Canvas要素数:', canvasElements.length);
             
             filteredUsers.forEach((user, index) => {
-                const userId = user.user_id || user.id;
+                const userId = user.id;
                 console.log(`[MatchingUnified] ユーザー ${index + 1}/${filteredUsers.length} のレーダーチャート描画:`, userId);
                 drawRadarChartForUser(user);
             });
@@ -360,7 +360,7 @@
         const commonSkills = ['ビジネス', 'コミュニケーション'];
         const hasCommonSkills = skills.some(skill => commonSkills.includes(skill));
 
-        const userId = user.user_id || user.id;
+        const userId = user.id;
         return `
             <div class="matching-card" data-user-id="${userId}">
                 <div class="matching-score">${matchScore}%</div>
@@ -444,8 +444,8 @@
             
             if (error) throw error;
             
-            // user_idでフィルタリング
-            const user = users.find(u => u.user_id === userId);
+            // idでフィルタリング（user_profilesテーブルではidカラムを使用）
+            const user = users.find(u => u.id === userId);
             if (!user) throw new Error('ユーザーが見つかりません');
 
             if (error) throw error;
@@ -531,7 +531,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary">閉じる</button>
-                    <button class="btn btn-primary" data-user-id="${user.user_id || user.id}">
+                    <button class="btn btn-primary" data-user-id="${user.id}">
                         <i class="fas fa-link"></i> コネクト申請
                     </button>
                 </div>
@@ -578,12 +578,18 @@
         try {
             console.log('[MatchingUnified] コネクト申請送信:', recipientId);
             
-            // 既存のコネクトを確認
-            const { data: existingConnection, error: checkError } = await window.supabaseClient
+            // 既存のコネクトを確認（シンプルなクエリに変更）
+            const { data: allConnections } = await window.supabaseClient
                 .from('connections')
-                .select('*')
-                .or(`and(user_id.eq.${currentUserId},connected_user_id.eq.${recipientId}),and(user_id.eq.${recipientId},connected_user_id.eq.${currentUserId})`)
-                .single();
+                .select('*');
+                
+            // JavaScriptでフィルタリング
+            const existingConnection = allConnections ? allConnections.find(conn =>
+                (conn.user_id === currentUserId && conn.connected_user_id === recipientId) ||
+                (conn.user_id === recipientId && conn.connected_user_id === currentUserId)
+            ) : null;
+            
+            const checkError = !allConnections ? new Error('Failed to fetch connections') : null;
 
             if (checkError && checkError.code !== 'PGRST116') {
                 throw checkError;
@@ -917,7 +923,7 @@
 
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
-        const userId = user.user_id || user.id;
+        const userId = user.id;
         console.log('[MatchingUnified] レーダーチャート描画開始:', userId);
         const canvas = document.getElementById(`radar-${userId}`);
         if (!canvas) {

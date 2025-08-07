@@ -148,7 +148,7 @@
                 .from('v_referral_history')
                 .select('*')
                 .eq('inviter_id', currentUserId)
-                .order('created_at', { ascending: false });
+                .order('accepted_at', { ascending: false });
 
             if (error) throw error;
 
