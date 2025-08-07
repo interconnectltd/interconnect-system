@@ -202,7 +202,7 @@
                 .from('user_profiles')
                 .select('*');
             
-            const currentUser = allProfiles ? allProfiles.find(u => u.user_id === currentUserId) : null;
+            const currentUser = allProfiles ? allProfiles.find(u => u.id === currentUserId) : null;
 
             if (!currentUser) return users;
 
