@@ -113,7 +113,7 @@
             const { data: users, error } = await window.supabaseClient
                 .from('user_profiles')
                 .select('*')
-                .not('user_id', 'eq', currentUserId);
+                .neq('user_id', currentUserId);
             
             if (error) {
                 console.error('[MatchingUnified] ユーザー取得エラー:', error);
