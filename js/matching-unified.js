@@ -97,8 +97,17 @@
                 return;
             }
             
-            // 読み込み中表示
-            container.innerHTML = '<div class="loading">読み込み中...</div>';
+            // 読み込み中表示（改善されたローディング演出）
+            container.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner">
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                    </div>
+                    <p class="loading-text">マッチング候補を検索中...</p>
+                </div>
+            `;
             
             // 現在のユーザーID取得
             const { data: { user } } = await window.supabaseClient.auth.getUser();
@@ -131,11 +140,20 @@
             }
             
             // 各ユーザーのコネクションステータスを取得
-            const userIds = users.map(u => u.user_id);
-            const { data: connections } = await window.supabaseClient
-                .from('connections')
-                .select('*')
-                .or(`and(user_id.eq.${currentUserId},connected_user_id.in.(${userIds.join(',')})),and(user_id.in.(${userIds.join(',')}),connected_user_id.eq.${currentUserId})`);
+            const userIds = users.map(u => u.user_id).filter(id => id); // null/undefinedを除外
+            let connections = [];
+            
+            if (userIds.length > 0) {
+                const { data: connectionsData } = await window.supabaseClient
+                    .from('connections')
+                    .select('*');
+                
+                // JavaScriptでフィルタリング
+                connections = connectionsData ? connectionsData.filter(conn => 
+                    (conn.user_id === currentUserId && userIds.includes(conn.connected_user_id)) ||
+                    (userIds.includes(conn.user_id) && conn.connected_user_id === currentUserId)
+                ) : [];
+            }
             
             // コネクションステータスをマップに格納
             const connectionMap = {};
@@ -170,11 +188,11 @@
     async function calculateMatchingScores(users) {
         try {
             // 現在のユーザーのプロフィール取得
-            const { data: currentUser } = await window.supabaseClient
+            const { data: allProfiles } = await window.supabaseClient
                 .from('user_profiles')
-                .select('*')
-                .eq('user_id', currentUserId)
-                .single();
+                .select('*');
+            
+            const currentUser = allProfiles ? allProfiles.find(u => u.user_id === currentUserId) : null;
 
             if (!currentUser) return users;
 
@@ -420,11 +438,15 @@
             await recordProfileView(userId);
 
             // プロフィールデータ取得
-            const { data: user, error } = await window.supabaseClient
+            const { data: users, error } = await window.supabaseClient
                 .from('user_profiles')
-                .select('*')
-                .eq('user_id', userId)
-                .single();
+                .select('*');
+            
+            if (error) throw error;
+            
+            // user_idでフィルタリング
+            const user = users.find(u => u.user_id === userId);
+            if (!user) throw new Error('ユーザーが見つかりません');
 
             if (error) throw error;
 
