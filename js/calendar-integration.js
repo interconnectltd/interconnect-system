@@ -136,7 +136,7 @@
                 .select(`
                     event_id,
                     attendance_status,
-                    events (
+                    events!inner(
                         id,
                         title,
                         description,
