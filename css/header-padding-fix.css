@@ -1,0 +1,153 @@
+/**
+ * ヘッダー余白修正CSS
+ * 全ページのヘッダー左側に適切な余白を設定
+ */
+
+/* =============================
+   コンテンツヘッダー共通修正
+   ============================= */
+
+/* ダッシュボードページのヘッダー */
+.dashboard-header {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+.dashboard-header .header-left {
+    padding-left: 0 !important; /* 親要素でパディング設定済み */
+}
+
+/* その他のページのコンテンツヘッダー */
+.content-header {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+.content-header .header-left {
+    padding-left: 0 !important; /* 親要素でパディング設定済み */
+}
+
+/* 紹介プログラムページ特有の調整 */
+.main-content .content-header {
+    padding: 1.5rem 2rem !important;
+}
+
+/* =============================
+   レスポンシブ対応
+   ============================= */
+
+/* PC画面（1024px以上） */
+@media (min-width: 1024px) {
+    .dashboard-header,
+    .content-header {
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+    }
+}
+
+/* 大画面（1440px以上） */
+@media (min-width: 1440px) {
+    .dashboard-header,
+    .content-header {
+        padding-left: 4rem !important;
+        padding-right: 4rem !important;
+    }
+}
+
+/* 超大画面（1920px以上） */
+@media (min-width: 1920px) {
+    .dashboard-header,
+    .content-header {
+        padding-left: 5rem !important;
+        padding-right: 5rem !important;
+    }
+}
+
+/* タブレット（768px〜1023px） */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .dashboard-header,
+    .content-header {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+/* モバイル（767px以下） */
+@media (max-width: 767px) {
+    .dashboard-header,
+    .content-header {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+/* =============================
+   紹介プログラムページ特別修正
+   ============================= */
+
+/* 紹介ページのメインコンテンツエリア全体 */
+.referral-page .main-content,
+body[data-page="referral"] .main-content {
+    /* 左余白の調整 */
+}
+
+/* 紹介ページのコンテンツボディ */
+.referral-page .content-body,
+body[data-page="referral"] .content-body {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+@media (min-width: 1024px) {
+    .referral-page .content-body,
+    body[data-page="referral"] .content-body {
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+    }
+}
+
+/* =============================
+   ヘッダー内要素の配置調整
+   ============================= */
+
+/* ヘッダー左側のテキスト */
+.header-left h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.header-left p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.header-left .user-name {
+    color: #0066ff;
+    font-weight: 500;
+}
+
+/* ヘッダー右側の要素 */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* =============================
+   デバッグ用（本番では削除）
+   ============================= */
+
+/* 余白を視覚的に確認（開発時のみ） */
+/*
+.dashboard-header,
+.content-header {
+    border-left: 2px solid red !important;
+}
+
+.header-left {
+    background: rgba(255, 0, 0, 0.1) !important;
+}
+*/
