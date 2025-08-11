@@ -6,6 +6,16 @@
 // Members Profile Modal - 即座実行
 console.log('[MembersProfileModal] ファイル読み込み開始');
 
+// グローバルに即座に関数を登録
+window.showMemberProfileModal = function(userId) {
+    console.log('[MembersProfileModal] showMemberProfileModal called with:', userId);
+    if (window.membersProfileModal && window.membersProfileModal.show) {
+        window.membersProfileModal.show(userId);
+    } else {
+        console.error('[MembersProfileModal] Modal not initialized yet');
+    }
+};
+
 (function() {
     'use strict';
     
@@ -202,11 +212,25 @@ console.log('[MembersProfileModal] ファイル読み込み開始');
                     return;
                 }
                 
-                const { data: userData, error } = await client
-                    .from('profiles')
+                // まずuser_profilesテーブルを試す
+                let { data: userData, error } = await client
+                    .from('user_profiles')
                     .select('*')
                     .eq('id', userId)
                     .single();
+                
+                // user_profilesが失敗したらprofilesテーブルを試す
+                if (error || !userData) {
+                    console.log('[MembersProfileModal] user_profiles failed, trying profiles table');
+                    const profilesResult = await client
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', userId)
+                        .single();
+                    
+                    userData = profilesResult.data;
+                    error = profilesResult.error;
+                }
                 
                 if (error) throw error;
                 
