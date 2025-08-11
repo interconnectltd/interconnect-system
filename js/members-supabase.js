@@ -257,10 +257,12 @@
                         </div>
                     </div>
                     <div class="member-actions">
-                        <a href="profile.html?user=${id}" class="btn btn-primary btn-small">
+                        <button class="btn btn-primary btn-small view-profile-btn" 
+                                data-member-id="${id}"
+                                onclick="window.membersProfileModal && window.membersProfileModal.show('${id}')">
                             <i class="fas fa-user"></i>
                             <span class="btn-text">プロフィール</span>
-                        </a>
+                        </button>
                         <button class="btn btn-outline btn-small connect-btn" 
                                 data-member-id="${id}"
                                 data-member-name="${this.escapeHtml(displayName)}">
