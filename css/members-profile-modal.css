@@ -5,7 +5,7 @@
 
 /* モーダルオーバーレイとコンテナ */
 #memberProfileModal {
-    display: none;
+    display: none !important; /* 初期状態は確実に非表示 */
     position: fixed;
     top: 0;
     left: 0;

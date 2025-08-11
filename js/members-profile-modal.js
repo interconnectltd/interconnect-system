@@ -35,6 +35,7 @@ class MembersProfileModal {
             this.modal = document.createElement('div');
             this.modal.id = 'memberProfileModal';
             this.modal.className = 'modal';
+            this.modal.style.display = 'none'; // 確実に非表示で開始
             this.modal.innerHTML = `
                 <div class="modal-overlay"></div>
                 <div class="modal-content">
@@ -59,7 +60,7 @@ class MembersProfileModal {
                             <button class="tab-btn" data-tab="experience">経歴</button>
                             <button class="tab-btn" data-tab="skills">スキル</button>
                             <button class="tab-btn" data-tab="interests">興味・関心</button>
-                            <button class="tab-btn active" data-tab="challenges">事業課題</button>
+                            <button class="tab-btn" data-tab="challenges">事業課題</button>
                         </div>
                         
                         <div class="profile-tab-content">
@@ -105,7 +106,7 @@ class MembersProfileModal {
                             </div>
                             
                             <!-- 事業課題タブ -->
-                            <div class="tab-pane active" data-tab="challenges">
+                            <div class="tab-pane" data-tab="challenges">
                                 <div class="challenges-container" id="modalChallenges">
                                     <p class="empty-state">事業課題情報がありません</p>
                                 </div>
@@ -601,7 +602,7 @@ document.addEventListener('click', (e) => {
 // MembersProfileModalクラスをグローバルスコープに登録
 window.MembersProfileModal = MembersProfileModal;
 
-// 初期化処理
+// 初期化処理（ただしモーダルは表示しない）
 function initializeMembersProfileModal() {
     console.log('[MembersProfileModal] Initializing...');
     try {
@@ -609,6 +610,14 @@ function initializeMembersProfileModal() {
             console.log('[MembersProfileModal] Creating new instance...');
             window.membersProfileModal = new MembersProfileModal();
             console.log('[MembersProfileModal] Instance created:', !!window.membersProfileModal);
+            
+            // 初期化直後に確実に非表示にする
+            const modal = document.getElementById('memberProfileModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                console.log('[MembersProfileModal] Modal hidden after initialization');
+            }
         } else {
             console.log('[MembersProfileModal] Instance already exists');
         }
@@ -631,6 +640,11 @@ setTimeout(() => {
     if (!window.membersProfileModal) {
         console.log('[MembersProfileModal] Fallback initialization...');
         initializeMembersProfileModal();
+    }
+    // 念のため再度非表示確認
+    const modal = document.getElementById('memberProfileModal');
+    if (modal && !modal.classList.contains('show')) {
+        modal.style.display = 'none';
     }
 }, 500);
 
