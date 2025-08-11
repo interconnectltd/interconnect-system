@@ -1,0 +1,2 @@
+Total JS files: 245
+Total CSS files: 118
