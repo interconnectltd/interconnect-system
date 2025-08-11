@@ -79,8 +79,9 @@ window.InterConnect.Profile = {
     // 現在のユーザー情報を取得
     getCurrentUser: async function() {
         try {
-            if (window.supabase) {
-                const { data: { user } } = await window.supabase.auth.getUser();
+            if (window.supabaseClient || window.supabase) {
+                const client = window.supabaseClient || window.supabase;
+                const { data: { user } } = await client.auth.getUser();
                 if (user) {
                     this.currentUserId = user.id;
                     // console.log('[Profile] 現在のユーザーID:', this.currentUserId);
@@ -121,7 +122,8 @@ window.InterConnect.Profile = {
                 return;
             }
             
-            if (!window.supabase) {
+            const client = window.supabaseClient || window.supabase;
+            if (!client) {
                 console.error('[Profile] Supabaseが初期化されていません');
                 // フォールバック：localStorageから基本情報を取得
                 this.showFallbackProfile(userId);
@@ -129,7 +131,7 @@ window.InterConnect.Profile = {
             }
             
             // user_profilesテーブルから他のユーザー情報を取得（公開情報のみ）
-            const { data, error } = await window.supabase
+            const { data, error } = await client
                 .from('user_profiles')
                 .select(`
                     id,
@@ -206,9 +208,9 @@ window.InterConnect.Profile = {
     // コネクション数を取得
     loadConnectionCount: async function(userId) {
         try {
-            if (!window.supabase) return;
+            if (!window.supabaseClient) return;
             
-            const { data, error } = await window.supabase
+            const { data, error } = await window.supabaseClient
                 .from('connections')
                 .select('id')
                 .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`)
@@ -226,9 +228,9 @@ window.InterConnect.Profile = {
     // コネクションステータスを確認
     checkConnectionStatus: async function(userId) {
         try {
-            if (!window.supabase || !this.currentUserId) return;
+            if (!window.supabaseClient || !this.currentUserId) return;
             
-            const { data } = await window.supabase
+            const { data } = await window.supabaseClient
                 .from('connections')
                 .select('status')
                 .or(`and(requester_id.eq.${this.currentUserId},receiver_id.eq.${userId}),and(requester_id.eq.${userId},receiver_id.eq.${this.currentUserId})`)
@@ -253,8 +255,8 @@ window.InterConnect.Profile = {
             }
             
             // Supabaseから自分のプロフィールデータも取得
-            if (window.supabase && this.currentUserId) {
-                const { data, error } = await window.supabase
+            if (window.supabaseClient && this.currentUserId) {
+                const { data, error } = await window.supabaseClient
                     .from('user_profiles')
                     .select('*')
                     .eq('id', this.currentUserId)
@@ -362,7 +364,7 @@ window.InterConnect.Profile = {
     // コネクト申請を送る
     sendConnectionRequest: async function() {
         try {
-            if (!window.supabase || !this.currentUserId || !this.targetUserId) {
+            if (!window.supabaseClient || !this.currentUserId || !this.targetUserId) {
                 // alert('ログインが必要です');
                 if (window.showError) {
                     showError('ログインが必要です');
@@ -370,7 +372,7 @@ window.InterConnect.Profile = {
                 return;
             }
             
-            const { error } = await window.supabase
+            const { error } = await window.supabaseClient
                 .from('connections')
                 .insert({
                     requester_id: this.currentUserId,
@@ -885,7 +887,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Supabaseの準備を待つ
     function initWhenReady() {
-        if (window.supabase) {
+        if (window.supabaseClient) {
             // console.log('Supabase準備完了、初期化開始');
             window.InterConnect.Profile.init();
         } else {
