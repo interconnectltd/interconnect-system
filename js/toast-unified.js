@@ -1,15 +1,21 @@
 /**
  * 統一トースト通知システム
  * 
- * 複数のファイルで重複定義されていたshowToast関数を統一
- * グローバルに利用可能な通知表示機能を提供
+ * notification-system-unified.jsに統合済み
+ * このファイルは互換性のために残すが、内部実装は統一版を使用
  */
 
 (function() {
     'use strict';
 
-    // トースト通知を表示
+    // notification-system-unified.jsの実装を使用
     function showToast(message, type = 'info', duration = 3000) {
+        // 統一版が読み込まれているか確認
+        if (window.NotificationSystem && window.NotificationSystem.showToast) {
+            return window.NotificationSystem.showToast(message, type, duration);
+        }
+        
+        // フォールバック実装（統一版が読み込まれていない場合）
         // 既存のトーストをチェック
         const existingToast = document.querySelector('.toast.show');
         if (existingToast) {

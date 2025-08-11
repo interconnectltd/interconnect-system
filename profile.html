@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="css/user-dropdown-fix-final.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
+    <!-- アバターサイズ統一 -->
+    <link rel="stylesheet" href="css/avatar-size-unified.css">
     <!-- プロフィール画像アップロード -->
     <link rel="stylesheet" href="css/profile-image-upload.css">
     <!-- サイドバーレスポンシブ統一修正 -->
@@ -228,7 +230,7 @@
                             </div>
                         </div>
                         <div class="user-profile">
-                            <img src="images/default-avatar.svg" alt="User Avatar" class="user-avatar" id="userAvatar">
+                            <img src="assets/default-avatar.svg" alt="User Avatar" class="user-avatar">
                             <span class="user-name" id="userName">ゲスト</span>
                             <i class="fas fa-chevron-down"></i>
                             <div class="user-dropdown">
@@ -574,8 +576,12 @@
         console.log('window.InterConnect:', window.InterConnect);
         console.log('window.loadTabContent:', window.loadTabContent);
     </script>
+    <!-- 統一通知システム -->
+    <script src="js/notification-system-unified.js"></script>
     <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- プロフィール画像アップロード -->
     <script src="js/profile-image-upload.js"></script>
+    <!-- アバターサイズ強制適用 -->
+    <script src="js/avatar-size-enforcer.js"></script>
 </body>
 </html>

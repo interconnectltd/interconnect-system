@@ -39,6 +39,8 @@
     <link rel="stylesheet" href="css/homepage-video-preload-fix.css">
     <!-- 動画読み込み最適化 -->
     <link rel="stylesheet" href="css/video-loading-optimize.css">
+    <!-- 動画ポスターフォールバック -->
+    <link rel="stylesheet" href="css/video-poster-fallback.css">
     <!-- ヒーローセクション -->
     <link rel="stylesheet" href="css/hero.css">
     <!-- タイプライター初期状態 -->
@@ -102,7 +104,13 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-video-container">
-            <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <video class="hero-video" 
+                   autoplay 
+                   muted 
+                   loop 
+                   playsinline 
+                   preload="metadata"
+                   poster="assets/video-poster.svg">
                 <source src="assets/interconnect-top.mp4" type="video/mp4">
                 お使いのブラウザは動画をサポートしていません。
             </video>
@@ -756,5 +764,17 @@
     <script src="js/homepage-perfect-final.js"></script>
     <script src="js/main.js"></script>
     <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- 動画パフォーマンス最適化 -->
+    <script src="js/video-performance-optimizer.js"></script>
+    <!-- Service Worker登録 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw-video-cache.js')
+                    .then(registration => console.log('[SW] 登録成功:', registration.scope))
+                    .catch(err => console.error('[SW] 登録失敗:', err));
+            });
+        }
+    </script>
 </body>
 </html>

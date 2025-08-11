@@ -29,6 +29,8 @@
     <link rel="stylesheet" href="css/responsive-complete.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
+    <!-- アバターサイズ統一 -->
+    <link rel="stylesheet" href="css/avatar-size-unified.css">
     <!-- サイドバーレスポンシブ統一修正 -->
     <link rel="stylesheet" href="css/sidebar-responsive-fix.css">
     <!-- 高度な検索機能 -->
@@ -230,7 +232,7 @@
                             </div>
                         </div>
                         <div class="user-profile">
-                            <img src="images/default-avatar.svg" alt="User Avatar" class="user-avatar" id="userAvatar">
+                            <img src="assets/default-avatar.svg" alt="User Avatar" class="user-avatar">
                             <span class="user-name" id="userName">ゲスト</span>
                             <i class="fas fa-chevron-down"></i>
                             <div class="user-dropdown">
@@ -309,8 +311,12 @@
     <!-- <script src="js/notifications.js"></script> -->
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
+    <!-- 統一通知システム -->
+    <script src="js/notification-system-unified.js"></script>
     <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- 高度な検索機能 -->
     <script src="js/advanced-search.js"></script>
+    <!-- アバターサイズ強制適用 -->
+    <script src="js/avatar-size-enforcer.js"></script>
 </body>
 </html>

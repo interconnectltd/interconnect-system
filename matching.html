@@ -226,7 +226,7 @@
                             </div>
                         </div>
                         <div class="user-profile">
-                            <img src="images/default-avatar.svg" alt="User Avatar" class="user-avatar" id="userAvatar">
+                            <img src="assets/default-avatar.svg" alt="User Avatar" class="user-avatar">
                             <span class="user-name" id="userName">ゲスト</span>
                             <i class="fas fa-chevron-down"></i>
                             <div class="user-dropdown">
@@ -329,6 +329,8 @@
     <!-- 関数実行トラッカー -->
     <script src="js/function-execution-tracker.js"></script>
     <!-- Supabase統一初期化（最初に読み込む） -->
+    <!-- 統一通知システム -->
+    <script src="js/notification-system-unified.js"></script>
     <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- Supabase参照修正（不要になったため無効化） -->
     <!-- <script src="js/supabase-wait-fix.js"></script> -->
@@ -355,5 +357,7 @@
     <script src="js/profile-detail-modal.js"></script>
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
+    <!-- アバターサイズ強制適用 -->
+    <script src="js/avatar-size-enforcer.js"></script>
 </body>
 </html>

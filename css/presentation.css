@@ -688,22 +688,22 @@ section {
     gap: 2rem;
 }
 
-.user-avatar {
-    width: 60px;
-    height: 60px;
-    background: var(--gradient-1);
-    border-radius: 50%;
-    position: relative;
-}
-
-.user-avatar::after {
-    content: '';
-    position: absolute;
-    inset: -5px;
-    border: 2px solid var(--primary-color);
-    border-radius: 50%;
-    opacity: 0.3;
-}
+/* DISABLED: .user-avatar { */
+/* DISABLED:     width: 60px; */
+/* DISABLED:     height: 60px; */
+/* DISABLED:     background: var(--gradient-1); */
+/* DISABLED:     border-radius: 50%; */
+/* DISABLED:     position: relative; */
+/* DISABLED: } */
+ */
+.user-avatar::after { */
+    content: ''; */
+    position: absolute; */
+    inset: -5px; */
+    border: 2px solid var(--primary-color); */
+    border-radius: 50%; */
+    opacity: 0.3; */
+} */
 
 .connection-line {
     width: 100px;

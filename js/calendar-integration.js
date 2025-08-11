@@ -150,7 +150,7 @@
                     )
                 `)
                 .eq('user_id', currentUserId)
-                .eq('attendance_status', 'registered');
+                .in('attendance_status', ['registered', 'confirmed']);
 
             if (participationError) throw participationError;
 

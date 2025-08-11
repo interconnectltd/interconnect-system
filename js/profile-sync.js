@@ -8,8 +8,15 @@
     
     // Supabaseからユーザー情報を取得して更新
     async function syncUserProfile() {
+        // Supabaseの初期化を待つ
         if (!window.supabaseClient) {
-            console.error('Supabase client not initialized');
+            console.log('[ProfileSync] Waiting for Supabase initialization...');
+            // 少し待ってから再試行
+            setTimeout(() => {
+                if (window.supabaseClient) {
+                    syncUserProfile();
+                }
+            }, 100);
             return;
         }
         

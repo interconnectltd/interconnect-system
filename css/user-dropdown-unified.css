@@ -23,22 +23,22 @@
     background: rgba(74, 144, 226, 0.12);
 }
 
-.user-profile .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #e0e0e0;
-}
-
-.user-profile .user-name {
-    font-weight: 500;
-    color: #333;
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+/* DISABLED: .user-profile .user-avatar { */
+/* DISABLED:     width: 32px; */
+/* DISABLED:     height: 32px; */
+/* DISABLED:     border-radius: 50%; */
+/* DISABLED:     object-fit: cover; */
+/* DISABLED:     border: 2px solid #e0e0e0; */
+/* DISABLED: } */
+ */
+.user-profile .user-name { */
+    font-weight: 500; */
+    color: #333; */
+    max-width: 150px; */
+    overflow: hidden; */
+    text-overflow: ellipsis; */
+    white-space: nowrap; */
+} */
 
 .user-profile .fa-chevron-down {
     font-size: 12px;
