@@ -1,0 +1,136 @@
+/**
+ * レスポンシブ余白修正
+ * 1024px以下での不要な余白を完全に削除
+ */
+
+/* =============================
+   1024px以下での余白リセット
+   ============================= */
+@media (max-width: 1023px) {
+    /* サイドバーを完全に非表示 */
+    .dashboard .sidebar {
+        display: none !important;
+        width: 0 !important;
+    }
+    
+    /* メインコンテンツの余白を完全にリセット */
+    .dashboard .main-content {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        width: 100% !important;
+        margin-top: 60px !important; /* モバイルヘッダーの高さ分のみ */
+    }
+    
+    /* コンテンツヘッダーの余白を調整 */
+    .dashboard .content-header,
+    .dashboard-header {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+    
+    /* コンテンツボディの余白を調整 */
+    .dashboard .main-content .content-body {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+    
+    /* 紹介ページ特有の調整 */
+    .referral-page .main-content,
+    body[data-page="referral"] .main-content {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }
+    
+    .referral-page .content-body,
+    body[data-page="referral"] .content-body {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+    
+    /* モバイルヘッダー表示 */
+    .mobile-header {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        align-items: center;
+        padding: 0 1rem;
+    }
+}
+
+/* =============================
+   768px以下（モバイル）の調整
+   ============================= */
+@media (max-width: 767px) {
+    /* ヘッダーとコンテンツの余白をさらに削減 */
+    .dashboard .content-header,
+    .dashboard-header {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .dashboard .main-content .content-body {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .referral-page .content-body,
+    body[data-page="referral"] .content-body {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+/* =============================
+   480px以下（小型モバイル）の調整
+   ============================= */
+@media (max-width: 480px) {
+    /* さらに余白を削減 */
+    .dashboard .content-header,
+    .dashboard-header {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    
+    .dashboard .main-content .content-body {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    
+    .referral-page .content-body,
+    body[data-page="referral"] .content-body {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+}
+
+/* =============================
+   重要：他のCSSの上書き
+   ============================= */
+@media (max-width: 1023px) {
+    /* referral-final-fix.cssの上書き */
+    body .dashboard .sidebar + .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    /* header-padding-fix.cssの上書き */
+    .main-content .content-header {
+        padding: 1.5rem !important;
+    }
+    
+    /* sidebar-responsive-fix.cssの確実な上書き */
+    .dashboard.sidebar-collapsed .main-content,
+    .dashboard .main-content {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        width: 100% !important;
+    }
+}
