@@ -25,11 +25,11 @@
     z-index: 100;
 }
 
-/* メインコンテンツ - サイドバーありの場合 */
+/* メインコンテンツ - デフォルトはサイドバーなし */
 .dashboard .main-content {
     flex: 1;
-    margin-left: 260px !important;
-    width: calc(100% - 260px) !important;
+    margin-left: 0 !important;
+    width: 100% !important;
     padding: 0 !important;
     overflow-y: auto;
     background: #f8f9fa;
@@ -59,32 +59,45 @@
 }
 
 /* =============================
-   大画面対応（1440px以上）
+   PC画面対応（1024px以上）
    ============================= */
-@media (min-width: 1440px) {
-    /* サイドバー固定 */
+@media (min-width: 1024px) {
+    /* サイドバー固定表示 */
     .dashboard .sidebar {
         position: fixed;
         left: 0;
         top: 0;
         height: 100vh;
         overflow-y: auto;
+        display: block !important;
     }
     
-    /* メインコンテンツ調整 */
+    /* メインコンテンツをサイドバー分ずらす */
     .dashboard .main-content {
         margin-left: 260px !important;
-    }
-    
-    /* コンテンツボディの最大幅を拡大 */
-    .dashboard .main-content .content-body {
-        max-width: 1400px !important;
-        padding: 0 3rem !important;
+        width: calc(100% - 260px) !important;
     }
     
     /* モバイルヘッダーを非表示 */
     .mobile-header {
         display: none !important;
+    }
+    
+    /* コンテンツボディの最大幅 */
+    .dashboard .main-content .content-body {
+        max-width: 1200px !important;
+        padding: 0 2rem !important;
+    }
+}
+
+/* =============================
+   大画面対応（1440px以上）
+   ============================= */
+@media (min-width: 1440px) {
+    /* コンテンツボディの最大幅を拡大 */
+    .dashboard .main-content .content-body {
+        max-width: 1400px !important;
+        padding: 0 3rem !important;
     }
 }
 
@@ -100,24 +113,41 @@
    タブレット対応（768px〜1023px）
    ============================= */
 @media (min-width: 768px) and (max-width: 1023px) {
-    /* サイドバー幅を狭める */
+    /* サイドバーを非表示（ハンバーガーメニュー使用） */
     .dashboard .sidebar {
-        width: 200px !important;
+        display: none !important;
     }
     
-    /* メインコンテンツの余白調整 */
+    /* メインコンテンツを全幅に */
     .dashboard .main-content {
-        margin-left: 200px !important;
-        width: calc(100% - 200px) !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+        margin-top: 60px !important; /* モバイルヘッダーの高さ分 */
     }
     
-    /* コンテンツの余白を減らす */
+    /* モバイルヘッダーを表示 */
+    .mobile-header {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        align-items: center;
+        padding: 0 1rem;
+    }
+    
+    /* コンテンツの余白を調整 */
     .dashboard .content-header {
         padding: 1rem 1.5rem !important;
     }
     
     .dashboard .main-content .content-body {
         padding: 0 1.5rem !important;
+        max-width: 100% !important;
     }
 }
 
