@@ -299,7 +299,39 @@
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
     <!-- Members specific scripts -->
-    <script src="js/members-profile-modal.js?v=20250811-2"></script>
+    <script>
+        // 動的にキャッシュバスターを追加してスクリプトを読み込む
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'js/members-profile-modal.js?v=' + Date.now();
+            script.onload = function() {
+                console.log('[members.html] members-profile-modal.js loaded successfully');
+            };
+            script.onerror = function() {
+                console.error('[members.html] Failed to load members-profile-modal.js');
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
+    <!-- 強制的に最新版を読み込むためのインライン初期化 -->
+    <script>
+        // 少し待ってから初期化を確認
+        setTimeout(function() {
+            if (typeof MembersProfileModal === 'undefined') {
+                console.error('[CRITICAL] members-profile-modal.js failed to load!');
+                // 最小限の機能を提供
+                window.membersProfileModal = {
+                    show: function(userId) {
+                        console.log('[Fallback] Opening profile.html for user:', userId);
+                        window.location.href = 'profile.html?user=' + userId;
+                    }
+                };
+            } else if (!window.membersProfileModal) {
+                console.log('[members.html] Creating modal instance manually');
+                window.membersProfileModal = new MembersProfileModal();
+            }
+        }, 500);
+    </script>
     <script>
         // モーダルの初期化を確認
         console.log('[members.html] After members-profile-modal.js load:');

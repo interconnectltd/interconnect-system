@@ -81,11 +81,16 @@ window.InterConnect.Profile = {
         try {
             if (window.supabaseClient || window.supabase) {
                 const client = window.supabaseClient || window.supabase;
-                const { data: { user } } = await client.auth.getUser();
-                if (user) {
-                    this.currentUserId = user.id;
-                    // console.log('[Profile] 現在のユーザーID:', this.currentUserId);
-                    return;
+                // authが存在するか確認
+                if (client && client.auth && typeof client.auth.getUser === 'function') {
+                    const { data: { user } } = await client.auth.getUser();
+                    if (user) {
+                        this.currentUserId = user.id;
+                        // console.log('[Profile] 現在のユーザーID:', this.currentUserId);
+                        return;
+                    }
+                } else {
+                    console.warn('[Profile] Supabase auth not available, using localStorage');
                 }
             }
             
@@ -123,7 +128,7 @@ window.InterConnect.Profile = {
             }
             
             const client = window.supabaseClient || window.supabase;
-            if (!client) {
+            if (!client || typeof client.from !== 'function') {
                 console.error('[Profile] Supabaseが初期化されていません');
                 // フォールバック：localStorageから基本情報を取得
                 this.showFallbackProfile(userId);

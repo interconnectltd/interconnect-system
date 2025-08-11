@@ -259,7 +259,8 @@
                     <div class="member-actions">
                         <button class="btn btn-primary btn-small view-profile-btn" 
                                 data-member-id="${id}"
-                                type="button">
+                                type="button"
+                                onclick="event.preventDefault(); event.stopPropagation(); if(window.membersProfileModal && window.membersProfileModal.show) { window.membersProfileModal.show('${id}'); } else { console.error('[members-supabase] Modal not found, opening profile page'); window.location.href='profile.html?user=${id}'; } return false;">
                             <i class="fas fa-user"></i>
                             <span class="btn-text">プロフィール</span>
                         </button>
