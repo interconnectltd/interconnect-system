@@ -8,7 +8,7 @@
 
     // ページ読み込み直後にローディング状態を表示
     function showInitialLoading() {
-        console.log('[InitialLoading] Showing initial loading states');
+        // console.log('[InitialLoading] Showing initial loading states');
         
         // 統計コンテナにローディング表示
         const statsContainer = document.querySelector('.stats-container');

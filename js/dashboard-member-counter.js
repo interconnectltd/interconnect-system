@@ -48,11 +48,11 @@
             // キャッシュチェック
             if (this.cache.count !== null && this.cache.lastUpdate &&
                 (Date.now() - this.cache.lastUpdate) < this.cache.ttl) {
-                console.log('[MemberCounter] Returning cached count:', this.cache.count);
+                // console.log('[MemberCounter] Returning cached count:', this.cache.count);
                 return this.cache.count;
             }
 
-            console.log('[MemberCounter] Calculating total members...');
+            // console.log('[MemberCounter] Calculating total members...');
             
             let count = null;
 
@@ -103,7 +103,7 @@
             this.cache.count = count;
             this.cache.lastUpdate = Date.now();
             this.saveCurrentCount(count);
-            console.log('[MemberCounter] Cache updated with count:', count);
+            // console.log('[MemberCounter] Cache updated with count:', count);
         }
 
         /**
@@ -116,11 +116,11 @@
                     .select('*', { count: 'exact', head: true });
 
                 if (!error && count !== null) {
-                    console.log('[MemberCounter] Count from profiles:', count);
+                    // console.log('[MemberCounter] Count from profiles:', count);
                     return count;
                 }
             } catch (e) {
-                console.log('[MemberCounter] profiles table not accessible');
+                // console.log('[MemberCounter] profiles table not accessible');
             }
             return null;
         }
@@ -135,11 +135,11 @@
                     .select('*', { count: 'exact', head: true });
 
                 if (!error && count !== null) {
-                    console.log('[MemberCounter] Count from users:', count);
+                    // console.log('[MemberCounter] Count from users:', count);
                     return count;
                 }
             } catch (e) {
-                console.log('[MemberCounter] users table not accessible');
+                // console.log('[MemberCounter] users table not accessible');
             }
             return null;
         }
@@ -154,11 +154,11 @@
                     .select('*', { count: 'exact', head: true });
 
                 if (!error && count !== null) {
-                    console.log('[MemberCounter] Count from members:', count);
+                    // console.log('[MemberCounter] Count from members:', count);
                     return count;
                 }
             } catch (e) {
-                console.log('[MemberCounter] members table not accessible');
+                // console.log('[MemberCounter] members table not accessible');
             }
             return null;
         }
@@ -177,13 +177,13 @@
                 if (!error && data) {
                     const uniqueUsers = [...new Set(data.map(item => item.user_id))];
                     const count = uniqueUsers.length;
-                    console.log('[MemberCounter] Unique users from activities:', count);
+                    // console.log('[MemberCounter] Unique users from activities:', count);
                     
                     // 最低でも1は返す（現在のユーザーを含む）
                     return Math.max(count, 1);
                 }
             } catch (e) {
-                console.log('[MemberCounter] user_activities count failed');
+                // console.log('[MemberCounter] user_activities count failed');
             }
             return null;
         }
@@ -199,11 +199,11 @@
                     .limit(1);
 
                 if (!error && data && data.length > 0 && data[0].total_members) {
-                    console.log('[MemberCounter] Count from dashboard_stats:', data[0].total_members);
+                    // console.log('[MemberCounter] Count from dashboard_stats:', data[0].total_members);
                     return data[0].total_members;
                 }
             } catch (e) {
-                console.log('[MemberCounter] dashboard_stats not accessible');
+                // console.log('[MemberCounter] dashboard_stats not accessible');
             }
             return null;
         }
@@ -245,7 +245,7 @@
         window.dashboardStats.calculateTotalMembers = async function() {
             return await window.dashboardMemberCounter.getTotalMembers();
         };
-        console.log('[MemberCounter] Enhanced calculateTotalMembers with multi-source counting');
+        // console.log('[MemberCounter] Enhanced calculateTotalMembers with multi-source counting');
     }
 
     // リアルタイム計算にも適用
@@ -263,7 +263,7 @@
             
             return stats;
         };
-        console.log('[MemberCounter] Enhanced realtime calculator with member counting');
+        // console.log('[MemberCounter] Enhanced realtime calculator with member counting');
     }
 
 })();

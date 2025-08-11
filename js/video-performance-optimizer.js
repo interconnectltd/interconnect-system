@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[VideoOptimizer] 初期化開始');
+    // console.log('[VideoOptimizer] 初期化開始');
 
     // 設定
     const config = {
@@ -30,7 +30,7 @@
 
         // 2. ネットワーク速度を検出
         detectNetworkSpeed().then(speed => {
-            console.log(`[VideoOptimizer] ネットワーク速度: ${speed}`);
+            // console.log(`[VideoOptimizer] ネットワーク速度: ${speed}`);
             
             if (speed === 'slow') {
                 // 遅い接続では低品質版または静止画のみ
@@ -97,7 +97,7 @@
 
     // 低品質版または静止画のみ
     function loadLowQualityOrPoster(video) {
-        console.log('[VideoOptimizer] 低品質モード');
+        // console.log('[VideoOptimizer] 低品質モード');
         
         // 低品質版が存在する場合
         fetch(config.lowQualityPath, { method: 'HEAD' })
@@ -119,7 +119,7 @@
 
     // 段階的読み込み
     function loadVideoProgressive(video) {
-        console.log('[VideoOptimizer] 段階的読み込みモード');
+        // console.log('[VideoOptimizer] 段階的読み込みモード');
         
         // 最初の数秒だけ読み込む
         const source = video.querySelector('source') || video;
@@ -145,7 +145,7 @@
 
     // 最適化された通常読み込み
     function loadVideoOptimized(video) {
-        console.log('[VideoOptimizer] 最適化モード');
+        // console.log('[VideoOptimizer] 最適化モード');
         
         // preload属性を調整
         video.preload = 'metadata'; // 最初はメタデータのみ
@@ -197,7 +197,7 @@
                     if (entry.isIntersecting) {
                         video.play().catch(() => {
                             // 自動再生がブロックされた場合
-                            console.log('[VideoOptimizer] 自動再生がブロックされました');
+                            // console.log('[VideoOptimizer] 自動再生がブロックされました');
                         });
                     } else {
                         video.pause();

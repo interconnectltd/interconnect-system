@@ -11,7 +11,7 @@
 (function() {
     'use strict';
 
-    console.log('[SupabaseUnified] 統一初期化モジュール読み込み開始');
+    // console.log('[SupabaseUnified] 統一初期化モジュール読み込み開始');
 
     // Supabase設定
     const SUPABASE_URL = 'https://whyoqhhzwtlxprhizmor.supabase.co';
@@ -62,14 +62,14 @@
     // Supabaseクライアントを初期化
     async function initializeSupabase() {
         if (isInitialized) {
-            console.log('[SupabaseUnified] 既に初期化済み');
+            // console.log('[SupabaseUnified] 既に初期化済み');
             return;
         }
 
         try {
             // SDKを読み込み
             await loadSupabaseSDK();
-            console.log('[SupabaseUnified] Supabase SDK読み込み完了');
+            // console.log('[SupabaseUnified] Supabase SDK読み込み完了');
 
             // クライアントを作成
             window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -83,7 +83,7 @@
             // window.supabase = window.supabaseClient;
 
             isInitialized = true;
-            console.log('[SupabaseUnified] Supabaseクライアント初期化完了');
+            // console.log('[SupabaseUnified] Supabaseクライアント初期化完了');
 
             // 初期化完了イベントを発火
             window.dispatchEvent(new Event('supabaseReady'));
@@ -101,27 +101,27 @@
         if (authInitialized) return;
         authInitialized = true;
 
-        console.log('[SupabaseUnified] 認証機能初期化開始');
+        // console.log('[SupabaseUnified] 認証機能初期化開始');
 
         // ログインフォームの処理
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', handleEmailLogin);
-            console.log('[SupabaseUnified] ログインフォームハンドラー設定完了');
+            // console.log('[SupabaseUnified] ログインフォームハンドラー設定完了');
         }
 
         // LINEログインボタンの処理
         const lineLoginBtn = document.getElementById('lineLoginBtn');
         if (lineLoginBtn) {
             lineLoginBtn.addEventListener('click', handleLineLogin);
-            console.log('[SupabaseUnified] LINEログインボタンハンドラー設定完了');
+            // console.log('[SupabaseUnified] LINEログインボタンハンドラー設定完了');
         }
 
         // LINE登録ボタンの処理
         const lineRegisterBtn = document.getElementById('lineRegisterBtn');
         if (lineRegisterBtn) {
             lineRegisterBtn.addEventListener('click', handleLineLogin);
-            console.log('[SupabaseUnified] LINE登録ボタンハンドラー設定完了');
+            // console.log('[SupabaseUnified] LINE登録ボタンハンドラー設定完了');
         }
 
         // 認証状態をチェック
@@ -156,7 +156,7 @@
             }
             
             // ログイン成功
-            console.log('[SupabaseUnified] ログイン成功:', data.user.email);
+            // console.log('[SupabaseUnified] ログイン成功:', data.user.email);
             
             // ユーザー情報を保存
             localStorage.setItem('user', JSON.stringify({
@@ -184,11 +184,11 @@
             e.stopPropagation();
         }
         
-        console.log('[SupabaseUnified] LINEログイン開始');
+        // console.log('[SupabaseUnified] LINEログイン開始');
         
         // 二重実行を防ぐ
         if (window._lineLoginInProgress) {
-            console.log('[SupabaseUnified] LINEログイン処理中');
+            // console.log('[SupabaseUnified] LINEログイン処理中');
             return;
         }
         window._lineLoginInProgress = true;
@@ -211,7 +211,7 @@
             });
             
             const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-            console.log('[SupabaseUnified] LINE認証URLへリダイレクト');
+            // console.log('[SupabaseUnified] LINE認証URLへリダイレクト');
             
             // LINE認証ページへリダイレクト
             window.location.href = authUrl;
@@ -228,7 +228,7 @@
             const { data: { user } } = await window.supabaseClient.auth.getUser();
             
             if (user) {
-                console.log('[SupabaseUnified] ログイン済みユーザー:', user.email);
+                // console.log('[SupabaseUnified] ログイン済みユーザー:', user.email);
                 
                 // ログインページの場合はダッシュボードへリダイレクト
                 if (window.location.pathname.includes('login.html')) {

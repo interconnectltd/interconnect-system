@@ -397,7 +397,7 @@
                 const start = performance.now();
                 const result = fn();
                 const end = performance.now();
-                console.log(`⏱️ ${name}: ${Math.round(end - start)}ms`);
+                // console.log(`⏱️ ${name}: ${Math.round(end - start)}ms`);
                 return result;
             },
             
@@ -474,6 +474,6 @@
     };
     */
 
-    console.log('✅ INTERCONNECT Utils loaded');
+    // console.log('✅ INTERCONNECT Utils loaded');
 
 })();

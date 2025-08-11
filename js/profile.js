@@ -1,9 +1,9 @@
 // Profile JavaScript
-console.log('profile.js loading started');
+// console.log('profile.js loading started');
 
 // 名前空間を使用してグローバル汚染を防ぐ
 window.InterConnect = window.InterConnect || {};
-console.log('InterConnect namespace:', window.InterConnect);
+// console.log('InterConnect namespace:', window.InterConnect);
 
 window.InterConnect.Profile = {
     currentTab: 'about',
@@ -18,13 +18,13 @@ window.InterConnect.Profile = {
     
     // 初期化
     init: async function() {
-        console.log('[Profile] 初期化開始...');
-        console.log('[Profile] 現在のURL:', window.location.href);
-        console.log('[Profile] URLパラメータ:', window.location.search);
+        // console.log('[Profile] 初期化開始...');
+        // console.log('[Profile] 現在のURL:', window.location.href);
+        // console.log('[Profile] URLパラメータ:', window.location.search);
         
         // 重複初期化を防ぐ
         if (this.initialized || this.isLoading) {
-            console.log('[Profile] 既に初期化済みまたは初期化中');
+            // console.log('[Profile] 既に初期化済みまたは初期化中');
             return;
         }
         
@@ -35,30 +35,30 @@ window.InterConnect.Profile = {
             // URLパラメータからユーザーIDを取得
             const urlParams = new URLSearchParams(window.location.search);
             const userId = urlParams.get('user');
-            console.log('[Profile] URLから取得したユーザーID:', userId);
+            // console.log('[Profile] URLから取得したユーザーID:', userId);
             
             // 現在のユーザーIDを取得
             await this.getCurrentUser();
-            console.log('[Profile] 現在のユーザーID:', this.currentUserId);
+            // console.log('[Profile] 現在のユーザーID:', this.currentUserId);
         
         if (userId) {
             // userパラメータが指定されている場合
             if (userId !== this.currentUserId) {
                 // 他のユーザーのプロフィール
-                console.log('[Profile] 他のユーザーのプロフィールを表示:', userId);
+                // console.log('[Profile] 他のユーザーのプロフィールを表示:', userId);
                 this.isOwnProfile = false;
                 this.targetUserId = userId;
                 await this.loadOtherUserProfile(userId);
             } else {
                 // 自分のプロフィール（userパラメータで指定された場合）
-                console.log('[Profile] 自分のプロフィールを表示 (userパラメータ指定)');
+                // console.log('[Profile] 自分のプロフィールを表示 (userパラメータ指定)');
                 this.isOwnProfile = true;
                 this.targetUserId = this.currentUserId;
                 await this.loadProfileData();
             }
         } else {
             // userパラメータがない場合は自分のプロフィール
-            console.log('[Profile] 自分のプロフィールを表示 (デフォルト)');
+            // console.log('[Profile] 自分のプロフィールを表示 (デフォルト)');
             this.isOwnProfile = true;
             this.targetUserId = this.currentUserId;
             await this.loadProfileData();
@@ -83,7 +83,7 @@ window.InterConnect.Profile = {
                 const { data: { user } } = await window.supabase.auth.getUser();
                 if (user) {
                     this.currentUserId = user.id;
-                    console.log('[Profile] 現在のユーザーID:', this.currentUserId);
+                    // console.log('[Profile] 現在のユーザーID:', this.currentUserId);
                     return;
                 }
             }
@@ -101,7 +101,7 @@ window.InterConnect.Profile = {
     
     // 他のユーザーのプロフィールを読み込む
     loadOtherUserProfile: async function(userId) {
-        console.log('[Profile] loadOtherUserProfile開始:', userId);
+        // console.log('[Profile] loadOtherUserProfile開始:', userId);
         try {
             // SQLインジェクション対策：UUIDの検証
             const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -114,7 +114,7 @@ window.InterConnect.Profile = {
             // キャッシュをチェック
             const cached = this.getFromCache(userId);
             if (cached) {
-                console.log('[Profile] キャッシュからデータを使用:', userId);
+                // console.log('[Profile] キャッシュからデータを使用:', userId);
                 this.profileData = cached;
                 await this.checkConnectionStatus(userId);
                 this.updateProfileInfo();
@@ -166,7 +166,7 @@ window.InterConnect.Profile = {
                 return;
             }
             
-            console.log('[Profile] 他のユーザーデータ:', data);
+            // console.log('[Profile] 他のユーザーデータ:', data);
             
             // プロフィールデータを設定
             this.profileData = {
@@ -216,7 +216,7 @@ window.InterConnect.Profile = {
             
             if (!error && data) {
                 this.profileData.connectionCount = data.length;
-                console.log('[Profile] コネクション数:', data.length);
+                // console.log('[Profile] コネクション数:', data.length);
             }
         } catch (error) {
             console.error('[Profile] コネクション数取得エラー:', error);
@@ -236,10 +236,10 @@ window.InterConnect.Profile = {
             
             if (data) {
                 this.connectionStatus = data.status;
-                console.log('[Profile] コネクションステータス:', this.connectionStatus);
+                // console.log('[Profile] コネクションステータス:', this.connectionStatus);
             }
         } catch (error) {
-            console.log('[Profile] コネクションステータス確認エラー:', error);
+            // console.log('[Profile] コネクションステータス確認エラー:', error);
         }
     },
     
@@ -248,7 +248,7 @@ window.InterConnect.Profile = {
         try {
             // まずSupabaseから最新のユーザー情報を取得
             if (window.ProfileSync && window.ProfileSync.sync) {
-                console.log('Syncing profile from Supabase...');
+                // console.log('Syncing profile from Supabase...');
                 await window.ProfileSync.sync();
             }
             
@@ -261,7 +261,7 @@ window.InterConnect.Profile = {
                     .single();
                 
                 if (data && !error) {
-                    console.log('[Profile] 自分のSupabaseデータ:', data);
+                    // console.log('[Profile] 自分のSupabaseデータ:', data);
                     // Supabaseのデータを優先的に使用
                     if (!window.InterConnect.Profile.profileData) {
                         window.InterConnect.Profile.profileData = {};
@@ -287,7 +287,7 @@ window.InterConnect.Profile = {
             if (userStr) {
                 try {
                     const userData = JSON.parse(userStr);
-                    console.log('User data from sync:', userData);
+                    // console.log('User data from sync:', userData);
                     
                     // プロフィールデータの初期化
                     if (!window.InterConnect.Profile.profileData) {
@@ -318,11 +318,11 @@ window.InterConnect.Profile = {
                 };
                 
                 // デバッグ: 詳細フィールドの確認
-                console.log('Loaded profile data:', window.InterConnect.Profile.profileData);
-                console.log('revenue-details:', window.InterConnect.Profile.profileData['revenue-details']);
-                console.log('hr-details:', window.InterConnect.Profile.profileData['hr-details']);
-                console.log('dx-details:', window.InterConnect.Profile.profileData['dx-details']);
-                console.log('strategy-details:', window.InterConnect.Profile.profileData['strategy-details']);
+                // console.log('Loaded profile data:', window.InterConnect.Profile.profileData);
+                // console.log('revenue-details:', window.InterConnect.Profile.profileData['revenue-details']);
+                // console.log('hr-details:', window.InterConnect.Profile.profileData['hr-details']);
+                // console.log('dx-details:', window.InterConnect.Profile.profileData['dx-details']);
+                // console.log('strategy-details:', window.InterConnect.Profile.profileData['strategy-details']);
             }
             
             // コネクション数を取得
@@ -339,9 +339,9 @@ window.InterConnect.Profile = {
     
     // UIモードの更新
     updateUIMode: function() {
-        console.log('[Profile] UIモード更新 - isOwnProfile:', this.isOwnProfile);
-        console.log('[Profile] targetUserId:', this.targetUserId);
-        console.log('[Profile] connectionStatus:', this.connectionStatus);
+        // console.log('[Profile] UIモード更新 - isOwnProfile:', this.isOwnProfile);
+        // console.log('[Profile] targetUserId:', this.targetUserId);
+        // console.log('[Profile] connectionStatus:', this.connectionStatus);
         
         const editAvatarBtn = document.querySelector('.btn-edit-avatar');
         const editCoverBtn = document.querySelector('.btn-edit-cover');
@@ -421,18 +421,18 @@ window.InterConnect.Profile = {
     
     // プロフィール情報の更新
     updateProfileInfo: function() {
-        console.log('updateProfileInfo called');
+        // console.log('updateProfileInfo called');
         const data = window.InterConnect.Profile.profileData;
-        console.log('Profile data:', data);
+        // console.log('Profile data:', data);
         
         if (!data) {
-            console.log('No profile data found');
+            // console.log('No profile data found');
             return;
         }
         
         // ユーザー名
         const userNameElements = document.querySelectorAll('.user-name, .profile-details h2');
-        console.log('User name elements found:', userNameElements.length);
+        // console.log('User name elements found:', userNameElements.length);
         userNameElements.forEach(el => {
             if (el) el.textContent = data.name || 'ユーザー名';
         });
@@ -465,7 +465,7 @@ window.InterConnect.Profile = {
                 profileAvatar.onerror = function() {
                     this.src = 'assets/user-placeholder.svg';
                 };
-                console.log('Profile avatar updated:', data.profileImage);
+                // console.log('Profile avatar updated:', data.profileImage);
             }
             
             // ヘッダーのユーザーアバター
@@ -475,7 +475,7 @@ window.InterConnect.Profile = {
                 headerAvatar.onerror = function() {
                     this.src = 'assets/user-placeholder.svg';
                 };
-                console.log('Header avatar updated:', data.profileImage);
+                // console.log('Header avatar updated:', data.profileImage);
             }
         }
         
@@ -487,7 +487,7 @@ window.InterConnect.Profile = {
                 coverImg.onerror = function() {
                     this.style.display = 'none';
                 };
-                console.log('Cover image updated:', data.coverImage);
+                // console.log('Cover image updated:', data.coverImage);
             }
         }
         
@@ -609,7 +609,7 @@ window.InterConnect.Profile = {
     
     // プロフィールを保存
     saveProfile: function() {
-        console.log('saveProfile called');
+        // console.log('saveProfile called');
         
         // フォームからデータを取得
         const nameInput = document.getElementById('profileName');
@@ -630,7 +630,7 @@ window.InterConnect.Profile = {
         // localStorageに保存
         if (window.safeLocalStorage) {
             window.safeLocalStorage.setJSON('userProfile', window.InterConnect.Profile.profileData);
-            console.log('Profile saved to localStorage');
+            // console.log('Profile saved to localStorage');
         }
         
         // UIを更新
@@ -692,7 +692,7 @@ window.InterConnect.Profile = {
     
     // 基本情報タブの更新
     updateAboutTab: function() {
-        console.log('updateAboutTab called');
+        // console.log('updateAboutTab called');
         const data = window.InterConnect.Profile.profileData;
         if (!data) return;
         
@@ -704,7 +704,7 @@ window.InterConnect.Profile = {
         const revenueDetailElement = document.getElementById('revenueDetailText');
         if (revenueDetailElement) {
             const revenueDetail = data['revenue-details'] || '詳細情報なし';
-            console.log('Setting revenue detail:', revenueDetail);
+            // console.log('Setting revenue detail:', revenueDetail);
             revenueDetailElement.textContent = revenueDetail;
         }
         
@@ -712,7 +712,7 @@ window.InterConnect.Profile = {
         const hrDetailElement = document.getElementById('hrDetailText');
         if (hrDetailElement) {
             const hrDetail = data['hr-details'] || '詳細情報なし';
-            console.log('Setting HR detail:', hrDetail);
+            // console.log('Setting HR detail:', hrDetail);
             hrDetailElement.textContent = hrDetail;
         }
         
@@ -720,7 +720,7 @@ window.InterConnect.Profile = {
         const dxDetailElement = document.getElementById('dxDetailText');
         if (dxDetailElement) {
             const dxDetail = data['dx-details'] || '詳細情報なし';
-            console.log('Setting DX detail:', dxDetail);
+            // console.log('Setting DX detail:', dxDetail);
             dxDetailElement.textContent = dxDetail;
         }
         
@@ -728,7 +728,7 @@ window.InterConnect.Profile = {
         const strategyDetailElement = document.getElementById('strategyDetailText');
         if (strategyDetailElement) {
             const strategyDetail = data['strategy-details'] || '詳細情報なし';
-            console.log('Setting strategy detail:', strategyDetail);
+            // console.log('Setting strategy detail:', strategyDetail);
             strategyDetailElement.textContent = strategyDetail;
         }
     },
@@ -762,7 +762,7 @@ window.InterConnect.Profile = {
     
     // プロフィール統計情報の更新
     updateProfileStats: function(data) {
-        console.log('[Profile] 統計情報更新:', data);
+        // console.log('[Profile] 統計情報更新:', data);
         
         // コネクション数
         const connectionCountEl = document.querySelector('.stat-value.connection-count');
@@ -835,7 +835,7 @@ window.InterConnect.Profile = {
     
     // フォールバックプロフィール表示
     showFallbackProfile: function(userId) {
-        console.log('[Profile] フォールバックモードでプロフィール表示');
+        // console.log('[Profile] フォールバックモードでプロフィール表示');
         
         // エラーバナーを表示
         const container = document.querySelector('.content-container');
@@ -874,30 +874,30 @@ window.InterConnect.Profile = {
 
 // DOMContentLoadedイベントでプロフィール機能を初期化
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded - initializing profile');
-    console.log('現在のURL:', window.location.href);
-    console.log('URLパラメータ:', window.location.search);
+    // console.log('DOMContentLoaded - initializing profile');
+    // console.log('現在のURL:', window.location.href);
+    // console.log('URLパラメータ:', window.location.search);
     
     // URLパラメータを早期に確認
     const urlParams = new URLSearchParams(window.location.search);
     const userParam = urlParams.get('user');
-    console.log('userパラメータ:', userParam);
+    // console.log('userパラメータ:', userParam);
     
     // Supabaseの準備を待つ
     function initWhenReady() {
         if (window.supabase) {
-            console.log('Supabase準備完了、初期化開始');
+            // console.log('Supabase準備完了、初期化開始');
             window.InterConnect.Profile.init();
         } else {
-            console.log('Supabase未準備、イベント待機');
+            // console.log('Supabase未準備、イベント待機');
             window.addEventListener('supabaseReady', () => {
-                console.log('supabaseReadyイベント受信、初期化開始');
+                // console.log('supabaseReadyイベント受信、初期化開始');
                 window.InterConnect.Profile.init();
             });
             // フォールバック
             setTimeout(() => {
                 if (!window.InterConnect.Profile.initialized) {
-                    console.log('タイムアウトによる初期化');
+                    // console.log('タイムアウトによる初期化');
                     window.InterConnect.Profile.init();
                 }
             }, 1000);
@@ -907,5 +907,5 @@ document.addEventListener('DOMContentLoaded', function() {
     initWhenReady();
 });
 
-console.log('profile.js loaded successfully');
+// console.log('profile.js loaded successfully');
 // Cache buster: 1753750334

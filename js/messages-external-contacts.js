@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[MessagesExternalContacts] 初期化開始...');
+    // console.log('[MessagesExternalContacts] 初期化開始...');
 
     class MessagesExternalContactsManager {
         constructor() {

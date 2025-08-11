@@ -2,13 +2,13 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Placeholder for matching functionality
-    console.log('Matching page loaded');
+    // console.log('Matching page loaded');
     
     // Search button functionality
     const searchBtn = document.querySelector('.matching-filters .btn-primary');
     if (searchBtn) {
         searchBtn.addEventListener('click', function() {
-            console.log('Search clicked');
+            // console.log('Search clicked');
             // TODO: Implement search functionality
         });
     }

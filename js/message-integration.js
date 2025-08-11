@@ -14,7 +14,7 @@
         async init() {
             // メッセージ送信フォームの監視
             this.setupMessageFormListeners();
-            console.log('[MessageIntegration] Initialized');
+            // console.log('[MessageIntegration] Initialized');
         }
 
         /**
@@ -141,7 +141,7 @@
                 */
 
                 // 現在はメッセージテーブルがないため、成功として扱う
-                console.log('[MessageIntegration] Message would be sent:', {
+                // console.log('[MessageIntegration] Message would be sent:', {
                     sender: user.id,
                     recipient: recipientId,
                     content: content
@@ -190,7 +190,7 @@
                 );
 
                 if (result.success) {
-                    console.log('[MessageIntegration] Notification sent successfully');
+                    // console.log('[MessageIntegration] Notification sent successfully');
                 }
 
             } catch (error) {
@@ -224,7 +224,7 @@
             if (window.showToast) {
                 window.showToast('メッセージを送信しました', 'success');
             } else {
-                console.log('[MessageIntegration] Message sent successfully');
+                // console.log('[MessageIntegration] Message sent successfully');
             }
         }
 

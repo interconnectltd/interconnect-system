@@ -19,7 +19,7 @@
          * 実際のデータベースから統計を計算
          */
         async calculateRealStats() {
-            console.log('[RealtimeCalculator] Calculating real statistics from database...');
+            // console.log('[RealtimeCalculator] Calculating real statistics from database...');
             
             const stats = {
                 total_members: 1234, // これは別途実装が必要
@@ -63,7 +63,7 @@
                     return 15; // フォールバック
                 }
 
-                console.log(`[RealtimeCalculator] Monthly events count: ${count}`);
+                // console.log(`[RealtimeCalculator] Monthly events count: ${count}`);
                 return count || 0;
 
             } catch (error) {
@@ -144,7 +144,7 @@
                     .limit(1);
 
                 if (!sampleMsg || sampleMsg.length === 0) {
-                    console.log('[RealtimeCalculator] Messages table is empty');
+                    // console.log('[RealtimeCalculator] Messages table is empty');
                     return 0;
                 }
 
@@ -160,7 +160,7 @@
                         .eq('is_read', false);
 
                     if (!error) {
-                        console.log(`[RealtimeCalculator] Unread messages: ${count}`);
+                        // console.log(`[RealtimeCalculator] Unread messages: ${count}`);
                         return count || 0;
                     }
                 }
@@ -185,7 +185,7 @@
             // キャッシュが有効な場合
             if (this.cache.data && this.cache.lastUpdate && 
                 (Date.now() - this.cache.lastUpdate) < this.cache.ttl) {
-                console.log('[RealtimeCalculator] Returning cached stats');
+                // console.log('[RealtimeCalculator] Returning cached stats');
                 return this.cache.data;
             }
 
@@ -246,7 +246,7 @@
             }
         };
 
-        console.log('[RealtimeCalculator] Enhanced dashboard stats with real-time calculations');
+        // console.log('[RealtimeCalculator] Enhanced dashboard stats with real-time calculations');
     }
 
 })();

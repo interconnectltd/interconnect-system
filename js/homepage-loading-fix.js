@@ -7,13 +7,13 @@
 (function() {
     'use strict';
     
-    console.log('[LoadingFix] 初期化開始');
+    // console.log('[LoadingFix] 初期化開始');
     
     // 既存のローディング画面を取得
     const instantLoadingScreen = document.getElementById('instantLoadingScreen');
     
     if (!instantLoadingScreen) {
-        console.log('[LoadingFix] instant loading screen not found');
+        // console.log('[LoadingFix] instant loading screen not found');
         return;
     }
     
@@ -48,7 +48,7 @@
     if (loadingVideo) {
         loadingVideo.playbackRate = 2.0;
         loadingVideo.play().catch(err => {
-            console.log('[LoadingFix] Video autoplay failed:', err);
+            // console.log('[LoadingFix] Video autoplay failed:', err);
         });
     }
     
@@ -59,7 +59,7 @@
         if (loadingComplete) return;
         loadingComplete = true;
         
-        console.log('[LoadingFix] ローディング完了');
+        // console.log('[LoadingFix] ローディング完了');
         
         // フェードアウト
         instantLoadingScreen.style.transition = 'opacity 0.8s ease-out';

@@ -16,7 +16,7 @@
          * マッチング統計を計算
          */
         async calculateMatchingStats() {
-            console.log('[MatchingCalculator] マッチング統計を計算中...');
+            // console.log('[MatchingCalculator] マッチング統計を計算中...');
             
             try {
                 // 今月と先月のマッチング数を並行で取得
@@ -54,7 +54,7 @@
                     calculated_at: new Date().toISOString()
                 };
 
-                console.log('[MatchingCalculator] 計算結果:', stats);
+                // console.log('[MatchingCalculator] 計算結果:', stats);
                 return stats;
 
             } catch (error) {
@@ -89,7 +89,7 @@
                     .or('status.eq.success,status.eq.completed,status.is.null');
 
                 if (error) {
-                    console.log('[MatchingCalculator] matchingsテーブルが存在しません。user_activitiesから取得...');
+                    // console.log('[MatchingCalculator] matchingsテーブルが存在しません。user_activitiesから取得...');
                     
                     // user_activitiesから取得
                     const result = await window.supabase
@@ -138,7 +138,7 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(new Date(nextMonth - 1));
                 
-                console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチングを取得: ${startDate} ~ ${endDate}`);
+                // console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチングを取得: ${startDate} ~ ${endDate}`);
 
                 // まずmatchingsテーブルを試す
                 let { count, error } = await window.supabase
@@ -169,7 +169,7 @@
                     timestamp: Date.now()
                 });
 
-                console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチング数: ${matchingCount}`);
+                // console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチング数: ${matchingCount}`);
                 return matchingCount;
 
             } catch (error) {
@@ -200,9 +200,9 @@
                     .limit(1);
 
                 if (!matchingError && matchingData && matchingData.length > 0) {
-                    console.log('[MatchingCalculator] matchingsテーブルの構造:', Object.keys(matchingData[0]));
+                    // console.log('[MatchingCalculator] matchingsテーブルの構造:', Object.keys(matchingData[0]));
                 } else {
-                    console.log('[MatchingCalculator] matchingsテーブルが存在しないか空です');
+                    // console.log('[MatchingCalculator] matchingsテーブルが存在しないか空です');
                 }
 
                 // user_activitiesのマッチング関連データ
@@ -213,7 +213,7 @@
                     .limit(5);
 
                 if (activityData && activityData.length > 0) {
-                    console.log('[MatchingCalculator] user_activitiesのマッチングデータ:', activityData);
+                    // console.log('[MatchingCalculator] user_activitiesのマッチングデータ:', activityData);
                 }
 
             } catch (error) {
@@ -285,6 +285,6 @@
         }.bind(window.dashboardUI);
     }
 
-    console.log('[MatchingCalculator] モジュールが読み込まれました');
+    // console.log('[MatchingCalculator] モジュールが読み込まれました');
 
 })();

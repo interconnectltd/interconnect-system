@@ -33,7 +33,7 @@
          * 初期化
          */
         async init() {
-            console.log('[DashboardUpdater] Initializing...');
+            // console.log('[DashboardUpdater] Initializing...');
 
             try {
                 // 依存関係の確認
@@ -55,7 +55,7 @@
                 // イベントリスナー設定
                 this.setupEventListeners();
                 
-                console.log('[DashboardUpdater] Initialized successfully');
+                // console.log('[DashboardUpdater] Initialized successfully');
                 
             } catch (error) {
                 console.error('[DashboardUpdater] Initialization failed:', error);
@@ -82,7 +82,7 @@
                 await window.dashboardStats.init();
             }
 
-            console.log('[DashboardUpdater] All dependencies ready');
+            // console.log('[DashboardUpdater] All dependencies ready');
         }
 
         /**
@@ -97,7 +97,7 @@
                 const check = () => {
                     if (checkFunction()) {
                         clearTimeout(timeout);
-                        console.log(`[DashboardUpdater] ${name} dependency ready`);
+                        // console.log(`[DashboardUpdater] ${name} dependency ready`);
                         resolve();
                     } else {
                         setTimeout(check, 100);
@@ -112,7 +112,7 @@
          * 初回データ読み込み
          */
         async loadInitialData() {
-            console.log('[DashboardUpdater] Loading initial data...');
+            // console.log('[DashboardUpdater] Loading initial data...');
             
             try {
                 // UIローディング状態を表示
@@ -130,7 +130,7 @@
                 // UI更新
                 await this.updateUI(stats, activities, events);
                 
-                console.log('[DashboardUpdater] Initial data loaded successfully');
+                // console.log('[DashboardUpdater] Initial data loaded successfully');
                 this.retryCount = 0; // 成功時はリトライカウントをリセット
                 
             } catch (error) {
@@ -168,7 +168,7 @@
                 window.dashboardUI.initializeButtonHandlers();
 
                 this.updateCount++;
-                console.log(`[DashboardUpdater] UI updated (count: ${this.updateCount})`);
+                // console.log(`[DashboardUpdater] UI updated (count: ${this.updateCount})`);
 
             } catch (error) {
                 console.error('[DashboardUpdater] UI update failed:', error);
@@ -184,7 +184,7 @@
                 this.stopAutoUpdate();
             }
 
-            console.log(`[DashboardUpdater] Starting auto-update (${this.updateInterval}ms interval)`);
+            // console.log(`[DashboardUpdater] Starting auto-update (${this.updateInterval}ms interval)`);
             
             this.intervalId = setInterval(() => {
                 this.performUpdate();
@@ -198,7 +198,7 @@
             if (this.intervalId) {
                 clearInterval(this.intervalId);
                 this.intervalId = null;
-                console.log('[DashboardUpdater] Auto-update stopped');
+                // console.log('[DashboardUpdater] Auto-update stopped');
             }
         }
 
@@ -207,14 +207,14 @@
          */
         async performUpdate() {
             if (this.isUpdating) {
-                console.log('[DashboardUpdater] Update already in progress, skipping');
+                // console.log('[DashboardUpdater] Update already in progress, skipping');
                 return;
             }
 
             this.isUpdating = true;
             
             try {
-                console.log('[DashboardUpdater] Performing scheduled update...');
+                // console.log('[DashboardUpdater] Performing scheduled update...');
                 
                 // データ取得
                 const [stats, activities, events] = await Promise.all([
@@ -240,7 +240,7 @@
          * 強制更新
          */
         async forceRefresh() {
-            console.log('[DashboardUpdater] Force refresh requested');
+            // console.log('[DashboardUpdater] Force refresh requested');
             
             // キャッシュクリア
             window.dashboardStats.clearCache();
@@ -258,7 +258,7 @@
                 return;
             }
 
-            console.log('[DashboardUpdater] Setting up realtime subscriptions...');
+            // console.log('[DashboardUpdater] Setting up realtime subscriptions...');
 
             try {
                 // 統計データの変更を監視
@@ -267,7 +267,7 @@
                     .on('postgres_changes', 
                         { event: '*', schema: 'public', table: 'dashboard_stats' },
                         (payload) => {
-                            console.log('[DashboardUpdater] Stats data changed:', payload);
+                            // console.log('[DashboardUpdater] Stats data changed:', payload);
                             this.handleRealtimeUpdate('stats', payload);
                         }
                     )
@@ -279,7 +279,7 @@
                     .on('postgres_changes',
                         { event: 'INSERT', schema: 'public', table: 'user_activities' },
                         (payload) => {
-                            console.log('[DashboardUpdater] New activity:', payload);
+                            // console.log('[DashboardUpdater] New activity:', payload);
                             this.handleRealtimeUpdate('activities', payload);
                         }
                     )
@@ -291,14 +291,14 @@
                     .on('postgres_changes',
                         { event: '*', schema: 'public', table: 'events' },
                         (payload) => {
-                            console.log('[DashboardUpdater] Events data changed:', payload);
+                            // console.log('[DashboardUpdater] Events data changed:', payload);
                             this.handleRealtimeUpdate('events', payload);
                         }
                     )
                     .subscribe();
 
                 this.subscriptions = [statsSubscription, activitiesSubscription, eventsSubscription];
-                console.log('[DashboardUpdater] Realtime subscriptions active');
+                // console.log('[DashboardUpdater] Realtime subscriptions active');
 
             } catch (error) {
                 console.warn('[DashboardUpdater] Realtime subscription setup failed:', error);
@@ -309,7 +309,7 @@
          * リアルタイム更新処理
          */
         async handleRealtimeUpdate(type, payload) {
-            console.log(`[DashboardUpdater] Handling realtime update (${type}):`, payload);
+            // console.log(`[DashboardUpdater] Handling realtime update (${type}):`, payload);
             
             try {
                 // キャッシュクリア
@@ -333,7 +333,7 @@
             if (this.config.enableVisibilityUpdate) {
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
-                        console.log('[DashboardUpdater] Page became visible, refreshing data');
+                        // console.log('[DashboardUpdater] Page became visible, refreshing data');
                         setTimeout(() => this.performUpdate(), 500);
                     }
                 });
@@ -341,13 +341,13 @@
 
             // ウィンドウフォーカス
             window.addEventListener('focus', () => {
-                console.log('[DashboardUpdater] Window focused, refreshing data');
+                // console.log('[DashboardUpdater] Window focused, refreshing data');
                 setTimeout(() => this.performUpdate(), 500);
             });
 
             // オンライン状態変更
             window.addEventListener('online', () => {
-                console.log('[DashboardUpdater] Back online, refreshing data');
+                // console.log('[DashboardUpdater] Back online, refreshing data');
                 this.performUpdate();
             });
 
@@ -356,7 +356,7 @@
                 window.dashboardUI.checkResponsiveLayout();
             }, 250));
 
-            console.log('[DashboardUpdater] Event listeners set up');
+            // console.log('[DashboardUpdater] Event listeners set up');
         }
 
         /**
@@ -381,7 +381,7 @@
             this.retryCount++;
             
             if (this.config.enableRetry && this.retryCount <= this.maxRetries) {
-                console.log(`[DashboardUpdater] Retrying data load (${this.retryCount}/${this.maxRetries})...`);
+                // console.log(`[DashboardUpdater] Retrying data load (${this.retryCount}/${this.maxRetries})...`);
                 
                 // 指数バックオフで再試行
                 const delay = Math.min(1000 * Math.pow(2, this.retryCount - 1), 10000);
@@ -408,7 +408,7 @@
             this.retryCount++;
             
             if (this.retryCount <= this.maxRetries) {
-                console.log(`[DashboardUpdater] Update failed, will retry in next cycle (${this.retryCount}/${this.maxRetries})`);
+                // console.log(`[DashboardUpdater] Update failed, will retry in next cycle (${this.retryCount}/${this.maxRetries})`);
                 
                 // 一時的に更新間隔を短くする
                 if (this.retryCount >= 2) {
@@ -428,7 +428,7 @@
          */
         updateConfig(newConfig) {
             this.config = { ...this.config, ...newConfig };
-            console.log('[DashboardUpdater] Config updated:', this.config);
+            // console.log('[DashboardUpdater] Config updated:', this.config);
             
             // 設定に応じて動作を調整
             if (!this.config.enableAutoUpdate && this.intervalId) {
@@ -456,7 +456,7 @@
          * クリーンアップ
          */
         destroy() {
-            console.log('[DashboardUpdater] Destroying...');
+            // console.log('[DashboardUpdater] Destroying...');
             
             // 自動更新停止
             this.stopAutoUpdate();
@@ -473,7 +473,7 @@
             this.isUpdating = false;
             this.retryCount = 0;
             
-            console.log('[DashboardUpdater] Destroyed');
+            // console.log('[DashboardUpdater] Destroyed');
         }
     }
 
@@ -496,6 +496,6 @@
     window.DashboardUpdater = DashboardUpdater;
     window.dashboardUpdater = new DashboardUpdater();
 
-    console.log('[DashboardUpdater] Module loaded');
+    // console.log('[DashboardUpdater] Module loaded');
 
 })();

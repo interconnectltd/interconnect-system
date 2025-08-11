@@ -47,7 +47,7 @@
             await this.ensureTablesExist();
             
             this.initialized = true;
-            console.log('[DashboardStats] Initialized successfully');
+            // console.log('[DashboardStats] Initialized successfully');
         }
 
         /**
@@ -82,7 +82,7 @@
                 await this.createDashboardStatsTable();
                 
                 // user_activitiesテーブルは既存のものを使用するため、作成はスキップ
-                console.log('[DashboardStats] Using existing user_activities table structure');
+                // console.log('[DashboardStats] Using existing user_activities table structure');
                 
                 // 初期データの作成
                 await this.initializeDefaultData();
@@ -104,7 +104,7 @@
                 .limit(1);
                 
             if (existingStats && existingStats.length > 0) {
-                console.log('[DashboardStats] dashboard_stats table already exists');
+                // console.log('[DashboardStats] dashboard_stats table already exists');
                 return;
             }
 
@@ -123,12 +123,12 @@
                     .limit(1);
                     
                 if (existingActivities && existingActivities.length > 0) {
-                    console.log('[DashboardStats] user_activities table already exists');
+                    // console.log('[DashboardStats] user_activities table already exists');
                     return;
                 }
             } catch (error) {
                 // テーブルが存在しない場合のエラーを無視
-                console.log('[DashboardStats] user_activities table check:', error.message);
+                // console.log('[DashboardStats] user_activities table check:', error.message);
             }
 
             console.warn('[DashboardStats] user_activities table not found. Please create it manually in Supabase.');
@@ -164,12 +164,12 @@
                     if (insertError) {
                         console.warn('[DashboardStats] 初期統計データ作成エラー:', insertError);
                     } else {
-                        console.log('[DashboardStats] 初期統計データを作成しました');
+                        // console.log('[DashboardStats] 初期統計データを作成しました');
                     }
                 }
 
                 // サンプル活動データの作成はスキップ（既存のテーブル構造が不明なため）
-                console.log('[DashboardStats] Skipping sample activities creation');
+                // console.log('[DashboardStats] Skipping sample activities creation');
 
             } catch (error) {
                 console.warn('[DashboardStats] 初期データ作成エラー:', error);
@@ -248,7 +248,7 @@
             // 既存のテーブル構造に合わせてサンプルアクティビティを作成
             const { data: { user } } = await window.supabase.auth.getUser();
             if (!user) {
-                console.log('[DashboardStats] No authenticated user for sample activities');
+                // console.log('[DashboardStats] No authenticated user for sample activities');
                 return;
             }
 
@@ -277,12 +277,12 @@
                     .insert(sampleActivities);
                 
                 if (!error) {
-                    console.log('[DashboardStats] Sample activities created');
+                    // console.log('[DashboardStats] Sample activities created');
                 } else {
-                    console.log('[DashboardStats] Sample activities creation failed:', error);
+                    // console.log('[DashboardStats] Sample activities creation failed:', error);
                 }
             } catch (e) {
-                console.log('[DashboardStats] Sample activities creation exception:', e);
+                // console.log('[DashboardStats] Sample activities creation exception:', e);
             }
         }
 
@@ -293,11 +293,11 @@
             try {
                 // キャッシュチェック
                 if (this.cache.stats && this.isCacheValid()) {
-                    console.log('[DashboardStats] Using cached stats');
+                    // console.log('[DashboardStats] Using cached stats');
                     return this.cache.stats;
                 }
 
-                console.log('[DashboardStats] Fetching fresh dashboard stats');
+                // console.log('[DashboardStats] Fetching fresh dashboard stats');
 
                 // Supabaseから統計データ取得
                 const { data: stats, error } = await window.supabase
@@ -318,7 +318,7 @@
                     return await this.generateFallbackStats();
                 }
 
-                console.log('[DashboardStats] Successfully fetched stats:', stats);
+                // console.log('[DashboardStats] Successfully fetched stats:', stats);
 
                 // キャッシュに保存
                 this.cache.stats = stats;
@@ -336,7 +336,7 @@
          * フォールバック統計データ生成
          */
         async generateFallbackStats() {
-            console.log('[DashboardStats] Generating fallback stats');
+            // console.log('[DashboardStats] Generating fallback stats');
             
             return {
                 total_members: await this.calculateTotalMembers(),
@@ -353,7 +353,7 @@
          */
         async fetchRecentActivities() {
             try {
-                console.log('[DashboardStats] Fetching recent activities');
+                // console.log('[DashboardStats] Fetching recent activities');
 
                 // まずシンプルなクエリを試す
                 const { data: activities, error } = await window.supabase
@@ -456,7 +456,7 @@
          */
         async fetchUpcomingEvents() {
             try {
-                console.log('[DashboardStats] Fetching upcoming events');
+                // console.log('[DashboardStats] Fetching upcoming events');
                 
                 // まずeventsテーブルの存在を確認
                 const { data: testEvents, error: testError } = await window.supabase
@@ -554,7 +554,7 @@
                 events: null,
                 lastUpdate: null
             };
-            console.log('[DashboardStats] Cache cleared');
+            // console.log('[DashboardStats] Cache cleared');
         }
 
         /**
@@ -576,7 +576,7 @@
 
                 // キャッシュクリア
                 this.clearCache();
-                console.log('[DashboardStats] Stats updated successfully');
+                // console.log('[DashboardStats] Stats updated successfully');
                 return true;
 
             } catch (error) {
@@ -594,30 +594,30 @@
 
     // デバッグ用関数
     window.testDashboardStats = async function() {
-        console.log('=== Testing Dashboard Stats ===');
+        // console.log('=== Testing Dashboard Stats ===');
         
         // 1. Supabase接続確認
-        console.log('1. Checking Supabase connection...');
+        // console.log('1. Checking Supabase connection...');
         if (window.supabase) {
-            console.log('✓ Supabase is available');
+            // console.log('✓ Supabase is available');
         } else {
             console.error('✗ Supabase is NOT available');
             return;
         }
         
         // 2. 認証状態確認
-        console.log('2. Checking authentication...');
+        // console.log('2. Checking authentication...');
         const { data: { user }, error: authError } = await window.supabase.auth.getUser();
         if (authError) {
             console.warn('✗ Auth error:', authError);
         } else if (!user) {
             console.warn('✗ No authenticated user');
         } else {
-            console.log('✓ Authenticated as:', user.email);
+            // console.log('✓ Authenticated as:', user.email);
         }
         
         // 3. dashboard_statsテーブルアクセス確認
-        console.log('3. Checking dashboard_stats table access...');
+        // console.log('3. Checking dashboard_stats table access...');
         const { data, error } = await window.supabase
             .from('dashboard_stats')
             .select('*');
@@ -631,24 +631,24 @@
                 code: error.code
             });
         } else {
-            console.log('✓ Table access successful');
-            console.log('Data retrieved:', data);
+            // console.log('✓ Table access successful');
+            // console.log('Data retrieved:', data);
         }
         
         // 4. 統計データ取得テスト
-        console.log('4. Testing fetchDashboardStats...');
+        // console.log('4. Testing fetchDashboardStats...');
         const stats = await window.dashboardStats.fetchDashboardStats();
-        console.log('Stats result:', stats);
+        // console.log('Stats result:', stats);
         
-        console.log('=== Test Complete ===');
+        // console.log('=== Test Complete ===');
     };
 
-    console.log('[DashboardStats] Module loaded');
-    console.log('[DashboardStats] Run window.testDashboardStats() to debug');
+    // console.log('[DashboardStats] Module loaded');
+    // console.log('[DashboardStats] Run window.testDashboardStats() to debug');
     
     // デバッグ関数が確実に登録されているか確認
     if (window.testDashboardStats) {
-        console.log('[DashboardStats] Debug function is available');
+        // console.log('[DashboardStats] Debug function is available');
     }
 
 })();

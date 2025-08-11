@@ -6,11 +6,11 @@
 (function() {
     'use strict';
     
-    console.log('[LoadingUnified] 初期化開始');
+    // console.log('[LoadingUnified] 初期化開始');
     
     // グローバルフラグで重複実行を防ぐ
     if (window._loadingInitialized) {
-        console.log('[LoadingUnified] 既に初期化済み');
+        // console.log('[LoadingUnified] 既に初期化済み');
         return;
     }
     window._loadingInitialized = true;
@@ -89,7 +89,7 @@
             // 既存の動画をチェック
             const existingVideo = this.screen.querySelector('video');
             if (existingVideo) {
-                console.log('[LoadingUnified] 動画は既に存在します');
+                // console.log('[LoadingUnified] 動画は既に存在します');
                 this.video = existingVideo;
                 this.styleVideo(existingVideo);
                 return;
@@ -113,7 +113,7 @@
                     
                     // 再生を試みる
                     this.video.play().catch(err => {
-                        console.log('[LoadingUnified] 動画の自動再生に失敗:', err);
+                        // console.log('[LoadingUnified] 動画の自動再生に失敗:', err);
                     });
                 }
             }
@@ -151,7 +151,7 @@
                 if (completed) return;
                 completed = true;
                 
-                console.log('[LoadingUnified] ローディング完了処理開始');
+                // console.log('[LoadingUnified] ローディング完了処理開始');
                 
                 // フェードアウト
                 this.screen.style.opacity = '0';
@@ -207,7 +207,7 @@
         },
         
         startPageAnimations() {
-            console.log('[LoadingUnified] ページアニメーション開始');
+            // console.log('[LoadingUnified] ページアニメーション開始');
             
             // ヒーロー動画の再生
             const heroVideo = document.querySelector('.hero-video');
@@ -316,7 +316,7 @@
             this.screen = null;
             this.bar = null;
             
-            console.log('[LoadingUnified] クリーンアップ完了');
+            // console.log('[LoadingUnified] クリーンアップ完了');
         }
     };
     

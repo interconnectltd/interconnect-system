@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[ViewingHistory] 閲覧履歴機能を初期化');
+    // console.log('[ViewingHistory] 閲覧履歴機能を初期化');
     
     // 閲覧履歴を管理
     const ViewingHistory = {

@@ -5,7 +5,7 @@
 (function() {
     'use strict';
 
-    console.log('[ReferralDebug] ネットワークデバッグ開始');
+    // console.log('[ReferralDebug] ネットワークデバッグ開始');
 
     // Supabaseのfromメソッドをラップ
     const wrapSupabase = () => {
@@ -13,14 +13,14 @@
             const originalFrom = window.supabaseClient.from;
             
             window.supabaseClient.from = function(table) {
-                console.log('[ReferralDebug] テーブルアクセス:', table);
+                // console.log('[ReferralDebug] テーブルアクセス:', table);
                 
                 const result = originalFrom.apply(this, arguments);
                 const originalSelect = result.select;
                 
                 if (originalSelect) {
                     result.select = function(columns) {
-                        console.log(`[ReferralDebug] SELECT ${columns} FROM ${table}`);
+                        // console.log(`[ReferralDebug] SELECT ${columns} FROM ${table}`);
                         
                         // referralsテーブルの問題のあるクエリを検出
                         if (table === 'referrals' && columns && columns.includes('referred_user')) {
@@ -39,7 +39,7 @@
                 return result;
             };
             
-            console.log('[ReferralDebug] Supabaseラップ完了');
+            // console.log('[ReferralDebug] Supabaseラップ完了');
         }
     };
 

@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[RegisterStrictValidation] 初期化開始');
+    // console.log('[RegisterStrictValidation] 初期化開始');
     
     // バリデーション状態を管理
     const validationState = {
@@ -90,7 +90,7 @@
         
         const isValid = isStepValid(stepNum);
         
-        console.log(`[RegisterStrictValidation] Step ${stepNum} validation:`, {
+        // console.log(`[RegisterStrictValidation] Step ${stepNum} validation:`, {
             isValid,
             state: validationState[`step${stepNum}`]
         });
@@ -381,6 +381,6 @@
         init();
     }
     
-    console.log('[RegisterStrictValidation] 初期化完了');
+    // console.log('[RegisterStrictValidation] 初期化完了');
     
 })();

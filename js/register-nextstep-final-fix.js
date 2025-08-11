@@ -6,14 +6,14 @@
 (function() {
     'use strict';
     
-    console.log('[RegisterNextStepFinalFix] 初期化開始');
+    // console.log('[RegisterNextStepFinalFix] 初期化開始');
     
     // 既存のnextStep関数を保存
     const originalNextStep = window.nextStep;
     
     // 新しいnextStep関数
     function newNextStep() {
-        console.log('[RegisterNextStepFinalFix] nextStep() が呼び出されました');
+        // console.log('[RegisterNextStepFinalFix] nextStep() が呼び出されました');
         
         const currentStepElement = document.querySelector('.form-step.active');
         if (!currentStepElement) {
@@ -22,11 +22,11 @@
         }
         
         const currentStep = parseInt(currentStepElement.dataset.step);
-        console.log('[RegisterNextStepFinalFix] 現在のステップ:', currentStep);
+        // console.log('[RegisterNextStepFinalFix] 現在のステップ:', currentStep);
         
         // バリデーション
         if (!validateCurrentStep(currentStep)) {
-            console.log('[RegisterNextStepFinalFix] バリデーションエラー');
+            // console.log('[RegisterNextStepFinalFix] バリデーションエラー');
             return;
         }
         
@@ -35,7 +35,7 @@
         const nextStepElement = document.querySelector(`.form-step[data-step="${nextStep}"]`);
         
         if (nextStepElement) {
-            console.log('[RegisterNextStepFinalFix] 次のステップへ移動:', nextStep);
+            // console.log('[RegisterNextStepFinalFix] 次のステップへ移動:', nextStep);
             
             // 現在のステップを非表示
             currentStepElement.classList.remove('active');
@@ -51,7 +51,7 @@
             // スクロール位置を調整
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            console.log('[RegisterNextStepFinalFix] これが最後のステップです');
+            // console.log('[RegisterNextStepFinalFix] これが最後のステップです');
             // 最後のステップの場合は送信処理
             submitRegistration();
         }
@@ -59,7 +59,7 @@
     
     // バリデーション関数
     function validateCurrentStep(step) {
-        console.log('[RegisterNextStepFinalFix] ステップ', step, 'のバリデーション開始');
+        // console.log('[RegisterNextStepFinalFix] ステップ', step, 'のバリデーション開始');
         
         // window.validateStep が存在する場合はそちらを使用（register-enhanced-validation.js）
         if (window.validateStep && typeof window.validateStep === 'function') {
@@ -73,7 +73,7 @@
         const requiredFields = stepElement.querySelectorAll('[required]');
         for (let field of requiredFields) {
             if (!field.value || field.value.trim() === '') {
-                console.log('[RegisterNextStepFinalFix] 必須フィールドが空です:', field.name);
+                // console.log('[RegisterNextStepFinalFix] 必須フィールドが空です:', field.name);
                 field.classList.add('error');
                 field.focus();
                 showError('必須項目を入力してください');
@@ -88,7 +88,7 @@
                 // メールアドレスのバリデーション
                 const email = stepElement.querySelector('input[name="email"]');
                 if (email && !isValidEmail(email.value)) {
-                    console.log('[RegisterNextStepFinalFix] 無効なメールアドレス');
+                    // console.log('[RegisterNextStepFinalFix] 無効なメールアドレス');
                     email.classList.add('error');
                     email.focus();
                     showError('有効なメールアドレスを入力してください');
@@ -100,14 +100,14 @@
                 const confirmPassword = stepElement.querySelector('input[name="password-confirm"]');
                 if (password && confirmPassword) {
                     if (password.value.length < 8) {
-                        console.log('[RegisterNextStepFinalFix] パスワードが短すぎます');
+                        // console.log('[RegisterNextStepFinalFix] パスワードが短すぎます');
                         password.classList.add('error');
                         password.focus();
                         showError('パスワードは8文字以上で入力してください');
                         return false;
                     }
                     if (password.value !== confirmPassword.value) {
-                        console.log('[RegisterNextStepFinalFix] パスワードが一致しません');
+                        // console.log('[RegisterNextStepFinalFix] パスワードが一致しません');
                         confirmPassword.classList.add('error');
                         confirmPassword.focus();
                         showError('パスワードが一致しません');
@@ -120,14 +120,14 @@
                 // 利用規約の同意チェック
                 const agreeCheckbox = stepElement.querySelector('input[name="agree"]');
                 if (agreeCheckbox && !agreeCheckbox.checked) {
-                    console.log('[RegisterNextStepFinalFix] 利用規約に同意していません');
+                    // console.log('[RegisterNextStepFinalFix] 利用規約に同意していません');
                     showError('利用規約に同意してください');
                     return false;
                 }
                 break;
         }
         
-        console.log('[RegisterNextStepFinalFix] バリデーション成功');
+        // console.log('[RegisterNextStepFinalFix] バリデーション成功');
         return true;
     }
     
@@ -194,7 +194,7 @@
     
     // 登録送信処理
     function submitRegistration() {
-        console.log('[RegisterNextStepFinalFix] 登録処理を開始');
+        // console.log('[RegisterNextStepFinalFix] 登録処理を開始');
         const form = document.getElementById('registrationForm');
         if (form) {
             // フォームを送信
@@ -214,7 +214,7 @@
         } else {
             window.nextStep = newNextStep;
         }
-        console.log('[RegisterNextStepFinalFix] nextStep関数を正常に置き換えました');
+        // console.log('[RegisterNextStepFinalFix] nextStep関数を正常に置き換えました');
     } catch (e) {
         console.error('[RegisterNextStepFinalFix] nextStep関数の置き換えに失敗:', e);
         // フォールバック: イベントリスナーで対応
@@ -224,13 +224,13 @@
                 button.removeAttribute('onclick');
                 button.addEventListener('click', newNextStep);
             });
-            console.log('[RegisterNextStepFinalFix] イベントリスナーでnextStepを設定しました');
+            // console.log('[RegisterNextStepFinalFix] イベントリスナーでnextStepを設定しました');
         });
     }
     
     // prevStep関数も同様に修正
     function newPrevStep() {
-        console.log('[RegisterNextStepFinalFix] prevStep() が呼び出されました');
+        // console.log('[RegisterNextStepFinalFix] prevStep() が呼び出されました');
         
         const currentStepElement = document.querySelector('.form-step.active');
         if (!currentStepElement) return;
@@ -288,6 +288,6 @@
     `;
     document.head.appendChild(style);
     
-    console.log('[RegisterNextStepFinalFix] 初期化完了');
+    // console.log('[RegisterNextStepFinalFix] 初期化完了');
     
 })();

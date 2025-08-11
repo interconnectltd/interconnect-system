@@ -4,7 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Digital Text Effect: スクリプト開始');
+    // console.log('Digital Text Effect: スクリプト開始');
     
     // ローディング完了チェック関数
     function checkLoadingComplete() {
@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
             !document.contains(loadingScreen) || 
             loadingScreen.classList.contains('fade-out')) {
             
-            console.log('Digital Text Effect: ローディング完了、アニメーション開始');
+            // console.log('Digital Text Effect: ローディング完了、アニメーション開始');
             setTimeout(startHeroAnimation, 500);
         } else {
-            console.log('Digital Text Effect: ローディング中、100ms後に再チェック');
+            // console.log('Digital Text Effect: ローディング中、100ms後に再チェック');
             setTimeout(checkLoadingComplete, 100);
         }
     }
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const heroTitle = document.querySelector('.hero-title');
         const heroSubtitle = document.querySelector('.hero-subtitle');
         
-        console.log('Digital Text Effect: 要素取得', {
+        // console.log('Digital Text Effect: 要素取得', {
             title: !!heroTitle,
             subtitle: !!heroSubtitle
         });
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // タイトルアニメーション開始
         animateDigitalText(heroTitle, () => {
-            console.log('Digital Text Effect: タイトル完了、サブタイトル開始');
+            // console.log('Digital Text Effect: タイトル完了、サブタイトル開始');
             // タイトル完了後、サブタイトル開始
             setTimeout(() => {
                 animateDigitalText(heroSubtitle);
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        console.log('Digital Text Effect: アニメーション開始', element.className);
+        // console.log('Digital Text Effect: アニメーション開始', element.className);
         
         // 要素を表示
         element.style.visibility = 'visible';
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const originalHTML = element.innerHTML;
         const textContent = element.textContent || element.innerText || '';
         
-        console.log('Digital Text Effect: 元テキスト', textContent);
+        // console.log('Digital Text Effect: 元テキスト', textContent);
         
         // ランダム文字のセット
         const randomChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん';
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentIndex >= textContent.length) {
                 // 全文字表示完了
                 element.innerHTML = originalHTML;
-                console.log('Digital Text Effect: アニメーション完了');
+                // console.log('Digital Text Effect: アニメーション完了');
                 
                 // 完了エフェクト
                 element.style.textShadow = '0 0 15px #00ff00, 0 0 25px #00ff00';
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         element.style.textShadow = '';
                     }, 150);
                     
-                    console.log('Digital Text Effect: 文字確定', targetChar, `(${currentIndex}/${textContent.length})`);
+                    // console.log('Digital Text Effect: 文字確定', targetChar, `(${currentIndex}/${textContent.length})`);
                     
                     // 次の文字へ
                     setTimeout(revealNextCharacter, 100 + Math.random() * 50); // 100-150ms
@@ -136,6 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 初期化開始
-    console.log('Digital Text Effect: 初期化開始');
+    // console.log('Digital Text Effect: 初期化開始');
     checkLoadingComplete();
 });

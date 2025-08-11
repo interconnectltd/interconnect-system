@@ -8,7 +8,7 @@
     const LINE_CHANNEL_ID = '2007688781';
     const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
     
-    console.log('LINE Login Immediate: Channel ID =', LINE_CHANNEL_ID);
+    // console.log('LINE Login Immediate: Channel ID =', LINE_CHANNEL_ID);
     
     // ランダム文字列生成
     function generateRandomString(length) {
@@ -22,7 +22,7 @@
     
     // グローバルに関数を公開
     window.handleLineLoginDirect = function() {
-        console.log('handleLineLoginDirect called');
+        // console.log('handleLineLoginDirect called');
         
         const state = generateRandomString(32);
         const nonce = generateRandomString(32);
@@ -41,7 +41,7 @@
         });
         
         const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-        console.log('Redirecting to:', authUrl);
+        // console.log('Redirecting to:', authUrl);
         
         // リダイレクト
         window.location.href = authUrl;
@@ -51,7 +51,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const lineButton = document.getElementById('lineLoginBtn');
         if (lineButton) {
-            console.log('LINE button found, attaching direct handler');
+            // console.log('LINE button found, attaching direct handler');
             
             // 既存のイベントリスナーをクリア
             const newButton = lineButton.cloneNode(true);
@@ -63,11 +63,11 @@
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 
-                console.log('LINE button clicked (immediate handler)');
+                // console.log('LINE button clicked (immediate handler)');
                 window.handleLineLoginDirect();
             });
             
-            console.log('LINE Login Immediate: Setup complete');
+            // console.log('LINE Login Immediate: Setup complete');
         } else {
             console.error('LINE Login Immediate: Button not found');
         }

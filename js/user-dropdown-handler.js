@@ -6,11 +6,11 @@
 (function() {
     'use strict';
 
-    console.log('[UserDropdown] ハンドラー初期化開始');
+    // console.log('[UserDropdown] ハンドラー初期化開始');
 
     // 初期化
     function initialize() {
-        console.log('[UserDropdown] DOM初期化');
+        // console.log('[UserDropdown] DOM初期化');
         
         // ユーザープロファイルドロップダウン
         setupUserProfileDropdown();
@@ -28,13 +28,13 @@
     // ユーザープロファイルドロップダウンの設定
     function setupUserProfileDropdown() {
         const userProfiles = document.querySelectorAll('.user-profile');
-        console.log(`[UserDropdown] ${userProfiles.length}個のユーザープロファイル要素を検出`);
+        // console.log(`[UserDropdown] ${userProfiles.length}個のユーザープロファイル要素を検出`);
         
         userProfiles.forEach((profile, index) => {
             // クリックイベントを設定
             profile.addEventListener('click', function(e) {
                 e.stopPropagation();
-                console.log(`[UserDropdown] ユーザープロファイル${index}がクリックされました`);
+                // console.log(`[UserDropdown] ユーザープロファイル${index}がクリックされました`);
                 
                 // 他のドロップダウンを閉じる
                 closeAllDropdowns();
@@ -46,11 +46,11 @@
                     if (isOpen) {
                         dropdown.classList.remove('active');
                         this.classList.remove('active');
-                        console.log('[UserDropdown] ユーザードロップダウンを閉じました');
+                        // console.log('[UserDropdown] ユーザードロップダウンを閉じました');
                     } else {
                         dropdown.classList.add('active');
                         this.classList.add('active');
-                        console.log('[UserDropdown] ユーザードロップダウンを開きました');
+                        // console.log('[UserDropdown] ユーザードロップダウンを開きました');
                     }
                 } else {
                     console.error('[UserDropdown] user-dropdown要素が見つかりません');
@@ -62,12 +62,12 @@
     // 通知ドロップダウンの設定
     function setupNotificationDropdown() {
         const notificationBtns = document.querySelectorAll('.notification-wrapper .notification-btn');
-        console.log(`[UserDropdown] ${notificationBtns.length}個の通知ボタンを検出`);
+        // console.log(`[UserDropdown] ${notificationBtns.length}個の通知ボタンを検出`);
         
         notificationBtns.forEach((btn, index) => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                console.log(`[UserDropdown] 通知ボタン${index}がクリックされました`);
+                // console.log(`[UserDropdown] 通知ボタン${index}がクリックされました`);
                 
                 // 他のドロップダウンを閉じる
                 closeAllDropdowns();
@@ -81,11 +81,11 @@
                     if (isOpen) {
                         dropdown.classList.remove('active');
                         wrapper.classList.remove('active');
-                        console.log('[UserDropdown] 通知ドロップダウンを閉じました');
+                        // console.log('[UserDropdown] 通知ドロップダウンを閉じました');
                     } else {
                         dropdown.classList.add('active');
                         wrapper.classList.add('active');
-                        console.log('[UserDropdown] 通知ドロップダウンを開きました');
+                        // console.log('[UserDropdown] 通知ドロップダウンを開きました');
                         
                         // 通知を読み込む（必要に応じて）
                         loadNotifications(dropdown);
@@ -101,7 +101,7 @@
         markAllReadBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                console.log('[UserDropdown] すべて既読にするボタンがクリックされました');
+                // console.log('[UserDropdown] すべて既読にするボタンがクリックされました');
                 markAllNotificationsAsRead();
             });
         });
@@ -110,7 +110,7 @@
     // ログアウトボタンの設定
     function setupLogoutButtons() {
         const logoutBtns = document.querySelectorAll('#logoutBtn, [href="#"][onclick*="logout"]');
-        console.log(`[UserDropdown] ${logoutBtns.length}個のログアウトボタンを検出`);
+        // console.log(`[UserDropdown] ${logoutBtns.length}個のログアウトボタンを検出`);
         
         logoutBtns.forEach((btn, index) => {
             // 既存のonclickを削除
@@ -119,10 +119,10 @@
             btn.addEventListener('click', async function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log(`[UserDropdown] ログアウトボタン${index}がクリックされました`);
+                // console.log(`[UserDropdown] ログアウトボタン${index}がクリックされました`);
                 
                 if (confirm('ログアウトしますか？')) {
-                    console.log('[UserDropdown] ログアウト処理を開始');
+                    // console.log('[UserDropdown] ログアウト処理を開始');
                     
                     try {
                         // グローバルなlogout関数があれば使用
@@ -146,7 +146,7 @@
                             window.location.href = '/login.html';
                         }
                         
-                        console.log('[UserDropdown] ログアウト完了');
+                        // console.log('[UserDropdown] ログアウト完了');
                     } catch (error) {
                         console.error('[UserDropdown] ログアウト失敗:', error);
                         // alert('ログアウトに失敗しました');
@@ -193,12 +193,12 @@
             }
         });
         
-        console.log('[UserDropdown] すべてのドロップダウンを閉じました');
+        // console.log('[UserDropdown] すべてのドロップダウンを閉じました');
     }
 
     // 通知を読み込む
     async function loadNotifications(dropdownElement) {
-        console.log('[UserDropdown] 通知を読み込み中...');
+        // console.log('[UserDropdown] 通知を読み込み中...');
         
         const notificationList = dropdownElement.querySelector('.notification-list');
         if (!notificationList) return;
@@ -208,7 +208,7 @@
             if (window.supabaseClient) {
                 const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
-                    console.log('[UserDropdown] ユーザーが認証されていません');
+                    // console.log('[UserDropdown] ユーザーが認証されていません');
                     return;
                 }
                 
@@ -223,7 +223,7 @@
                 if (error) throw error;
                 
                 if (notifications && notifications.length > 0) {
-                    console.log(`[UserDropdown] ${notifications.length}件の通知を取得`);
+                    // console.log(`[UserDropdown] ${notifications.length}件の通知を取得`);
                     
                     // 通知を表示
                     notificationList.innerHTML = notifications.map(notif => `
@@ -241,7 +241,7 @@
                     // 通知バッジを更新
                     updateNotificationBadge(notifications.length);
                 } else {
-                    console.log('[UserDropdown] 新しい通知はありません');
+                    // console.log('[UserDropdown] 新しい通知はありません');
                 }
             }
         } catch (error) {
@@ -251,7 +251,7 @@
 
     // すべての通知を既読にする
     async function markAllNotificationsAsRead() {
-        console.log('[UserDropdown] すべての通知を既読にしています...');
+        // console.log('[UserDropdown] すべての通知を既読にしています...');
         
         try {
             if (window.supabaseClient) {
@@ -266,7 +266,7 @@
                 
                 if (error) throw error;
                 
-                console.log('[UserDropdown] すべての通知を既読にしました');
+                // console.log('[UserDropdown] すべての通知を既読にしました');
                 
                 // UIを更新
                 document.querySelectorAll('.notification-list').forEach(list => {

@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[EventParticipation] イベント参加機能を初期化...');
+    // console.log('[EventParticipation] イベント参加機能を初期化...');
 
     class EventParticipationHandler {
         constructor() {
@@ -37,10 +37,10 @@
                     .limit(1);
 
                 if (error && error.code === '42P01') {
-                    console.log('[EventParticipation] event_participantsテーブルが存在しません。user_activitiesを使用します。');
+                    // console.log('[EventParticipation] event_participantsテーブルが存在しません。user_activitiesを使用します。');
                     this.useActivityTable = true;
                 } else {
-                    console.log('[EventParticipation] event_participantsテーブルを使用します。');
+                    // console.log('[EventParticipation] event_participantsテーブルを使用します。');
                     this.useActivityTable = false;
                 }
             } catch (error) {
@@ -165,7 +165,7 @@
          * イベントに参加
          */
         async joinEvent(eventId) {
-            console.log('[EventParticipation] イベントに参加:', eventId);
+            // console.log('[EventParticipation] イベントに参加:', eventId);
             
             // ローディング状態を表示
             this.showParticipationLoading();
@@ -234,7 +234,7 @@
          * 参加をキャンセル
          */
         async cancelParticipation(eventId) {
-            console.log('[EventParticipation] 参加をキャンセル:', eventId);
+            // console.log('[EventParticipation] 参加をキャンセル:', eventId);
             
             if (!confirm('参加登録をキャンセルしますか？')) {
                 return;
@@ -469,7 +469,7 @@
     // 初期化
     setTimeout(() => {
         window.eventParticipationHandler = new EventParticipationHandler();
-        console.log('[EventParticipation] 初期化完了');
+        // console.log('[EventParticipation] 初期化完了');
     }, 1000);
 
 })();

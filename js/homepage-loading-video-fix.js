@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[LoadingVideoFix] 動画修正開始');
+    // console.log('[LoadingVideoFix] 動画修正開始');
     
     function addVideoToLoading() {
         const screen = document.getElementById('instantLoadingScreen');
@@ -18,7 +18,7 @@
         // 既存の動画をチェック
         let video = screen.querySelector('video');
         if (video) {
-            console.log('[LoadingVideoFix] 動画は既に存在します');
+            // console.log('[LoadingVideoFix] 動画は既に存在します');
             return;
         }
         
@@ -52,10 +52,10 @@
         if (video) {
             video.playbackRate = 2.0;
             video.play().catch(err => {
-                console.log('[LoadingVideoFix] 動画の自動再生に失敗:', err);
+                // console.log('[LoadingVideoFix] 動画の自動再生に失敗:', err);
             });
             
-            console.log('[LoadingVideoFix] 動画を追加しました');
+            // console.log('[LoadingVideoFix] 動画を追加しました');
         }
     }
     

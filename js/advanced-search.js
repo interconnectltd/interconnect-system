@@ -11,7 +11,7 @@
 (function() {
     'use strict';
 
-    console.log('[AdvancedSearch] 高度な検索機能初期化');
+    // console.log('[AdvancedSearch] 高度な検索機能初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -55,7 +55,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[AdvancedSearch] 初期化開始');
+        // console.log('[AdvancedSearch] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -68,7 +68,7 @@
         }
 
         currentUserId = user.id;
-        console.log('[AdvancedSearch] ユーザーID:', currentUserId);
+        // console.log('[AdvancedSearch] ユーザーID:', currentUserId);
 
         // 検索UIを構築
         buildSearchUI();
@@ -84,7 +84,7 @@
     function buildSearchUI() {
         const searchContainer = document.querySelector('.advanced-search-container');
         if (!searchContainer) {
-            console.log('[AdvancedSearch] 検索コンテナが見つかりません');
+            // console.log('[AdvancedSearch] 検索コンテナが見つかりません');
             return;
         }
 

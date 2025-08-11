@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // モバイルでの再生を強制
         loadingVideo.play().catch(error => {
-            console.log('Video autoplay failed:', error);
+            // console.log('Video autoplay failed:', error);
             // ビデオが再生できない場合は早めに終了
             setManagedTimeout(completeLoading, 1000);
         });

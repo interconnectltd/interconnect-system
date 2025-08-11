@@ -6,19 +6,19 @@
 (function() {
     'use strict';
     
-    console.log('[GuestLogin] ゲストログインハンドラー初期化');
+    // console.log('[GuestLogin] ゲストログインハンドラー初期化');
     
     document.addEventListener('DOMContentLoaded', function() {
         // ゲストログインボタンを取得
         const guestButton = document.querySelector('.guest-button');
         
         if (guestButton) {
-            console.log('[GuestLogin] ゲストログインボタンを検出');
+            // console.log('[GuestLogin] ゲストログインボタンを検出');
             
             // 既存のリンクを無効化してイベントハンドラーを追加
             guestButton.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('[GuestLogin] ゲストログインボタンがクリックされました');
+                // console.log('[GuestLogin] ゲストログインボタンがクリックされました');
                 
                 // ゲストモードフラグを設定
                 sessionStorage.setItem('isGuestMode', 'true');
@@ -35,7 +35,7 @@
                 // ローカルストレージに保存
                 localStorage.setItem('currentUser', JSON.stringify(guestUser));
                 
-                console.log('[GuestLogin] ゲストモード設定完了');
+                // console.log('[GuestLogin] ゲストモード設定完了');
                 
                 // ダッシュボードへリダイレクト
                 window.location.href = 'dashboard.html?guest=true';

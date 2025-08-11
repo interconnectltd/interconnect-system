@@ -18,7 +18,7 @@ class ReferralTracker {
     const referralCode = urlParams.get('ref') || urlParams.get('referral') || urlParams.get('invite');
     
     if (referralCode) {
-      console.log('紹介コード検出:', referralCode);
+      // console.log('紹介コード検出:', referralCode);
       
       // セッションストレージとローカルストレージの両方に保存
       sessionStorage.setItem('referralCode', referralCode);
@@ -75,7 +75,7 @@ class ReferralTracker {
     }
     
     try {
-      console.log('新規ユーザーに紹介コードを適用:', referralCode);
+      // console.log('新規ユーザーに紹介コードを適用:', referralCode);
       
       // 紹介情報をinvitationsテーブルに記録
       const { error } = await window.supabaseClient

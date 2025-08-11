@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[MembersSearch] 初期化開始...');
+    // console.log('[MembersSearch] 初期化開始...');
 
     class MembersSearchManager {
         constructor() {
@@ -307,7 +307,7 @@
             // 地域フィルター
             // 並び替え機能
             // 詳細検索モーダル
-            console.log('[MembersSearch] 高度な検索機能は今後実装予定');
+            // console.log('[MembersSearch] 高度な検索機能は今後実装予定');
         }
     }
 
@@ -372,5 +372,5 @@
     // グローバルインスタンス
     window.membersSearch = new MembersSearchManager();
 
-    console.log('[MembersSearch] 初期化完了');
+    // console.log('[MembersSearch] 初期化完了');
 })();

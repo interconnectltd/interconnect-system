@@ -17,7 +17,7 @@
         init() {
             if (this.initialized) return;
             
-            console.log('[StatsInitializer] 統計カードを初期化中...');
+            // console.log('[StatsInitializer] 統計カードを初期化中...');
             
             // 各統計カードを「読み込み中」状態に設定
             this.setLoadingState();
@@ -188,6 +188,6 @@
         }, 10);
     }
 
-    console.log('[StatsInitializer] モジュールが読み込まれました');
+    // console.log('[StatsInitializer] モジュールが読み込まれました');
 
 })();

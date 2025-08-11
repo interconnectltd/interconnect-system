@@ -29,14 +29,14 @@
                 this.eventActionBtn.addEventListener('click', () => this.handleEventAction());
             }
 
-            console.log('[EventModal] Initialized');
+            // console.log('[EventModal] Initialized');
         }
 
         /**
          * イベント詳細を表示
          */
         async show(eventId) {
-            console.log('[EventModal] Showing event:', eventId);
+            // console.log('[EventModal] Showing event:', eventId);
 
             try {
                 // ローディング状態を表示
@@ -358,7 +358,7 @@
                 }
             } catch (error) {
                 // エラーは無視（未参加として扱う）
-                console.log('[EventModal] User not registered for this event');
+                // console.log('[EventModal] User not registered for this event');
             }
         }
 
@@ -514,6 +514,6 @@
         };
     }
 
-    console.log('[EventModal] Module loaded');
+    // console.log('[EventModal] Module loaded');
 
 })();

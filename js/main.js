@@ -186,7 +186,7 @@
                 }
                 
                 // Here you would normally send the data to a server
-                console.log('Form data:', data);
+                // console.log('Form data:', data);
                 
                 // Show success message
                 alert('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。');
@@ -205,7 +205,7 @@
         const heroVideo = document.querySelector('.hero-video');
         
         if (!heroVideo || !heroVideoContainer) {
-            console.log('Video elements not found');
+            // console.log('Video elements not found');
             return;
         }
 
@@ -232,7 +232,7 @@
 
         // Function to show fallback
         function showFallback() {
-            console.log('Showing fallback image');
+            // console.log('Showing fallback image');
             heroVideo.style.display = 'none';
             fallbackImage.style.display = 'block';
         }
@@ -279,12 +279,12 @@
 
         // Check if video can be played
         heroVideo.addEventListener('loadedmetadata', function() {
-            console.log('Video metadata loaded successfully');
+            // console.log('Video metadata loaded successfully');
         });
 
         // Handle successful video load
         heroVideo.addEventListener('canplay', function() {
-            console.log('Video can play');
+            // console.log('Video can play');
             loadAttempts = 0; // Reset attempts on success
             heroVideo.classList.remove('loading');
             heroVideo.classList.add('loaded');
@@ -295,7 +295,7 @@
             if (playPromise !== undefined) {
                 playPromise
                     .then(function() {
-                        console.log('Video autoplay started');
+                        // console.log('Video autoplay started');
                     })
                     .catch(function(error) {
                         console.warn('Autoplay was prevented:', error);
@@ -321,7 +321,7 @@
         // Clear timeout if video loads successfully
         heroVideo.addEventListener('canplaythrough', function() {
             clearTimeout(loadingTimeout);
-            console.log('Video loaded completely');
+            // console.log('Video loaded completely');
         });
 
         // Performance optimization: pause video when not visible
@@ -349,7 +349,7 @@
         if (!isNetlify && 'connection' in navigator) {
             const connection = navigator.connection;
             if (connection.saveData || connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
-                console.log('Slow connection detected - showing fallback');
+                // console.log('Slow connection detected - showing fallback');
                 showFallback();
             }
         }

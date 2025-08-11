@@ -4,7 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[Typewriter] 初期化開始');
+    // console.log('[Typewriter] 初期化開始');
     
     // ローディング画面の監視
     const loadingScreen = document.getElementById('instantLoadingScreen');
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // opacity が 0 になったらローディング完了
                     if (loadingScreen.style.opacity === '0' || 
                         loadingScreen.style.display === 'none') {
-                        console.log('[Typewriter] ローディング完了を検知');
+                        // console.log('[Typewriter] ローディング完了を検知');
                         observer.disconnect();
                         // 少し遅延を入れてから開始
                         setTimeout(startTypewriter, 500);
@@ -32,12 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         // ローディング画面がない場合は即座に開始
-        console.log('[Typewriter] ローディング画面なし、即座に開始');
+        // console.log('[Typewriter] ローディング画面なし、即座に開始');
         setTimeout(startTypewriter, 1000);
     }
     
     function startTypewriter() {
-        console.log('[Typewriter] タイプライター開始');
+        // console.log('[Typewriter] タイプライター開始');
         
         // タイプライター効果を適用する要素
         const elements = [

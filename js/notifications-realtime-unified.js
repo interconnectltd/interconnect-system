@@ -10,7 +10,7 @@
 (function() {
     'use strict';
 
-    console.log('[RealtimeNotificationsUnified] リアルタイム通知モジュール初期化');
+    // console.log('[RealtimeNotificationsUnified] リアルタイム通知モジュール初期化');
 
     // グローバル変数
     let realtimeSubscriptions = {};
@@ -19,7 +19,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[RealtimeNotificationsUnified] 初期化開始');
+        // console.log('[RealtimeNotificationsUnified] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -32,7 +32,7 @@
         }
 
         currentUserId = user.id;
-        console.log('[RealtimeNotificationsUnified] ユーザーID:', currentUserId);
+        // console.log('[RealtimeNotificationsUnified] ユーザーID:', currentUserId);
 
         // 通知音の準備
         setupNotificationSound();
@@ -171,7 +171,7 @@
 
     // 新しい通知の処理
     async function handleNewNotification(notification) {
-        console.log('[RealtimeNotificationsUnified] 新しい通知:', notification);
+        // console.log('[RealtimeNotificationsUnified] 新しい通知:', notification);
 
         // トースト表示
         showNotificationToast(notification);
@@ -190,7 +190,7 @@
 
     // 新しいメッセージの処理
     async function handleNewMessage(message) {
-        console.log('[RealtimeNotificationsUnified] 新しいメッセージ:', message);
+        // console.log('[RealtimeNotificationsUnified] 新しいメッセージ:', message);
 
         // 送信者情報を取得
         const { data: sender } = await window.supabaseClient
@@ -212,7 +212,7 @@
 
     // マッチング更新の処理
     async function handleMatchingUpdate(payload) {
-        console.log('[RealtimeNotificationsUnified] マッチング更新:', payload);
+        // console.log('[RealtimeNotificationsUnified] マッチング更新:', payload);
 
         if (payload.eventType === 'INSERT' && payload.new.status === 'matched') {
             // 相手のユーザー情報を取得
@@ -244,7 +244,7 @@
 
     // イベント参加の処理
     async function handleEventParticipation(participation) {
-        console.log('[RealtimeNotificationsUnified] イベント参加:', participation);
+        // console.log('[RealtimeNotificationsUnified] イベント参加:', participation);
 
         // イベント情報を取得
         const { data: event } = await window.supabaseClient
@@ -269,7 +269,7 @@
 
     // 紹介更新の処理
     async function handleReferralUpdate(payload) {
-        console.log('[RealtimeNotificationsUnified] 紹介更新:', payload);
+        // console.log('[RealtimeNotificationsUnified] 紹介更新:', payload);
 
         if (payload.eventType === 'UPDATE' && payload.new.status === 'completed') {
             // 紹介された人の情報を取得
@@ -310,7 +310,7 @@
 
             if (error) throw error;
 
-            console.log('[RealtimeNotificationsUnified] 通知作成成功:', data);
+            // console.log('[RealtimeNotificationsUnified] 通知作成成功:', data);
             return data;
 
         } catch (error) {
@@ -382,7 +382,7 @@
     function playNotificationSound() {
         if (notificationSound) {
             notificationSound.play().catch(e => {
-                console.log('[RealtimeNotificationsUnified] 通知音の再生に失敗:', e);
+                // console.log('[RealtimeNotificationsUnified] 通知音の再生に失敗:', e);
             });
         }
     }

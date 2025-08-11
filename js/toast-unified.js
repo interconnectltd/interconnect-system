@@ -80,6 +80,6 @@
     window.showWarning = showWarning;
     window.showInfo = showInfo;
 
-    console.log('[ToastUnified] 統一トースト通知システムが初期化されました');
+    // console.log('[ToastUnified] 統一トースト通知システムが初期化されました');
 
 })();

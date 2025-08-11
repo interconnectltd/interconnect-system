@@ -71,23 +71,23 @@ class GoogleCalendarBooking {
     const urlParams = new URLSearchParams(window.location.search);
     const urlRef = urlParams.get('ref');
     if (urlRef) {
-      console.log('紹介コード（URL）:', urlRef);
+      // console.log('紹介コード（URL）:', urlRef);
       return urlRef;
     }
     
     const sessionRef = sessionStorage.getItem('referralCode');
     if (sessionRef) {
-      console.log('紹介コード（セッション）:', sessionRef);
+      // console.log('紹介コード（セッション）:', sessionRef);
       return sessionRef;
     }
     
     const localRef = localStorage.getItem('referralCode');
     if (localRef) {
-      console.log('紹介コード（ローカル）:', localRef);
+      // console.log('紹介コード（ローカル）:', localRef);
       return localRef;
     }
     
-    console.log('紹介コード（直接アクセス）');
+    // console.log('紹介コード（直接アクセス）');
     return 'DIRECT';
   }
   
@@ -168,7 +168,7 @@ class GoogleCalendarBooking {
           if (error) {
             console.error('予約意図の記録エラー:', error);
           } else {
-            console.log('予約意図を記録しました');
+            // console.log('予約意図を記録しました');
           }
         }
       } catch (error) {

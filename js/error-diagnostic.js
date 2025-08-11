@@ -15,8 +15,8 @@ class ErrorDiagnostic {
      * 完全なエラー診断を実行
      */
     async runFullDiagnostic() {
-        console.log('====== エラー診断開始 ======');
-        console.log('実行時刻:', new Date().toISOString());
+        // console.log('====== エラー診断開始 ======');
+        // console.log('実行時刻:', new Date().toISOString());
         
         // 1. コンソールエラーの分析
         this.analyzeConsoleErrors();
@@ -50,7 +50,7 @@ class ErrorDiagnostic {
      * コンソールエラーの分析
      */
     analyzeConsoleErrors() {
-        console.log('\n=== コンソールエラー分析 ===');
+        // console.log('\n=== コンソールエラー分析 ===');
         
         // 既知のエラーパターン
         const knownErrors = [
@@ -72,9 +72,9 @@ class ErrorDiagnostic {
         
         knownErrors.forEach(error => {
             this.warnings.push(error);
-            console.log(`⚠️ ${error.pattern}`);
-            console.log(`  影響: ${error.impact}`);
-            console.log(`  対策: ${error.solution}`);
+            // console.log(`⚠️ ${error.pattern}`);
+            // console.log(`  影響: ${error.impact}`);
+            // console.log(`  対策: ${error.solution}`);
         });
     }
 
@@ -82,7 +82,7 @@ class ErrorDiagnostic {
      * システムコンポーネントの状態確認
      */
     async checkSystemComponents() {
-        console.log('\n=== システムコンポーネント確認 ===');
+        // console.log('\n=== システムコンポーネント確認 ===');
         
         const components = {
             // 基本システム
@@ -152,7 +152,7 @@ class ErrorDiagnostic {
         let criticalMissing = 0;
         Object.entries(components).forEach(([name, info]) => {
             if (!info.exists) {
-                console.log(`❌ ${name} - ${info.description}`);
+                // console.log(`❌ ${name} - ${info.description}`);
                 if (info.critical) {
                     criticalMissing++;
                     this.criticalIssues.push({
@@ -162,7 +162,7 @@ class ErrorDiagnostic {
                     });
                 }
             } else {
-                console.log(`✅ ${name} - ${info.description}`);
+                // console.log(`✅ ${name} - ${info.description}`);
             }
         });
         
@@ -175,17 +175,17 @@ class ErrorDiagnostic {
      * データフローの検証
      */
     async checkDataFlow() {
-        console.log('\n=== データフロー検証 ===');
+        // console.log('\n=== データフロー検証 ===');
         
         // 1. Supabaseの認証状態
         if (window.supabase) {
             try {
                 const { data: { user } } = await window.supabase.auth.getUser();
                 if (user) {
-                    console.log('✅ Supabase認証: ログイン済み');
-                    console.log(`  ユーザーID: ${user.id}`);
+                    // console.log('✅ Supabase認証: ログイン済み');
+                    // console.log(`  ユーザーID: ${user.id}`);
                 } else {
-                    console.log('❌ Supabase認証: 未ログイン');
+                    // console.log('❌ Supabase認証: 未ログイン');
                     this.errors.push({
                         type: 'auth',
                         message: 'ユーザーが認証されていません',
@@ -205,7 +205,7 @@ class ErrorDiagnostic {
         // 2. マッチングデータの状態
         if (window.matchingSupabase) {
             const profiles = window.matchingSupabase.allProfiles;
-            console.log(`📊 読み込まれたプロファイル数: ${profiles ? profiles.length : 0}`);
+            // console.log(`📊 読み込まれたプロファイル数: ${profiles ? profiles.length : 0}`);
             
             if (!profiles || profiles.length === 0) {
                 this.warnings.push({
@@ -226,9 +226,9 @@ class ErrorDiagnostic {
             if (card.querySelector('canvas')) chartsWithCanvas++;
         });
         
-        console.log(`📈 マッチングカード総数: ${cards.length}`);
-        console.log(`  データ付きカード: ${chartsWithData}`);
-        console.log(`  Canvas描画済み: ${chartsWithCanvas}`);
+        // console.log(`📈 マッチングカード総数: ${cards.length}`);
+        // console.log(`  データ付きカード: ${chartsWithData}`);
+        // console.log(`  Canvas描画済み: ${chartsWithCanvas}`);
         
         if (cards.length > 0 && chartsWithCanvas === 0) {
             this.errors.push({
@@ -243,7 +243,7 @@ class ErrorDiagnostic {
      * ネットワークエラーの確認
      */
     async checkNetworkErrors() {
-        console.log('\n=== ネットワーク状態確認 ===');
+        // console.log('\n=== ネットワーク状態確認 ===');
         
         // Supabase接続テスト
         if (window.supabase) {
@@ -262,7 +262,7 @@ class ErrorDiagnostic {
                         impact: 'データの取得ができません'
                     });
                 } else {
-                    console.log('✅ Supabaseデータベース接続: 正常');
+                    // console.log('✅ Supabaseデータベース接続: 正常');
                 }
             } catch (error) {
                 console.error('❌ ネットワークエラー:', error);
@@ -279,7 +279,7 @@ class ErrorDiagnostic {
      * DOM関連のエラー
      */
     checkDOMErrors() {
-        console.log('\n=== DOM状態確認 ===');
+        // console.log('\n=== DOM状態確認 ===');
         
         // 必要な要素の存在確認
         const requiredElements = {
@@ -291,14 +291,14 @@ class ErrorDiagnostic {
         Object.entries(requiredElements).forEach(([selector, name]) => {
             const element = document.querySelector(selector);
             if (!element) {
-                console.log(`❌ ${name} (${selector}) が見つかりません`);
+                // console.log(`❌ ${name} (${selector}) が見つかりません`);
                 this.errors.push({
                     type: 'dom',
                     message: `${name}が存在しません`,
                     selector: selector
                 });
             } else {
-                console.log(`✅ ${name} (${selector}) 存在確認`);
+                // console.log(`✅ ${name} (${selector}) 存在確認`);
             }
         });
     }
@@ -307,11 +307,11 @@ class ErrorDiagnostic {
      * 非同期処理の問題
      */
     async checkAsyncIssues() {
-        console.log('\n=== 非同期処理の確認 ===');
+        // console.log('\n=== 非同期処理の確認 ===');
         
         // 初期化タイミングの問題
         if (window.matchingSupabase && !window.matchingSupabase.allProfiles) {
-            console.log('⚠️ matchingSupabaseは存在するがデータが読み込まれていない');
+            // console.log('⚠️ matchingSupabaseは存在するがデータが読み込まれていない');
             this.warnings.push({
                 type: 'async',
                 message: 'データの読み込みが完了していない可能性',
@@ -323,7 +323,7 @@ class ErrorDiagnostic {
         if (window.matchingDataMigration) {
             const report = window.matchingDataMigration.generateMigrationReport();
             if (report.dataStats.oldFormat > 0) {
-                console.log(`⚠️ 旧形式データが${report.dataStats.oldFormat}件存在`);
+                // console.log(`⚠️ 旧形式データが${report.dataStats.oldFormat}件存在`);
                 this.warnings.push({
                     type: 'migration',
                     message: '旧形式データの移行が必要',
@@ -337,14 +337,14 @@ class ErrorDiagnostic {
      * パフォーマンス問題の確認
      */
     checkPerformanceIssues() {
-        console.log('\n=== パフォーマンス確認 ===');
+        // console.log('\n=== パフォーマンス確認 ===');
         
         if (performance.memory) {
             const used = performance.memory.usedJSHeapSize / 1024 / 1024;
             const total = performance.memory.totalJSHeapSize / 1024 / 1024;
             const percent = (used / total) * 100;
             
-            console.log(`💾 メモリ使用量: ${used.toFixed(1)}MB / ${total.toFixed(1)}MB (${percent.toFixed(1)}%)`);
+            // console.log(`💾 メモリ使用量: ${used.toFixed(1)}MB / ${total.toFixed(1)}MB (${percent.toFixed(1)}%)`);
             
             if (percent > 80) {
                 this.performanceIssues.push({
@@ -359,14 +359,14 @@ class ErrorDiagnostic {
         // レンダリングパフォーマンス
         if (window.matchingRadarChartPerformance) {
             const metrics = window.matchingRadarChartPerformance.metrics;
-            console.log(`📊 チャートレンダリング統計:`);
-            console.log(`  総レンダリング数: ${metrics.renderCount}`);
-            console.log(`  キャッシュヒット: ${metrics.cacheHits}`);
-            console.log(`  キャッシュミス: ${metrics.cacheMisses}`);
+            // console.log(`📊 チャートレンダリング統計:`);
+            // console.log(`  総レンダリング数: ${metrics.renderCount}`);
+            // console.log(`  キャッシュヒット: ${metrics.cacheHits}`);
+            // console.log(`  キャッシュミス: ${metrics.cacheMisses}`);
             
             if (metrics.renderCount > 0) {
                 const avgTime = metrics.totalRenderTime / metrics.renderCount;
-                console.log(`  平均レンダリング時間: ${avgTime.toFixed(2)}ms`);
+                // console.log(`  平均レンダリング時間: ${avgTime.toFixed(2)}ms`);
                 
                 if (avgTime > 100) {
                     this.performanceIssues.push({
@@ -384,14 +384,14 @@ class ErrorDiagnostic {
      * 統合システムのエラー
      */
     checkIntegrationErrors() {
-        console.log('\n=== 統合システムエラー確認 ===');
+        // console.log('\n=== 統合システムエラー確認 ===');
         
         if (window.matchingRadarChartIntegration) {
             const errors = window.matchingRadarChartIntegration.errors;
             if (errors.length > 0) {
-                console.log(`❌ 統合システムで${errors.length}個のエラー`);
+                // console.log(`❌ 統合システムで${errors.length}個のエラー`);
                 errors.slice(-5).forEach((error, index) => {
-                    console.log(`  ${index + 1}. [${error.context}] ${error.message}`);
+                    // console.log(`  ${index + 1}. [${error.context}] ${error.message}`);
                     this.errors.push({
                         type: 'integration',
                         context: error.context,
@@ -400,7 +400,7 @@ class ErrorDiagnostic {
                     });
                 });
             } else {
-                console.log('✅ 統合システムエラーなし');
+                // console.log('✅ 統合システムエラーなし');
             }
         }
     }
@@ -426,16 +426,16 @@ class ErrorDiagnostic {
             recommendations: this.generateRecommendations()
         };
         
-        console.log('\n====== 診断結果サマリー ======');
-        console.log(`🚨 重大な問題: ${report.summary.criticalIssues}件`);
-        console.log(`❌ エラー: ${report.summary.errors}件`);
-        console.log(`⚠️ 警告: ${report.summary.warnings}件`);
-        console.log(`🐌 パフォーマンス問題: ${report.summary.performanceIssues}件`);
+        // console.log('\n====== 診断結果サマリー ======');
+        // console.log(`🚨 重大な問題: ${report.summary.criticalIssues}件`);
+        // console.log(`❌ エラー: ${report.summary.errors}件`);
+        // console.log(`⚠️ 警告: ${report.summary.warnings}件`);
+        // console.log(`🐌 パフォーマンス問題: ${report.summary.performanceIssues}件`);
         
         if (report.recommendations.length > 0) {
-            console.log('\n📋 推奨される対処法:');
+            // console.log('\n📋 推奨される対処法:');
             report.recommendations.forEach((rec, index) => {
-                console.log(`${index + 1}. ${rec}`);
+                // console.log(`${index + 1}. ${rec}`);
             });
         }
         
@@ -479,20 +479,20 @@ class ErrorDiagnostic {
      * 修正スクリプトの実行
      */
     async attemptAutoFix() {
-        console.log('\n====== 自動修正を試行 ======');
+        // console.log('\n====== 自動修正を試行 ======');
         
         let fixed = 0;
         
         // 1. 初期化の再実行
         if (window.forceInitMatching) {
-            console.log('1. マッチング機能の再初期化...');
+            // console.log('1. マッチング機能の再初期化...');
             window.forceInitMatching();
             fixed++;
         }
         
         // 2. レーダーチャートの追加
         if (document.querySelectorAll('.matching-card canvas').length === 0) {
-            console.log('2. レーダーチャートの追加...');
+            // console.log('2. レーダーチャートの追加...');
             if (window.quickTest) {
                 await window.quickTest.addChart();
                 fixed++;
@@ -501,14 +501,14 @@ class ErrorDiagnostic {
         
         // 3. データ移行
         if (this.warnings.some(w => w.type === 'migration')) {
-            console.log('3. データ移行の実行...');
+            // console.log('3. データ移行の実行...');
             if (window.matchingDataMigration) {
                 await window.matchingDataMigration.migrate();
                 fixed++;
             }
         }
         
-        console.log(`\n✅ ${fixed}個の問題を自動修正しました`);
+        // console.log(`\n✅ ${fixed}個の問題を自動修正しました`);
         return fixed;
     }
 }
@@ -520,14 +520,14 @@ window.errorDiagnostic = new ErrorDiagnostic();
 window.runDiagnostics = () => window.errorDiagnostic.runFullDiagnostic();
 
 // 診断コマンド
-console.log('\n🔍 エラー診断ツール');
-console.log('完全診断: runDiagnostics() または await errorDiagnostic.runFullDiagnostic()');
-console.log('自動修正: await errorDiagnostic.attemptAutoFix()');
+// console.log('\n🔍 エラー診断ツール');
+// console.log('完全診断: runDiagnostics() または await errorDiagnostic.runFullDiagnostic()');
+// console.log('自動修正: await errorDiagnostic.attemptAutoFix()');
 
 // 自動実行（デバッグモード時）
 if (localStorage.getItem('debugMode') === 'true') {
     setTimeout(async () => {
-        console.log('\n=== 自動エラー診断開始 ===');
+        // console.log('\n=== 自動エラー診断開始 ===');
         await window.errorDiagnostic.runFullDiagnostic();
     }, 2000);
 }

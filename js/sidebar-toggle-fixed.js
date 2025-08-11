@@ -1,8 +1,8 @@
 // サイドバートグル機能（修正版）
-console.log('[Sidebar] sidebar-toggle-fixed.js loaded');
+// console.log('[Sidebar] sidebar-toggle-fixed.js loaded');
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('[Sidebar] DOM loaded, initializing sidebar toggles');
+    // console.log('[Sidebar] DOM loaded, initializing sidebar toggles');
     
     // モバイルメニュートグルボタンを取得
     const mobileMenuToggle = document.getElementById('dashboardSidebarToggle');
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
-    console.log('[Sidebar] Elements found:', {
+    // console.log('[Sidebar] Elements found:', {
         mobileMenuToggle,
         sidebar,
         mobileBackdrop
@@ -30,13 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const backdrop = document.createElement('div');
         backdrop.className = 'mobile-backdrop';
         document.body.appendChild(backdrop);
-        console.log('[Sidebar] Mobile backdrop created');
+        // console.log('[Sidebar] Mobile backdrop created');
         return backdrop;
     }
     
     // サイドバーを開く
     function openSidebar() {
-        console.log('[Sidebar] Opening sidebar');
+        // console.log('[Sidebar] Opening sidebar');
         sidebar.classList.add('active');
         mobileBackdrop.classList.add('active');
         document.body.classList.add('menu-open');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // サイドバーを閉じる
     function closeSidebar() {
-        console.log('[Sidebar] Closing sidebar');
+        // console.log('[Sidebar] Closing sidebar');
         sidebar.classList.remove('active');
         mobileBackdrop.classList.remove('active');
         document.body.classList.remove('menu-open');
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // トグル機能
     function toggleSidebar() {
-        console.log('[Sidebar] Toggling sidebar');
+        // console.log('[Sidebar] Toggling sidebar');
         if (sidebar.classList.contains('active')) {
             closeSidebar();
         } else {
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // イベントリスナーを設定（優先度を高くする）
     mobileMenuToggle.addEventListener('click', (e) => {
-        console.log('[Sidebar] Mobile menu toggle clicked');
+        // console.log('[Sidebar] Mobile menu toggle clicked');
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // バックドロップクリックで閉じる
     mobileBackdrop.addEventListener('click', (e) => {
-        console.log('[Sidebar] Backdrop clicked');
+        // console.log('[Sidebar] Backdrop clicked');
         e.preventDefault();
         e.stopPropagation();
         closeSidebar();
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // サイドバー内のリンククリックで閉じる（モバイルのみ）
     sidebar.addEventListener('click', (e) => {
         if (window.innerWidth <= 991 && e.target.closest('.sidebar-link')) {
-            console.log('[Sidebar] Sidebar link clicked on mobile');
+            // console.log('[Sidebar] Sidebar link clicked on mobile');
             setTimeout(closeSidebar, 200); // リンク遷移を待つ
         }
     });
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ESCキーで閉じる
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && sidebar.classList.contains('active')) {
-            console.log('[Sidebar] ESC key pressed');
+            // console.log('[Sidebar] ESC key pressed');
             closeSidebar();
         }
     });
@@ -99,13 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             if (window.innerWidth > 991 && sidebar.classList.contains('active')) {
-                console.log('[Sidebar] Window resized to desktop, closing mobile sidebar');
+                // console.log('[Sidebar] Window resized to desktop, closing mobile sidebar');
                 closeSidebar();
             }
         }, 250);
     });
     
-    console.log('[Sidebar] Initialization complete');
+    // console.log('[Sidebar] Initialization complete');
 });
 
 // グローバル関数として公開

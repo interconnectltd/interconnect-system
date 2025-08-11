@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[GuestMode] Guest Mode Manager 初期化');
+    // console.log('[GuestMode] Guest Mode Manager 初期化');
     
     class GuestModeManager {
         constructor() {
@@ -21,7 +21,7 @@
             // ゲストモードの場合はグローバルフラグを設定
             if (this.isGuestMode) {
                 window.INTERCONNECT_GUEST_MODE = true;
-                console.log('[GuestMode] ゲストモードが有効です');
+                // console.log('[GuestMode] ゲストモードが有効です');
                 this.setupGuestMode();
             }
         }
@@ -60,7 +60,7 @@
                 
                 window.supabase.from = (table) => {
                     if (this.isGuestMode) {
-                        console.log(`[GuestMode] Supabaseクエリをインターセプト: ${table}`);
+                        // console.log(`[GuestMode] Supabaseクエリをインターセプト: ${table}`);
                         
                         // デモデータを返すモックオブジェクトを作成
                         return this.createMockQueryBuilder(table);

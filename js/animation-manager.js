@@ -152,10 +152,10 @@
         autoAdjustPerformance() {
             if (this.actualFPS < 30 && this.performanceMode !== 'low') {
                 this.setPerformanceMode('low');
-                console.log('AnimationManager: Switching to low performance mode');
+                // console.log('AnimationManager: Switching to low performance mode');
             } else if (this.actualFPS > 50 && this.performanceMode === 'low') {
                 this.setPerformanceMode('normal');
-                console.log('AnimationManager: Switching to normal performance mode');
+                // console.log('AnimationManager: Switching to normal performance mode');
             }
         }
         
@@ -279,9 +279,9 @@
     window.AnimationManager = new AnimationManager();
     
     // 使用例をコンソールに出力
-    console.log('AnimationManager initialized. Usage:');
-    console.log('AnimationManager.register("myAnimation", (delta, time) => { /* animation code */ })');
-    console.log('AnimationManager.unregister("myAnimation")');
-    console.log('AnimationManager.getStatus()');
+    // console.log('AnimationManager initialized. Usage:');
+    // console.log('AnimationManager.register("myAnimation", (delta, time) => { /* animation code */ })');
+    // console.log('AnimationManager.unregister("myAnimation")');
+    // console.log('AnimationManager.getStatus()');
     
 })();

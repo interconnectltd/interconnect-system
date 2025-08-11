@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', function() {
     // global-functions.js のステップ変更イベントを監視
     window.addEventListener('stepChanged', function(e) {
         // 必要に応じて registration-flow.js 側の処理を実行
-        console.log('Step changed:', e.detail);
+        // console.log('Step changed:', e.detail);
     });
 });
 
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const inviterId = sessionStorage.getItem('inviterId');
     
     if (inviteCode) {
-        console.log('招待コードが検出されました:', inviteCode);
+        // console.log('招待コードが検出されました:', inviteCode);
         // 招待情報を表示
         const inviteNotice = document.createElement('div');
         inviteNotice.className = 'invite-notice';
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             .update({ used_count: (inviteLink.used_count || 0) + 1 })
                             .eq('id', inviteLink.id);
                         
-                        console.log('招待リンクの使用回数を更新しました');
+                        // console.log('招待リンクの使用回数を更新しました');
                     }
                     
                     // セッションストレージをクリア
@@ -563,7 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function simulateRegistration(data) {
         return new Promise((resolve) => {
             setTimeout(() => {
-                console.log('Registration data:', data);
+                // console.log('Registration data:', data);
                 resolve();
             }, 2000);
         });
@@ -600,5 +600,5 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // LINE登録ボタンの処理は削除（auth-supabase.jsで処理）
     // 競合を避けるため、ここでは何もしない
-    console.log('📍 registration-flow.js: LINE button handling delegated to auth-supabase.js');
+    // console.log('📍 registration-flow.js: LINE button handling delegated to auth-supabase.js');
 });

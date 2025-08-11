@@ -22,7 +22,7 @@
             }
 
             try {
-                console.log(`[SchemaDetector] ${tableName}テーブルのスキーマを検出中...`);
+                // console.log(`[SchemaDetector] ${tableName}テーブルのスキーマを検出中...`);
                 
                 // サンプルデータを取得してカラムを確認
                 const { data, error } = await window.supabase
@@ -55,7 +55,7 @@
                 this.schemaCache.set(tableName, schema);
                 this.detectedSchemas[tableName] = schema;
 
-                console.log(`[SchemaDetector] ${tableName}のスキーマ:`, columns);
+                // console.log(`[SchemaDetector] ${tableName}のスキーマ:`, columns);
                 return schema;
 
             } catch (error) {
@@ -83,7 +83,7 @@
 
             if (dateField) {
                 query = query.gte(dateField, startDate).lte(dateField, endDate);
-                console.log(`[SchemaDetector] 使用する日付フィールド: ${dateField}`);
+                // console.log(`[SchemaDetector] 使用する日付フィールド: ${dateField}`);
             } else {
                 console.warn('[SchemaDetector] 適切な日付フィールドが見つかりません');
             }
@@ -99,7 +99,7 @@
             let schema = await this.detectTableSchema('matchings');
             
             if (!schema.exists) {
-                console.log('[SchemaDetector] matchingsテーブルが存在しない、代替テーブルを検索');
+                // console.log('[SchemaDetector] matchingsテーブルが存在しない、代替テーブルを検索');
                 
                 // user_activitiesテーブルを確認
                 schema = await this.detectTableSchema('user_activities');
@@ -155,7 +155,7 @@
                 query = query.eq('read', false);
             }
 
-            console.log(`[SchemaDetector] メッセージクエリ構築完了`);
+            // console.log(`[SchemaDetector] メッセージクエリ構築完了`);
             return query;
         }
 
@@ -170,7 +170,7 @@
                 report[table] = await this.detectTableSchema(table);
             }
 
-            console.log('[SchemaDetector] 全スキーマ検出レポート:', report);
+            // console.log('[SchemaDetector] 全スキーマ検出レポート:', report);
             return report;
         }
 
@@ -238,10 +238,10 @@
     window.supabaseSchemaDetector = new SupabaseSchemaDetector();
 
     // コンソールヘルプ
-    console.log('[SchemaDetector] モジュールが読み込まれました');
-    console.log('使用方法:');
-    console.log('- supabaseSchemaDetector.detectAllSchemas() - 全テーブルのスキーマを検出');
-    console.log('- supabaseSchemaDetector.generateSchemaReport() - スキーマレポートを生成');
-    console.log('- supabaseSchemaDetector.generateRecommendations() - 推奨事項を生成');
+    // console.log('[SchemaDetector] モジュールが読み込まれました');
+    // console.log('使用方法:');
+    // console.log('- supabaseSchemaDetector.detectAllSchemas() - 全テーブルのスキーマを検出');
+    // console.log('- supabaseSchemaDetector.generateSchemaReport() - スキーマレポートを生成');
+    // console.log('- supabaseSchemaDetector.generateRecommendations() - 推奨事項を生成');
 
 })();

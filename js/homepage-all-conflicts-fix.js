@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[AllConflictsFix] 競合解決開始');
+    // console.log('[AllConflictsFix] 競合解決開始');
     
     // 競合している全スクリプトを無効化
     const ConflictResolver = {
@@ -36,14 +36,14 @@
         
         // すべての競合を無効化
         disableAll() {
-            console.log('[AllConflictsFix] 競合関数を無効化');
+            // console.log('[AllConflictsFix] 競合関数を無効化');
             
             // グローバル関数を無効化
             this.conflictingFunctions.forEach(fnName => {
                 if (window[fnName]) {
-                    console.log(`[AllConflictsFix] ${fnName}を無効化`);
+                    // console.log(`[AllConflictsFix] ${fnName}を無効化`);
                     window[fnName] = function() {
-                        console.log(`[AllConflictsFix] ${fnName}は無効化されています`);
+                        // console.log(`[AllConflictsFix] ${fnName}は無効化されています`);
                     };
                 }
             });
@@ -65,7 +65,7 @@
                 // 競合するイベントリスナーをブロック
                 for (const conflict of ConflictResolver.conflictingEvents) {
                     if (this === conflict.target && type === conflict.type && conflict.pattern.test(listenerStr)) {
-                        console.log(`[AllConflictsFix] ブロック: ${type}イベント`);
+                        // console.log(`[AllConflictsFix] ブロック: ${type}イベント`);
                         return;
                     }
                 }
@@ -86,7 +86,7 @@
                 const elements = document.querySelectorAll(selector);
                 elements.forEach(el => {
                     if (el.id !== 'instantLoadingScreen') {
-                        console.log(`[AllConflictsFix] 削除: ${selector}`);
+                        // console.log(`[AllConflictsFix] 削除: ${selector}`);
                         el.remove();
                     }
                 });
@@ -104,7 +104,7 @@
         init() {
             if (this.initialized) return;
             
-            console.log('[AllConflictsFix] 統一ローダー初期化');
+            // console.log('[AllConflictsFix] 統一ローダー初期化');
             
             // instantLoadingScreenのみを使用
             this.screen = document.getElementById('instantLoadingScreen');
@@ -153,7 +153,7 @@
             if (this.video) {
                 this.video.playbackRate = 2.0;
                 this.video.play().catch(err => {
-                    console.log('[AllConflictsFix] 動画再生エラー:', err);
+                    // console.log('[AllConflictsFix] 動画再生エラー:', err);
                 });
             }
         },
@@ -168,7 +168,7 @@
                 if (completed) return;
                 completed = true;
                 
-                console.log('[AllConflictsFix] ローディング完了');
+                // console.log('[AllConflictsFix] ローディング完了');
                 
                 // フェードアウト
                 this.screen.style.transition = 'opacity 0.8s ease-out';
@@ -199,7 +199,7 @@
             if (this.animationStarted) return;
             this.animationStarted = true;
             
-            console.log('[AllConflictsFix] 統一アニメーション開始');
+            // console.log('[AllConflictsFix] 統一アニメーション開始');
             
             // ヒーロー動画再生
             const heroVideo = document.querySelector('.hero-video');
@@ -312,6 +312,6 @@
         UnifiedLoader
     };
     
-    console.log('[AllConflictsFix] 初期化完了');
+    // console.log('[AllConflictsFix] 初期化完了');
     
 })();

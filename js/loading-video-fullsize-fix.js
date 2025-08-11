@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[LoadingVideoFix] 初期化開始');
+    // console.log('[LoadingVideoFix] 初期化開始');
     
     // 既存のローディング画面を修正
     function fixLoadingVideo() {
@@ -69,7 +69,7 @@
             if (mutation.type === 'childList') {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === 1 && node.tagName === 'VIDEO' && node.classList.contains('loading-video')) {
-                        console.log('[LoadingVideoFix] 動画要素を検知、スタイル適用');
+                        // console.log('[LoadingVideoFix] 動画要素を検知、スタイル適用');
                         node.style.position = 'absolute';
                         node.style.top = '0';
                         node.style.left = '0';

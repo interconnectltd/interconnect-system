@@ -6,14 +6,14 @@
 (function() {
     'use strict';
 
-    console.log('[DashboardEventFix] イベントクエリ修正スクリプト読み込み');
+    // console.log('[DashboardEventFix] イベントクエリ修正スクリプト読み込み');
 
     // 元のfetchEventsメソッドを上書き
     if (window.DashboardEvents) {
         window.DashboardEvents.prototype.fetchEvents = async function() {
             try {
                 if (!window.supabase && !window.supabaseClient) {
-                    console.log('[DashboardEventFix] Supabaseクライアントが利用できません');
+                    // console.log('[DashboardEventFix] Supabaseクライアントが利用できません');
                     return;
                 }
 
@@ -46,12 +46,12 @@
                 }
 
                 if (!dateColumn) {
-                    console.log('[DashboardEventFix] 日付カラムが見つかりません');
+                    // console.log('[DashboardEventFix] 日付カラムが見つかりません');
                     this.loadDummyEvents();
                     return;
                 }
 
-                console.log('[DashboardEventFix] 使用する日付カラム:', dateColumn);
+                // console.log('[DashboardEventFix] 使用する日付カラム:', dateColumn);
 
                 // イベントを取得
                 const { data: events, error } = await client
@@ -71,7 +71,7 @@
 
                 this.events = events || [];
                 this.renderEvents();
-                console.log('[DashboardEventFix] イベント取得成功:', this.events.length);
+                // console.log('[DashboardEventFix] イベント取得成功:', this.events.length);
 
             } catch (error) {
                 console.error('[DashboardEventFix] Error loading events:', error);
@@ -87,7 +87,7 @@
         window.DashboardCalculator.prototype.calculateStats = async function() {
             try {
                 if (!window.supabase && !window.supabaseClient) {
-                    console.log('[DashboardEventFix] Calculatorで使用: ダミーデータ');
+                    // console.log('[DashboardEventFix] Calculatorで使用: ダミーデータ');
                     this.setDummyStats();
                     return;
                 }
@@ -144,6 +144,6 @@
         };
     }
 
-    console.log('[DashboardEventFix] 修正適用完了');
+    // console.log('[DashboardEventFix] 修正適用完了');
 
 })();

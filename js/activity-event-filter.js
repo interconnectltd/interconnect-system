@@ -39,7 +39,7 @@
             // イベントリスナーを設定
             this.setupEventListeners();
             
-            console.log('[ActivityEventFilter] Initialized');
+            // console.log('[ActivityEventFilter] Initialized');
         }
 
         /**
@@ -123,12 +123,12 @@
                         this.activities = data.map(activity => this.transformActivity(activity));
                     } else {
                         // データがない場合はダミーデータを使用
-                        console.log('[ActivityEventFilter] No activities found, using dummy data');
+                        // console.log('[ActivityEventFilter] No activities found, using dummy data');
                         this.activities = this.getDummyActivities();
                     }
                 } else {
                     // Supabaseが利用できない場合はダミーデータを使用
-                    console.log('[ActivityEventFilter] Supabase not available, using dummy data');
+                    // console.log('[ActivityEventFilter] Supabase not available, using dummy data');
                     this.activities = this.getDummyActivities();
                 }
 
@@ -247,11 +247,11 @@
                         
                         this.events = events;
                     } else {
-                        console.log('[ActivityEventFilter] No events found, using dummy data');
+                        // console.log('[ActivityEventFilter] No events found, using dummy data');
                         this.events = this.getDummyEvents();
                     }
                 } else {
-                    console.log('[ActivityEventFilter] Supabase not available, using dummy data');
+                    // console.log('[ActivityEventFilter] Supabase not available, using dummy data');
                     this.events = this.getDummyEvents();
                 }
                 

@@ -16,7 +16,7 @@
          * イベント統計を計算
          */
         async calculateEventStats() {
-            console.log('[EventCalculator] イベント統計を計算中...');
+            // console.log('[EventCalculator] イベント統計を計算中...');
             
             try {
                 // 今月と先月のイベント数を並行で取得
@@ -61,7 +61,7 @@
                     calculated_at: new Date().toISOString()
                 };
 
-                console.log('[EventCalculator] 計算結果:', stats);
+                // console.log('[EventCalculator] 計算結果:', stats);
                 return stats;
 
             } catch (error) {
@@ -99,7 +99,7 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(new Date(nextMonth - 1));
                 
-                console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベントを取得: ${startDate} ~ ${endDate}`);
+                // console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベントを取得: ${startDate} ~ ${endDate}`);
 
                 // まずevent_dateフィールドで試す
                 let { count, error } = await window.supabase
@@ -110,7 +110,7 @@
 
                 // event_dateがエラーの場合、dateフィールドで試す
                 if (error && error.message.includes('event_date')) {
-                    console.log('[EventCalculator] event_dateフィールドが存在しません。dateフィールドで再試行...');
+                    // console.log('[EventCalculator] event_dateフィールドが存在しません。dateフィールドで再試行...');
                     
                     const result = await window.supabase
                         .from('events')
@@ -135,7 +135,7 @@
                     timestamp: Date.now()
                 });
 
-                console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベント数: ${eventCount}`);
+                // console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベント数: ${eventCount}`);
                 return eventCount;
 
             } catch (error) {
@@ -166,7 +166,7 @@
 
                 if (!error && data && data.length > 0) {
                     const columns = Object.keys(data[0]);
-                    console.log('[EventCalculator] イベントテーブルのカラム:', columns);
+                    // console.log('[EventCalculator] イベントテーブルのカラム:', columns);
                     
                     return {
                         hasEventDate: columns.includes('event_date'),
@@ -234,6 +234,6 @@
         }.bind(window.dashboardUI);
     }
 
-    console.log('[EventCalculator] モジュールが読み込まれました');
+    // console.log('[EventCalculator] モジュールが読み込まれました');
 
 })();

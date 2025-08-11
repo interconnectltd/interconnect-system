@@ -83,14 +83,14 @@
                 return Promise.resolve(null); // ブロックされた場合
             }
             
-            console.log(`📍 [FunctionTracker] ${functionName} 実行開始`);
+            // console.log(`📍 [FunctionTracker] ${functionName} 実行開始`);
             const result = original.apply(this, args);
             
             // Promiseの場合
             if (result && typeof result.then === 'function') {
                 return result
                     .then(res => {
-                        console.log(`✅ [FunctionTracker] ${functionName} 完了`);
+                        // console.log(`✅ [FunctionTracker] ${functionName} 完了`);
                         return res;
                     })
                     .catch(err => {
@@ -99,7 +99,7 @@
                     });
             }
             
-            console.log(`✅ [FunctionTracker] ${functionName} 完了（同期）`);
+            // console.log(`✅ [FunctionTracker] ${functionName} 完了（同期）`);
             return result;
         };
     }
@@ -110,7 +110,7 @@
         window.FunctionTracker.config.trackingFunctions.forEach(funcName => {
             if (typeof window[funcName] === 'function') {
                 wrapFunction(window, funcName);
-                console.log(`🔍 [FunctionTracker] ${funcName} を追跡対象に追加しました`);
+                // console.log(`🔍 [FunctionTracker] ${funcName} を追跡対象に追加しました`);
             }
         });
         
@@ -120,7 +120,7 @@
                 if (typeof window[funcName] === 'function' && !window[funcName]._tracked) {
                     wrapFunction(window, funcName);
                     window[funcName]._tracked = true;
-                    console.log(`🔍 [FunctionTracker] ${funcName} を追跡対象に追加しました（遅延）`);
+                    // console.log(`🔍 [FunctionTracker] ${funcName} を追跡対象に追加しました（遅延）`);
                 }
             });
         });
@@ -132,11 +132,11 @@
     window.FunctionTracker.utils = {
         // 実行統計を表示
         showStats() {
-            console.log('📊 === 関数実行統計 ===');
+            // console.log('📊 === 関数実行統計 ===');
             Object.entries(window.FunctionTracker.executions)
                 .sort((a, b) => b[1].count - a[1].count)
                 .forEach(([name, data]) => {
-                    console.log(
+                    // console.log(
                         `${name}: ${data.count}回`,
                         `(初回: ${new Date(data.firstCall).toLocaleTimeString()},`,
                         `最終: ${new Date(data.lastCall).toLocaleTimeString()})`
@@ -148,24 +148,24 @@
         showDetails(functionName) {
             const data = window.FunctionTracker.executions[functionName];
             if (!data) {
-                console.log(`関数 ${functionName} の実行記録はありません`);
+                // console.log(`関数 ${functionName} の実行記録はありません`);
                 return;
             }
             
-            console.log(`📋 === ${functionName} 実行詳細 ===`);
-            console.log(`合計実行回数: ${data.count}`);
-            console.log(`初回実行: ${new Date(data.firstCall).toLocaleTimeString()}`);
-            console.log(`最終実行: ${new Date(data.lastCall).toLocaleTimeString()}`);
-            console.log('最近の呼び出し:');
+            // console.log(`📋 === ${functionName} 実行詳細 ===`);
+            // console.log(`合計実行回数: ${data.count}`);
+            // console.log(`初回実行: ${new Date(data.firstCall).toLocaleTimeString()}`);
+            // console.log(`最終実行: ${new Date(data.lastCall).toLocaleTimeString()}`);
+            // console.log('最近の呼び出し:');
             data.calls.forEach((call, i) => {
-                console.log(`  ${i + 1}. ${new Date(call.time).toLocaleTimeString()}`);
+                // console.log(`  ${i + 1}. ${new Date(call.time).toLocaleTimeString()}`);
             });
         },
         
         // 追跡をリセット
         reset() {
             window.FunctionTracker.executions = {};
-            console.log('🔄 関数実行追跡をリセットしました');
+            // console.log('🔄 関数実行追跡をリセットしました');
         },
         
         // 特定の関数を追跡対象に追加
@@ -174,7 +174,7 @@
                 window.FunctionTracker.config.trackingFunctions.push(functionName);
                 if (typeof window[functionName] === 'function') {
                     wrapFunction(window, functionName);
-                    console.log(`🎯 ${functionName} を追跡対象に追加しました`);
+                    // console.log(`🎯 ${functionName} を追跡対象に追加しました`);
                 }
             }
         }
@@ -190,7 +190,7 @@
         setTimeout(autoWrapFunctions, 100);
     }
 
-    console.log(
+    // console.log(
         '🎯 関数実行トラッカーが有効になりました\n' +
         '使い方:\n' +
         '  ft.showStats() - 実行統計を表示\n' +

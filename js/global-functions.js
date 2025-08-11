@@ -13,7 +13,7 @@
      * ログアウト処理（統一版）
      */
     window.logout = async function() {
-        console.log('Logout initiated');
+        // console.log('Logout initiated');
         
         try {
             // Supabaseからログアウト
@@ -143,7 +143,7 @@
     /**
      * 初期化完了を通知
      */
-    console.log('Global functions initialized');
+    // console.log('Global functions initialized');
     
     // 他のスクリプトが重複定義しないように警告
     Object.defineProperty(window, 'logout', {

@@ -16,7 +16,7 @@
          * メンバー統計を計算
          */
         async calculateMemberStats() {
-            console.log('[MemberCalculator] メンバー統計を計算中...');
+            // console.log('[MemberCalculator] メンバー統計を計算中...');
             
             try {
                 // 総メンバー数と先月の新規メンバー数を並行で取得
@@ -53,7 +53,7 @@
                     calculated_at: new Date().toISOString()
                 };
 
-                console.log('[MemberCalculator] 計算結果:', stats);
+                // console.log('[MemberCalculator] 計算結果:', stats);
                 return stats;
 
             } catch (error) {
@@ -97,7 +97,7 @@
                     timestamp: Date.now()
                 });
 
-                console.log('[MemberCalculator] 総メンバー数:', memberCount);
+                // console.log('[MemberCalculator] 総メンバー数:', memberCount);
                 return memberCount;
 
             } catch (error) {
@@ -127,7 +127,7 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(new Date(nextMonth - 1));
                 
-                console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバーを取得: ${startDate} ~ ${endDate}`);
+                // console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバーを取得: ${startDate} ~ ${endDate}`);
 
                 const { count, error } = await window.supabase
                     .from('profiles')
@@ -148,7 +148,7 @@
                     timestamp: Date.now()
                 });
 
-                console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバー数: ${newMemberCount}`);
+                // console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバー数: ${newMemberCount}`);
                 return newMemberCount;
 
             } catch (error) {
@@ -241,6 +241,6 @@
         }.bind(window.dashboardUI);
     }
 
-    console.log('[MemberCalculator] モジュールが読み込まれました');
+    // console.log('[MemberCalculator] モジュールが読み込まれました');
 
 })();

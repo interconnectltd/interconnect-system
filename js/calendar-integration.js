@@ -11,7 +11,7 @@
 (function() {
     'use strict';
 
-    console.log('[CalendarIntegration] カレンダー連携機能初期化');
+    // console.log('[CalendarIntegration] カレンダー連携機能初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -20,7 +20,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[CalendarIntegration] 初期化開始');
+        // console.log('[CalendarIntegration] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -33,7 +33,7 @@
         }
 
         currentUserId = user.id;
-        console.log('[CalendarIntegration] ユーザーID:', currentUserId);
+        // console.log('[CalendarIntegration] ユーザーID:', currentUserId);
 
         // カレンダー要素が存在する場合のみ初期化
         const calendarEl = document.getElementById('calendar');

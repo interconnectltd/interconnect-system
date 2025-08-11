@@ -8,7 +8,7 @@
 (function() {
     'use strict';
     
-    console.log('[DatabaseTableFix] テーブル名修正開始');
+    // console.log('[DatabaseTableFix] テーブル名修正開始');
     
     // イベント関連の修正
     if (window.dashboardEventCalculator) {
@@ -23,7 +23,7 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(nextMonth);
                 
-                console.log('[DatabaseTableFix] activitiesテーブルから取得');
+                // console.log('[DatabaseTableFix] activitiesテーブルから取得');
                 
                 // activitiesテーブルから取得（typeがeventのもの）
                 const { count, error } = await window.supabase
@@ -52,7 +52,7 @@
         const original = window.dashboardUpcomingEvents.loadUpcomingEvents;
         
         window.dashboardUpcomingEvents.loadUpcomingEvents = async function() {
-            console.log('[DatabaseTableFix] 今後のイベントをactivitiesから取得');
+            // console.log('[DatabaseTableFix] 今後のイベントをactivitiesから取得');
             
             try {
                 const now = new Date().toISOString();
@@ -107,7 +107,7 @@
                     description: activity.metadata?.description || ''
                 }));
                 
-                console.log('[DatabaseTableFix] 取得したイベント数:', events.length);
+                // console.log('[DatabaseTableFix] 取得したイベント数:', events.length);
                 
                 // キャッシュに保存
                 this.eventCache = events;
@@ -175,7 +175,7 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(nextMonth);
                 
-                console.log('[DatabaseTableFix] connectionsテーブルから取得');
+                // console.log('[DatabaseTableFix] connectionsテーブルから取得');
                 
                 // connectionsテーブルを使用
                 const { count, error } = await window.supabase
@@ -220,6 +220,6 @@
         };
     }
     
-    console.log('[DatabaseTableFix] テーブル名修正完了');
+    // console.log('[DatabaseTableFix] テーブル名修正完了');
     
 })();

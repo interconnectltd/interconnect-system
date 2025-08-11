@@ -48,7 +48,7 @@
          * 統計カード更新
          */
         updateStatCards(stats) {
-            console.log('[DashboardUI] Updating stat cards with:', stats);
+            // console.log('[DashboardUI] Updating stat cards with:', stats);
 
             // 統計コンテナのローディング状態をクリア
             const statsContainer = document.querySelector('.stats-container');
@@ -58,7 +58,7 @@
                 // 統計カードが存在しない場合（ローディング後）、HTMLを再生成
                 const existingCards = statsContainer.querySelectorAll('.stat-card');
                 if (existingCards.length === 0 && window.dashboardStatRenderer) {
-                    console.log('[DashboardUI] Regenerating stat cards HTML');
+                    // console.log('[DashboardUI] Regenerating stat cards HTML');
                     statsContainer.innerHTML = window.dashboardStatRenderer.generateStatCardsHTML(stats);
                     return;
                 }
@@ -66,7 +66,7 @@
 
             // stats-container内のstat-cardを正確に選択
             const statCards = document.querySelectorAll('.stats-container .stat-card');
-            console.log(`[DashboardUI] Found ${statCards.length} stat cards`);
+            // console.log(`[DashboardUI] Found ${statCards.length} stat cards`);
             
             const statMappings = [
                 {
@@ -182,7 +182,7 @@
          * 最近のアクティビティ更新
          */
         renderRecentActivities(activities) {
-            console.log('[DashboardUI] Rendering activities:', activities);
+            // console.log('[DashboardUI] Rendering activities:', activities);
 
             const container = document.querySelector('.activity-list');
             if (!container) {
@@ -236,7 +236,7 @@
          * イベントリスト更新
          */
         renderUpcomingEvents(events) {
-            console.log('[DashboardUI] Rendering upcoming events:', events);
+            // console.log('[DashboardUI] Rendering upcoming events:', events);
 
             const container = document.querySelector('.event-list');
             if (!container) {
@@ -418,7 +418,7 @@
                 refreshElement.textContent = `最終更新: ${timeString}`;
             }
 
-            console.log(`[DashboardUI] Dashboard updated at ${timeString}`);
+            // console.log(`[DashboardUI] Dashboard updated at ${timeString}`);
         }
 
         /**
@@ -437,14 +437,14 @@
                 calendarBtn.onclick = () => this.viewCalendar();
             }
 
-            console.log('[DashboardUI] Button handlers initialized');
+            // console.log('[DashboardUI] Button handlers initialized');
         }
 
         /**
          * 全アクティビティ表示
          */
         viewAllActivities() {
-            console.log('[DashboardUI] Navigating to all activities');
+            // console.log('[DashboardUI] Navigating to all activities');
             // 将来的にactivities.htmlページを作成
             window.location.href = 'activities.html';
         }
@@ -453,7 +453,7 @@
          * カレンダー表示
          */
         viewCalendar() {
-            console.log('[DashboardUI] カレンダーへ移動');
+            // console.log('[DashboardUI] カレンダーへ移動');
             window.location.href = 'events.html#calendar';
         }
 
@@ -461,7 +461,7 @@
          * イベント詳細表示
          */
         viewEventDetails(eventId) {
-            console.log('[DashboardUI] Viewing event details:', eventId);
+            // console.log('[DashboardUI] Viewing event details:', eventId);
             window.location.href = `events.html#event-${eventId}`;
         }
 
@@ -513,7 +513,7 @@
          * トースト通知表示（将来の実装用）
          */
         showToast(message, type = 'info') {
-            console.log(`[DashboardUI] Toast (${type}):`, message);
+            // console.log(`[DashboardUI] Toast (${type}):`, message);
             // 将来的にトースト通知システムを実装
         }
 
@@ -537,6 +537,6 @@
     window.DashboardUI = DashboardUI;
     window.dashboardUI = new DashboardUI();
 
-    console.log('[DashboardUI] Module loaded');
+    // console.log('[DashboardUI] Module loaded');
 
 })();

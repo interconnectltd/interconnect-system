@@ -1,5 +1,5 @@
 // 登録ページでの紹介コード処理
-console.log('=== 登録ページ紹介コード処理 ===');
+// console.log('=== 登録ページ紹介コード処理 ===');
 
 (function() {
     // 紹介コードを取得（優先順位: URL > Session > Cookie）
@@ -19,7 +19,7 @@ console.log('=== 登録ページ紹介コード処理 ===');
     referralCode = urlRef || sessionRef || cookieRef;
     
     if (referralCode) {
-        console.log('[Register] 紹介コード検出:', referralCode);
+        // console.log('[Register] 紹介コード検出:', referralCode);
         
         // 隠しフィールドに設定
         const referralInput = document.getElementById('referral-code-input');
@@ -124,13 +124,13 @@ function showReferralInfo(code) {
 const originalRegister = window.register;
 if (originalRegister) {
     window.register = async function(...args) {
-        console.log('[Register] 登録処理開始（紹介コード付き）');
+        // console.log('[Register] 登録処理開始（紹介コード付き）');
         
         // 紹介コードを取得
         const referralCode = document.getElementById('referral-code-input')?.value;
         
         if (referralCode) {
-            console.log('[Register] 紹介コード:', referralCode);
+            // console.log('[Register] 紹介コード:', referralCode);
             
             // 登録データに紹介コードを追加
             if (args[0] && typeof args[0] === 'object') {
@@ -186,7 +186,7 @@ async function recordReferralRegistration(code, userId) {
         if (invitationError) {
             console.error('[Register] 招待記録エラー:', invitationError);
         } else {
-            console.log('[Register] 紹介登録を記録しました');
+            // console.log('[Register] 紹介登録を記録しました');
             
             // 成功メッセージを表示
             showSuccessMessage('紹介コードが適用されました！');
@@ -256,4 +256,4 @@ function showSuccessMessage(message) {
     }
 }
 
-console.log('=== 登録ページ紹介コード処理準備完了 ===');
+// console.log('=== 登録ページ紹介コード処理準備完了 ===');

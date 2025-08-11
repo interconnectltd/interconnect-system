@@ -33,12 +33,12 @@
          * メッセージ統計を計算
          */
         async calculateMessageStats() {
-            console.log('[MessageCalculator] メッセージ統計を計算中...');
+            // console.log('[MessageCalculator] メッセージ統計を計算中...');
             
             try {
                 const user = await this.getCurrentUser();
                 if (!user) {
-                    console.log('[MessageCalculator] ユーザーが認証されていません');
+                    // console.log('[MessageCalculator] ユーザーが認証されていません');
                     return this.getDefaultStats();
                 }
 
@@ -82,7 +82,7 @@
                     calculated_at: new Date().toISOString()
                 };
 
-                console.log('[MessageCalculator] 計算結果:', stats);
+                // console.log('[MessageCalculator] 計算結果:', stats);
                 return stats;
 
             } catch (error) {
@@ -160,7 +160,7 @@
                     timestamp: Date.now()
                 });
 
-                console.log(`[MessageCalculator] 未読メッセージ数: ${count}`);
+                // console.log(`[MessageCalculator] 未読メッセージ数: ${count}`);
                 return count;
 
             } catch (error) {
@@ -244,7 +244,7 @@
                     structure.hasToUserId = 'to_user_id' in data[0];
                     structure.hasReadAt = 'read_at' in data[0];
                     
-                    console.log('[MessageCalculator] メッセージテーブル構造:', structure);
+                    // console.log('[MessageCalculator] メッセージテーブル構造:', structure);
                 }
 
                 // キャッシュに保存
@@ -336,6 +336,6 @@
         }.bind(window.dashboardUI);
     }
 
-    console.log('[MessageCalculator] モジュールが読み込まれました');
+    // console.log('[MessageCalculator] モジュールが読み込まれました');
 
 })();

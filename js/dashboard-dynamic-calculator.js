@@ -145,7 +145,7 @@
             const stats = await originalFetch.call(this);
             return window.dashboardCalculator.enrichStatsWithCalculations(stats);
         };
-        console.log('[DashboardCalculator] Enhanced fetchDashboardStats with calculations');
+        // console.log('[DashboardCalculator] Enhanced fetchDashboardStats with calculations');
     }
 
 })();

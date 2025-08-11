@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[LoadingIntegration] 初期化開始');
+    // console.log('[LoadingIntegration] 初期化開始');
     
     // 状態管理
     const state = {
@@ -20,7 +20,7 @@
         const loadingScreen = document.getElementById('instantLoadingScreen');
         
         if (!loadingScreen) {
-            console.log('[LoadingIntegration] ローディング画面が見つかりません');
+            // console.log('[LoadingIntegration] ローディング画面が見つかりません');
             state.loadingComplete = true;
             checkAndStartAnimations();
             return;
@@ -32,7 +32,7 @@
                 if (mutation.type === 'attributes') {
                     const opacity = loadingScreen.style.opacity;
                     if (opacity === '0' || !document.contains(loadingScreen)) {
-                        console.log('[LoadingIntegration] ローディング完了を検出');
+                        // console.log('[LoadingIntegration] ローディング完了を検出');
                         state.loadingComplete = true;
                         observer.disconnect();
                         checkAndStartAnimations();
@@ -50,7 +50,7 @@
         // フォールバック: 5秒後には必ず開始
         setTimeout(() => {
             if (!state.loadingComplete) {
-                console.log('[LoadingIntegration] タイムアウトによるローディング完了');
+                // console.log('[LoadingIntegration] タイムアウトによるローディング完了');
                 state.loadingComplete = true;
                 checkAndStartAnimations();
             }
@@ -62,7 +62,7 @@
         const video = document.querySelector('.hero-video');
         
         if (!video) {
-            console.log('[LoadingIntegration] 動画要素が見つかりません');
+            // console.log('[LoadingIntegration] 動画要素が見つかりません');
             state.videoReady = true;
             checkAndStartAnimations();
             return;
@@ -74,12 +74,12 @@
         
         // 動画の準備完了を待つ
         if (video.readyState >= 3) { // HAVE_FUTURE_DATA
-            console.log('[LoadingIntegration] 動画準備完了');
+            // console.log('[LoadingIntegration] 動画準備完了');
             state.videoReady = true;
             checkAndStartAnimations();
         } else {
             video.addEventListener('canplay', () => {
-                console.log('[LoadingIntegration] 動画準備完了（canplay）');
+                // console.log('[LoadingIntegration] 動画準備完了（canplay）');
                 state.videoReady = true;
                 checkAndStartAnimations();
             }, { once: true });
@@ -92,7 +92,7 @@
             return;
         }
         
-        console.log('[LoadingIntegration] アニメーション開始');
+        // console.log('[LoadingIntegration] アニメーション開始');
         state.animationsStarted = true;
         
         // 少し遅延を入れてスムーズな遷移を実現
@@ -169,7 +169,7 @@
             }
         });
         
-        console.log('[LoadingIntegration] スクロールアニメーション有効化完了');
+        // console.log('[LoadingIntegration] スクロールアニメーション有効化完了');
     }
     
     // 初期化
@@ -180,7 +180,7 @@
             return;
         }
         
-        console.log('[LoadingIntegration] DOM準備完了、初期化開始');
+        // console.log('[LoadingIntegration] DOM準備完了、初期化開始');
         
         // ローディング画面の監視開始
         observeLoadingScreen();

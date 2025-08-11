@@ -218,7 +218,7 @@
 
         // 全チェックを実行
         runAllChecks: async function() {
-            console.log('🔍 本番環境準備チェック開始...\n');
+            // console.log('🔍 本番環境準備チェック開始...\n');
             
             this.results = {
                 passed: [],
@@ -246,20 +246,20 @@
 
         // 結果表示
         displayResults: function() {
-            console.log('\n📊 チェック結果:\n');
+            // console.log('\n📊 チェック結果:\n');
             
             if (this.results.passed.length > 0) {
-                console.log('✅ 合格項目 (' + this.results.passed.length + '件):');
+                // console.log('✅ 合格項目 (' + this.results.passed.length + '件):');
                 this.results.passed.forEach(item => console.log('   ✓ ' + item));
             }
 
             if (this.results.warnings.length > 0) {
-                console.log('\n⚠️  警告項目 (' + this.results.warnings.length + '件):');
+                // console.log('\n⚠️  警告項目 (' + this.results.warnings.length + '件):');
                 this.results.warnings.forEach(item => console.log('   ⚠ ' + item));
             }
 
             if (this.results.errors.length > 0) {
-                console.log('\n❌ エラー項目 (' + this.results.errors.length + '件):');
+                // console.log('\n❌ エラー項目 (' + this.results.errors.length + '件):');
                 this.results.errors.forEach(item => console.log('   ✗ ' + item));
             }
 
@@ -267,12 +267,12 @@
             const total = this.results.passed.length + this.results.warnings.length + this.results.errors.length;
             const score = Math.round((this.results.passed.length / total) * 100);
             
-            console.log('\n📈 スコア: ' + score + '% (' + this.results.passed.length + '/' + total + ')');
+            // console.log('\n📈 スコア: ' + score + '% (' + this.results.passed.length + '/' + total + ')');
             
             if (this.results.errors.length === 0) {
-                console.log('\n🎉 エラーなし！本番環境への準備ができています。');
+                // console.log('\n🎉 エラーなし！本番環境への準備ができています。');
             } else {
-                console.log('\n⚠️  エラーを修正してから本番環境にデプロイしてください。');
+                // console.log('\n⚠️  エラーを修正してから本番環境にデプロイしてください。');
             }
 
             return {
@@ -285,7 +285,7 @@
     };
 
     // グローバルに公開
-    console.log('💡 本番環境チェックツール準備完了');
-    console.log('実行: productionReadyCheck.runAllChecks()');
+    // console.log('💡 本番環境チェックツール準備完了');
+    // console.log('実行: productionReadyCheck.runAllChecks()');
     
 })();

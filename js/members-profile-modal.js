@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[MembersProfileModal] 初期化開始');
+    // console.log('[MembersProfileModal] 初期化開始');
     
     // プロフィールモーダルクラス
     class MembersProfileModal {
@@ -22,7 +22,7 @@
         init() {
             this.createModal();
             this.setupEventListeners();
-            console.log('[MembersProfileModal] 初期化完了');
+            // console.log('[MembersProfileModal] 初期化完了');
         }
         
         createModal() {

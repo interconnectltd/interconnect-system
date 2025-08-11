@@ -47,5 +47,5 @@
         };
     }
 
-    console.log('[SupabaseWaitFix] Supabase参照の修正を適用しました');
+    // console.log('[SupabaseWaitFix] Supabase参照の修正を適用しました');
 })();

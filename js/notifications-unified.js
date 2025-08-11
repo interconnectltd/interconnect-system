@@ -15,7 +15,7 @@
 (function() {
     'use strict';
 
-    console.log('[NotificationsUnified] 通知システム統一モジュール初期化');
+    // console.log('[NotificationsUnified] 通知システム統一モジュール初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -25,7 +25,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[NotificationsUnified] 初期化開始');
+        // console.log('[NotificationsUnified] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -38,7 +38,7 @@
         }
 
         currentUserId = user.id;
-        console.log('[NotificationsUnified] ユーザーID:', currentUserId);
+        // console.log('[NotificationsUnified] ユーザーID:', currentUserId);
 
         // イベントリスナーの設定
         setupEventListeners();
@@ -407,7 +407,7 @@
 
     // リアルタイム更新処理
     function handleRealtimeUpdate(payload) {
-        console.log('[NotificationsUnified] リアルタイム更新:', payload.eventType);
+        // console.log('[NotificationsUnified] リアルタイム更新:', payload.eventType);
 
         switch (payload.eventType) {
             case 'INSERT':
@@ -458,7 +458,7 @@
 
             if (error) throw error;
 
-            console.log('[NotificationsUnified] 通知送信成功:', data);
+            // console.log('[NotificationsUnified] 通知送信成功:', data);
             return data;
 
         } catch (error) {
@@ -506,7 +506,7 @@
 
     function showToast(message, type = 'success') {
         // トースト通知の実装（既存の実装に依存）
-        console.log(`[NotificationsUnified] Toast: ${type} - ${message}`);
+        // console.log(`[NotificationsUnified] Toast: ${type} - ${message}`);
         
         // 簡易的なトースト表示
         const toast = document.createElement('div');

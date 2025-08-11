@@ -1,5 +1,5 @@
 // 紹介リンクからのランディング処理
-console.log('=== 紹介リンク処理開始 ===');
+// console.log('=== 紹介リンク処理開始 ===');
 
 (function() {
     // URLから紹介コードを取得
@@ -8,7 +8,7 @@ console.log('=== 紹介リンク処理開始 ===');
     
     if (referralMatch) {
         const referralCode = referralMatch[1];
-        console.log('[Referral] 紹介コード検出:', referralCode);
+        // console.log('[Referral] 紹介コード検出:', referralCode);
         
         // セッションストレージに保存
         sessionStorage.setItem('referral_code', referralCode);
@@ -28,7 +28,7 @@ console.log('=== 紹介リンク処理開始 ===');
         const refCode = urlParams.get('ref');
         
         if (refCode) {
-            console.log('[Referral] クエリパラメータから紹介コード検出:', refCode);
+            // console.log('[Referral] クエリパラメータから紹介コード検出:', refCode);
             sessionStorage.setItem('referral_code', refCode);
             sessionStorage.setItem('referral_timestamp', new Date().toISOString());
             
@@ -219,4 +219,4 @@ window.goToRegister = function() {
     }
 };
 
-console.log('=== 紹介リンク処理準備完了 ===');
+// console.log('=== 紹介リンク処理準備完了 ===');

@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[MembersConnection] 初期化開始...');
+    // console.log('[MembersConnection] 初期化開始...');
 
     class MembersConnectionManager {
         constructor() {
@@ -324,7 +324,7 @@
          * コネクション変更を処理
          */
         handleConnectionChange(payload) {
-            console.log('[MembersConnection] コネクション変更:', payload);
+            // console.log('[MembersConnection] コネクション変更:', payload);
             
             // コネクション情報を再読み込み
             this.loadConnections();
@@ -465,5 +465,5 @@
         }
     });
 
-    console.log('[MembersConnection] 初期化完了');
+    // console.log('[MembersConnection] 初期化完了');
 })();

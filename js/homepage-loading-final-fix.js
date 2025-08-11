@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[LoadingFinalFix] 初期化開始');
+    // console.log('[LoadingFinalFix] 初期化開始');
     
     // 1. hero-fallback.svgを非表示にする
     const hideFallbackImage = () => {
@@ -96,7 +96,7 @@
             // 再生を試みる
             const playVideo = () => {
                 video.play().then(() => {
-                    console.log('[LoadingFinalFix] 動画再生成功');
+                    // console.log('[LoadingFinalFix] 動画再生成功');
                     video.playbackRate = 2.0;
                 }).catch(err => {
                     console.error('[LoadingFinalFix] 動画再生エラー:', err);
@@ -174,7 +174,7 @@
             };
         }
         
-        console.log('[LoadingFinalFix] 初期化完了');
+        // console.log('[LoadingFinalFix] 初期化完了');
     };
     
     // DOMContentLoadedより早く実行

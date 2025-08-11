@@ -105,7 +105,7 @@
             
             window.DashboardStats.prototype.initializeDefaultData = async function() {
                 try {
-                    console.log('[FinalFixes] 初期データ作成をスキップ（dashboard_stats 406エラー回避）');
+                    // console.log('[FinalFixes] 初期データ作成をスキップ（dashboard_stats 406エラー回避）');
                     
                     // dashboard_statsテーブルへのアクセスを完全にスキップ
                     this.currentStats = {
@@ -130,13 +130,13 @@
 
     // 全ての修正を適用
     const applyFinalFixes = () => {
-        console.log('[FinalFixes] 最終修正を適用中...');
+        // console.log('[FinalFixes] 最終修正を適用中...');
         
         fixEventsDateField();
         fixMatchingsQueries();
         preventDashboardStatsAccess();
         
-        console.log('[FinalFixes] 最終修正が完了しました');
+        // console.log('[FinalFixes] 最終修正が完了しました');
     };
 
     // すぐに実行

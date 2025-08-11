@@ -18,7 +18,7 @@
          * 初期化
          */
         init() {
-            console.log('[UpcomingEvents] 初期化開始');
+            // console.log('[UpcomingEvents] 初期化開始');
             
             // コンテナを探す
             this.findContainer();
@@ -44,7 +44,7 @@
                     const card = header.closest('.content-card');
                     if (card) {
                         this.container = card.querySelector('.event-list');
-                        console.log('[UpcomingEvents] コンテナを発見');
+                        // console.log('[UpcomingEvents] コンテナを発見');
                         break;
                     }
                 }
@@ -61,12 +61,12 @@
         async loadUpcomingEvents() {
             // キャッシュチェック
             if (this.eventCache && this.cacheTime && (Date.now() - this.cacheTime) < this.cacheTTL) {
-                console.log('[UpcomingEvents] キャッシュからイベントを表示');
+                // console.log('[UpcomingEvents] キャッシュからイベントを表示');
                 this.displayEvents(this.eventCache);
                 return;
             }
 
-            console.log('[UpcomingEvents] データベースからイベントを取得中...');
+            // console.log('[UpcomingEvents] データベースからイベントを取得中...');
             
             try {
                 const now = new Date().toISOString();
@@ -81,7 +81,7 @@
 
                 // event_dateがエラーの場合、dateフィールドで試す
                 if (error && error.message.includes('event_date')) {
-                    console.log('[UpcomingEvents] event_dateフィールドが存在しません。dateフィールドで再試行...');
+                    // console.log('[UpcomingEvents] event_dateフィールドが存在しません。dateフィールドで再試行...');
                     
                     const result = await window.supabase
                         .from('events')
@@ -100,7 +100,7 @@
                     return;
                 }
 
-                console.log('[UpcomingEvents] 取得したイベント数:', events?.length || 0);
+                // console.log('[UpcomingEvents] 取得したイベント数:', events?.length || 0);
                 
                 // キャッシュに保存
                 this.eventCache = events || [];
@@ -204,7 +204,7 @@
          * イベント詳細を表示
          */
         async showEventDetail(eventId) {
-            console.log('[UpcomingEvents] イベント詳細を表示:', eventId);
+            // console.log('[UpcomingEvents] イベント詳細を表示:', eventId);
             
             // event-detail-modal.jsの関数を呼び出し
             if (window.eventDetailModal && typeof window.eventDetailModal.show === 'function') {
@@ -273,8 +273,8 @@
 
                 if (!error && data && data.length > 0) {
                     const columns = Object.keys(data[0]);
-                    console.log('[UpcomingEvents] イベントテーブルのカラム:', columns);
-                    console.log('[UpcomingEvents] サンプルデータ:', data[0]);
+                    // console.log('[UpcomingEvents] イベントテーブルのカラム:', columns);
+                    // console.log('[UpcomingEvents] サンプルデータ:', data[0]);
                 }
             } catch (error) {
                 console.error('[UpcomingEvents] テーブル構造確認エラー:', error);
@@ -297,6 +297,6 @@
         }, 100);
     }
 
-    console.log('[UpcomingEvents] モジュールが読み込まれました');
+    // console.log('[UpcomingEvents] モジュールが読み込まれました');
 
 })();

@@ -14,7 +14,7 @@
 (function() {
     'use strict';
 
-    console.log('[ReferralUnified] 紹介システム統一モジュール初期化');
+    // console.log('[ReferralUnified] 紹介システム統一モジュール初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -28,7 +28,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[ReferralUnified] 初期化開始');
+        // console.log('[ReferralUnified] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -42,7 +42,7 @@
         }
 
         currentUserId = user.id;
-        console.log('[ReferralUnified] ユーザーID:', currentUserId);
+        // console.log('[ReferralUnified] ユーザーID:', currentUserId);
 
         // イベントリスナーの設定
         setupEventListeners();
@@ -458,7 +458,7 @@
     // 紹介履歴のフィルタリング
     function filterReferrals() {
         const filterValue = document.getElementById('status-filter').value;
-        console.log('[ReferralUnified] フィルター:', filterValue);
+        // console.log('[ReferralUnified] フィルター:', filterValue);
         // フィルタリング処理を実装
     }
 
@@ -523,7 +523,7 @@
 
     function showNotification(message, type = 'info') {
         // 通知の表示（実装は既存の通知システムに依存）
-        console.log(`[ReferralUnified] ${type}: ${message}`);
+        // console.log(`[ReferralUnified] ${type}: ${message}`);
     }
 
     // 初期化実行

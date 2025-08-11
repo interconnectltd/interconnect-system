@@ -1,10 +1,10 @@
 // auth.uid()問題の修正
-console.log('=== Auth修正版 ===');
+// console.log('=== Auth修正版 ===');
 
 // ReferralManagerのcreateReferralLinkメソッドを修正
 if (window.ReferralManager) {
     window.ReferralManager.prototype.createReferralLink = async function(description = null) {
-        console.log('[Auth-Fix] 紹介リンク作成開始...');
+        // console.log('[Auth-Fix] 紹介リンク作成開始...');
         
         try {
             // ユーザーIDを確実に取得
@@ -17,8 +17,8 @@ if (window.ReferralManager) {
                 this.user = user;
             }
             
-            console.log('[Auth-Fix] ユーザーID:', this.user.id);
-            console.log('[Auth-Fix] 説明:', description);
+            // console.log('[Auth-Fix] ユーザーID:', this.user.id);
+            // console.log('[Auth-Fix] 説明:', description);
             
             // 修正版の関数を使用
             const { data, error } = await window.supabaseClient
@@ -27,11 +27,11 @@ if (window.ReferralManager) {
                     p_description: description || 'マイ紹介リンク'
                 });
             
-            console.log('[Auth-Fix] 作成結果:', { data, error });
+            // console.log('[Auth-Fix] 作成結果:', { data, error });
             
             if (error) {
                 // 元の関数名でも試す
-                console.log('[Auth-Fix] 元の関数名で再試行...');
+                // console.log('[Auth-Fix] 元の関数名で再試行...');
                 const { data: data2, error: error2 } = await window.supabaseClient
                     .rpc('create_invite_link', {
                         p_user_id: this.user.id,
@@ -43,7 +43,7 @@ if (window.ReferralManager) {
                     throw error2;
                 }
                 
-                console.log('[Auth-Fix] 元の関数で成功:', data2);
+                // console.log('[Auth-Fix] 元の関数で成功:', data2);
                 
                 // 成功通知
                 this.showNotification('success', '紹介リンクを作成しました');
@@ -59,7 +59,7 @@ if (window.ReferralManager) {
             }
             
             if (data && data.success) {
-                console.log('[Auth-Fix] 作成成功:', data);
+                // console.log('[Auth-Fix] 作成成功:', data);
                 
                 // 成功通知
                 this.showNotification('success', '紹介リンクを作成しました');
@@ -82,7 +82,7 @@ if (window.ReferralManager) {
     
     // loadReferralLinksも修正
     window.ReferralManager.prototype.loadReferralLinks = async function() {
-        console.log('[Auth-Fix] 紹介リンク読み込み開始...');
+        // console.log('[Auth-Fix] 紹介リンク読み込み開始...');
         
         try {
             // ユーザーIDを確実に取得
@@ -94,7 +94,7 @@ if (window.ReferralManager) {
                 this.user = user;
             }
             
-            console.log('[Auth-Fix] ユーザーID:', this.user.id);
+            // console.log('[Auth-Fix] ユーザーID:', this.user.id);
             
             // 複数の方法で取得を試みる
             let links = null;
@@ -107,13 +107,13 @@ if (window.ReferralManager) {
                         p_user_id: this.user.id
                     });
                 
-                console.log('[Auth-Fix] 修正版関数結果:', { links1, error1 });
+                // console.log('[Auth-Fix] 修正版関数結果:', { links1, error1 });
                 
                 if (!error1 && links1) {
                     links = links1;
                 }
             } catch (e) {
-                console.log('[Auth-Fix] 修正版関数が存在しない:', e);
+                // console.log('[Auth-Fix] 修正版関数が存在しない:', e);
             }
             
             // 方法2: 通常のSELECT
@@ -124,7 +124,7 @@ if (window.ReferralManager) {
                     .eq('created_by', this.user.id)
                     .order('created_at', { ascending: false });
                 
-                console.log('[Auth-Fix] 通常SELECT結果:', { links2, error2 });
+                // console.log('[Auth-Fix] 通常SELECT結果:', { links2, error2 });
                 
                 if (!error2) {
                     links = links2;
@@ -140,7 +140,7 @@ if (window.ReferralManager) {
             }
             
             if (!links || links.length === 0) {
-                console.log('[Auth-Fix] リンクが0件です');
+                // console.log('[Auth-Fix] リンクが0件です');
                 linksList.innerHTML = `
                     <div class="empty-links">
                         <i class="fas fa-link"></i>
@@ -149,7 +149,7 @@ if (window.ReferralManager) {
                     </div>
                 `;
             } else {
-                console.log('[Auth-Fix] リンクを表示:', links.length + '件');
+                // console.log('[Auth-Fix] リンクを表示:', links.length + '件');
                 const html = links.map(link => this.renderLinkItem(link)).join('');
                 linksList.innerHTML = html;
             }
@@ -161,4 +161,4 @@ if (window.ReferralManager) {
     };
 }
 
-console.log('=== Auth修正版適用完了 ===');
+// console.log('=== Auth修正版適用完了 ===');

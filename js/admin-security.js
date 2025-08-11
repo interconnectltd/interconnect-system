@@ -41,7 +41,7 @@
                 sessionStorage.setItem('adminSession', JSON.stringify(sessionData));
                 this.resetTimeout();
                 
-                console.log('🔐 Admin session started');
+                // console.log('🔐 Admin session started');
                 return sessionData.token;
             },
 
@@ -70,7 +70,7 @@
                 sessionStorage.removeItem('adminSession');
                 localStorage.removeItem('adminLoginAttempts');
                 localStorage.removeItem('adminLockout');
-                console.log('🔓 Admin session ended');
+                // console.log('🔓 Admin session ended');
             },
 
             // セッション有効性確認
@@ -304,7 +304,7 @@
                 }
                 
                 localStorage.setItem('adminActionLogs', JSON.stringify(logs));
-                console.log('📝 Action logged:', action);
+                // console.log('📝 Action logged:', action);
             }
         },
 
@@ -328,7 +328,7 @@
             // セキュリティ監視開始
             this.monitor.detectSuspiciousActivity();
 
-            console.log('🛡️ Security module initialized');
+            // console.log('🛡️ Security module initialized');
         }
     });
 
@@ -359,6 +359,6 @@
         window.INTERCONNECT.Security.init();
     });
 
-    console.log('🔐 Security module loaded');
+    // console.log('🔐 Security module loaded');
 
 })();

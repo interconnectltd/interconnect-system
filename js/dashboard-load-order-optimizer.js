@@ -36,5 +36,5 @@
         originalWarn.apply(console, args);
     };
     
-    console.log('[LoadOptimizer] コンソールエラー抑制を適用');
+    // console.log('[LoadOptimizer] コンソールエラー抑制を適用');
 })();

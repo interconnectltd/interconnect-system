@@ -10,7 +10,7 @@
     async function syncUserProfile() {
         // Supabaseの初期化を待つ
         if (!window.supabaseClient) {
-            console.log('[ProfileSync] Waiting for Supabase initialization...');
+            // console.log('[ProfileSync] Waiting for Supabase initialization...');
             // 少し待ってから再試行
             setTimeout(() => {
                 if (window.supabaseClient) {
@@ -30,11 +30,11 @@
             }
             
             if (!user) {
-                console.log('No authenticated user');
+                // console.log('No authenticated user');
                 return;
             }
             
-            console.log('Current Supabase user:', user);
+            // console.log('Current Supabase user:', user);
             
             // ユーザーメタデータから情報を取得
             const userData = {
@@ -50,13 +50,13 @@
             
             // LINE IDが名前として設定されている場合の対処
             if (userData.name && userData.name.startsWith('line_')) {
-                console.log('Detected LINE ID as name, checking for display_name');
+                // console.log('Detected LINE ID as name, checking for display_name');
                 if (userData.display_name && !userData.display_name.startsWith('line_')) {
                     userData.name = userData.display_name;
                 }
             }
             
-            console.log('Synced user data:', userData);
+            // console.log('Synced user data:', userData);
             
             // localStorageを更新
             localStorage.setItem('user', JSON.stringify(userData));
@@ -77,16 +77,16 @@
     
     // ユーザー情報をDOMに反映
     function updateUserDisplay(userData) {
-        console.log('[ProfileSync] updateUserDisplay called with:', userData);
+        // console.log('[ProfileSync] updateUserDisplay called with:', userData);
         
         // 名前の更新
         const userNameElements = document.querySelectorAll('.user-name');
-        console.log('[ProfileSync] Found user-name elements:', userNameElements.length);
+        // console.log('[ProfileSync] Found user-name elements:', userNameElements.length);
         
         userNameElements.forEach((element, index) => {
             if (element) {
                 const newName = userData.name || userData.display_name || 'ゲスト';
-                console.log(`[ProfileSync] Updating element ${index}: ${element.textContent} -> ${newName}`);
+                // console.log(`[ProfileSync] Updating element ${index}: ${element.textContent} -> ${newName}`);
                 element.textContent = newName;
             }
         });
@@ -128,7 +128,7 @@
                 return { error };
             }
             
-            console.log('Profile updated successfully:', data);
+            // console.log('Profile updated successfully:', data);
             
             // 更新後に同期
             await syncUserProfile();
@@ -143,14 +143,14 @@
     
     // 初期化
     function init() {
-        console.log('ProfileSync init called');
+        // console.log('ProfileSync init called');
         
         // 即座にlocalStorageから読み込んで表示を更新
         const userStr = localStorage.getItem('user');
         if (userStr) {
             try {
                 const userData = JSON.parse(userStr);
-                console.log('Immediate update with localStorage data:', userData);
+                // console.log('Immediate update with localStorage data:', userData);
                 updateUserDisplay(userData);
             } catch (e) {
                 console.error('Failed to parse immediate user data:', e);
@@ -178,21 +178,21 @@
     // さらに早く実行（DOMContentLoaded前）
     if (typeof Storage !== 'undefined') {
         const userStr = localStorage.getItem('user');
-        console.log('[ProfileSync] Early sync - localStorage user:', userStr);
+        // console.log('[ProfileSync] Early sync - localStorage user:', userStr);
         if (userStr) {
             try {
                 const userData = JSON.parse(userStr);
                 
                 // LINE IDが名前になっている場合の強制修正
                 if (userData.name && userData.name.startsWith('line_')) {
-                    console.log('[ProfileSync] Detected LINE ID as name, fixing...');
+                    // console.log('[ProfileSync] Detected LINE ID as name, fixing...');
                     if (userData.display_name && !userData.display_name.startsWith('line_')) {
                         userData.name = userData.display_name;
-                        console.log('[ProfileSync] Fixed name from display_name:', userData.name);
+                        // console.log('[ProfileSync] Fixed name from display_name:', userData.name);
                     } else {
                         // display_nameもLINE IDの場合、デフォルト名を設定
                         userData.name = 'ユーザー';
-                        console.log('[ProfileSync] Set default name');
+                        // console.log('[ProfileSync] Set default name');
                     }
                     // 修正したデータを保存
                     localStorage.setItem('user', JSON.stringify(userData));
@@ -203,24 +203,24 @@
                     window._profileSyncLastUpdate = Date.now();
                     
                     const userNameElements = document.querySelectorAll('.user-name');
-                    console.log('[ProfileSync] Immediate update - found elements:', userNameElements.length);
+                    // console.log('[ProfileSync] Immediate update - found elements:', userNameElements.length);
                     userNameElements.forEach((element, index) => {
                         if (element) {
                             const oldText = element.textContent;
                             element.textContent = userData.name || userData.display_name || 'ユーザー';
-                            console.log(`[ProfileSync] Updated element ${index}: ${oldText} -> ${element.textContent}`);
+                            // console.log(`[ProfileSync] Updated element ${index}: ${oldText} -> ${element.textContent}`);
                         }
                     });
                 }
                 
                 // DOMが準備できたらもう一度実行
                 if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                    console.log('[ProfileSync] DOM ready, updating immediately');
+                    // console.log('[ProfileSync] DOM ready, updating immediately');
                     updateUserDisplay(userData);
                 } else {
-                    console.log('[ProfileSync] Waiting for DOMContentLoaded');
+                    // console.log('[ProfileSync] Waiting for DOMContentLoaded');
                     document.addEventListener('DOMContentLoaded', () => {
-                        console.log('[ProfileSync] DOMContentLoaded fired - updating display');
+                        // console.log('[ProfileSync] DOMContentLoaded fired - updating display');
                         updateUserDisplay(userData);
                         // さらに確実にするため、少し遅延して再実行
                         setTimeout(() => updateUserDisplay(userData), 100);
@@ -234,23 +234,23 @@
     
     // 強制的にLINE IDを修正する関数
     function forceFixLineId() {
-        console.log('[ProfileSync] Force fixing LINE ID...');
+        // console.log('[ProfileSync] Force fixing LINE ID...');
         const userStr = localStorage.getItem('user');
         if (userStr) {
             try {
                 const userData = JSON.parse(userStr);
-                console.log('[ProfileSync] Current user data:', userData);
+                // console.log('[ProfileSync] Current user data:', userData);
                 
                 // LINE IDを実際の名前に修正
                 if (userData.name && userData.name.startsWith('line_')) {
                     if (userData.display_name && !userData.display_name.startsWith('line_')) {
                         userData.name = userData.display_name;
-                        console.log('[ProfileSync] Fixed name to:', userData.name);
+                        // console.log('[ProfileSync] Fixed name to:', userData.name);
                     } else {
                         // 手動で「りゅう」を設定
                         userData.name = 'りゅう';
                         userData.display_name = 'りゅう';
-                        console.log('[ProfileSync] Manually set name to: りゅう');
+                        // console.log('[ProfileSync] Manually set name to: りゅう');
                     }
                     localStorage.setItem('user', JSON.stringify(userData));
                 }
@@ -260,7 +260,7 @@
                 userNameElements.forEach((element, index) => {
                     if (element) {
                         element.textContent = userData.name || 'ユーザー';
-                        console.log(`[ProfileSync] Force updated element ${index} to:`, element.textContent);
+                        // console.log(`[ProfileSync] Force updated element ${index} to:`, element.textContent);
                     }
                 });
                 
@@ -285,11 +285,11 @@
         if (userStr) {
             try {
                 const userData = JSON.parse(userStr);
-                console.log('[ProfileSync] Delayed update (500ms)');
+                // console.log('[ProfileSync] Delayed update (500ms)');
                 
                 // 遅延実行でも強制的にLINE IDをチェック・修正
                 if (userData.name && userData.name.startsWith('line_')) {
-                    console.log('[ProfileSync] Delayed: Still LINE ID, forcing fix');
+                    // console.log('[ProfileSync] Delayed: Still LINE ID, forcing fix');
                     if (userData.display_name && !userData.display_name.startsWith('line_')) {
                         userData.name = userData.display_name;
                     } else {
@@ -305,7 +305,7 @@
                 userNameElements.forEach(element => {
                     if (element && element.textContent.startsWith('line_')) {
                         element.textContent = userData.name || 'ユーザー';
-                        console.log('[ProfileSync] Force fixed LINE ID in DOM');
+                        // console.log('[ProfileSync] Force fixed LINE ID in DOM');
                     }
                 });
             } catch (e) {
@@ -324,10 +324,10 @@
                     try {
                         const userData = JSON.parse(userStr);
                         element.textContent = userData.name || userData.display_name || 'ユーザー';
-                        console.log('[ProfileSync] Final fix applied at 1000ms');
+                        // console.log('[ProfileSync] Final fix applied at 1000ms');
                     } catch (e) {
                         element.textContent = 'ユーザー';
-                        console.log('[ProfileSync] Final fallback applied');
+                        // console.log('[ProfileSync] Final fallback applied');
                     }
                 }
             }

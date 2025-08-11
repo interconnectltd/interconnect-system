@@ -1,41 +1,41 @@
 // RLS問題の回避策
-console.log('=== RLS回避策実装 ===');
+// console.log('=== RLS回避策実装 ===');
 
 // ReferralManagerを拡張
 if (window.ReferralManager) {
     // loadReferralLinksメソッドを完全に置き換え
     window.ReferralManager.prototype.loadReferralLinks = async function() {
-        console.log('[RLS-Fix] 紹介リンク読み込み開始...');
+        // console.log('[RLS-Fix] 紹介リンク読み込み開始...');
         
         try {
             // 方法1: 通常のSELECT
-            console.log('[RLS-Fix] 方法1: 通常のSELECT実行');
+            // console.log('[RLS-Fix] 方法1: 通常のSELECT実行');
             const { data: links1, error: error1 } = await window.supabaseClient
                 .from('invite_links')
                 .select('*')
                 .eq('created_by', this.user.id)
                 .order('created_at', { ascending: false });
             
-            console.log('[RLS-Fix] 方法1結果:', { links1, error1 });
+            // console.log('[RLS-Fix] 方法1結果:', { links1, error1 });
             
             // 方法2: 別の書き方でSELECT
-            console.log('[RLS-Fix] 方法2: filter使用');
+            // console.log('[RLS-Fix] 方法2: filter使用');
             const { data: links2, error: error2 } = await window.supabaseClient
                 .from('invite_links')
                 .select('*')
                 .filter('created_by', 'eq', this.user.id)
                 .order('created_at', { ascending: false });
             
-            console.log('[RLS-Fix] 方法2結果:', { links2, error2 });
+            // console.log('[RLS-Fix] 方法2結果:', { links2, error2 });
             
             // 方法3: RPC経由で取得
-            console.log('[RLS-Fix] 方法3: RPC経由');
+            // console.log('[RLS-Fix] 方法3: RPC経由');
             const { data: links3, error: error3 } = await window.supabaseClient
                 .rpc('get_user_invite_links', {
                     p_user_id: this.user.id
                 });
             
-            console.log('[RLS-Fix] 方法3結果:', { links3, error3 });
+            // console.log('[RLS-Fix] 方法3結果:', { links3, error3 });
             
             // 成功したデータを使用
             const links = links1 || links2 || links3 || [];
@@ -54,7 +54,7 @@ if (window.ReferralManager) {
             }
             
             if (!links || links.length === 0) {
-                console.log('[RLS-Fix] リンクが0件です');
+                // console.log('[RLS-Fix] リンクが0件です');
                 linksList.innerHTML = `
                     <div class="empty-links">
                         <i class="fas fa-link"></i>
@@ -63,7 +63,7 @@ if (window.ReferralManager) {
                     </div>
                 `;
             } else {
-                console.log('[RLS-Fix] リンクを表示:', links.length + '件');
+                // console.log('[RLS-Fix] リンクを表示:', links.length + '件');
                 const html = links.map(link => this.renderLinkItem(link)).join('');
                 linksList.innerHTML = html;
             }
@@ -74,7 +74,7 @@ if (window.ReferralManager) {
             // エラー時でもローカルストレージから復元を試みる
             const cachedLinks = localStorage.getItem('referral_links_cache');
             if (cachedLinks) {
-                console.log('[RLS-Fix] キャッシュから復元');
+                // console.log('[RLS-Fix] キャッシュから復元');
                 const links = JSON.parse(cachedLinks);
                 const linksList = document.getElementById('links-list');
                 if (linksList && links.length > 0) {
@@ -89,7 +89,7 @@ if (window.ReferralManager) {
     const originalCreate = window.ReferralManager.prototype.createReferralLink;
     
     window.ReferralManager.prototype.createReferralLink = async function(description = null) {
-        console.log('[RLS-Fix] リンク作成開始');
+        // console.log('[RLS-Fix] リンク作成開始');
         
         try {
             // 元の作成処理を実行
@@ -110,7 +110,7 @@ if (window.ReferralManager) {
             cached.unshift(linkData);
             localStorage.setItem('referral_links_cache', JSON.stringify(cached));
             
-            console.log('[RLS-Fix] ローカルキャッシュに保存:', linkData);
+            // console.log('[RLS-Fix] ローカルキャッシュに保存:', linkData);
             
             // 複数回の再読み込みを試みる
             setTimeout(() => this.loadReferralLinks(), 500);
@@ -163,9 +163,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 GRANT EXECUTE ON FUNCTION get_user_invite_links TO authenticated;
     `;
     
-    console.log('以下のSQLをSupabaseで実行してください:');
-    console.log(sql);
+    // console.log('以下のSQLをSupabaseで実行してください:');
+    // console.log(sql);
 };
 
-console.log('=== RLS回避策準備完了 ===');
-console.log('createRPCFunction() を実行してRPC関数のSQLを表示できます');
+// console.log('=== RLS回避策準備完了 ===');
+// console.log('createRPCFunction() を実行してRPC関数のSQLを表示できます');

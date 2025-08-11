@@ -84,7 +84,7 @@
 
             // 招待コードがある場合の処理
             if (inviteCode && inviterId) {
-                console.log('招待コードを処理中:', inviteCode);
+                // console.log('招待コードを処理中:', inviteCode);
 
                 // 招待記録を作成
                 const { error: invitationError } = await supabase

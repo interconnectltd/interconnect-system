@@ -27,7 +27,7 @@
             // 現在のユーザーを取得
             const { data: { user } } = await window.supabase.auth.getUser();
             if (!user) {
-                console.log('[ProfileViewer] Not authenticated');
+                // console.log('[ProfileViewer] Not authenticated');
                 return;
             }
 
@@ -226,7 +226,7 @@
     // DOMContentLoaded後に初期化
     document.addEventListener('DOMContentLoaded', () => {
         window.profileViewer = new ProfileViewer();
-        console.log('[ProfileViewer] Initialized');
+        // console.log('[ProfileViewer] Initialized');
     });
 
 })();

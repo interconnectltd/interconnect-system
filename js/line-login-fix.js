@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             
-            console.log('LINE Login Fix: Button clicked');
+            // console.log('LINE Login Fix: Button clicked');
             
             // Channel ID and redirect URI
             const LINE_CHANNEL_ID = '2007688781';
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '&scope=' + encodeURIComponent('profile openid email') +
                 '&nonce=' + nonce;
             
-            console.log('Redirecting to:', authUrl);
+            // console.log('Redirecting to:', authUrl);
             
             // Redirect
             window.location.href = authUrl;

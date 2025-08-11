@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[MembersViewMode] 初期化開始...');
+    // console.log('[MembersViewMode] 初期化開始...');
 
     class MembersViewModeManager {
         constructor() {
@@ -312,5 +312,5 @@
         };
     }
 
-    console.log('[MembersViewMode] 初期化完了');
+    // console.log('[MembersViewMode] 初期化完了');
 })();

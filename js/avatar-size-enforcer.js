@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[AvatarEnforcer] 初期化開始');
+    // console.log('[AvatarEnforcer] 初期化開始');
     
     // サイズ定義
     const AVATAR_SIZES = {
@@ -84,7 +84,7 @@
         });
         
         if (fixedCount > 0) {
-            console.log(`[AvatarEnforcer] ${fixedCount}個のアバターサイズを修正`);
+            // console.log(`[AvatarEnforcer] ${fixedCount}個のアバターサイズを修正`);
         }
         
         return fixedCount;
@@ -152,7 +152,7 @@
             });
             
             if (hasNewAvatars) {
-                console.log('[AvatarEnforcer] 新しいアバター要素を検出');
+                // console.log('[AvatarEnforcer] 新しいアバター要素を検出');
                 setTimeout(enforceAvatarSizes, 100);
             }
         });
@@ -165,7 +165,7 @@
     
     // 初期化
     function initialize() {
-        console.log('[AvatarEnforcer] 実行開始');
+        // console.log('[AvatarEnforcer] 実行開始');
         
         // CSS競合をチェック
         const conflicts = detectCSSConflicts();
@@ -198,7 +198,7 @@
             resizeTimer = setTimeout(enforceAvatarSizes, 250);
         });
         
-        console.log('[AvatarEnforcer] 初期化完了');
+        // console.log('[AvatarEnforcer] 初期化完了');
     }
     
     // DOMContentLoaded後に実行

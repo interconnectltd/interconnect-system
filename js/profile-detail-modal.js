@@ -5,7 +5,7 @@
 (function() {
     'use strict';
     
-    console.log('[ProfileDetailModal] 初期化開始');
+    // console.log('[ProfileDetailModal] 初期化開始');
     
     class ProfileDetailModal {
         constructor() {
@@ -25,7 +25,7 @@
                 }
                 
                 if (!window.supabaseClient || !window.supabaseClient.auth) {
-                    console.log('[ProfileDetailModal] Waiting for Supabase initialization...');
+                    // console.log('[ProfileDetailModal] Waiting for Supabase initialization...');
                     // 初期化をスキップして後で再試行
                     window.addEventListener('supabaseReady', () => this.init());
                     return;
@@ -415,7 +415,7 @@
                         meetingMinutes = data;
                     }
                 } catch (e) {
-                    console.log('[ProfileDetailModal] meeting_minutesテーブルは存在しません');
+                    // console.log('[ProfileDetailModal] meeting_minutesテーブルは存在しません');
                 }
                 
                 // マッチングスコアを計算
@@ -836,6 +836,6 @@
     // グローバル公開
     window.profileDetailModal = new ProfileDetailModal();
     
-    console.log('[ProfileDetailModal] 初期化完了');
+    // console.log('[ProfileDetailModal] 初期化完了');
     
 })();

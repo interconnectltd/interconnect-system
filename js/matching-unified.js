@@ -12,7 +12,7 @@
 (function() {
     'use strict';
 
-    console.log('[MatchingUnified] マッチングシステム初期化');
+    // console.log('[MatchingUnified] マッチングシステム初期化');
     
     // 他のレーダーチャート関数との競合を防ぐ
     if (window.drawRadarChart || window.drawRadarChartForUser) {
@@ -33,7 +33,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[MatchingUnified] 初期化開始');
+        // console.log('[MatchingUnified] 初期化開始');
 
         try {
             // Supabaseの準備を待つ
@@ -49,7 +49,7 @@
             }
 
             currentUserId = user.id;
-            console.log('[MatchingUnified] ユーザーID:', currentUserId);
+            // console.log('[MatchingUnified] ユーザーID:', currentUserId);
 
             // イベントリスナーの設定
             setupEventListeners();
@@ -89,7 +89,7 @@
     // マッチング候補の読み込み
     async function loadMatchingCandidates() {
         try {
-            console.log('[MatchingUnified] マッチング候補読み込み開始');
+            // console.log('[MatchingUnified] マッチング候補読み込み開始');
             
             const container = document.getElementById('matching-container');
             if (!container) {
@@ -132,7 +132,7 @@
             // 自分以外のユーザーをフィルタリング（user_profilesではidカラムを使用）
             const users = allUsers ? allUsers.filter(user => user.id !== currentUserId) : [];
             
-            console.log('[MatchingUnified] 取得したユーザー数:', users.length);
+            // console.log('[MatchingUnified] 取得したユーザー数:', users.length);
             
             if (!users || users.length === 0) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><h3>マッチング候補が見つかりません</h3><p>条件を変更して再度お試しください</p></div>';
@@ -141,7 +141,7 @@
             
             // 各ユーザーのコネクションステータスを取得（user_profilesではidカラムを使用）
             const userIds = users.map(u => u.id).filter(id => id); // null/undefinedを除外
-            console.log('[MatchingUnified] フィルタリング後のuserIds:', userIds);
+            // console.log('[MatchingUnified] フィルタリング後のuserIds:', userIds);
             
             let connections = [];
             
@@ -158,7 +158,7 @@
                         (conn.user_id === currentUserId && userIds.includes(conn.connected_user_id)) ||
                         (userIds.includes(conn.user_id) && conn.connected_user_id === currentUserId)
                     ) : [];
-                    console.log('[MatchingUnified] 取得したconnections:', connections);
+                    // console.log('[MatchingUnified] 取得したconnections:', connections);
                 }
             }
             
@@ -284,7 +284,7 @@
 
     // マッチングユーザーの表示
     function displayMatchingUsers() {
-        console.log('[MatchingUnified] displayMatchingUsers開始, ユーザー数:', matchingUsers.length);
+        // console.log('[MatchingUnified] displayMatchingUsers開始, ユーザー数:', matchingUsers.length);
         const container = document.getElementById('matching-container');
         if (!container) {
             console.error('[MatchingUnified] matching-containerが見つかりません');
@@ -323,14 +323,14 @@
         
         // レーダーチャートを描画（少し遅延させて確実にCanvasが準備されるようにする）
         setTimeout(() => {
-            console.log('[MatchingUnified] レーダーチャート描画を開始します。ユーザー数:', filteredUsers.length);
+            // console.log('[MatchingUnified] レーダーチャート描画を開始します。ユーザー数:', filteredUsers.length);
             // 全てのCanvas要素が存在するか確認
             const canvasElements = container.querySelectorAll('canvas[id^="radar-"]');
-            console.log('[MatchingUnified] Canvas要素数:', canvasElements.length);
+            // console.log('[MatchingUnified] Canvas要素数:', canvasElements.length);
             
             filteredUsers.forEach((user, index) => {
                 const userId = user.id;
-                console.log(`[MatchingUnified] ユーザー ${index + 1}/${filteredUsers.length} のレーダーチャート描画:`, userId);
+                // console.log(`[MatchingUnified] ユーザー ${index + 1}/${filteredUsers.length} のレーダーチャート描画:`, userId);
                 drawRadarChartForUser(user);
             });
         }, 300);
@@ -430,7 +430,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 const userId = btn.dataset.userId || e.target.closest('.connect-btn').dataset.userId;
-                console.log('[MatchingUnified] コネクトボタンクリック:', userId);
+                // console.log('[MatchingUnified] コネクトボタンクリック:', userId);
                 if (userId) {
                     sendConnectRequest(userId);
                 }
@@ -591,7 +591,7 @@
     // コネクト申請送信
     async function sendConnectRequest(recipientId) {
         try {
-            console.log('[MatchingUnified] コネクト申請送信:', recipientId);
+            // console.log('[MatchingUnified] コネクト申請送信:', recipientId);
             
             // 既存のコネクトを確認（シンプルなクエリに変更）
             const { data: allConnections } = await window.supabaseClient
@@ -837,7 +837,7 @@
     // 通知送信
     async function sendNotification(userId, type, title, content, relatedId = null, relatedType = null) {
         try {
-            console.log('[MatchingUnified] 通知送信:', { userId, type, title });
+            // console.log('[MatchingUnified] 通知送信:', { userId, type, title });
             
             const { error } = await window.supabaseClient
                 .from('notifications')
@@ -855,7 +855,7 @@
                 });
 
             if (error) throw error;
-            console.log('[MatchingUnified] 通知送信成功');
+            // console.log('[MatchingUnified] 通知送信成功');
             
         } catch (error) {
             console.error('[MatchingUnified] 通知送信エラー:', error);
@@ -875,7 +875,7 @@
                 });
 
             if (error) throw error;
-            console.log('[MatchingUnified] アクティビティ記録成功');
+            // console.log('[MatchingUnified] アクティビティ記録成功');
             
         } catch (error) {
             console.error('[MatchingUnified] アクティビティ記録エラー:', error);
@@ -938,7 +938,7 @@
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
         const userId = user.id;
-        console.log('[MatchingUnified] レーダーチャート描画開始:', userId);
+        // console.log('[MatchingUnified] レーダーチャート描画開始:', userId);
         const canvas = document.getElementById(`radar-${userId}`);
         if (!canvas) {
             console.error('[MatchingUnified] Canvas要素が見つかりません:', `radar-${userId}`);
@@ -946,7 +946,7 @@
             setTimeout(() => {
                 const retryCanvas = document.getElementById(`radar-${userId}`);
                 if (retryCanvas) {
-                    console.log('[MatchingUnified] Canvas要素が見つかりました（再試行）');
+                    // console.log('[MatchingUnified] Canvas要素が見つかりました（再試行）');
                     drawRadarChartForUser(user);
                 }
             }, 500);
@@ -954,7 +954,7 @@
         }
         
         const ctx = canvas.getContext('2d');
-        console.log('[MatchingUnified] Canvas取得成功:', canvas.width, 'x', canvas.height);
+        // console.log('[MatchingUnified] Canvas取得成功:', canvas.width, 'x', canvas.height);
         
         // Canvasのサイズを確認
         if (canvas.width === 0 || canvas.height === 0) {
@@ -1061,11 +1061,11 @@
             ctx.fill();
         });
         
-        console.log('[MatchingUnified] レーダーチャート描画完了:', userId);
+        // console.log('[MatchingUnified] レーダーチャート描画完了:', userId);
         
         // Canvasの表示状態を検証
         const canvasRect = canvas.getBoundingClientRect();
-        console.log('[MatchingUnified] Canvas表示状態:', {
+        // console.log('[MatchingUnified] Canvas表示状態:', {
             userId: userId,
             visible: canvasRect.width > 0 && canvasRect.height > 0,
             width: canvasRect.width,
@@ -1077,7 +1077,7 @@
 
     // ダミーデータを表示
     function displayDummyData() {
-        console.log('[MatchingUnified] ダミーデータを表示します');
+        // console.log('[MatchingUnified] ダミーデータを表示します');
         const dummyUsers = [
             {
                 id: 'dummy1',

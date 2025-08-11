@@ -30,7 +30,7 @@
      * Main initialization function
      */
     function initializeApp() {
-        console.log('🚀 Super Admin Interface Loading...');
+        // console.log('🚀 Super Admin Interface Loading...');
         
         // Show loading screen
         showLoadingScreen();
@@ -52,7 +52,7 @@
             // Hide loading screen after initialization
             setTimeout(hideLoadingScreen, 1000);
             
-            console.log('✅ Super Admin Interface Ready');
+            // console.log('✅ Super Admin Interface Ready');
         }, 500);
     }
 
@@ -144,7 +144,7 @@
 
     function loadPageContent(page) {
         // Simulate dynamic content loading
-        console.log(`Loading content for: ${page}`);
+        // console.log(`Loading content for: ${page}`);
         
         // Add page-specific initialization here
         switch(page) {
@@ -304,7 +304,7 @@
 
     function loadNotifications() {
         // Simulate loading notifications
-        console.log('Loading notifications...');
+        // console.log('Loading notifications...');
         
         // In a real app, this would be an API call
         SuperAdmin.state.notifications = [
@@ -349,14 +349,14 @@
         
         updateNotificationBadge();
         
-        console.log('All notifications marked as read');
+        // console.log('All notifications marked as read');
     }
 
     function initializeNotificationPolling() {
         // Poll for new notifications every 30 seconds
         setInterval(() => {
             // In a real app, this would check for new notifications
-            console.log('Checking for new notifications...');
+            // console.log('Checking for new notifications...');
         }, 30000);
     }
 
@@ -405,7 +405,7 @@
     }
 
     function handleQuickAdd(type) {
-        console.log(`Quick add: ${type}`);
+        // console.log(`Quick add: ${type}`);
         
         // Simulate action
         const actions = {
@@ -440,7 +440,7 @@
             if (menuBtn) {
                 menuBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    console.log('KPI card menu clicked');
+                    // console.log('KPI card menu clicked');
                 });
             }
         });
@@ -603,7 +603,7 @@
     function initializeMainCharts() {
         // Initialize main dashboard charts
         // In a real app, you would use a charting library like Chart.js or D3.js
-        console.log('Initializing main charts...');
+        // console.log('Initializing main charts...');
     }
 
     /**
@@ -766,7 +766,7 @@
     function performSearch(query) {
         if (query.length < 2) return;
         
-        console.log(`Searching for: ${query}`);
+        // console.log(`Searching for: ${query}`);
         
         // Implement search logic here
         // This could search through users, content, logs, etc.
@@ -860,17 +860,17 @@
      * Page-specific initialization functions
      */
     function initializeAnalytics() {
-        console.log('Initializing analytics page...');
+        // console.log('Initializing analytics page...');
         // Add analytics-specific functionality
     }
 
     function initializeSiteSettings() {
-        console.log('Initializing site settings page...');
+        // console.log('Initializing site settings page...');
         // Add site settings functionality
     }
 
     function initializeUserManagement() {
-        console.log('Initializing user management page...');
+        // console.log('Initializing user management page...');
         // Add user management functionality
     }
 
@@ -921,7 +921,7 @@
     if ('performance' in window) {
         window.addEventListener('load', function() {
             const loadTime = performance.now();
-            console.log(`⚡ Super Admin loaded in ${Math.round(loadTime)}ms`);
+            // console.log(`⚡ Super Admin loaded in ${Math.round(loadTime)}ms`);
         });
     }
 

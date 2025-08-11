@@ -1,9 +1,9 @@
 // リンク作成後の強制表示
-console.log('=== 強制表示デバッグ開始 ===');
+// console.log('=== 強制表示デバッグ開始 ===');
 
 // 作成されたリンクを直接表示する関数
 window.forceDisplayLink = function(linkData) {
-    console.log('強制表示実行:', linkData);
+    // console.log('強制表示実行:', linkData);
     
     const linksList = document.getElementById('links-list');
     if (!linksList) {
@@ -52,7 +52,7 @@ window.forceDisplayLink = function(linkData) {
     `;
     
     linksList.innerHTML = html;
-    console.log('リンクを強制表示しました');
+    // console.log('リンクを強制表示しました');
 };
 
 // createReferralLink関数をオーバーライド
@@ -60,7 +60,7 @@ if (window.ReferralManager) {
     const originalCreateLink = window.ReferralManager.prototype.createReferralLink;
     
     window.ReferralManager.prototype.createReferralLink = async function(description = null) {
-        console.log('[Override] createReferralLink呼び出し');
+        // console.log('[Override] createReferralLink呼び出し');
         
         try {
             // 元の関数を実行
@@ -123,4 +123,4 @@ window.shareLink = function(url, description) {
     }
 };
 
-console.log('=== 強制表示デバッグ準備完了 ===');
+// console.log('=== 強制表示デバッグ準備完了 ===');

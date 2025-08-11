@@ -42,7 +42,7 @@ class TimeRexBooking {
       // TimeRex予約ページのシンプルなURL
       const bookingUrl = `${this.baseUrl}/book/${this.pageId}${params.toString() ? '?' + params.toString() : ''}`;
       
-      console.log('簡略化された予約URL:', bookingUrl);
+      // console.log('簡略化された予約URL:', bookingUrl);
       
       // Edge Functionを使わずに直接開く
       this.openBookingWindow(bookingUrl);
@@ -60,23 +60,23 @@ class TimeRexBooking {
     const urlParams = new URLSearchParams(window.location.search);
     const urlRef = urlParams.get('ref');
     if (urlRef) {
-      console.log('紹介コード（URL）:', urlRef);
+      // console.log('紹介コード（URL）:', urlRef);
       return urlRef;
     }
     
     const sessionRef = sessionStorage.getItem('referralCode');
     if (sessionRef) {
-      console.log('紹介コード（セッション）:', sessionRef);
+      // console.log('紹介コード（セッション）:', sessionRef);
       return sessionRef;
     }
     
     const localRef = localStorage.getItem('referralCode');
     if (localRef) {
-      console.log('紹介コード（ローカル）:', localRef);
+      // console.log('紹介コード（ローカル）:', localRef);
       return localRef;
     }
     
-    console.log('紹介コード（直接アクセス）');
+    // console.log('紹介コード（直接アクセス）');
     return 'DIRECT'; // 直接アクセスの場合
   }
   

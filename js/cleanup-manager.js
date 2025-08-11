@@ -132,7 +132,7 @@
             this.clearAllIntervals();
             this.clearAllTimeouts();
             
-            console.log('All cleanup completed');
+            // console.log('All cleanup completed');
         }
     };
     

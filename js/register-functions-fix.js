@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[RegisterFix] 初期化開始');
+    // console.log('[RegisterFix] 初期化開始');
     
     // nextStep関数をグローバルに定義（既存の関数が無い場合）
     if (!window.nextStep) {
@@ -154,6 +154,6 @@
         });
     });
     
-    console.log('[RegisterFix] 初期化完了');
+    // console.log('[RegisterFix] 初期化完了');
     
 })();

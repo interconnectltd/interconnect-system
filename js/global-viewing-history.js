@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[GlobalViewingHistory] 閲覧履歴トラッキング初期化');
+    // console.log('[GlobalViewingHistory] 閲覧履歴トラッキング初期化');
     
     // グローバル閲覧履歴管理
     window.GlobalViewingHistory = {
@@ -36,7 +36,7 @@
             }
             
             localStorage.setItem(this.storageKey, JSON.stringify(history));
-            console.log('[GlobalViewingHistory] 履歴に追加:', userName);
+            // console.log('[GlobalViewingHistory] 履歴に追加:', userName);
         },
         
         // 履歴を取得
@@ -50,7 +50,7 @@
             const original = window.viewProfile;
             if (original) {
                 window.viewProfile = (userId) => {
-                    console.log('[GlobalViewingHistory] viewProfile:', userId);
+                    // console.log('[GlobalViewingHistory] viewProfile:', userId);
                     
                     // 元の関数を実行
                     const result = original(userId);
@@ -70,7 +70,7 @@
             const original = window.showDetailedReport;
             if (original) {
                 window.showDetailedReport = (profileId) => {
-                    console.log('[GlobalViewingHistory] showDetailedReport:', profileId);
+                    // console.log('[GlobalViewingHistory] showDetailedReport:', profileId);
                     
                     // 元の関数を実行
                     const result = original(profileId);
@@ -166,7 +166,7 @@
                 }
             });
             
-            console.log('[GlobalViewingHistory] 初期化完了');
+            // console.log('[GlobalViewingHistory] 初期化完了');
         }
     };
     

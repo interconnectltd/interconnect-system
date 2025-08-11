@@ -41,7 +41,7 @@
                 }
                 
                 this.initialized = true;
-                console.log('INTERCONNECT Core initialized v' + this.version);
+                // console.log('INTERCONNECT Core initialized v' + this.version);
                 
                 // デバッグモードの設定
                 const urlParams = new URLSearchParams(window.location.search);
@@ -58,14 +58,14 @@
                 }
                 
                 this.modules[name] = module;
-                console.log(`Module ${name} registered`);
+                // console.log(`Module ${name} registered`);
                 return true;
             },
             
             // デバッグログ
             log: function(...args) {
                 if (this.config.debug) {
-                    console.log('[INTERCONNECT]', ...args);
+                    // console.log('[INTERCONNECT]', ...args);
                 }
             },
             
