@@ -628,58 +628,48 @@ console.log('[DEBUG] window.MembersProfileModal:', !!window.MembersProfileModal)
 function initializeMembersProfileModal() {
     console.log('[MembersProfileModal] Initializing...');
     try {
-        if (!window.membersProfileModal) {
-            console.log('[MembersProfileModal] Creating new instance...');
-            window.membersProfileModal = new MembersProfileModal();
-            console.log('[MembersProfileModal] Instance created:', !!window.membersProfileModal);
-            
-            // インスタンス作成後のモーダル状態を確認
-            setTimeout(() => {
-                const modal = document.getElementById('memberProfileModal');
-                if (modal) {
-                    console.log('[DEBUG] Modal state after initialization:');
-                    console.log('[DEBUG]   - display:', modal.style.display);
-                    console.log('[DEBUG]   - computed display:', window.getComputedStyle(modal).display);
-                    console.log('[DEBUG]   - has show class:', modal.classList.contains('show'));
-                }
-            }, 100);
-            
-            // 初期化直後に確実に非表示にする
-            const modal = document.getElementById('memberProfileModal');
-            if (modal) {
-                modal.style.display = 'none';
-                modal.classList.remove('show');
-                console.log('[MembersProfileModal] Modal hidden after initialization');
-            }
-        } else {
-            console.log('[MembersProfileModal] Instance already exists');
+        // 常に新しいインスタンスを作成（既存のものは上書き）
+        console.log('[MembersProfileModal] Creating modal instance...');
+        window.membersProfileModal = new MembersProfileModal();
+        console.log('[MembersProfileModal] Instance created:', !!window.membersProfileModal);
+        
+        // 初期化直後に確実に非表示にする
+        const modal = document.getElementById('memberProfileModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+            console.log('[MembersProfileModal] Modal hidden after initialization');
+        }
+        
+        // グローバルに利用可能であることを確認
+        if (window.membersProfileModal && window.membersProfileModal.show) {
+            console.log('[MembersProfileModal] Modal ready to use');
         }
     } catch (error) {
         console.error('[MembersProfileModal] Initialization error:', error);
+        // エラー時でも最小限の機能を提供
+        window.membersProfileModal = {
+            show: function(userId) {
+                console.error('[MembersProfileModal] Failed to initialize, cannot show modal');
+                alert('プロフィールを表示できません。ページを再読み込みしてください。');
+            }
+        };
     }
 }
 
-// DOM準備チェック
+// 即座に初期化を実行
+console.log('[MembersProfileModal] Starting initialization...');
+initializeMembersProfileModal();
+
+// DOMContentLoadedでも再確認（念のため）
 if (document.readyState === 'loading') {
-    console.log('[MembersProfileModal] Waiting for DOMContentLoaded...');
-    document.addEventListener('DOMContentLoaded', initializeMembersProfileModal);
-} else {
-    console.log('[MembersProfileModal] DOM already loaded - Initializing immediately...');
-    initializeMembersProfileModal();
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!window.membersProfileModal || !window.membersProfileModal.show) {
+            console.log('[MembersProfileModal] Re-initializing on DOMContentLoaded...');
+            initializeMembersProfileModal();
+        }
+    });
 }
-
-// さらにフォールバックとして少し遅延して再初期化
-setTimeout(() => {
-    if (!window.membersProfileModal) {
-        console.log('[MembersProfileModal] Fallback initialization...');
-        initializeMembersProfileModal();
-    }
-    // 念のため再度非表示確認
-    const modal = document.getElementById('memberProfileModal');
-    if (modal && !modal.classList.contains('show')) {
-        modal.style.display = 'none';
-    }
-}, 500);
 
 console.log('[DEBUG] 5. ファイル読み込み完了時点');
 console.log('[DEBUG] window.MembersProfileModal:', !!window.MembersProfileModal);
