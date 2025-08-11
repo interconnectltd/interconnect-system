@@ -695,15 +695,15 @@ section {
 /* DISABLED:     border-radius: 50%; */
 /* DISABLED:     position: relative; */
 /* DISABLED: } */
- */
-.user-avatar::after { */
-    content: ''; */
-    position: absolute; */
-    inset: -5px; */
-    border: 2px solid var(--primary-color); */
-    border-radius: 50%; */
-    opacity: 0.3; */
-} */
+
+.user-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    opacity: 0.3;
+}
 
 .connection-line {
     width: 100px;

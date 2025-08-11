@@ -30,15 +30,15 @@
 /* DISABLED:     object-fit: cover; */
 /* DISABLED:     border: 2px solid #e0e0e0; */
 /* DISABLED: } */
- */
-.user-profile .user-name { */
-    font-weight: 500; */
-    color: #333; */
-    max-width: 150px; */
-    overflow: hidden; */
-    text-overflow: ellipsis; */
-    white-space: nowrap; */
-} */
+
+.user-profile .user-name {
+    font-weight: 500;
+    color: #333;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 .user-profile .fa-chevron-down {
     font-size: 12px;

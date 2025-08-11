@@ -170,17 +170,17 @@
 /* DISABLED:     border: 2px solid white; */
 /* DISABLED:     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 /* DISABLED: } */
- */
-/* ユーザー名 */ */
-.user-name { */
-    font-size: 0.9375rem; */
-    font-weight: 500; */
-    color: #2d3748; */
-    max-width: 120px; */
-    overflow: hidden; */
-    text-overflow: ellipsis; */
-    white-space: nowrap; */
-} */
+
+/* ユーザー名 */
+.user-name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #2d3748;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 /* ドロップダウン矢印 */
 .user-profile > i {
