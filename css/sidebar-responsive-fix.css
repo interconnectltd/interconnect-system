@@ -29,11 +29,8 @@
 .dashboard .main-content {
     flex: 1;
     margin-left: 0 !important;
-    padding-left: 0 !important; /* 左パディングも明示的に0に */
     width: 100% !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    padding-right: 0 !important;
+    padding: 0 !important;
     overflow-y: auto;
     background: #f8f9fa;
 }
@@ -123,10 +120,9 @@
         display: none !important;
     }
     
-    /* メインコンテンツを全幅に - 重要：左マージンを完全に削除 */
+    /* メインコンテンツを全幅に */
     .dashboard .main-content {
         margin-left: 0 !important;
-        padding-left: 0 !important; /* 追加：パディングも明示的に0に */
         width: 100% !important;
         margin-top: 60px !important; /* モバイルヘッダーの高さ分 */
     }
