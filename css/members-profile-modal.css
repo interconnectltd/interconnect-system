@@ -3,8 +3,39 @@
  * メンバーページのプロフィールモーダル専用スタイル
  */
 
+/* モーダルオーバーレイとコンテナ */
+#memberProfileModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+}
+
+#memberProfileModal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#memberProfileModal .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
 /* モーダル基本スタイル */
 #memberProfileModal .modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     max-width: 800px;
     width: 90%;
     max-height: 90vh;
@@ -17,6 +48,43 @@
     flex: 1;
     overflow-y: auto;
     padding: 30px;
+}
+
+/* モーダルヘッダー */
+#memberProfileModal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+}
+
+#memberProfileModal .modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+    font-weight: 600;
+}
+
+#memberProfileModal .modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: none;
+    color: #666;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#memberProfileModal .modal-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
 }
 
 /* プロフィールヘッダー */
@@ -236,6 +304,33 @@
     color: #666;
     line-height: 1.6;
     margin: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    #memberProfileModal .modal-content {
+        width: 95%;
+        max-height: 95vh;
+        margin: 10px;
+    }
+    
+    #memberProfileModal .modal-body {
+        padding: 20px;
+    }
+    
+    .profile-header-section {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-tabs {
+        gap: 5px;
+    }
+    
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
 }
 
 .budget-info {
