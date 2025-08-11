@@ -218,7 +218,7 @@ window.InterConnect.Profile = {
             const { data, error } = await window.supabaseClient
                 .from('connections')
                 .select('id')
-                .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`)
+                .or(`user_id.eq.${userId},connected_user_id.eq.${userId}`)
                 .eq('status', 'accepted');
             
             if (!error && data) {
@@ -238,7 +238,9 @@ window.InterConnect.Profile = {
             const { data } = await window.supabaseClient
                 .from('connections')
                 .select('status')
-                .or(`and(requester_id.eq.${this.currentUserId},receiver_id.eq.${userId}),and(requester_id.eq.${userId},receiver_id.eq.${this.currentUserId})`)
+                .or(`user_id.eq.${this.currentUserId},connected_user_id.eq.${this.currentUserId}`)
+                .eq('user_id', userId)
+                .eq('connected_user_id', userId)
                 .single();
             
             if (data) {

@@ -305,6 +305,12 @@
         // モーダルの初期化を確実に行う
         (function() {
             function ensureModalInitialized() {
+                // 既にインスタンスがある場合は作成しない（重複防止）
+                if (window.membersProfileModal && window.membersProfileModal.show) {
+                    console.log('[members.html] Modal instance already exists');
+                    return;
+                }
+                
                 if (typeof MembersProfileModal === 'undefined') {
                     console.error('[CRITICAL] members-profile-modal.js failed to load!');
                     // エラー時はモーダル表示を試みる（リダイレクトしない）
@@ -314,7 +320,7 @@
                             alert('プロフィールを読み込めませんでした。ページを再読み込みしてください。');
                         }
                     };
-                } else if (!window.membersProfileModal) {
+                } else {
                     console.log('[members.html] Creating modal instance');
                     window.membersProfileModal = new MembersProfileModal();
                     console.log('[members.html] Modal instance created:', !!window.membersProfileModal);
@@ -395,10 +401,10 @@
             }
             
             // モーダルインスタンスが存在しない場合の最終フォールバック
-            if (!window.membersProfileModal) {
+            if (!window.membersProfileModal || !window.membersProfileModal.show) {
                 console.error('[CRITICAL] Modal still not initialized after 1 second!');
-                // 再度初期化を試みる
-                if (window.MembersProfileModal) {
+                // 再度初期化を試みる（既存インスタンスがない場合のみ）
+                if (window.MembersProfileModal && !window.membersProfileModal) {
                     window.membersProfileModal = new window.MembersProfileModal();
                     console.log('[members.html] Emergency modal creation completed');
                 }

@@ -47,6 +47,9 @@
         setupEventListeners() {
             // メンバーカードのホバーイベントを監視
             document.addEventListener('mouseenter', (e) => {
+                // e.targetがElementであることを確認
+                if (!e.target || !e.target.nodeType || e.target.nodeType !== 1) return;
+                
                 const memberCard = e.target.closest('.member-card');
                 if (memberCard && !memberCard.closest('.profile-preview')) {
                     this.handleMouseEnter(memberCard);
@@ -54,6 +57,9 @@
             }, true);
 
             document.addEventListener('mouseleave', (e) => {
+                // e.targetがElementであることを確認
+                if (!e.target || !e.target.nodeType || e.target.nodeType !== 1) return;
+                
                 const memberCard = e.target.closest('.member-card');
                 if (memberCard && memberCard === this.currentTarget) {
                     this.handleMouseLeave();

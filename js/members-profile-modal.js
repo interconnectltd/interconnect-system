@@ -224,33 +224,30 @@ class MembersProfileModal {
                 
                 console.log('[MembersProfileModal] Using client:', client);
                 
-                let userData = null;
-                let error = null;
+                // user_profilesテーブルからデータを取得（正しいテーブル）
+                const { data: userData, error } = await client
+                    .from('user_profiles')
+                    .select(`
+                        *,
+                        user_experiences (
+                            title,
+                            company,
+                            description,
+                            start_date,
+                            end_date,
+                            is_current
+                        ),
+                        user_business_challenges (
+                            challenge_id,
+                            details,
+                            priority
+                        )
+                    `)
+                    .eq('id', userId)
+                    .single();
                 
-                // テーブル検索順序：profiles → user_profiles
-                const tableNames = ['profiles', 'user_profiles'];
-                
-                for (const tableName of tableNames) {
-                    try {
-                        console.log(`[MembersProfileModal] Trying table: ${tableName}`);
-                        
-                        const result = await client
-                            .from(tableName)
-                            .select('*')
-                            .eq('id', userId)
-                            .single();
-                        
-                        if (result.data && !result.error) {
-                            userData = result.data;
-                            error = null;
-                            console.log(`[MembersProfileModal] Data found in table: ${tableName}`);
-                            break;
-                        } else if (result.error) {
-                            console.log(`[MembersProfileModal] Error in table ${tableName}:`, result.error.message);
-                        }
-                    } catch (tableError) {
-                        console.log(`[MembersProfileModal] Exception with table ${tableName}:`, tableError.message);
-                    }
+                if (error) {
+                    console.log('[MembersProfileModal] Error fetching user data:', error.message);
                 }
                 
                 if (!userData) {
@@ -450,22 +447,59 @@ class MembersProfileModal {
             if (userData.email && userData.show_email) {
                 this.modal.querySelector('#modalEmail').textContent = userData.email;
             }
+            
+            // 追加フィールドを表示（user_profilesテーブルの詳細データ）
+            const additionalInfo = [];
+            if (userData.company) {
+                additionalInfo.push(`会社: ${userData.company}`);
+            }
+            if (userData.position) {
+                additionalInfo.push(`役職: ${userData.position}`);
+            }
+            if (userData.employee_count) {
+                additionalInfo.push(`従業員数: ${userData.employee_count}`);
+            }
+            if (userData.revenue_scale) {
+                additionalInfo.push(`売上規模: ${userData.revenue_scale}`);
+            }
+            
+            // 基本情報セクションに追加情報を挿入
+            if (additionalInfo.length > 0) {
+                const bioSection = this.modal.querySelector('#modalBio').parentElement;
+                const additionalDiv = document.createElement('div');
+                additionalDiv.className = 'info-section';
+                additionalDiv.innerHTML = `
+                    <h4>企業情報</h4>
+                    <p>${additionalInfo.join(' / ')}</p>
+                `;
+                bioSection.parentElement.insertBefore(additionalDiv, bioSection.nextSibling);
+            }
         }
         
         displayExperienceTab(userData) {
             const container = this.modal.querySelector('#modalExperience');
-            if (userData.experience && Array.isArray(userData.experience) && userData.experience.length > 0) {
-                container.innerHTML = userData.experience.map(exp => `
-                    <div class="experience-item">
-                        <h5>${this.escapeHtml(exp.title || '')}</h5>
-                        <p class="company">${this.escapeHtml(exp.company || '')}</p>
-                        <p class="period">${this.escapeHtml(exp.period || '')}</p>
-                        ${exp.description ? `<p class="description">${this.escapeHtml(exp.description)}</p>` : ''}
-                    </div>
-                `).join('');
+            
+            // user_experiencesテーブルのデータを使用
+            if (userData.user_experiences && Array.isArray(userData.user_experiences) && userData.user_experiences.length > 0) {
+                container.innerHTML = userData.user_experiences.map(exp => {
+                    const period = exp.is_current ? 
+                        `${exp.start_date || ''} - 現在` : 
+                        `${exp.start_date || ''} - ${exp.end_date || ''}`;
+                    
+                    return `
+                        <div class="experience-item">
+                            <h5>${this.escapeHtml(exp.title || '')}</h5>
+                            <p class="company">${this.escapeHtml(exp.company || '')}</p>
+                            <p class="period">${this.escapeHtml(period)}</p>
+                            ${exp.description ? `<p class="description">${this.escapeHtml(exp.description)}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
             } else if (userData.work_history) {
-                // 代替フィールドをチェック
+                // フォールバック：work_historyフィールドがあれば使用
                 container.innerHTML = `<p>${this.escapeHtml(userData.work_history)}</p>`;
+            } else {
+                container.innerHTML = '<p class="empty-state">経歴情報がありません</p>';
             }
         }
         
@@ -497,14 +531,30 @@ class MembersProfileModal {
         
         displayChallengesTab(userData) {
             const container = this.modal.querySelector('#modalChallenges');
-            const challenges = [];
+            let html = '';
             
-            // 各種課題フィールドをチェック
-            if (userData.challenges && Array.isArray(userData.challenges)) {
-                challenges.push(...userData.challenges);
+            // user_business_challengesテーブルのデータを使用
+            if (userData.user_business_challenges && Array.isArray(userData.user_business_challenges) && userData.user_business_challenges.length > 0) {
+                // 優先度順にソート
+                const sortedChallenges = userData.user_business_challenges.sort((a, b) => (a.priority || 999) - (b.priority || 999));
+                
+                html += `
+                    <div class="challenges-list">
+                        <h5>事業課題（優先度順）</h5>
+                        <ul>
+                            ${sortedChallenges.map(challenge => 
+                                `<li>
+                                    <i class="fas fa-check-circle"></i> 
+                                    ${challenge.details ? this.escapeHtml(challenge.details) : '詳細なし'}
+                                    ${challenge.priority ? `<span class="priority-badge">優先度 ${challenge.priority}</span>` : ''}
+                                </li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                `;
             }
             
-            // 課題詳細フィールドをチェック
+            // user_profilesテーブルの詳細フィールドも表示
             const challengeDetails = [
                 { title: '売上・収益の課題', content: userData.revenue_details },
                 { title: '組織・人材の課題', content: userData.hr_details },
@@ -512,23 +562,6 @@ class MembersProfileModal {
                 { title: '事業戦略の課題', content: userData.strategy_details }
             ];
             
-            let html = '';
-            
-            // チェックボックス形式の課題
-            if (challenges.length > 0) {
-                html += `
-                    <div class="challenges-list">
-                        <h5>主な課題</h5>
-                        <ul>
-                            ${challenges.map(challenge => 
-                                `<li><i class="fas fa-check-circle"></i> ${this.escapeHtml(challenge)}</li>`
-                            ).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
-            
-            // 詳細テキスト形式の課題
             challengeDetails.forEach(detail => {
                 if (detail.content) {
                     html += `
@@ -540,17 +573,12 @@ class MembersProfileModal {
                 }
             });
             
-            // 予算情報
-            if (userData.budget) {
-                const budgetFormatted = new Intl.NumberFormat('ja-JP', {
-                    style: 'currency',
-                    currency: 'JPY'
-                }).format(userData.budget);
-                
+            // 予算情報（budget_rangeフィールドを使用）
+            if (userData.budget_range) {
                 html += `
                     <div class="budget-info">
-                        <h5>年間予算規模</h5>
-                        <p>${budgetFormatted}</p>
+                        <h5>予算規模</h5>
+                        <p>${this.escapeHtml(userData.budget_range)}</p>
                     </div>
                 `;
             }
@@ -589,33 +617,34 @@ window.showMemberProfileModal = function(userId) {
     }
 };
 
-// プロフィールボタンのクリックイベントを監視（動的生成されたボタンに対応）
-document.addEventListener('click', (e) => {
-    console.log('[MembersProfileModal] Click event:', e.target);
-    
-    // プロフィールボタンのクリック
-    if (e.target.closest('.view-profile-btn')) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const btn = e.target.closest('.view-profile-btn');
-        const userId = btn.dataset.memberId;
-        
-        console.log('[MembersProfileModal] Profile button clicked for userId:', userId);
-        
-        if (userId) {
-            if (window.membersProfileModal && window.membersProfileModal.show) {
-                window.membersProfileModal.show(userId);
-            } else {
-                console.error('[MembersProfileModal] Modal instance not found');
-            }
-        } else {
-            console.error('[MembersProfileModal] No userId found in button data');
-        }
-        
-        return false;
-    }
-});
+// onclickインラインハンドラーがあるため、addEventListenerは不要
+// イベントハンドラーの重複を防ぐためコメントアウト
+// document.addEventListener('click', (e) => {
+//     console.log('[MembersProfileModal] Click event:', e.target);
+//     
+//     // プロフィールボタンのクリック
+//     if (e.target.closest('.view-profile-btn')) {
+//         e.preventDefault();
+//         e.stopPropagation();
+//         
+//         const btn = e.target.closest('.view-profile-btn');
+//         const userId = btn.dataset.memberId;
+//         
+//         console.log('[MembersProfileModal] Profile button clicked for userId:', userId);
+//         
+//         if (userId) {
+//             if (window.membersProfileModal && window.membersProfileModal.show) {
+//                 window.membersProfileModal.show(userId);
+//             } else {
+//                 console.error('[MembersProfileModal] Modal instance not found');
+//             }
+//         } else {
+//             console.error('[MembersProfileModal] No userId found in button data');
+//         }
+//         
+//         return false;
+//     }
+// });
 
 // MembersProfileModalクラスをグローバルスコープに登録（ファイルの早い段階で実行）
 console.log('[DEBUG] 2. クラス定義完了、グローバル登録前');
@@ -626,9 +655,14 @@ console.log('[DEBUG] window.MembersProfileModal:', !!window.MembersProfileModal)
 
 // 初期化処理（ただしモーダルは表示しない）
 function initializeMembersProfileModal() {
+    // 既にインスタンスが存在する場合はスキップ（重複作成防止）
+    if (window.membersProfileModal && window.membersProfileModal.show) {
+        console.log('[MembersProfileModal] Instance already exists, skipping initialization');
+        return;
+    }
+    
     console.log('[MembersProfileModal] Initializing...');
     try {
-        // 常に新しいインスタンスを作成（既存のものは上書き）
         console.log('[MembersProfileModal] Creating modal instance...');
         window.membersProfileModal = new MembersProfileModal();
         console.log('[MembersProfileModal] Instance created:', !!window.membersProfileModal);
