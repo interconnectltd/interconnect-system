@@ -20,14 +20,20 @@
         }
 
         init() {
-            if (!window.supabase) {
-                console.error('[EventsSupabase] Supabase client not found');
-                return;
+            // supabaseReadyイベントを待ってから初期化
+            if (window.supabaseClientClient) {
+                this.setupEventListeners();
+                this.loadEvents();
+                this.loadPastEvents();
+            } else {
+                // Supabaseクライアントがまだ初期化されていない場合は待機
+                document.addEventListener('supabaseReady', () => {
+                    console.log('[EventsSupabase] Supabase client ready, initializing...');
+                    this.setupEventListeners();
+                    this.loadEvents();
+                    this.loadPastEvents();
+                });
             }
-
-            this.setupEventListeners();
-            this.loadEvents();
-            this.loadPastEvents();
         }
 
         setupEventListeners() {
@@ -78,7 +84,7 @@
 
                 // Supabaseからイベントを取得
                 const now = new Date().toISOString();
-                let query = window.supabase
+                let query = window.supabaseClient
                     .from('event_items')
                     .select('*')
                     .eq('is_public', true)
@@ -130,7 +136,7 @@
             
             try {
                 // 一括で参加者数を取得
-                const { data: participants, error } = await window.supabase
+                const { data: participants, error } = await window.supabaseClient
                     .from('event_participants')
                     .select('event_id')
                     .in('event_id', eventIds)
@@ -313,7 +319,7 @@
         async handleEventRegistration(eventId, button) {
             try {
                 // ユーザー認証チェック
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     alert('ログインが必要です');
                     window.location.href = 'login.html';
@@ -326,7 +332,7 @@
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
 
                 // 既に参加登録しているかチェック
-                const { data: existing } = await window.supabase
+                const { data: existing } = await window.supabaseClient
                     .from('event_participants')
                     .select('id, status')
                     .eq('event_id', eventId)
@@ -336,7 +342,7 @@
                 if (existing) {
                     if (existing.status === 'cancelled') {
                         // キャンセル済みの場合は再登録
-                        const { error: updateError } = await window.supabase
+                        const { error: updateError } = await window.supabaseClient
                             .from('event_participants')
                             .update({ 
                                 status: 'registered',
@@ -353,7 +359,7 @@
                     }
                 } else {
                     // 新規登録
-                    const { error: insertError } = await window.supabase
+                    const { error: insertError } = await window.supabaseClient
                         .from('event_participants')
                         .insert({
                             event_id: eventId,
@@ -597,7 +603,7 @@
 
                 // Supabaseから過去のイベントを取得
                 const now = new Date().toISOString();
-                const { data: events, error } = await window.supabase
+                const { data: events, error } = await window.supabaseClient
                     .from('event_items')
                     .select('*')
                     .eq('is_public', true)
@@ -661,7 +667,7 @@
             const eventIds = events.map(e => e.id);
             
             try {
-                const { data: participants } = await window.supabase
+                const { data: participants } = await window.supabaseClient
                     .from('event_participants')
                     .select('event_id')
                     .in('event_id', eventIds)

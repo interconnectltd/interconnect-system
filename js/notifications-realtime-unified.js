@@ -43,9 +43,19 @@
 
     // 通知音の準備
     function setupNotificationSound() {
-        notificationSound = new Audio('/sounds/notification.mp3');
-        notificationSound.volume = 0.5;
-        window.notificationSound = notificationSound;
+        try {
+            notificationSound = new Audio('/sounds/notification.mp3');
+            notificationSound.volume = 0.5;
+            // 音声ファイルの読み込みエラーをキャッチ
+            notificationSound.addEventListener('error', (e) => {
+                console.warn('[RealtimeNotifications] 通知音ファイルの読み込みに失敗しました。音声なしで続行します。');
+                notificationSound = null;
+            });
+            window.notificationSound = notificationSound;
+        } catch (error) {
+            console.warn('[RealtimeNotifications] 通知音の初期化に失敗しました:', error);
+            notificationSound = null;
+        }
     }
 
     // 全てのリアルタイムサブスクリプションを設定
