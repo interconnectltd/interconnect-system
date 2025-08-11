@@ -210,34 +210,48 @@
         
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
-            <header class="dashboard-header">
+            <div class="content-header">
                 <div class="header-left">
-                    <h1>ダッシュボード</h1>
-                    <p>ようこそ、<span class="user-name">ユーザー</span>様</p>
+                    <div>
+                        <h1 class="page-title">
+                            <i class="fas fa-home"></i>
+                            ダッシュボード
+                        </h1>
+                        <p>ようこそ、<span class="user-name">ユーザー</span>様</p>
+                    </div>
                 </div>
-                
                 <div class="header-right">
-                    <a href="notifications.html" class="notification-btn">
-                        <i class="fas fa-bell"></i>
-                    </a>
-                    
                     <div class="user-menu">
-                        <button class="user-menu-btn">
-                            <img src="assets/user-placeholder.svg" alt="User">
-                            <span class="user-name">ユーザー名</span>
+                        <div class="notification-wrapper">
+                            <button class="notification-btn">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <div class="notification-dropdown">
+                                <div class="notification-header">
+                                    <h3>通知</h3>
+                                    <button class="mark-all-read">すべて既読にする</button>
+                                </div>
+                                <div class="notification-list">
+                                    <div class="empty-notifications">
+                                        <i class="fas fa-bell-slash"></i>
+                                        <p>新しい通知はありません</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-profile">
+                            <img src="images/default-avatar.svg" alt="User Avatar" class="user-avatar" id="userAvatar">
+                            <span class="user-name" id="userName">ゲスト</span>
                             <i class="fas fa-chevron-down"></i>
-                        </button>
-                        
-                        <div class="user-dropdown">
-                            <a href="profile.html">プロフィール</a>
-                            <a href="settings.html">設定</a>
-                            <hr>
-                            <a href="#" onclick="logout(); return false;">ログアウト</a>
+                            <div class="user-dropdown">
+                                <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
+                                <a href="settings.html"><i class="fas fa-cog"></i> 設定</a>
+                                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
             
             <!-- Statistics -->
             <div class="stats-container">
