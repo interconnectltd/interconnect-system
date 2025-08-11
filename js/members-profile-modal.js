@@ -5,6 +5,10 @@
 
 // デバッグ用ログ
 console.log('[MembersProfileModal] ファイル読み込み開始');
+console.log('[DEBUG] 1. ファイル実行開始時点');
+console.log('[DEBUG] window.MembersProfileModal:', window.MembersProfileModal);
+console.log('[DEBUG] window.showMemberProfileModal:', window.showMemberProfileModal);
+console.log('[DEBUG] window.membersProfileModal:', window.membersProfileModal);
 
 // プロフィールモーダルクラスをグローバルスコープで定義
 class MembersProfileModal {
@@ -124,6 +128,14 @@ class MembersProfileModal {
             
             document.body.appendChild(this.modal);
             console.log('[MembersProfileModal] Modal added to DOM. Check:', document.getElementById('memberProfileModal'));
+            
+            // モーダルの初期状態を確認
+            console.log('[DEBUG] Modal initial state:');
+            console.log('[DEBUG]   - display:', this.modal.style.display);
+            console.log('[DEBUG]   - classList:', this.modal.classList.toString());
+            console.log('[DEBUG]   - computed display:', window.getComputedStyle(this.modal).display);
+            console.log('[DEBUG]   - computed visibility:', window.getComputedStyle(this.modal).visibility);
+            console.log('[DEBUG]   - has show class:', this.modal.classList.contains('show'));
         }
         
         setupEventListeners() {
@@ -164,6 +176,7 @@ class MembersProfileModal {
         
         async show(userId) {
             console.log('[MembersProfileModal] show() called with userId:', userId);
+            console.log('[DEBUG] Stack trace:', new Error().stack);
             if (!userId) {
                 console.error('[MembersProfileModal] userId is empty');
                 return;
@@ -561,6 +574,7 @@ class MembersProfileModal {
 }
 
 // グローバル関数を定義
+console.log('[DEBUG] 4. showMemberProfileModal関数登録前');
 window.showMemberProfileModal = function(userId) {
     console.log('[MembersProfileModal] showMemberProfileModal called with:', userId);
     if (window.membersProfileModal && window.membersProfileModal.show) {
@@ -599,8 +613,12 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// MembersProfileModalクラスをグローバルスコープに登録
+// MembersProfileModalクラスをグローバルスコープに登録（ファイルの早い段階で実行）
+console.log('[DEBUG] 2. クラス定義完了、グローバル登録前');
+console.log('[DEBUG] MembersProfileModal (ローカル):', typeof MembersProfileModal);
 window.MembersProfileModal = MembersProfileModal;
+console.log('[DEBUG] 3. グローバル登録完了');
+console.log('[DEBUG] window.MembersProfileModal:', !!window.MembersProfileModal);
 
 // 初期化処理（ただしモーダルは表示しない）
 function initializeMembersProfileModal() {
@@ -610,6 +628,17 @@ function initializeMembersProfileModal() {
             console.log('[MembersProfileModal] Creating new instance...');
             window.membersProfileModal = new MembersProfileModal();
             console.log('[MembersProfileModal] Instance created:', !!window.membersProfileModal);
+            
+            // インスタンス作成後のモーダル状態を確認
+            setTimeout(() => {
+                const modal = document.getElementById('memberProfileModal');
+                if (modal) {
+                    console.log('[DEBUG] Modal state after initialization:');
+                    console.log('[DEBUG]   - display:', modal.style.display);
+                    console.log('[DEBUG]   - computed display:', window.getComputedStyle(modal).display);
+                    console.log('[DEBUG]   - has show class:', modal.classList.contains('show'));
+                }
+            }, 100);
             
             // 初期化直後に確実に非表示にする
             const modal = document.getElementById('memberProfileModal');
@@ -648,4 +677,8 @@ setTimeout(() => {
     }
 }, 500);
 
+console.log('[DEBUG] 5. ファイル読み込み完了時点');
+console.log('[DEBUG] window.MembersProfileModal:', !!window.MembersProfileModal);
+console.log('[DEBUG] window.showMemberProfileModal:', !!window.showMemberProfileModal);
+console.log('[DEBUG] window.membersProfileModal:', !!window.membersProfileModal);
 console.log('[MembersProfileModal] ファイル読み込み完了');

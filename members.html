@@ -356,6 +356,30 @@
             console.log('  - membersProfileModal instance:', !!window.membersProfileModal);
             console.log('  - showMemberProfileModal function:', !!window.showMemberProfileModal);
             
+            // モーダルのDOM状態をチェック
+            const modalElement = document.getElementById('memberProfileModal');
+            if (modalElement) {
+                console.log('[members.html] Modal DOM state at 1 second:');
+                console.log('  - exists in DOM:', true);
+                console.log('  - display style:', modalElement.style.display);
+                console.log('  - computed display:', window.getComputedStyle(modalElement).display);
+                console.log('  - has show class:', modalElement.classList.contains('show'));
+                console.log('  - visibility:', window.getComputedStyle(modalElement).visibility);
+                console.log('  - opacity:', window.getComputedStyle(modalElement).opacity);
+                console.log('  - z-index:', window.getComputedStyle(modalElement).zIndex);
+                console.log('  - position:', window.getComputedStyle(modalElement).position);
+                
+                // モーダルが表示されている場合のデバッグ
+                if (window.getComputedStyle(modalElement).display !== 'none') {
+                    console.error('[ERROR] Modal is visible when it should be hidden!');
+                    console.log('  - Forcing hide...');
+                    modalElement.style.display = 'none';
+                    modalElement.classList.remove('show');
+                }
+            } else {
+                console.log('[members.html] Modal element not found in DOM');
+            }
+            
             if (!window.membersProfileModal && window.MembersProfileModal) {
                 console.log('[members.html] Creating modal instance via fallback...');
                 window.membersProfileModal = new window.MembersProfileModal();
