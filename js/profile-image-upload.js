@@ -11,7 +11,7 @@
 (function() {
     'use strict';
 
-    console.log('[ProfileImageUpload] プロフィール画像アップロード機能初期化');
+    // console.log('[ProfileImageUpload] プロフィール画像アップロード機能初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -20,7 +20,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[ProfileImageUpload] 初期化開始');
+        // console.log('[ProfileImageUpload] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -33,7 +33,7 @@
         }
 
         currentUserId = user.id;
-        console.log('[ProfileImageUpload] ユーザーID:', currentUserId);
+        // console.log('[ProfileImageUpload] ユーザーID:', currentUserId);
 
         // イベントリスナーの設定
         setupEventListeners();

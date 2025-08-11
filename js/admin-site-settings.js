@@ -26,7 +26,7 @@
         initializeKeyboardShortcuts();
         loadSettingsData();
         
-        console.log('✅ Site Settings initialized');
+        // console.log('✅ Site Settings initialized');
     });
 
     /**
@@ -414,7 +414,7 @@
 
     function autoSaveSettings() {
         const timestamp = new Date().toLocaleTimeString();
-        console.log(`🔄 Auto-saving at ${timestamp}`);
+        // console.log(`🔄 Auto-saving at ${timestamp}`);
         
         // Save to localStorage as backup
         localStorage.setItem('interconnect_settings_backup', JSON.stringify({
@@ -535,7 +535,7 @@
             const data = sectionId === 'all' ? SettingsManager.modifiedData 
                                              : { [sectionId]: SettingsManager.modifiedData[sectionId] };
             
-            console.log('Saving settings:', data);
+            // console.log('Saving settings:', data);
             
             // Simulate network delay and potential error
             setTimeout(() => {

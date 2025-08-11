@@ -360,7 +360,10 @@
         const description = document.getElementById('link-description').value.trim();
         
         if (!description) {
-            alert('リンクの説明を入力してください');
+            // alert('リンクの説明を入力してください');
+            if (window.showError) {
+                showError('リンクの説明を入力してください');
+            }
             return;
         }
 
@@ -396,7 +399,10 @@
 
         } catch (error) {
             console.error('[ReferralUnified] リンク作成エラー:', error);
-            alert('リンクの作成に失敗しました');
+            // alert('リンクの作成に失敗しました');
+            if (window.showError) {
+                showError('リンクの作成に失敗しました');
+            }
         }
     };
 
@@ -442,7 +448,10 @@
 
         } catch (error) {
             console.error('[ReferralUnified] リンク削除エラー:', error);
-            alert('リンクの削除に失敗しました');
+            // alert('リンクの削除に失敗しました');
+            if (window.showError) {
+                showError('リンクの削除に失敗しました');
+            }
         }
     };
 

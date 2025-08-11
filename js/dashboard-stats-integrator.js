@@ -15,7 +15,7 @@
          * 統計の統合計算と適用
          */
         async integrateAllStats() {
-            console.log('[StatsIntegrator] 全統計を統合計算中...');
+            // console.log('[StatsIntegrator] 全統計を統合計算中...');
 
             try {
                 // 各計算モジュールから統計を取得
@@ -109,7 +109,7 @@
          * UIを直接更新
          */
         updateUI(stats) {
-            console.log('[StatsIntegrator] UIを更新中...', stats);
+            // console.log('[StatsIntegrator] UIを更新中...', stats);
 
             // 統計カードを取得
             const statCards = document.querySelectorAll('.stats-container .stat-card');
@@ -192,7 +192,7 @@
         init() {
             if (this.initialized) return;
             
-            console.log('[StatsIntegrator] 初期化中...');
+            // console.log('[StatsIntegrator] 初期化中...');
             
             // ページ読み込み後に実行
             if (document.readyState === 'loading') {
@@ -228,7 +228,7 @@
     // 自動初期化
     window.dashboardStatsIntegrator.init();
     
-    console.log('[StatsIntegrator] モジュールが読み込まれました');
-    console.log('手動で統計を更新するには: dashboardStatsIntegrator.integrateAllStats()');
+    // console.log('[StatsIntegrator] モジュールが読み込まれました');
+    // console.log('手動で統計を更新するには: dashboardStatsIntegrator.integrateAllStats()');
 
 })();

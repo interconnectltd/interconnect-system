@@ -137,7 +137,7 @@
                 const newsletter = formData.get('newsletter');
                 
                 // Here you would normally send registration request to server
-                console.log('Registration data:', { 
+                // console.log('Registration data:', { 
                     name, company, email, position,
                     challenges, budget,
                     phone, lineId,

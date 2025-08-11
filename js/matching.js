@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const connectBtns = document.querySelectorAll('.matching-actions .btn-primary');
     connectBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            alert('コネクト機能は準備中です');
+            // alert('コネクト機能は準備中です');
+            if (window.showInfo) {
+                showInfo('コネクト機能は準備中です');
+            }
         });
     });
     
@@ -25,7 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const profileBtns = document.querySelectorAll('.matching-actions .btn-outline');
     profileBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            alert('プロフィール表示機能は準備中です');
+            // alert('プロフィール表示機能は準備中です');
+            if (window.showInfo) {
+                showInfo('プロフィール表示機能は準備中です');
+            }
         });
     });
 });

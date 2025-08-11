@@ -1,21 +1,21 @@
 // サイドバートグル機能
-console.log('[Sidebar] sidebar-toggle.js loaded');
+// console.log('[Sidebar] sidebar-toggle.js loaded');
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('[Sidebar] DOM loaded, initializing sidebar toggles');
+    // console.log('[Sidebar] DOM loaded, initializing sidebar toggles');
     
     // すべてのサイドバートグルボタンを取得
     const toggleButtons = document.querySelectorAll('.mobile-menu-toggle');
-    console.log(`[Sidebar] Found ${toggleButtons.length} toggle buttons`);
+    // console.log(`[Sidebar] Found ${toggleButtons.length} toggle buttons`);
     
     toggleButtons.forEach((button, index) => {
-        console.log(`[Sidebar] Setting up toggle button ${index}:`, button.id || 'no-id');
+        // console.log(`[Sidebar] Setting up toggle button ${index}:`, button.id || 'no-id');
         
         button.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             
-            console.log('[Sidebar] Toggle button clicked');
+            // console.log('[Sidebar] Toggle button clicked');
             
             // サイドバーを探す
             const sidebar = document.querySelector('.sidebar');
@@ -23,14 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (sidebar) {
                 sidebar.classList.toggle('active');
-                console.log('[Sidebar] Sidebar toggled, active:', sidebar.classList.contains('active'));
+                // console.log('[Sidebar] Sidebar toggled, active:', sidebar.classList.contains('active'));
             } else {
                 console.error('[Sidebar] Sidebar element not found');
             }
             
             if (mobileNav) {
                 mobileNav.classList.toggle('active');
-                console.log('[Sidebar] Mobile nav toggled, active:', mobileNav.classList.contains('active'));
+                // console.log('[Sidebar] Mobile nav toggled, active:', mobileNav.classList.contains('active'));
             }
             
             // オーバーレイの処理
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 overlay = document.createElement('div');
                 overlay.className = 'sidebar-overlay';
                 document.body.appendChild(overlay);
-                console.log('[Sidebar] Overlay created');
+                // console.log('[Sidebar] Overlay created');
             }
             
             if (sidebar && sidebar.classList.contains('active')) {
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // サイドバーを閉じる関数
     function closeSidebar() {
-        console.log('[Sidebar] Closing sidebar');
+        // console.log('[Sidebar] Closing sidebar');
         const sidebar = document.querySelector('.sidebar');
         const mobileNav = document.querySelector('.mobile-nav');
         const overlay = document.querySelector('.sidebar-overlay');
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ESCキーでサイドバーを閉じる
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            console.log('[Sidebar] ESC key pressed');
+            // console.log('[Sidebar] ESC key pressed');
             closeSidebar();
         }
     });
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            console.log('[Sidebar] Window resized, width:', window.innerWidth);
+            // console.log('[Sidebar] Window resized, width:', window.innerWidth);
             if (window.innerWidth > 991) {
                 closeSidebar();
             }
@@ -88,4 +88,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-console.log('[Sidebar] sidebar-toggle.js setup complete');
+// console.log('[Sidebar] sidebar-toggle.js setup complete');

@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[DashboardFix] ローディング修正開始');
+    // console.log('[DashboardFix] ローディング修正開始');
     
     // Supabaseクライアントの初期化を待つ
     function waitForSupabase() {
@@ -143,7 +143,7 @@
     
     // フォールバックデータの表示
     function showFallbackData() {
-        console.log('[DashboardFix] フォールバックデータを表示');
+        // console.log('[DashboardFix] フォールバックデータを表示');
         
         // 統計カードにデフォルト値を設定
         const statCards = document.querySelectorAll('.stat-card');
@@ -227,7 +227,7 @@
             return;
         }
         
-        console.log('[DashboardFix] 初期化開始');
+        // console.log('[DashboardFix] 初期化開始');
         
         // 各修正を実行
         Promise.all([
@@ -235,7 +235,7 @@
             fixUpcomingEvents(),
             fixRealtimeNotifications()
         ]).then(() => {
-            console.log('[DashboardFix] すべての修正が完了');
+            // console.log('[DashboardFix] すべての修正が完了');
         }).catch(error => {
             console.error('[DashboardFix] 修正中にエラー:', error);
         });

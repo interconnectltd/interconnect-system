@@ -198,6 +198,6 @@
     `;
     document.head.appendChild(style);
     
-    console.log('✅ Global error handler initialized');
+    // console.log('✅ Global error handler initialized');
     
 })();

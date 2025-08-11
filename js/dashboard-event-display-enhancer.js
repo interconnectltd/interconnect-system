@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[EventDisplayEnhancer] イベント表示強化を初期化...');
+    // console.log('[EventDisplayEnhancer] イベント表示強化を初期化...');
 
     // displayEventDetailsメソッドを強化
     const enhanceEventDisplay = () => {
@@ -20,7 +20,7 @@
 
         // 新しいdisplayEventDetailsメソッド
         window.eventDetailsHandler.displayEventDetails = function(event) {
-            console.log('[EventDisplayEnhancer] Supabaseイベントデータ:', event);
+            // console.log('[EventDisplayEnhancer] Supabaseイベントデータ:', event);
 
             // データの正規化と日本語表示の強化
             const normalizedEvent = normalizeEventData(event);
@@ -407,7 +407,7 @@
     // 初期化
     setTimeout(() => {
         enhanceEventDisplay();
-        console.log('[EventDisplayEnhancer] 強化完了');
+        // console.log('[EventDisplayEnhancer] 強化完了');
     }, 1500);
 
 })();

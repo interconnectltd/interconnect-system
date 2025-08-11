@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[ForgotPassword] 初期化開始');
+    // console.log('[ForgotPassword] 初期化開始');
     
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('forgotPasswordForm');
@@ -25,7 +25,7 @@
         // フォーム送信処理
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('[ForgotPassword] フォーム送信開始');
+            // console.log('[ForgotPassword] フォーム送信開始');
             
             const email = emailInput.value.trim();
             
@@ -65,7 +65,7 @@
                         
                         showMessage(errorMessage, 'error');
                     } else {
-                        console.log('[ForgotPassword] メール送信成功');
+                        // console.log('[ForgotPassword] メール送信成功');
                         showMessage('パスワード再設定用のメールを送信しました。メールボックスをご確認ください。', 'success');
                         
                         // フォームをリセット
@@ -78,7 +78,7 @@
                     }
                 } else {
                     // Supabaseが利用できない場合のデモモード
-                    console.log('[ForgotPassword] デモモード: メール送信をシミュレート');
+                    // console.log('[ForgotPassword] デモモード: メール送信をシミュレート');
                     
                     // デモ用の処理
                     await simulateEmailSending();
@@ -135,6 +135,6 @@
         }
     });
     
-    console.log('[ForgotPassword] 初期化完了');
+    // console.log('[ForgotPassword] 初期化完了');
     
 })();

@@ -18,7 +18,7 @@
         }
 
         init() {
-            console.log('[Calendar] 初期化中...');
+            // console.log('[Calendar] 初期化中...');
             
             // URLハッシュをチェック
             if (window.location.hash === '#calendar') {
@@ -42,7 +42,7 @@
          * カレンダービューのセットアップ
          */
         async setupCalendarView() {
-            console.log('[Calendar] カレンダービューを設定中...');
+            // console.log('[Calendar] カレンダービューを設定中...');
             
             // コンテナを探す
             this.container = document.querySelector('.content-container');
@@ -162,7 +162,7 @@
                 if (error) throw error;
                 
                 this.events = data || [];
-                console.log('[Calendar] イベントを取得しました:', this.events.length);
+                // console.log('[Calendar] イベントを取得しました:', this.events.length);
                 
             } catch (error) {
                 console.error('[Calendar] イベント取得エラー:', error);
@@ -464,7 +464,7 @@
             if (window.eventModal) {
                 window.eventModal.show(eventId);
             } else {
-                console.log('[Calendar] イベント詳細モーダルが利用できません');
+                // console.log('[Calendar] イベント詳細モーダルが利用できません');
                 // フォールバック
                 window.location.href = `events.html?id=${eventId}`;
             }
@@ -519,6 +519,6 @@
     window.EventCalendar = EventCalendar;
     window.eventCalendar = new EventCalendar();
 
-    console.log('[Calendar] モジュールがロードされました');
+    // console.log('[Calendar] モジュールがロードされました');
 
 })();

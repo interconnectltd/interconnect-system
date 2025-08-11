@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[ActivityFilterFix] 修正開始');
+    // console.log('[ActivityFilterFix] 修正開始');
     
     // DOMが読み込まれるまで待つ
     if (document.readyState === 'loading') {
@@ -83,7 +83,7 @@
                 const hasEventList = document.querySelector('.event-list');
                 
                 if (!hasActivityList && !hasEventList) {
-                    console.log('[ActivityFilterFix] Required elements not found, skipping init');
+                    // console.log('[ActivityFilterFix] Required elements not found, skipping init');
                     return;
                 }
                 
@@ -94,7 +94,7 @@
         };
     }
     
-        console.log('[ActivityFilterFix] 修正完了');
+        // console.log('[ActivityFilterFix] 修正完了');
     }
     
 })();

@@ -214,15 +214,21 @@
                 // Validate email
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(data.email)) {
-                    alert('有効なメールアドレスを入力してください。');
+                    // alert('有効なメールアドレスを入力してください。');
+                    if (window.showError) {
+                        showError('有効なメールアドレスを入力してください。');
+                    }
                     return;
                 }
                 
                 // Here you would normally send the data to a server
-                console.log('Form data:', data);
+                // console.log('Form data:', data);
                 
                 // Show success message
-                alert('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。');
+                // alert('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。');
+                if (window.showSuccess) {
+                    showSuccess('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。');
+                }
                 
                 // Reset form
                 contactForm.reset();
@@ -239,7 +245,7 @@
         const heroVideo = document.querySelector('.hero-video');
         
         if (!heroVideo || !heroVideoContainer) {
-            console.log('Video elements not found');
+            // console.log('Video elements not found');
             return;
         }
 
@@ -268,7 +274,7 @@
 
         // Function to show fallback
         function showFallback() {
-            console.log('Showing fallback image');
+            // console.log('Showing fallback image');
             heroVideo.style.display = 'none';
             fallbackImage.style.display = 'block';
             // ビデオのソースを解放
@@ -321,7 +327,7 @@
 
         // Handle successful video load
         const canPlayHandler = function() {
-            console.log('Video can play');
+            // console.log('Video can play');
             loadAttempts = 0; // Reset attempts on success
             heroVideo.classList.remove('loading');
             heroVideo.classList.add('loaded');
@@ -332,7 +338,7 @@
             if (playPromise !== undefined) {
                 playPromise
                     .then(function() {
-                        console.log('Video autoplay started');
+                        // console.log('Video autoplay started');
                     })
                     .catch(function(error) {
                         console.warn('Autoplay was prevented:', error);
@@ -356,7 +362,7 @@
                 const index = timeouts.indexOf(loadingTimeout);
                 if (index > -1) timeouts.splice(index, 1);
             }
-            console.log('Video loaded completely');
+            // console.log('Video loaded completely');
         };
         addEventListener(heroVideo, 'canplaythrough', canPlayThroughHandler);
 
@@ -396,7 +402,7 @@
      * グローバルクリーンアップ関数
      */
     function cleanup() {
-        console.log('Cleaning up resources...');
+        // console.log('Cleaning up resources...');
         
         // すべてのタイムアウトをクリア
         timeouts.forEach(timeout => clearTimeout(timeout));

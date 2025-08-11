@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[VideoOptimize] 動画最適化開始');
+    // console.log('[VideoOptimize] 動画最適化開始');
     
     // 1. 動画プリロードの強化
     function preloadVideo() {
@@ -41,7 +41,7 @@
         // 3. 動画のメタデータを事前に読み込む
         preloadVideo.load();
         
-        console.log('[VideoOptimize] プリロード設定完了');
+        // console.log('[VideoOptimize] プリロード設定完了');
         
         return preloadVideo;
     }
@@ -73,7 +73,7 @@
         // ブラウザのデコード最適化
         if ('requestVideoFrameCallback' in video) {
             video.requestVideoFrameCallback(() => {
-                console.log('[VideoOptimize] ビデオフレーム準備完了');
+                // console.log('[VideoOptimize] ビデオフレーム準備完了');
             });
         }
         
@@ -92,9 +92,9 @@
         const playPromise = video.play();
         if (playPromise !== undefined) {
             playPromise.then(() => {
-                console.log('[VideoOptimize] 動画再生開始');
+                // console.log('[VideoOptimize] 動画再生開始');
             }).catch(error => {
-                console.log('[VideoOptimize] 自動再生エラー:', error);
+                // console.log('[VideoOptimize] 自動再生エラー:', error);
                 // ユーザーインタラクション後に再生
                 document.addEventListener('click', () => {
                     video.play();
@@ -108,10 +108,10 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw-video-cache-fixed.js')
                 .then(registration => {
-                    console.log('[VideoOptimize] Service Worker登録成功');
+                    // console.log('[VideoOptimize] Service Worker登録成功');
                 })
                 .catch(error => {
-                    console.log('[VideoOptimize] Service Worker登録失敗:', error);
+                    // console.log('[VideoOptimize] Service Worker登録失敗:', error);
                 });
         }
     }
@@ -174,13 +174,13 @@
             
             // 低速接続の場合は品質を下げる
             if (connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
-                console.log('[VideoOptimize] 低速接続検出 - 品質を調整');
+                // console.log('[VideoOptimize] 低速接続検出 - 品質を調整');
                 // ここで低品質バージョンの動画に切り替える処理を追加
             }
             
             // 接続状態の変更を監視
             connection.addEventListener('change', () => {
-                console.log('[VideoOptimize] ネットワーク状態変更:', connection.effectiveType);
+                // console.log('[VideoOptimize] ネットワーク状態変更:', connection.effectiveType);
             });
         }
     }

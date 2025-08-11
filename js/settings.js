@@ -65,7 +65,7 @@ function initToggleSwitches() {
             const isEnabled = this.checked;
             
             // Here you would typically save the setting
-            console.log(`Setting "${settingName}" ${isEnabled ? 'enabled' : 'disabled'}`);
+            // console.log(`Setting "${settingName}" ${isEnabled ? 'enabled' : 'disabled'}`);
             
             // Show feedback
             showToast(`${settingName}を${isEnabled ? '有効' : '無効'}にしました`);
@@ -81,7 +81,7 @@ function initThemeSelector() {
             const theme = this.value;
             
             // Apply theme (this would be more complex in a real app)
-            console.log(`Theme changed to: ${theme}`);
+            // console.log(`Theme changed to: ${theme}`);
             
             // Show feedback
             showToast(`テーマを${getThemeName(theme)}に変更しました`);
@@ -328,7 +328,7 @@ function exportData() {
             showToast('データのエクスポートが完了しました', 'success');
             
             // In a real app, this would trigger a download
-            console.log('Data export completed');
+            // console.log('Data export completed');
         }, 2000);
     }
 }
@@ -339,7 +339,7 @@ function deleteAccount() {
         if (confirm('本当に削除しますか？すべてのデータが失われます。')) {
             showToast('アカウント削除の処理を開始しました');
             // In a real app, this would redirect to a confirmation page
-            console.log('Account deletion initiated');
+            // console.log('Account deletion initiated');
         }
     }
 }

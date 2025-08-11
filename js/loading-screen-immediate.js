@@ -134,7 +134,7 @@
         
         // ビデオの再生を試みる
         loadingVideo.play().catch(error => {
-            console.log('Video autoplay failed:', error);
+            // console.log('Video autoplay failed:', error);
         });
         
         // プログレスバーのアニメーション開始

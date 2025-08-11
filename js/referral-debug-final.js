@@ -1,11 +1,11 @@
 // 最終デバッグ - ユーザーIDとリンク取得の確認
-console.log('=== 最終デバッグ開始 ===');
+// console.log('=== 最終デバッグ開始 ===');
 
 window.finalDebug = async function() {
     try {
         // 1. 現在のユーザー情報を取得
         const { data: { user } } = await window.supabaseClient.auth.getUser();
-        console.log('認証ユーザー:', user);
+        // console.log('認証ユーザー:', user);
         
         if (!user) {
             console.error('ユーザーがログインしていません');
@@ -19,7 +19,7 @@ window.finalDebug = async function() {
             .eq('id', user.id)
             .single();
             
-        console.log('プロファイル情報:', { profile, profileError });
+        // console.log('プロファイル情報:', { profile, profileError });
         
         // 3. 直接SQLでリンクを取得
         const { data: directLinks, error: directError } = await window.supabaseClient
@@ -28,7 +28,7 @@ window.finalDebug = async function() {
             .eq('created_by', user.id)
             .order('created_at', { ascending: false });
             
-        console.log('直接SELECT結果:', { 
+        // console.log('直接SELECT結果:', { 
             directLinks, 
             directError,
             count: directLinks?.length || 0 
@@ -40,7 +40,7 @@ window.finalDebug = async function() {
                 p_user_id: user.id
             });
             
-        console.log('RPC関数結果:', { 
+        // console.log('RPC関数結果:', { 
             rpcLinks, 
             rpcError,
             count: rpcLinks?.length || 0 
@@ -52,7 +52,7 @@ window.finalDebug = async function() {
             .select('id, link_code, created_by')
             .limit(20);
             
-        console.log('全リンク取得（RLS適用）:', { 
+        // console.log('全リンク取得（RLS適用）:', { 
             allLinks, 
             allError,
             count: allLinks?.length || 0 
@@ -60,7 +60,7 @@ window.finalDebug = async function() {
         
         // 6. もしリンクが取得できた場合、手動で表示
         if (directLinks && directLinks.length > 0) {
-            console.log('=== リンクを手動表示 ===');
+            // console.log('=== リンクを手動表示 ===');
             const linksList = document.getElementById('links-list');
             if (linksList) {
                 const html = directLinks.map(link => {
@@ -91,7 +91,7 @@ window.finalDebug = async function() {
                 }).join('');
                 
                 linksList.innerHTML = html;
-                console.log('リンクを表示しました');
+                // console.log('リンクを表示しました');
             }
         }
         
@@ -109,7 +109,7 @@ window.testCreateLink = async function(description = 'デバッグテストリ�
             return;
         }
         
-        console.log('リンク作成開始...');
+        // console.log('リンク作成開始...');
         
         const { data, error } = await window.supabaseClient
             .rpc('create_invite_link', {
@@ -117,10 +117,10 @@ window.testCreateLink = async function(description = 'デバッグテストリ�
                 p_description: description
             });
             
-        console.log('作成結果:', { data, error });
+        // console.log('作成結果:', { data, error });
         
         if (data && data.success) {
-            console.log('作成成功！リンクコード:', data.link_code);
+            // console.log('作成成功！リンクコード:', data.link_code);
             
             // 作成後すぐに再取得
             setTimeout(() => finalDebug(), 1000);
@@ -140,7 +140,7 @@ if (document.readyState === 'loading') {
     setTimeout(finalDebug, 2000);
 }
 
-console.log('=== デバッグ関数準備完了 ===');
-console.log('使用可能なコマンド:');
-console.log('- finalDebug() : 詳細デバッグ実行');
-console.log('- testCreateLink("説明") : 新規リンク作成テスト');
+// console.log('=== デバッグ関数準備完了 ===');
+// console.log('使用可能なコマンド:');
+// console.log('- finalDebug() : 詳細デバッグ実行');
+// console.log('- testCreateLink("説明") : 新規リンク作成テスト');

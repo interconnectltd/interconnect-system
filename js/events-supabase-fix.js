@@ -32,7 +32,7 @@
         const eventActionBtn = document.getElementById('eventActionBtn');
         if (eventActionBtn) {
             eventActionBtn.addEventListener('click', async () => {
-                console.log('[EventsFix] 参加申込ボタンがクリックされました');
+                // console.log('[EventsFix] 参加申込ボタンがクリックされました');
                 
                 // 現在のイベントIDを取得
                 const modal = document.getElementById('eventDetailModal');
@@ -45,13 +45,19 @@
                 
                 // ユーザー認証を確認
                 if (!window.supabase) {
-                    alert('認証エラーが発生しました。ページをリロードしてください。');
+                    // alert('認証エラーが発生しました。ページをリロードしてください。');
+                    if (window.showError) {
+                        showError('認証エラーが発生しました。ページをリロードしてください。');
+                    }
                     return;
                 }
                 
                 const { data: { user } } = await window.supabase.auth.getUser();
                 if (!user) {
-                    alert('ログインが必要です');
+                    // alert('ログインが必要です');
+                    if (window.showError) {
+                        showError('ログインが必要です');
+                    }
                     window.location.href = 'login.html';
                     return;
                 }
@@ -83,9 +89,15 @@
                             
                             if (error) throw error;
                             
-                            alert('イベントに再登録しました！');
+                            // alert('イベントに再登録しました！');
+                            if (window.showSuccess) {
+                                showSuccess('イベントに再登録しました！');
+                            }
                         } else {
-                            alert('既にこのイベントに参加登録済みです');
+                            // alert('既にこのイベントに参加登録済みです');
+                            if (window.showInfo) {
+                                showInfo('既にこのイベントに参加登録済みです');
+                            }
                         }
                     } else {
                         // 新規登録
@@ -99,7 +111,10 @@
                         
                         if (error) throw error;
                         
-                        alert('イベントへの参加申込が完了しました！');
+                        // alert('イベントへの参加申込が完了しました！');
+                        if (window.showSuccess) {
+                            showSuccess('イベントへの参加申込が完了しました！');
+                        }
                         
                         // 通知を送信
                         if (window.notificationSender) {
@@ -129,7 +144,10 @@
                     
                 } catch (error) {
                     console.error('[EventsFix] 参加申込エラー:', error);
-                    alert('参加申込中にエラーが発生しました: ' + error.message);
+                    // alert('参加申込中にエラーが発生しました: ' + error.message);
+                    if (window.showError) {
+                        showError('参加申込中にエラーが発生しました: ' + error.message);
+                    }
                 }
             });
         }

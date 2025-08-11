@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkLoadingComplete() {
         // homepage-loading-integration.jsが処理を行うため、ここではスキップ
         if (window.homepageLoadingIntegration) {
-            console.log('[ScrollFade] ローディング処理はhomepage-loading-integrationに委譲');
+            // console.log('[ScrollFade] ローディング処理はhomepage-loading-integrationに委譲');
             return;
         }
         

@@ -28,7 +28,7 @@
             } else {
                 // Supabaseクライアントがまだ初期化されていない場合は待機
                 document.addEventListener('supabaseReady', () => {
-                    console.log('[EventsSupabase] Supabase client ready, initializing...');
+                    // console.log('[EventsSupabase] Supabase client ready, initializing...');
                     this.setupEventListeners();
                     this.loadEvents();
                     this.loadPastEvents();
@@ -290,10 +290,10 @@
                     // ボタンクリックは除外
                     if (!e.target.closest('button')) {
                         const eventId = card.dataset.eventId;
-                        console.log('[EventsSupabase] Card clicked, eventId:', eventId);
-                        console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
+                        // console.log('[EventsSupabase] Card clicked, eventId:', eventId);
+                        // console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
                         if (eventId && window.eventModal) {
-                            console.log('[EventsSupabase] Calling eventModal.show()');
+                            // console.log('[EventsSupabase] Calling eventModal.show()');
                             window.eventModal.show(eventId);
                         } else {
                             console.error('[EventsSupabase] Missing eventId or eventModal');
@@ -321,7 +321,10 @@
                 // ユーザー認証チェック
                 const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
-                    alert('ログインが必要です');
+                    // alert('ログインが必要です');
+                    if (window.showError) {
+                        showError('ログインが必要です');
+                    }
                     window.location.href = 'login.html';
                     return;
                 }
@@ -352,7 +355,10 @@
 
                         if (updateError) throw updateError;
                     } else {
-                        alert('既に参加登録済みです');
+                        // alert('既に参加登録済みです');
+                        if (window.showInfo) {
+                            showInfo('既に参加登録済みです');
+                        }
                         button.innerHTML = originalText;
                         button.disabled = false;
                         return;
@@ -382,7 +388,10 @@
 
             } catch (error) {
                 console.error('[EventsSupabase] Registration error:', error);
-                alert('申込処理中にエラーが発生しました');
+                // alert('申込処理中にエラーが発生しました');
+                if (window.showError) {
+                    showError('申込処理中にエラーが発生しました');
+                }
                 button.innerHTML = originalText;
                 button.disabled = false;
             }
@@ -699,6 +708,6 @@
     window.EventsSupabase = EventsSupabase;
     window.eventsSupabase = new EventsSupabase();
 
-    console.log('[EventsSupabase] Module loaded');
+    // console.log('[EventsSupabase] Module loaded');
 
 })();

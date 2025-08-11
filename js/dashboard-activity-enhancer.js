@@ -250,7 +250,7 @@
                 const originalRender = window.dashboardUI.renderRecentActivities;
                 
                 window.dashboardUI.renderRecentActivities = (activities) => {
-                    console.log('[ActivityEnhancer] アクティビティを拡張中...');
+                    // console.log('[ActivityEnhancer] アクティビティを拡張中...');
                     
                     // アクティビティを拡張
                     const enhancedActivities = activities.map(activity => 
@@ -291,7 +291,7 @@
          * 初期化
          */
         init() {
-            console.log('[ActivityEnhancer] 初期化中...');
+            // console.log('[ActivityEnhancer] 初期化中...');
             
             // レンダリングメソッドを拡張
             this.enhanceRenderMethod();
@@ -306,7 +306,7 @@
                 }, 3000);
             }
             
-            console.log('[ActivityEnhancer] 初期化完了');
+            // console.log('[ActivityEnhancer] 初期化完了');
         }
     }
 

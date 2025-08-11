@@ -202,6 +202,6 @@
     window.showInfo = showInfo;
     window.showNotification = showNotification;
 
-    console.log('[NotificationSystem] 統一通知システム初期化完了');
+    // console.log('[NotificationSystem] 統一通知システム初期化完了');
 
 })();

@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[PerfectFinal] 初期化開始');
+    // console.log('[PerfectFinal] 初期化開始');
     
     // グローバル状態管理
     const GlobalState = {
@@ -46,7 +46,7 @@
                 // ローディング・アニメーション関連のリスナーをブロック
                 if ((type === 'DOMContentLoaded' || type === 'load') && 
                     /loading|animation|typewriter|scroll.*fade/i.test(listenerStr)) {
-                    console.log(`[PerfectFinal] ブロック: ${type}イベント`);
+                    // console.log(`[PerfectFinal] ブロック: ${type}イベント`);
                     return;
                 }
                 
@@ -63,7 +63,7 @@
             
             const screen = document.getElementById('instantLoadingScreen');
             if (!screen) {
-                console.log('[PerfectFinal] ローディング画面なし、スキップ');
+                // console.log('[PerfectFinal] ローディング画面なし、スキップ');
                 GlobalState.loadingComplete = true;
                 this.onComplete();
                 return;
@@ -122,7 +122,7 @@
                 if (GlobalState.loadingComplete) return;
                 GlobalState.loadingComplete = true;
                 
-                console.log('[PerfectFinal] ローディング完了');
+                // console.log('[PerfectFinal] ローディング完了');
                 
                 screen.style.transition = 'opacity 0.8s ease-out';
                 screen.style.opacity = '0';
@@ -157,7 +157,7 @@
             if (GlobalState.animationsStarted) return;
             GlobalState.animationsStarted = true;
             
-            console.log('[PerfectFinal] アニメーション開始');
+            // console.log('[PerfectFinal] アニメーション開始');
             
             // ヒーロー動画再生
             const heroVideo = document.querySelector('.hero-video');
@@ -237,7 +237,7 @@
             if (GlobalState.scrollObserversSetup) return;
             GlobalState.scrollObserversSetup = true;
             
-            console.log('[PerfectFinal] スクロールエフェクト初期化');
+            // console.log('[PerfectFinal] スクロールエフェクト初期化');
             
             // フェードイン対象要素
             const fadeElements = document.querySelectorAll(

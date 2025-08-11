@@ -22,7 +22,7 @@
         init() {
             this.createPreviewElement();
             this.setupEventListeners();
-            console.log('[ProfilePreview] Initialized');
+            // console.log('[ProfilePreview] Initialized');
         }
 
         /**

@@ -23,7 +23,7 @@
         }
 
         async checkTables() {
-            console.log('=== Supabase Table Check ===');
+            // console.log('=== Supabase Table Check ===');
             
             if (!window.supabase) {
                 console.error('Supabase client not initialized');
@@ -36,13 +36,13 @@
             }
 
             // 各ビューの存在確認
-            console.log('\n=== Checking Views ===');
+            // console.log('\n=== Checking Views ===');
             for (const view of this.requiredViews) {
                 await this.checkView(view);
             }
 
             // サンプルデータ確認
-            console.log('\n=== Checking Sample Data ===');
+            // console.log('\n=== Checking Sample Data ===');
             await this.checkSampleData();
         }
 
@@ -55,10 +55,10 @@
                 if (error) {
                     console.error(`❌ Table '${tableName}' check failed:`, error.message);
                     if (error.message.includes('relation') && error.message.includes('does not exist')) {
-                        console.log(`   → Table '${tableName}' does not exist in database`);
+                        // console.log(`   → Table '${tableName}' does not exist in database`);
                     }
                 } else {
-                    console.log(`✅ Table '${tableName}' exists`);
+                    // console.log(`✅ Table '${tableName}' exists`);
                     
                     // テーブル構造を確認
                     const { data: sample, error: sampleError } = await window.supabase
@@ -67,7 +67,7 @@
                         .limit(1);
                     
                     if (sample && sample.length > 0) {
-                        console.log(`   → Columns: ${Object.keys(sample[0]).join(', ')}`);
+                        // console.log(`   → Columns: ${Object.keys(sample[0]).join(', ')}`);
                     }
                     
                     // レコード数を表示
@@ -75,7 +75,7 @@
                         .from(tableName)
                         .select('*', { count: 'exact', head: true });
                     
-                    console.log(`   → Records: ${recordCount || 0}`);
+                    // console.log(`   → Records: ${recordCount || 0}`);
                 }
             } catch (err) {
                 console.error(`❌ Error checking table '${tableName}':`, err);
@@ -92,7 +92,7 @@
                 if (error) {
                     console.error(`❌ View '${viewName}' check failed:`, error.message);
                 } else {
-                    console.log(`✅ View '${viewName}' exists`);
+                    // console.log(`✅ View '${viewName}' exists`);
                 }
             } catch (err) {
                 console.error(`❌ Error checking view '${viewName}':`, err);
@@ -109,12 +109,12 @@
                     .limit(3);
 
                 if (!error && events && events.length > 0) {
-                    console.log(`✅ Found ${events.length} sample events:`);
+                    // console.log(`✅ Found ${events.length} sample events:`);
                     events.forEach(event => {
-                        console.log(`   - ${event.title} (${event.event_date})`);
+                        // console.log(`   - ${event.title} (${event.event_date})`);
                     });
                 } else {
-                    console.log('❌ No sample events found');
+                    // console.log('❌ No sample events found');
                 }
             } catch (err) {
                 console.error('Error checking sample events:', err);
@@ -129,9 +129,9 @@
                     .limit(3);
 
                 if (!error && notifications && notifications.length > 0) {
-                    console.log(`✅ Found ${notifications.length} sample notifications`);
+                    // console.log(`✅ Found ${notifications.length} sample notifications`);
                 } else {
-                    console.log('❌ No sample notifications found');
+                    // console.log('❌ No sample notifications found');
                 }
             } catch (err) {
                 console.error('Error checking sample notifications:', err);
@@ -140,13 +140,13 @@
 
         // RLSポリシーの確認
         async checkRLSPolicies() {
-            console.log('\n=== Checking RLS Policies ===');
+            // console.log('\n=== Checking RLS Policies ===');
             
             // 現在のユーザー情報を確認
             const { data: { user }, error } = await window.supabase.auth.getUser();
             
             if (user) {
-                console.log(`✅ Authenticated as: ${user.email}`);
+                // console.log(`✅ Authenticated as: ${user.email}`);
                 
                 // 自分のイベントを作成できるか確認
                 try {
@@ -169,7 +169,7 @@
                     if (error) {
                         console.error('❌ RLS test failed:', error.message);
                     } else {
-                        console.log('✅ RLS allows event creation');
+                        // console.log('✅ RLS allows event creation');
                         
                         // テストイベントを削除
                         if (data && data[0]) {
@@ -183,20 +183,20 @@
                     console.error('RLS test error:', err);
                 }
             } else {
-                console.log('❌ Not authenticated - cannot test RLS policies');
+                // console.log('❌ Not authenticated - cannot test RLS policies');
             }
         }
 
         // SQLファイルの実行手順を表示
         showSetupInstructions() {
-            console.log('\n=== Setup Instructions ===');
-            console.log('1. Go to your Supabase dashboard');
-            console.log('2. Navigate to SQL Editor');
-            console.log('3. Click "New query"');
-            console.log('4. Copy and paste the contents of setup-all-tables.sql');
-            console.log('5. Click "Run" to execute the SQL');
-            console.log('6. Refresh this page and run the check again');
-            console.log('\nFile location: /setup-all-tables.sql');
+            // console.log('\n=== Setup Instructions ===');
+            // console.log('1. Go to your Supabase dashboard');
+            // console.log('2. Navigate to SQL Editor');
+            // console.log('3. Click "New query"');
+            // console.log('4. Copy and paste the contents of setup-all-tables.sql');
+            // console.log('5. Click "Run" to execute the SQL');
+            // console.log('6. Refresh this page and run the check again');
+            // console.log('\nFile location: /setup-all-tables.sql');
         }
     }
 
@@ -211,6 +211,6 @@
         checker.showSetupInstructions();
     };
 
-    console.log('Supabase table checker loaded. Run `checkSupabaseTables()` in console to check tables.');
+    // console.log('Supabase table checker loaded. Run `checkSupabaseTables()` in console to check tables.');
 
 })();

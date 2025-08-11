@@ -363,7 +363,10 @@ window.InterConnect.Profile = {
     sendConnectionRequest: async function() {
         try {
             if (!window.supabase || !this.currentUserId || !this.targetUserId) {
-                alert('ログインが必要です');
+                // alert('ログインが必要です');
+                if (window.showError) {
+                    showError('ログインが必要です');
+                }
                 return;
             }
             
@@ -379,13 +382,19 @@ window.InterConnect.Profile = {
             
             if (error) throw error;
             
-            alert('コネクト申請を送信しました');
+            // alert('コネクト申請を送信しました');
+            if (window.showSuccess) {
+                showSuccess('コネクト申請を送信しました');
+            }
             this.connectionStatus = 'pending';
             this.updateUIMode();
             
         } catch (error) {
             console.error('[Profile] コネクト申請エラー:', error);
-            alert('コネクト申請の送信に失敗しました');
+            // alert('コネクト申請の送信に失敗しました');
+            if (window.showError) {
+                showError('コネクト申請の送信に失敗しました');
+            }
         }
     },
     
@@ -631,7 +640,10 @@ window.InterConnect.Profile = {
         window.InterConnect.Profile.closeEditModal();
         
         // 成功メッセージ
-        alert('プロフィールを更新しました');
+        // alert('プロフィールを更新しました');
+        if (window.showSuccess) {
+            showSuccess('プロフィールを更新しました');
+        }
     },
     
     // 画像アップロードの処理
@@ -641,13 +653,19 @@ window.InterConnect.Profile = {
         
         // ファイルサイズチェック（5MB以下）
         if (file.size > 5 * 1024 * 1024) {
-            alert('ファイルサイズは5MB以下にしてください');
+            // alert('ファイルサイズは5MB以下にしてください');
+            if (window.showError) {
+                showError('ファイルサイズは5MB以下にしてください');
+            }
             return;
         }
         
         // 画像ファイルチェック
         if (!file.type.startsWith('image/')) {
-            alert('画像ファイルを選択してください');
+            // alert('画像ファイルを選択してください');
+            if (window.showError) {
+                showError('画像ファイルを選択してください');
+            }
             return;
         }
         

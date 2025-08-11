@@ -38,7 +38,10 @@ class AdminReferralManager {
             .single();
 
         if (!profile?.is_admin) {
-            alert('管理者権限がありません');
+            // alert('管理者権限がありません');
+            if (window.showError) {
+                showError('管理者権限がありません');
+            }
             window.location.href = '/dashboard.html';
         }
     }
@@ -734,7 +737,7 @@ class AdminReferralManager {
 
     showNotification(message, type = 'info') {
         // 通知表示の実装
-        console.log(`[${type}] ${message}`);
+        // console.log(`[${type}] ${message}`);
     }
 
     // モーダル関連

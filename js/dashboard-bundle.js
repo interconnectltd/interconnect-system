@@ -30,14 +30,14 @@
         }
 
         async init() {
-            console.log('[DashboardLoader] Initializing...');
+            // console.log('[DashboardLoader] Initializing...');
             
             // 各モジュールを順番に初期化
             for (const moduleName of this.loadOrder) {
                 await this.loadModule(moduleName);
             }
             
-            console.log('[DashboardLoader] All modules loaded');
+            // console.log('[DashboardLoader] All modules loaded');
         }
 
         async loadModule(name) {
@@ -354,7 +354,7 @@
         }
 
         async init() {
-            console.log('[DashboardBundle] Initializing...');
+            // console.log('[DashboardBundle] Initializing...');
             await this.loader.init();
             
             // グローバルメソッドを公開

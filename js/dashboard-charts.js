@@ -33,7 +33,7 @@
             // データを読み込んでチャートを作成
             await this.loadDataAndCreateCharts();
             
-            console.log('[DashboardCharts] Initialized');
+            // console.log('[DashboardCharts] Initialized');
         }
 
         /**

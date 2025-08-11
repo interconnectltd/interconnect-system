@@ -20,7 +20,7 @@
         
         // 実行中または最小間隔内の場合はスキップ
         if (state.isRunning || (now - state.lastRun < state.minInterval)) {
-            console.log('[Dashboard] updateUserInfo スキップ (実行中または間隔内)');
+            // console.log('[Dashboard] updateUserInfo スキップ (実行中または間隔内)');
             return;
         }
         
@@ -47,12 +47,12 @@
         
         // supabaseReadyイベントでも更新
         window.addEventListener('supabaseReady', function() {
-            console.log('Dashboard: supabaseReady event received, updating user info');
+            // console.log('Dashboard: supabaseReady event received, updating user info');
             setTimeout(() => updateUserInfoSafe(), 500);
             
             // ダッシュボード更新システムを初期化
             if (window.dashboardUpdater) {
-                console.log('Dashboard: Initializing dashboard updater...');
+                // console.log('Dashboard: Initializing dashboard updater...');
                 setTimeout(() => {
                     window.dashboardUpdater.init();
                 }, 1000);
@@ -61,7 +61,7 @@
         
         // ダッシュボード更新システムが既に準備できている場合
         if (window.dashboardUpdater && window.supabaseClient) {
-            console.log('Dashboard: Dashboard updater already available, initializing...');
+            // console.log('Dashboard: Dashboard updater already available, initializing...');
             setTimeout(() => {
                 window.dashboardUpdater.init();
             }, 1500);
@@ -73,7 +73,7 @@
      */
     function checkAuth() {
         // Authentication check disabled for testing
-        console.log('[Dashboard] Auth check skipped for testing');
+        // console.log('[Dashboard] Auth check skipped for testing');
         // const isLoggedIn = sessionStorage.getItem('isLoggedIn');
         // 
         // if (!isLoggedIn || isLoggedIn !== 'true') {
@@ -151,7 +151,7 @@
      * Update user information
      */
     function updateUserInfo() {
-        console.log('[Dashboard] updateUserInfo called at', new Date().toISOString());
+        // console.log('[Dashboard] updateUserInfo called at', new Date().toISOString());
         try {
             // まずlocalStorageから完全なユーザー情報を取得
             let userName = 'ゲスト';
@@ -159,11 +159,11 @@
             
             if (typeof Storage !== 'undefined') {
                 const userDataStr = localStorage.getItem('user');
-                console.log('[Dashboard] Raw user data from localStorage:', userDataStr);
+                // console.log('[Dashboard] Raw user data from localStorage:', userDataStr);
                 if (userDataStr) {
                     try {
                         const userData = JSON.parse(userDataStr);
-                        console.log('[Dashboard] Parsed user data:', userData);
+                        // console.log('[Dashboard] Parsed user data:', userData);
                         
                         // 名前の優先順位: name > display_name > emailの@前
                         userName = userData.name || userData.display_name || userData.email?.split('@')[0] || 'ゲスト';
@@ -177,8 +177,8 @@
                         }
                         
                         userPicture = userData.picture || userData.picture_url;
-                        console.log('[Dashboard] Extracted userName:', userName);
-                        console.log('[Dashboard] Extracted userPicture:', userPicture);
+                        // console.log('[Dashboard] Extracted userName:', userName);
+                        // console.log('[Dashboard] Extracted userPicture:', userPicture);
                     } catch (e) {
                         console.error('[Dashboard] Failed to parse user data:', e);
                     }
@@ -187,7 +187,7 @@
                 // フォールバック: sessionStorageのemail
                 if (userName === 'ゲスト' || userName.startsWith('line_')) {
                     const userEmail = sessionStorage.getItem('userEmail');
-                    console.log('[Dashboard] Fallback to sessionStorage email:', userEmail);
+                    // console.log('[Dashboard] Fallback to sessionStorage email:', userEmail);
                     if (userEmail && userEmail.includes('@')) {
                         userName = userEmail.split('@')[0];
                     }
@@ -196,15 +196,15 @@
             
             // Update all user name elements
             const userNameElements = document.querySelectorAll('.user-name');
-            console.log('Found user name elements:', userNameElements.length);
+            // console.log('Found user name elements:', userNameElements.length);
             if (userNameElements.length > 0) {
                 userNameElements.forEach((element, index) => {
                     if (element) {
-                        console.log(`Updating element ${index}:`, element);
-                        console.log(`  Parent:`, element.parentElement);
-                        console.log(`  Old text:`, element.textContent);
+                        // console.log(`Updating element ${index}:`, element);
+                        // console.log(`  Parent:`, element.parentElement);
+                        // console.log(`  Old text:`, element.textContent);
                         element.textContent = userName;
-                        console.log(`  New text:`, element.textContent);
+                        // console.log(`  New text:`, element.textContent);
                     }
                 });
             }
@@ -245,7 +245,7 @@
             
             const supabaseInstance = window.supabaseClient;
             if (!supabaseInstance || !supabaseInstance.auth) {
-                console.log('[Dashboard] Supabase not initialized yet');
+                // console.log('[Dashboard] Supabase not initialized yet');
                 return;
             }
             
@@ -280,7 +280,7 @@
     // 初期化時に紹介ポイントも読み込む
     // supabaseReadyイベントを待つ
     window.addEventListener('supabaseReady', function() {
-        console.log('[Dashboard] supabaseReady event received, loading referral points');
+        // console.log('[Dashboard] supabaseReady event received, loading referral points');
         if (window.supabaseClient) {
             setTimeout(() => loadReferralPoints(), 500);
         }

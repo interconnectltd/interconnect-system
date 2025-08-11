@@ -32,7 +32,7 @@
          * イベント詳細を表示
          */
         async viewEventDetails(eventId) {
-            console.log('[EventDetails] イベント詳細を取得:', eventId);
+            // console.log('[EventDetails] イベント詳細を取得:', eventId);
             
             this.currentEventId = eventId;
             this.showLoadingState();
@@ -256,10 +256,13 @@
          * イベントに参加
          */
         async joinEvent(eventId) {
-            console.log('[EventDetails] イベントに参加:', eventId);
+            // console.log('[EventDetails] イベントに参加:', eventId);
             
             // TODO: 実際の参加処理を実装
-            alert('イベントへの参加登録機能は準備中です。');
+            // alert('イベントへの参加登録機能は準備中です。');
+            if (window.showInfo) {
+                showInfo('イベントへの参加登録機能は準備中です。');
+            }
             
             // モーダルを閉じる
             this.closeModal();

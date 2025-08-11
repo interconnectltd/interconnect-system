@@ -5,14 +5,14 @@
 (function() {
     'use strict';
 
-    console.log('[SupabaseInitWait] 初期化待機スクリプト読み込み');
+    // console.log('[SupabaseInitWait] 初期化待機スクリプト読み込み');
 
     // Supabaseクライアントの初期化を待つPromise
     window.waitForSupabase = function() {
         return new Promise((resolve) => {
             // 既に初期化済みの場合
             if (window.supabaseClient) {
-                console.log('[SupabaseInitWait] Supabaseクライアントは既に初期化済み');
+                // console.log('[SupabaseInitWait] Supabaseクライアントは既に初期化済み');
                 resolve(window.supabaseClient);
                 return;
             }
@@ -26,7 +26,7 @@
                 
                 if (window.supabaseClient) {
                     clearInterval(checkInterval);
-                    console.log('[SupabaseInitWait] Supabaseクライアントが初期化されました');
+                    // console.log('[SupabaseInitWait] Supabaseクライアントが初期化されました');
                     resolve(window.supabaseClient);
                 } else if (checkCount >= maxChecks) {
                     clearInterval(checkInterval);

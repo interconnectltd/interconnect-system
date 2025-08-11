@@ -11,7 +11,7 @@
 (function() {
     'use strict';
 
-    console.log('[EventRegistration] イベント参加登録システム初期化');
+    // console.log('[EventRegistration] イベント参加登録システム初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -19,7 +19,7 @@
 
     // 初期化
     async function initialize() {
-        console.log('[EventRegistration] 初期化開始');
+        // console.log('[EventRegistration] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -32,7 +32,7 @@
         }
 
         currentUserId = user.id;
-        console.log('[EventRegistration] ユーザーID:', currentUserId);
+        // console.log('[EventRegistration] ユーザーID:', currentUserId);
 
         // URLパラメータからイベントIDを取得
         const urlParams = new URLSearchParams(window.location.search);

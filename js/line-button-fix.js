@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('🔧 LINE Button Fix Script loaded');
+    // console.log('🔧 LINE Button Fix Script loaded');
     
     // 複数のタイミングでボタンを探して設定を試みる
     function setupLineButton() {
@@ -14,11 +14,11 @@
         const lineLoginBtn = document.getElementById('lineLoginBtn');
         
         if (lineRegisterBtn && !lineRegisterBtn.hasAttribute('data-listener-attached')) {
-            console.log('📍 Setting up LINE Register button');
+            // console.log('📍 Setting up LINE Register button');
             
             // クリックイベントを直接設定
             lineRegisterBtn.onclick = function(e) {
-                console.log('🖱️ LINE Register button clicked (onclick)');
+                // console.log('🖱️ LINE Register button clicked (onclick)');
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -29,7 +29,7 @@
                     console.error('❌ handleLineLogin function not found');
                     
                     // フォールバック: 直接LINE認証URLにリダイレクト
-                    console.log('📍 Using fallback LINE authentication');
+                    // console.log('📍 Using fallback LINE authentication');
                     const LINE_CHANNEL_ID = '2007688781';
                     const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
                     
@@ -48,21 +48,21 @@
                     });
                     
                     const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-                    console.log('Redirecting to:', authUrl);
+                    // console.log('Redirecting to:', authUrl);
                     window.location.href = authUrl;
                 }
             };
             
             // マーカーを設定
             lineRegisterBtn.setAttribute('data-listener-attached', 'true');
-            console.log('✅ LINE Register button setup complete');
+            // console.log('✅ LINE Register button setup complete');
         }
         
         if (lineLoginBtn && !lineLoginBtn.hasAttribute('data-listener-attached')) {
-            console.log('📍 Setting up LINE Login button');
+            // console.log('📍 Setting up LINE Login button');
             
             lineLoginBtn.onclick = function(e) {
-                console.log('🖱️ LINE Login button clicked (onclick)');
+                // console.log('🖱️ LINE Login button clicked (onclick)');
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -74,7 +74,7 @@
             };
             
             lineLoginBtn.setAttribute('data-listener-attached', 'true');
-            console.log('✅ LINE Login button setup complete');
+            // console.log('✅ LINE Login button setup complete');
         }
     }
     
@@ -95,7 +95,7 @@
     
     // 4. supabaseReadyイベントで実行
     window.addEventListener('supabaseReady', function() {
-        console.log('📍 supabaseReady event in line-button-fix.js');
+        // console.log('📍 supabaseReady event in line-button-fix.js');
         setupLineButton();
     });
     
@@ -108,7 +108,7 @@
         checkCount++;
         const btn = document.getElementById('lineRegisterBtn');
         if (btn) {
-            console.log(`🔍 Button check #${checkCount}:`, {
+            // console.log(`🔍 Button check #${checkCount}:`, {
                 exists: true,
                 hasOnclick: !!btn.onclick,
                 hasListenerAttr: btn.hasAttribute('data-listener-attached'),
@@ -121,7 +121,7 @@
             }
         } else if (checkCount > 10) {
             // ボタンが見つからない場合も10回でクリア
-            console.log('❌ Button not found after 10 checks, stopping');
+            // console.log('❌ Button not found after 10 checks, stopping');
             clearInterval(checkInterval);
         }
     }, 500);

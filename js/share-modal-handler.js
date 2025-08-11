@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('[ShareModal] ハンドラー初期化');
+    // console.log('[ShareModal] ハンドラー初期化');
 
     // 現在の紹介リンクURL
     let currentShareUrl = '';
@@ -14,7 +14,7 @@
 
     // 初期化
     function initialize() {
-        console.log('[ShareModal] 初期化開始');
+        // console.log('[ShareModal] 初期化開始');
         
         // デフォルトのシェアテキストを設定
         const shareMessageElement = document.getElementById('share-message');
@@ -32,17 +32,17 @@
         const inviteLinkElement = document.querySelector('.invite-link-url');
         if (inviteLinkElement) {
             currentShareUrl = inviteLinkElement.textContent;
-            console.log('[ShareModal] 紹介リンクを使用:', currentShareUrl);
+            // console.log('[ShareModal] 紹介リンクを使用:', currentShareUrl);
         } else {
             // なければ現在のページURL
             currentShareUrl = window.location.href;
-            console.log('[ShareModal] 現在のページURLを使用:', currentShareUrl);
+            // console.log('[ShareModal] 現在のページURLを使用:', currentShareUrl);
         }
     }
 
     // シェアモーダルを開く
     window.openShareModal = function(linkUrl) {
-        console.log('[ShareModal] モーダルを開く:', linkUrl);
+        // console.log('[ShareModal] モーダルを開く:', linkUrl);
         
         if (linkUrl) {
             currentShareUrl = linkUrl;
@@ -62,7 +62,7 @@
 
     // シェアモーダルを閉じる
     window.closeShareModal = function() {
-        console.log('[ShareModal] モーダルを閉じる');
+        // console.log('[ShareModal] モーダルを閉じる');
         
         const modal = document.getElementById('share-modal');
         if (modal) {
@@ -89,7 +89,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // Twitterでシェア
     window.shareToTwitter = function() {
-        console.log('[ShareModal] Twitterでシェア');
+        // console.log('[ShareModal] Twitterでシェア');
         
         const text = encodeURIComponent(currentShareText);
         const url = encodeURIComponent(currentShareUrl);
@@ -105,7 +105,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // LINEでシェア
     window.shareToLine = function() {
-        console.log('[ShareModal] LINEでシェア');
+        // console.log('[ShareModal] LINEでシェア');
         
         const text = encodeURIComponent(`${currentShareText}\n\n${currentShareUrl}`);
         const lineUrl = `https://line.me/R/msg/text/?${text}`;
@@ -123,7 +123,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // Facebookでシェア
     window.shareToFacebook = function() {
-        console.log('[ShareModal] Facebookでシェア');
+        // console.log('[ShareModal] Facebookでシェア');
         
         const url = encodeURIComponent(currentShareUrl);
         const quote = encodeURIComponent(currentShareText);
@@ -138,7 +138,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // メールでシェア
     window.shareByEmail = function() {
-        console.log('[ShareModal] メールでシェア');
+        // console.log('[ShareModal] メールでシェア');
         
         const subject = encodeURIComponent('INTERCONNECTのご紹介');
         const body = encodeURIComponent(`${currentShareText}\n\n詳細はこちら:\n${currentShareUrl}`);
@@ -153,7 +153,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // コピー機能（追加）
     window.copyShareLink = function() {
-        console.log('[ShareModal] リンクをコピー');
+        // console.log('[ShareModal] リンクをコピー');
         
         const tempInput = document.createElement('input');
         tempInput.value = currentShareUrl;
@@ -186,7 +186,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // シェアアナリティクス
     function trackShare(platform) {
-        console.log(`[ShareModal] ${platform}でシェアされました`);
+        // console.log(`[ShareModal] ${platform}でシェアされました`);
         
         // Google Analytics
         if (typeof gtag !== 'undefined') {
@@ -221,7 +221,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
             if (error) {
                 console.error('[ShareModal] シェア記録エラー:', error);
             } else {
-                console.log('[ShareModal] シェア活動を記録しました');
+                // console.log('[ShareModal] シェア活動を記録しました');
             }
         } catch (error) {
             console.error('[ShareModal] シェア記録エラー:', error);

@@ -3,20 +3,20 @@
  * Version: 2025-01-22-v2
  */
 
-console.log('🚀 auth-supabase.js loaded at:', new Date().toISOString());
-console.log('   Script version: 2025-01-22-v2');
+// console.log('🚀 auth-supabase.js loaded at:', new Date().toISOString());
+// console.log('   Script version: 2025-01-22-v2');
 
 // LINE Login Configuration
 const LINE_CHANNEL_ID = '2007688781';
 const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
 
 // デバッグ用：Channel IDの詳細確認
-console.log('🔍 auth-supabase.js: LINE_CHANNEL_ID defined');
-console.log('   Value:', LINE_CHANNEL_ID);
-console.log('   Type:', typeof LINE_CHANNEL_ID);
-console.log('   Length:', LINE_CHANNEL_ID.length);
-console.log('   Is 10 digits?:', /^\d{10}$/.test(LINE_CHANNEL_ID));
-console.log('   ⚠️ If you see 2007213003, clear cache!');
+// console.log('🔍 auth-supabase.js: LINE_CHANNEL_ID defined');
+// console.log('   Value:', LINE_CHANNEL_ID);
+// console.log('   Type:', typeof LINE_CHANNEL_ID);
+// console.log('   Length:', LINE_CHANNEL_ID.length);
+// console.log('   Is 10 digits?:', /^\d{10}$/.test(LINE_CHANNEL_ID));
+// console.log('   ⚠️ If you see 2007213003, clear cache!');
 
 // 初期化タイミングの改善
 let authInitialized = false;
@@ -24,9 +24,9 @@ let authInitialized = false;
 function tryInitializeAuth() {
     if (authInitialized) return;
     
-    console.log('🔍 Trying to initialize auth...');
-    console.log('   Supabase available:', !!window.supabase);
-    console.log('   DOM state:', document.readyState);
+    // console.log('🔍 Trying to initialize auth...');
+    // console.log('   Supabase available:', !!window.supabase);
+    // console.log('   DOM state:', document.readyState);
     
     if (window.supabase && document.readyState !== 'loading') {
         authInitialized = true;
@@ -36,13 +36,13 @@ function tryInitializeAuth() {
 
 // Supabaseが準備できるまで待つ
 window.addEventListener('supabaseReady', function() {
-    console.log('📍 supabaseReady event received in auth-supabase.js');
+    // console.log('📍 supabaseReady event received in auth-supabase.js');
     tryInitializeAuth();
 });
 
 // DOMContentLoadedでも試す
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📍 DOMContentLoaded in auth-supabase.js');
+    // console.log('📍 DOMContentLoaded in auth-supabase.js');
     tryInitializeAuth();
 });
 
@@ -52,15 +52,15 @@ if (document.readyState !== 'loading') {
 }
 
 function initializeAuth() {
-    console.log('🔧 initializeAuth called');
-    console.log('   Current page:', window.location.pathname);
-    console.log('   DOM ready state:', document.readyState);
+    // console.log('🔧 initializeAuth called');
+    // console.log('   Current page:', window.location.pathname);
+    // console.log('   DOM ready state:', document.readyState);
     
     // ログインフォームの処理
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleEmailLogin);
-        console.log('   ✅ Login form handler attached');
+        // console.log('   ✅ Login form handler attached');
     } else if (window.location.pathname.includes('login.html')) {
         console.warn('   ⚠️ Login form not found on login page');
     }
@@ -68,29 +68,29 @@ function initializeAuth() {
     // LINEログインボタンの処理
     const lineLoginBtn = document.getElementById('lineLoginBtn');
     if (lineLoginBtn) {
-        console.log('🎯 LINE Login button found, adding event listener');
+        // console.log('🎯 LINE Login button found, adding event listener');
         lineLoginBtn.addEventListener('click', handleLineLogin);
         
         // デバッグ用: クリックイベントが本当に登録されたか確認
         lineLoginBtn.addEventListener('click', function() {
-            console.log('📍 LINE Login button clicked (debug listener)');
+            // console.log('📍 LINE Login button clicked (debug listener)');
         });
     }
     
     // LINE登録ボタンの処理
     const lineRegisterBtn = document.getElementById('lineRegisterBtn');
     if (lineRegisterBtn) {
-        console.log('🎯 LINE Register button found, adding event listener');
+        // console.log('🎯 LINE Register button found, adding event listener');
         lineRegisterBtn.addEventListener('click', handleLineLogin);
         
         // デバッグ用: クリックイベントが本当に登録されたか確認
         lineRegisterBtn.addEventListener('click', function() {
-            console.log('📍 LINE Register button clicked (debug listener)');
+            // console.log('📍 LINE Register button clicked (debug listener)');
         });
     } else {
-        console.log('❌ LINE Register button NOT found');
-        console.log('   Available buttons:', document.querySelectorAll('button').length);
-        console.log('   Buttons with ID:', Array.from(document.querySelectorAll('button[id]')).map(b => b?.id).filter(Boolean));
+        // console.log('❌ LINE Register button NOT found');
+        // console.log('   Available buttons:', document.querySelectorAll('button').length);
+        // console.log('   Buttons with ID:', Array.from(document.querySelectorAll('button[id]')).map(b => b?.id).filter(Boolean));
     }
     
     // 現在のユーザーセッションをチェック
@@ -140,7 +140,7 @@ async function handleEmailLogin(e) {
         }
         
         // ログイン成功
-        console.log('ログイン成功:', data.user);
+        // console.log('ログイン成功:', data.user);
         
         // ユーザー情報をローカルストレージに保存（エラーハンドリング付き）
         try {
@@ -178,12 +178,12 @@ function handleLineLogin(e) {
         e.stopPropagation();
     }
     
-    console.log('LINE Login button clicked (auth-supabase.js)');
-    console.log('Using Channel ID:', LINE_CHANNEL_ID);
+    // console.log('LINE Login button clicked (auth-supabase.js)');
+    // console.log('Using Channel ID:', LINE_CHANNEL_ID);
     
     // 二重実行を防ぐフラグ
     if (window._lineLoginInProgress) {
-        console.log('LINE login already in progress');
+        // console.log('LINE login already in progress');
         return;
     }
     window._lineLoginInProgress = true;
@@ -215,7 +215,7 @@ function handleLineLogin(e) {
         });
         
         const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-        console.log('Redirecting to:', authUrl);
+        // console.log('Redirecting to:', authUrl);
         
         // LINE認証ページへリダイレクト
         window.location.href = authUrl;
@@ -238,7 +238,7 @@ async function checkAuthStatus() {
         const { data: { user } } = await window.supabase.auth.getUser();
         
         if (user) {
-            console.log('既にログイン済み:', user);
+            // console.log('既にログイン済み:', user);
             
             // ログインページの場合はダッシュボードへリダイレクト
             if (window.location.pathname.includes('login.html')) {

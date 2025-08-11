@@ -48,7 +48,7 @@
             // ネイティブ関数をラップ
             this.wrapNativeFunctions();
             
-            console.log('Performance Monitor initialized');
+            // console.log('Performance Monitor initialized');
         },
         
         // メモリ監視
@@ -69,7 +69,7 @@
                 }
                 
                 if (this.config.enableLogging) {
-                    console.log(`Memory usage: ${(currentMemory / 1024 / 1024).toFixed(2)}MB (Increase: ${(memoryIncrease / 1024 / 1024).toFixed(2)}MB)`);
+                    // console.log(`Memory usage: ${(currentMemory / 1024 / 1024).toFixed(2)}MB (Increase: ${(memoryIncrease / 1024 / 1024).toFixed(2)}MB)`);
                 }
             }, this.config.memoryCheckInterval);
         },
@@ -218,13 +218,13 @@
         // レポートをクリア
         clearReports() {
             localStorage.removeItem('performanceReports');
-            console.log('Performance reports cleared');
+            // console.log('Performance reports cleared');
         },
         
         // 監視を停止
         stop() {
             // Note: In production, you would store interval IDs and clear them here
-            console.log('Performance Monitor stopped');
+            // console.log('Performance Monitor stopped');
         }
     };
     

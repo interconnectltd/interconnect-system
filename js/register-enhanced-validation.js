@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('[RegisterEnhancedValidation] 初期化開始');
+    // console.log('[RegisterEnhancedValidation] 初期化開始');
     
     // 現在のステップ
     let currentStep = 1;
@@ -148,7 +148,10 @@
         
         // エラー表示
         if (errors.length > 0) {
-            alert(errors.join('\n'));
+            // alert(errors.join('\n'));
+            if (window.showError) {
+                showError(errors.join('\n'));
+            }
             return false;
         }
         
@@ -195,6 +198,6 @@
         init();
     }
     
-    console.log('[RegisterEnhancedValidation] 初期化完了');
+    // console.log('[RegisterEnhancedValidation] 初期化完了');
     
 })();

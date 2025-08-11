@@ -25,7 +25,7 @@
         return filterPatterns.some(pattern => pattern.test(message));
     }
 
-    console.log = function(...args) {
+    // console.log = function(...args) {
         if (!shouldFilter(args)) {
             originalLog.apply(console, args);
         }
@@ -62,5 +62,5 @@
         };
     }
 
-    console.log('[ServiceWorkerFilter] Chrome拡張機能ログフィルターが有効になりました');
+    // console.log('[ServiceWorkerFilter] Chrome拡張機能ログフィルターが有効になりました');
 })();

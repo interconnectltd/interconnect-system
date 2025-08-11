@@ -9,9 +9,9 @@
     const LINE_CHANNEL_ID = '2007688781';
     const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
     
-    console.log('📱 LINE Login Simple loaded');
-    console.log('   Channel ID:', LINE_CHANNEL_ID);
-    console.log('   Redirect URI:', LINE_REDIRECT_URI);
+    // console.log('📱 LINE Login Simple loaded');
+    // console.log('   Channel ID:', LINE_CHANNEL_ID);
+    // console.log('   Redirect URI:', LINE_REDIRECT_URI);
     
     // ランダム文字列生成
     function generateRandomString(length) {
@@ -30,7 +30,7 @@
             e.stopPropagation();
         }
         
-        console.log('🚀 LINE Login initiated (Simple)');
+        // console.log('🚀 LINE Login initiated (Simple)');
         
         try {
             // LINE認証URLを構築
@@ -50,8 +50,8 @@
             });
             
             const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-            console.log('📍 Redirecting to LINE auth');
-            console.log('   URL:', authUrl);
+            // console.log('📍 Redirecting to LINE auth');
+            // console.log('   URL:', authUrl);
             
             // LINE認証ページへリダイレクト
             window.location.href = authUrl;
@@ -68,7 +68,7 @@
         const lineRegisterBtn = document.getElementById('lineRegisterBtn');
         
         if (lineLoginBtn) {
-            console.log('✅ LINE Login button found');
+            // console.log('✅ LINE Login button found');
             
             // 既存のイベントリスナーをクリア
             const newButton = lineLoginBtn.cloneNode(true);
@@ -80,11 +80,11 @@
             // グローバルに公開
             window.handleLineLoginSimple = handleLineLogin;
             
-            console.log('✅ LINE Login button setup complete');
+            // console.log('✅ LINE Login button setup complete');
         }
         
         if (lineRegisterBtn) {
-            console.log('✅ LINE Register button found');
+            // console.log('✅ LINE Register button found');
             
             // 既存のイベントリスナーをクリア
             const newButton = lineRegisterBtn.cloneNode(true);
@@ -93,7 +93,7 @@
             // 新しいイベントリスナーを追加
             newButton.addEventListener('click', handleLineLogin);
             
-            console.log('✅ LINE Register button setup complete');
+            // console.log('✅ LINE Register button setup complete');
         }
     }
     

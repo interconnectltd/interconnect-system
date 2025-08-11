@@ -30,7 +30,7 @@ class TimeRexBooking {
     try {
       // supabaseが存在するかチェック
       if (!window.supabase || !window.supabase.auth) {
-        console.log('Supabaseクライアントが利用できません。ゲストとして処理します。');
+        // console.log('Supabaseクライアントが利用できません。ゲストとして処理します。');
         const referralCode = this.getReferralCode();
         const bookingUrl = this.buildFallbackUrl(null, referralCode);
         this.openBookingWindow(bookingUrl);
@@ -67,7 +67,7 @@ class TimeRexBooking {
           }
           
           bookingUrl = response.data.bookingUrl;
-          console.log('Edge Function成功:', response.data);
+          // console.log('Edge Function成功:', response.data);
           
         } catch (edgeFunctionError) {
           console.error('Edge Function失敗、フォールバックを使用:', edgeFunctionError);
@@ -95,23 +95,23 @@ class TimeRexBooking {
     const urlParams = new URLSearchParams(window.location.search);
     const urlRef = urlParams.get('ref');
     if (urlRef) {
-      console.log('紹介コード（URL）:', urlRef);
+      // console.log('紹介コード（URL）:', urlRef);
       return urlRef;
     }
     
     const sessionRef = sessionStorage.getItem('referralCode');
     if (sessionRef) {
-      console.log('紹介コード（セッション）:', sessionRef);
+      // console.log('紹介コード（セッション）:', sessionRef);
       return sessionRef;
     }
     
     const localRef = localStorage.getItem('referralCode');
     if (localRef) {
-      console.log('紹介コード（ローカル）:', localRef);
+      // console.log('紹介コード（ローカル）:', localRef);
       return localRef;
     }
     
-    console.log('紹介コード（直接アクセス）');
+    // console.log('紹介コード（直接アクセス）');
     return 'DIRECT'; // 直接アクセスの場合
   }
   
@@ -133,7 +133,7 @@ class TimeRexBooking {
     
     // TimeRex予約ページのURL
     const url = `${this.baseUrl}/book/${this.pageId}?${params.toString()}`;
-    console.log('フォールバック予約URL:', url);
+    // console.log('フォールバック予約URL:', url);
     return url;
   }
   
@@ -162,7 +162,7 @@ class TimeRexBooking {
       // TimeRexからのメッセージのみ処理
       if (event.origin !== this.baseUrl) return;
       
-      console.log('TimeRexからのメッセージ:', event.data);
+      // console.log('TimeRexからのメッセージ:', event.data);
       
       if (event.data.type === 'booking_completed') {
         this.handleBookingCompleted(event.data);
@@ -177,13 +177,13 @@ class TimeRexBooking {
       if (popup && popup.closed) {
         clearInterval(checkClosed);
         window.removeEventListener('message', messageHandler);
-        console.log('予約ウィンドウが閉じられました');
+        // console.log('予約ウィンドウが閉じられました');
       }
     }, 1000);
   }
   
   async handleBookingCompleted(data) {
-    console.log('予約完了:', data);
+    // console.log('予約完了:', data);
     
     // 予約完了通知
     if (typeof showNotification !== 'undefined') {
