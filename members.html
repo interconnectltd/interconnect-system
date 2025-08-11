@@ -302,20 +302,75 @@
     <script src="js/members-profile-modal.js"></script>
     <script>
         // モーダルの初期化を確認
-        console.log('[members.html] After members-profile-modal.js:');
+        console.log('[members.html] After members-profile-modal.js load:');
+        console.log('  - window.MembersProfileModal:', !!window.MembersProfileModal);
         console.log('  - window.membersProfileModal:', !!window.membersProfileModal);
         console.log('  - window.showMemberProfileModal:', !!window.showMemberProfileModal);
         
-        // 強制的にモーダルを初期化（フォールバック）
-        if (!window.membersProfileModal) {
-            console.log('[members.html] Forcing modal initialization...');
-            setTimeout(() => {
-                if (window.MembersProfileModal) {
-                    window.membersProfileModal = new window.MembersProfileModal();
-                    console.log('[members.html] Modal initialized by fallback');
-                }
-            }, 100);
-        }
+        // 動作テスト用の関数
+        window.testModal = function() {
+            console.log('[TEST] Modal test function called');
+            if (window.showMemberProfileModal) {
+                window.showMemberProfileModal('test-user-id');
+            } else {
+                console.error('[TEST] showMemberProfileModal not available');
+            }
+        };
+        
+        // デモユーザーのモーダル表示テスト
+        window.testDemoModal = function(userId = 'fallback-1') {
+            console.log('[TEST] Demo modal test for userId:', userId);
+            if (window.showMemberProfileModal) {
+                window.showMemberProfileModal(userId);
+            } else {
+                console.error('[TEST] showMemberProfileModal not available');
+            }
+        };
+        
+        // モーダル状態の診断
+        window.diagnoseModal = function() {
+            console.log('=== Modal Diagnosis ===');
+            console.log('MembersProfileModal class:', !!window.MembersProfileModal);
+            console.log('membersProfileModal instance:', !!window.membersProfileModal);
+            console.log('showMemberProfileModal function:', !!window.showMemberProfileModal);
+            console.log('Modal element in DOM:', !!document.getElementById('memberProfileModal'));
+            
+            if (window.membersProfileModal) {
+                console.log('Modal instance details:');
+                console.log('  - modal element:', !!window.membersProfileModal.modal);
+                console.log('  - currentUserId:', window.membersProfileModal.currentUserId);
+                console.log('  - currentTab:', window.membersProfileModal.currentTab);
+            }
+            
+            const profileButtons = document.querySelectorAll('.view-profile-btn');
+            console.log('Profile buttons found:', profileButtons.length);
+            profileButtons.forEach((btn, index) => {
+                console.log(`  Button ${index + 1}:`, btn.dataset.memberId);
+            });
+        };
+        
+        // 強制初期化（フォールバック）
+        setTimeout(() => {
+            console.log('[members.html] Fallback check:');
+            console.log('  - MembersProfileModal class:', !!window.MembersProfileModal);
+            console.log('  - membersProfileModal instance:', !!window.membersProfileModal);
+            console.log('  - showMemberProfileModal function:', !!window.showMemberProfileModal);
+            
+            if (!window.membersProfileModal && window.MembersProfileModal) {
+                console.log('[members.html] Creating modal instance via fallback...');
+                window.membersProfileModal = new window.MembersProfileModal();
+                console.log('[members.html] Fallback modal created:', !!window.membersProfileModal);
+            }
+        }, 1000);
+        
+        // デバッグ用: プロフィールボタンクリックの監視
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.view-profile-btn')) {
+                console.log('[members.html] Profile button click detected');
+                console.log('  - Button element:', e.target.closest('.view-profile-btn'));
+                console.log('  - User ID:', e.target.closest('.view-profile-btn').dataset.memberId);
+            }
+        });
     </script>
     <script src="js/members-supabase.js?v=20250729"></script>
     <script src="js/member-profile-preview.js"></script>
