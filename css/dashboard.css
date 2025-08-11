@@ -11,6 +11,10 @@
 /* ===========================
    Dashboard Sidebar (specific)
    =========================== */
+/* NOTE: .dashboard-sidebar は実際のHTMLでは使用されていません
+   実際には .sidebar クラスが使用されているため、以下はレガシーコードです
+   sidebar-responsive-fix.css で統一された260px幅が適用されます */
+/*
 .dashboard-sidebar {
     width: 250px;
     background: white;
@@ -19,6 +23,7 @@
     flex-direction: column;
     transition: var(--transition-base);
 }
+*/
 
 .sidebar-header {
     padding: var(--space-lg);
