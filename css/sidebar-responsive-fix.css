@@ -1,0 +1,264 @@
+/**
+ * サイドバーレスポンシブ統一修正CSS
+ * 全ページのサイドバーとメインコンテンツのレイアウトを統一
+ * 基準: referral-final-fix.css の実装に準拠
+ */
+
+/* =============================
+   基本レイアウト設定
+   ============================= */
+/* ダッシュボード全体 */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background: #f8f9fa;
+}
+
+/* サイドバー幅を260pxに統一 */
+.dashboard .sidebar {
+    width: 260px !important;
+    flex-shrink: 0;
+    background: white;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 100;
+}
+
+/* メインコンテンツ - サイドバーありの場合 */
+.dashboard .main-content {
+    flex: 1;
+    margin-left: 260px !important;
+    width: calc(100% - 260px) !important;
+    padding: 0 !important;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+/* サイドバーが非表示の場合 */
+.dashboard.sidebar-collapsed .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
+/* コンテンツヘッダー */
+.dashboard .content-header {
+    background: white;
+    padding: 1.5rem 2rem !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem !important;
+    width: 100%;
+}
+
+/* コンテンツボディ */
+.dashboard .main-content .content-body {
+    padding: 0 2rem !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    width: 100%;
+}
+
+/* =============================
+   大画面対応（1440px以上）
+   ============================= */
+@media (min-width: 1440px) {
+    /* サイドバー固定 */
+    .dashboard .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    
+    /* メインコンテンツ調整 */
+    .dashboard .main-content {
+        margin-left: 260px !important;
+    }
+    
+    /* コンテンツボディの最大幅を拡大 */
+    .dashboard .main-content .content-body {
+        max-width: 1400px !important;
+        padding: 0 3rem !important;
+    }
+    
+    /* モバイルヘッダーを非表示 */
+    .mobile-header {
+        display: none !important;
+    }
+}
+
+/* 超大画面（1920px以上） */
+@media (min-width: 1920px) {
+    .dashboard .main-content .content-body {
+        max-width: 1600px !important;
+        padding: 0 4rem !important;
+    }
+}
+
+/* =============================
+   タブレット対応（768px〜1023px）
+   ============================= */
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* サイドバー幅を狭める */
+    .dashboard .sidebar {
+        width: 200px !important;
+    }
+    
+    /* メインコンテンツの余白調整 */
+    .dashboard .main-content {
+        margin-left: 200px !important;
+        width: calc(100% - 200px) !important;
+    }
+    
+    /* コンテンツの余白を減らす */
+    .dashboard .content-header {
+        padding: 1rem 1.5rem !important;
+    }
+    
+    .dashboard .main-content .content-body {
+        padding: 0 1.5rem !important;
+    }
+}
+
+/* =============================
+   モバイル対応（767px以下）
+   ============================= */
+@media (max-width: 767px) {
+    /* フレックスボックスを縦並びに */
+    .dashboard {
+        flex-direction: column;
+    }
+    
+    /* サイドバーを非表示（モバイルナビを使用） */
+    .dashboard .sidebar {
+        display: none !important;
+    }
+    
+    /* メインコンテンツを全幅に */
+    .dashboard .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        margin-top: 60px !important; /* モバイルヘッダーの高さ分 */
+    }
+    
+    /* モバイルヘッダーを表示 */
+    .mobile-header {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        align-items: center;
+        padding: 0 1rem;
+    }
+    
+    /* コンテンツヘッダーの余白調整 */
+    .dashboard .content-header {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* コンテンツボディの余白調整 */
+    .dashboard .main-content .content-body {
+        padding: 0 1rem !important;
+        max-width: 100% !important;
+    }
+    
+    /* モバイルナビゲーション表示時 */
+    .mobile-nav.active {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        background: white;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1100;
+        overflow-y: auto;
+    }
+    
+    /* モバイルバックドロップ */
+    .mobile-backdrop.active {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
+}
+
+/* =============================
+   小型モバイル対応（480px以下）
+   ============================= */
+@media (max-width: 480px) {
+    /* さらに余白を減らす */
+    .dashboard .content-header {
+        padding: 0.75rem !important;
+    }
+    
+    .dashboard .main-content .content-body {
+        padding: 0 0.75rem !important;
+    }
+    
+    /* モバイルナビの幅を調整 */
+    .mobile-nav.active {
+        width: 85vw;
+        max-width: 300px;
+    }
+}
+
+/* =============================
+   印刷対応
+   ============================= */
+@media print {
+    /* サイドバーを非表示 */
+    .dashboard .sidebar,
+    .mobile-header,
+    .mobile-nav,
+    .mobile-backdrop {
+        display: none !important;
+    }
+    
+    /* メインコンテンツを全幅に */
+    .dashboard .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* =============================
+   アクセシビリティ対応
+   ============================= */
+/* フォーカス時のアウトライン */
+.dashboard .sidebar a:focus,
+.dashboard .main-content a:focus,
+.dashboard button:focus {
+    outline: 2px solid #0066ff;
+    outline-offset: 2px;
+}
+
+/* ハイコントラストモード対応 */
+@media (prefers-contrast: high) {
+    .dashboard .sidebar {
+        border-right: 2px solid #000;
+    }
+    
+    .dashboard .content-header {
+        border-bottom: 2px solid #000;
+    }
+}
+
+/* ダークモード対応（将来の実装用） */
+@media (prefers-color-scheme: dark) {
+    /* ダークモード時のスタイルはここに追加 */
+}
