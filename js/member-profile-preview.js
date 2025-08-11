@@ -84,8 +84,14 @@
 
             // クリックで非表示
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.member-card') && !e.target.closest('.profile-preview')) {
-                    this.hidePreview();
+                // e.targetがElementであることを確認
+                if (!e.target || !e.target.nodeType || e.target.nodeType !== 1) return;
+                
+                // closestメソッドが使用可能か確認
+                if (typeof e.target.closest === 'function') {
+                    if (!e.target.closest('.member-card') && !e.target.closest('.profile-preview')) {
+                        this.hidePreview();
+                    }
                 }
             });
         }
