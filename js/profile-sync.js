@@ -8,14 +8,14 @@
     
     // Supabaseからユーザー情報を取得して更新
     async function syncUserProfile() {
-        if (!window.supabaseClientClient) {
+        if (!window.supabaseClient) {
             console.error('Supabase client not initialized');
             return;
         }
         
         try {
             // 現在のユーザーを取得
-            const { data: { user }, error } = await window.supabaseClientClient.auth.getUser();
+            const { data: { user }, error } = await window.supabaseClient.auth.getUser();
             
             if (error) {
                 console.error('Error getting user:', error);

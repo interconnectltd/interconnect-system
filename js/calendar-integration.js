@@ -144,8 +144,8 @@
                         start_time,
                         end_time,
                         location,
-                        is_online,
-                        meeting_url,
+                        event_type,
+                        online_url,
                         organizer_id
                     )
                 `)
@@ -166,10 +166,10 @@
                     start: startDateTime,
                     end: endDateTime,
                     description: event.description,
-                    location: event.is_online ? 'オンライン' : event.location,
+                    location: event.event_type === 'online' ? 'オンライン' : event.location,
                     extendedProps: {
-                        isOnline: event.is_online,
-                        meetingUrl: event.meeting_url,
+                        isOnline: event.event_type === 'online' || event.event_type === 'hybrid',
+                        meetingUrl: event.online_url,
                         organizerId: event.organizer_id
                     }
                 };
