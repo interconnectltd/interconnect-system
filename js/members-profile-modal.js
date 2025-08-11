@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    // console.log('[MembersProfileModal] 初期化開始');
+    console.log('[MembersProfileModal] 初期化開始');
     
     // プロフィールモーダルクラス
     class MembersProfileModal {
@@ -22,7 +22,7 @@
         init() {
             this.createModal();
             this.setupEventListeners();
-            // console.log('[MembersProfileModal] 初期化完了');
+            console.log('[MembersProfileModal] 初期化完了');
         }
         
         createModal() {
@@ -122,6 +122,7 @@
             `;
             
             document.body.appendChild(this.modal);
+            console.log('[MembersProfileModal] Modal added to DOM. Check:', document.getElementById('memberProfileModal'));
         }
         
         setupEventListeners() {
@@ -161,16 +162,32 @@
         }
         
         async show(userId) {
-            if (!userId) return;
+            console.log('[MembersProfileModal] show() called with userId:', userId);
+            if (!userId) {
+                console.error('[MembersProfileModal] userId is empty');
+                return;
+            }
+            
+            console.log('[MembersProfileModal] Modal element:', this.modal);
+            console.log('[MembersProfileModal] Modal classList before:', this.modal.classList.toString());
             
             this.currentUserId = userId;
             this.modal.classList.add('show');
             document.body.style.overflow = 'hidden';
             
+            console.log('[MembersProfileModal] Modal classList after:', this.modal.classList.toString());
+            console.log('[MembersProfileModal] Modal display style:', window.getComputedStyle(this.modal).display);
+            
             // データ取得前にローディング表示
             this.showLoading();
             
             try {
+                // Supabaseチェック
+                if (!window.supabase) {
+                    console.error('[MembersProfileModal] Supabase not initialized');
+                    return;
+                }
+                
                 // ユーザーデータを取得
                 const { data: userData, error } = await window.supabase
                     .from('profiles')
@@ -441,7 +458,9 @@
     }
     
     // グローバルインスタンスを作成
+    console.log('[MembersProfileModal] Creating global instance...');
     window.membersProfileModal = new MembersProfileModal();
+    console.log('[MembersProfileModal] Global instance created:', window.membersProfileModal);
     
     // プロフィールボタンのクリックイベントを監視
     document.addEventListener('click', (e) => {

@@ -259,7 +259,7 @@
                     <div class="member-actions">
                         <button class="btn btn-primary btn-small view-profile-btn" 
                                 data-member-id="${id}"
-                                onclick="window.membersProfileModal && window.membersProfileModal.show('${id}')">
+                                onclick="console.log('Profile button clicked for:', '${id}'); console.log('membersProfileModal exists?', !!window.membersProfileModal); if(window.membersProfileModal) { window.membersProfileModal.show('${id}'); } else { console.error('membersProfileModal not found!'); }">
                             <i class="fas fa-user"></i>
                             <span class="btn-text">プロフィール</span>
                         </button>
