@@ -56,7 +56,8 @@ header,
 }
 
 /* 第4優先: モーダル・ダイアログ (z-index: 5000番台) */
-.modal,
+/* メンバープロフィールモーダルは除外（専用CSSで管理） */
+.modal:not(#memberProfileModal),
 .modal-backdrop,
 .modal-overlay,
 .dialog {

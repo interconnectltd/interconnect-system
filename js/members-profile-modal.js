@@ -604,7 +604,11 @@ document.addEventListener('click', (e) => {
         console.log('[MembersProfileModal] Profile button clicked for userId:', userId);
         
         if (userId) {
-            window.showMemberProfileModal(userId);
+            if (window.membersProfileModal && window.membersProfileModal.show) {
+                window.membersProfileModal.show(userId);
+            } else {
+                console.error('[MembersProfileModal] Modal instance not found');
+            }
         } else {
             console.error('[MembersProfileModal] No userId found in button data');
         }
