@@ -33,6 +33,8 @@
     <link rel="stylesheet" href="css/header-user-menu-redesign.css">
     <!-- ヘッダー余白修正 -->
     <link rel="stylesheet" href="css/header-padding-fix.css">
+    <!-- シェアモーダル改善CSS -->
+    <link rel="stylesheet" href="css/share-modal-enhanced.css">
 </head>
 <body class="referral-page">
     <!-- Mobile Header (ダッシュボードと同じ) -->
@@ -453,6 +455,9 @@
                 <button class="share-button email" onclick="shareByEmail()">
                     <i class="fas fa-envelope"></i><span>メール</span>
                 </button>
+                <button class="share-button copy" onclick="copyShareLink()">
+                    <i class="fas fa-copy"></i><span>コピー</span>
+                </button>
             </div>
             <div class="share-text">
                 <textarea id="share-message" rows="5">経営者向けAI活用コミュニティ「INTERCONNECT」をご存知ですか？
@@ -536,5 +541,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
     <script src="js/google-calendar-booking.js?v=1.0"></script>
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
+    <!-- シェアモーダルハンドラー -->
+    <script src="js/share-modal-handler.js"></script>
 </body>
 </html>
