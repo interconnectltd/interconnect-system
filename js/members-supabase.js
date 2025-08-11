@@ -28,7 +28,7 @@
             
             try {
                 // Supabase接続確認
-                if (!window.supabase) {
+                if (!window.supabaseClient) {
                     console.error('[MembersSupabase] Supabaseクライアントが見つかりません');
                     this.showFallbackUI();
                     return;
@@ -37,7 +37,7 @@
                 console.log('[MembersSupabase] Supabase接続確認OK');
 
                 // 認証状態を確認
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     console.log('[MembersSupabase] ユーザー未認証');
                     this.showFallbackUI();
@@ -65,7 +65,7 @@
                 console.log('[MembersSupabase] メンバーデータ読み込み中...');
                 
                 // ベースクエリ（user_profilesテーブルを使用 - active_usersはビュー）
-                let query = window.supabase
+                let query = window.supabaseClient
                     .from('user_profiles')
                     .select('*', { count: 'exact' })
                     .eq('is_active', true)
@@ -141,10 +141,10 @@
                 if (memberIds.length === 0) return;
                 
                 // 各メンバーのコネクション数を取得
-                const { data: connections, error } = await window.supabase
+                const { data: connections, error } = await window.supabaseClient
                     .from('connections')
-                    .select('requester_id, receiver_id')
-                    .or(`requester_id.in.(${memberIds.join(',')}),receiver_id.in.(${memberIds.join(',')})`)
+                    .select('user_id, connected_user_id')
+                    .or(`user_id.in.(${memberIds.join(',')}),connected_user_id.in.(${memberIds.join(',')})`)
                     .eq('status', 'accepted');
 
                 if (error) throw error;
@@ -154,11 +154,11 @@
                 memberIds.forEach(id => connectionCounts[id] = 0);
 
                 connections?.forEach(conn => {
-                    if (connectionCounts[conn.requester_id] !== undefined) {
-                        connectionCounts[conn.requester_id]++;
+                    if (connectionCounts[conn.user_id] !== undefined) {
+                        connectionCounts[conn.user_id]++;
                     }
-                    if (connectionCounts[conn.receiver_id] !== undefined) {
-                        connectionCounts[conn.receiver_id]++;
+                    if (connectionCounts[conn.connected_user_id] !== undefined) {
+                        connectionCounts[conn.connected_user_id]++;
                     }
                 });
 
@@ -357,7 +357,7 @@
          */
         setupRealtimeSubscription() {
             // プロフィール更新を監視
-            this.profilesSubscription = window.supabase
+            this.profilesSubscription = window.supabaseClient
                 .channel('public:profiles')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'profiles' },
@@ -462,7 +462,7 @@
          */
         cleanup() {
             if (this.profilesSubscription) {
-                window.supabase.removeChannel(this.profilesSubscription);
+                window.supabaseClient.removeChannel(this.profilesSubscription);
             }
         }
     }
@@ -582,7 +582,7 @@
 
     // Supabaseの準備ができるまで待つ
     function initializeWhenReady() {
-        if (window.supabase) {
+        if (window.supabaseClient) {
             console.log('[MembersSupabase] Supabase準備完了、マネージャー作成');
             window.membersSupabase = new MembersSupabaseManager();
             window.membersSupabase.init();
@@ -593,7 +593,7 @@
     }
 
     // supabaseReadyイベントを待つ
-    if (window.supabase) {
+    if (window.supabaseClient) {
         initializeWhenReady();
     } else {
         window.addEventListener('supabaseReady', () => {

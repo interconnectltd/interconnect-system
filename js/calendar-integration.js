@@ -136,7 +136,7 @@
                 .select(`
                     event_id,
                     attendance_status,
-                    events(
+                    event_items(
                         id,
                         title,
                         description,
@@ -156,7 +156,7 @@
 
             // イベントをカレンダー形式に変換
             events = (participations || []).map(p => {
-                const event = p.events;
+                const event = p.event_items;
                 const startDateTime = combineDateTime(event.event_date, event.start_time);
                 const endDateTime = combineDateTime(event.event_date, event.end_time);
 

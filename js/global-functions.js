@@ -17,8 +17,8 @@
         
         try {
             // Supabaseからログアウト
-            if (window.supabase) {
-                const { error } = await window.supabase.auth.signOut();
+            if (window.supabaseClient) {
+                const { error } = await window.supabaseClient.auth.signOut();
                 if (error) {
                     console.error('Logout error:', error);
                     throw error;

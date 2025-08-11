@@ -79,8 +79,8 @@
                 }
             });
 
-            // 後方互換性のため window.supabase も設定
-            window.supabase = window.supabaseClient;
+            // 後方互換性の設定は削除（window.supabaseClientのみ使用）
+            // window.supabase = window.supabaseClient;
 
             isInitialized = true;
             console.log('[SupabaseUnified] Supabaseクライアント初期化完了');

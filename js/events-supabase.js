@@ -21,7 +21,7 @@
 
         init() {
             // supabaseReadyイベントを待ってから初期化
-            if (window.supabaseClientClient) {
+            if (window.supabaseClient) {
                 this.setupEventListeners();
                 this.loadEvents();
                 this.loadPastEvents();

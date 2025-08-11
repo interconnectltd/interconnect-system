@@ -4,14 +4,19 @@ console.log('[UserMenu] user-menu.js loaded');
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('[UserMenu] DOM loaded, initializing user menu');
     
+    // Supabaseの初期化を待つ
+    if (typeof window.waitForSupabase === 'function') {
+        await window.waitForSupabase();
+    }
+    
     // ユーザー情報を取得
     try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
         console.log('[UserMenu] Current user:', user?.email || 'Not logged in');
         
         if (user) {
             // プロファイル情報を取得
-            const { data: profile } = await supabase
+            const { data: profile } = await window.supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)

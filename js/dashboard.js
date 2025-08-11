@@ -243,7 +243,7 @@
                 await window.waitForSupabase();
             }
             
-            const supabaseInstance = window.supabaseClient || window.supabase;
+            const supabaseInstance = window.supabaseClient;
             if (!supabaseInstance || !supabaseInstance.auth) {
                 console.log('[Dashboard] Supabase not initialized yet');
                 return;

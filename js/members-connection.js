@@ -19,8 +19,8 @@
         async init() {
             try {
                 // 認証状態を確認
-                if (window.supabase) {
-                    const { data: { user } } = await window.supabase.auth.getUser();
+                if (window.supabaseClient) {
+                    const { data: { user } } = await window.supabaseClient.auth.getUser();
                     if (user) {
                         this.currentUserId = user.id;
                         await this.loadConnections();
@@ -37,34 +37,34 @@
          * 既存のコネクションを読み込む
          */
         async loadConnections() {
-            if (!window.supabase) return;
+            if (!window.supabaseClient) return;
 
             try {
                 // 承認済みコネクション
-                const { data: accepted } = await window.supabase
+                const { data: accepted } = await window.supabaseClient
                     .from('connections')
                     .select('*')
-                    .or(`requester_id.eq.${this.currentUserId},receiver_id.eq.${this.currentUserId}`)
+                    .or(`user_id.eq.${this.currentUserId},connected_user_id.eq.${this.currentUserId}`)
                     .eq('status', 'accepted');
 
                 // ペンディングリクエスト
-                const { data: pending } = await window.supabase
+                const { data: pending } = await window.supabaseClient
                     .from('connections')
                     .select('*')
-                    .or(`requester_id.eq.${this.currentUserId},receiver_id.eq.${this.currentUserId}`)
+                    .or(`user_id.eq.${this.currentUserId},connected_user_id.eq.${this.currentUserId}`)
                     .eq('status', 'pending');
 
                 // コネクション情報を整理
                 accepted?.forEach(conn => {
-                    const connectedId = conn.requester_id === this.currentUserId ? 
-                        conn.receiver_id : conn.requester_id;
+                    const connectedId = conn.user_id === this.currentUserId ? 
+                        conn.connected_user_id : conn.user_id;
                     this.connections.set(connectedId, 'connected');
                 });
 
                 pending?.forEach(conn => {
-                    const connectedId = conn.requester_id === this.currentUserId ? 
-                        conn.receiver_id : conn.requester_id;
-                    const status = conn.requester_id === this.currentUserId ? 
+                    const connectedId = conn.user_id === this.currentUserId ? 
+                        conn.connected_user_id : conn.user_id;
+                    const status = conn.user_id === this.currentUserId ? 
                         'pending_sent' : 'pending_received';
                     this.connections.set(connectedId, status);
                     
@@ -101,7 +101,7 @@
          * コネクトボタンクリックを処理
          */
         async handleConnectClick(memberId, memberName, button) {
-            if (!this.currentUserId || !window.supabase) {
+            if (!this.currentUserId || !window.supabaseClient) {
                 this.showLoginPrompt();
                 return;
             }
@@ -136,10 +136,10 @@
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 送信中...';
 
                 // 重複チェック
-                const { data: existing } = await window.supabase
+                const { data: existing } = await window.supabaseClient
                     .from('connections')
                     .select('id, status')
-                    .or(`and(requester_id.eq.${this.currentUserId},receiver_id.eq.${memberId}),and(requester_id.eq.${memberId},receiver_id.eq.${this.currentUserId})`)
+                    .or(`and(user_id.eq.${this.currentUserId},connected_user_id.eq.${memberId}),and(user_id.eq.${memberId},connected_user_id.eq.${this.currentUserId})`)
                     .single();
 
                 if (existing) {
@@ -147,11 +147,11 @@
                 }
 
                 // コネクションレコードを作成
-                const { data, error } = await window.supabase
+                const { data, error } = await window.supabaseClient
                     .from('connections')
                     .insert({
-                        requester_id: this.currentUserId,
-                        receiver_id: memberId,
+                        user_id: this.currentUserId,
+                        connected_user_id: memberId,
                         status: 'pending',
                         message: 'コネクトさせていただければ幸いです。',
                         created_at: new Date().toISOString()
@@ -196,11 +196,11 @@
         async acceptConnection(memberId, memberName) {
             try {
                 // コネクションステータスを更新
-                const { error } = await window.supabase
+                const { error } = await window.supabaseClient
                     .from('connections')
                     .update({ status: 'accepted', responded_at: new Date().toISOString() })
-                    .or(`requester_id.eq.${memberId},receiver_id.eq.${memberId}`)
-                    .or(`requester_id.eq.${this.currentUserId},receiver_id.eq.${this.currentUserId}`);
+                    .or(`user_id.eq.${memberId},connected_user_id.eq.${memberId}`)
+                    .or(`user_id.eq.${this.currentUserId},connected_user_id.eq.${this.currentUserId}`);
 
                 if (error) throw error;
 
@@ -223,7 +223,7 @@
          * 通知を作成
          */
         async createNotification(recipientId, memberName, type) {
-            if (!window.supabase) return;
+            if (!window.supabaseClient) return;
 
             try {
                 const messages = {
@@ -231,7 +231,7 @@
                     connection_accepted: `${memberName}さんがコネクト申請を承認しました`
                 };
 
-                await window.supabase
+                await window.supabaseClient
                     .from('notifications')
                     .insert({
                         user_id: recipientId,
@@ -294,17 +294,17 @@
          * リアルタイム購読を設定
          */
         setupRealtimeSubscription() {
-            if (!window.supabase) return;
+            if (!window.supabaseClient) return;
 
             // コネクションの変更を監視
-            this.connectionsSubscription = window.supabase
+            this.connectionsSubscription = window.supabaseClient
                 .channel('connections_changes')
                 .on('postgres_changes',
                     {
                         event: '*',
                         schema: 'public',
                         table: 'connections',
-                        filter: `requester_id=eq.${this.currentUserId}`
+                        filter: `user_id=eq.${this.currentUserId}`
                     },
                     (payload) => this.handleConnectionChange(payload)
                 )
@@ -313,7 +313,7 @@
                         event: '*',
                         schema: 'public',
                         table: 'connections',
-                        filter: `receiver_id=eq.${this.currentUserId}`
+                        filter: `connected_user_id=eq.${this.currentUserId}`
                     },
                     (payload) => this.handleConnectionChange(payload)
                 )
@@ -369,7 +369,7 @@
          */
         cleanup() {
             if (this.connectionsSubscription) {
-                window.supabase.removeChannel(this.connectionsSubscription);
+                window.supabaseClient.removeChannel(this.connectionsSubscription);
             }
         }
     }
