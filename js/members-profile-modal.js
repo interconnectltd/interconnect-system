@@ -3,10 +3,13 @@
  * メンバーページ専用のプロフィールモーダル機能
  */
 
+// Members Profile Modal - 即座実行
+console.log('[MembersProfileModal] ファイル読み込み開始');
+
 (function() {
     'use strict';
     
-    console.log('[MembersProfileModal] 初期化開始');
+    console.log('[MembersProfileModal] IIFE内部 - 初期化開始');
     
     // プロフィールモーダルクラス
     class MembersProfileModal {
@@ -183,13 +186,23 @@
             
             try {
                 // Supabaseチェック
-                if (!window.supabase) {
+                if (!window.supabaseClient && !window.supabase) {
                     console.error('[MembersProfileModal] Supabase not initialized');
                     return;
                 }
                 
                 // ユーザーデータを取得
-                const { data: userData, error } = await window.supabase
+                console.log('[MembersProfileModal] Supabase client:', window.supabase);
+                console.log('[MembersProfileModal] supabaseClient:', window.supabaseClient);
+                
+                // supabaseClientを使用（supabaseではなく）
+                const client = window.supabaseClient || window.supabase;
+                if (!client) {
+                    console.error('[MembersProfileModal] No Supabase client found!');
+                    return;
+                }
+                
+                const { data: userData, error } = await client
                     .from('profiles')
                     .select('*')
                     .eq('id', userId)
@@ -457,10 +470,19 @@
         }
     }
     
-    // グローバルインスタンスを作成
-    console.log('[MembersProfileModal] Creating global instance...');
-    window.membersProfileModal = new MembersProfileModal();
-    console.log('[MembersProfileModal] Global instance created:', window.membersProfileModal);
+    // DOMContentLoadedを待つ
+    if (document.readyState === 'loading') {
+        console.log('[MembersProfileModal] Waiting for DOMContentLoaded...');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('[MembersProfileModal] DOMContentLoaded - Creating instance...');
+            window.membersProfileModal = new MembersProfileModal();
+            console.log('[MembersProfileModal] Global instance created:', window.membersProfileModal);
+        });
+    } else {
+        console.log('[MembersProfileModal] DOM already loaded - Creating instance immediately...');
+        window.membersProfileModal = new MembersProfileModal();
+        console.log('[MembersProfileModal] Global instance created:', window.membersProfileModal);
+    }
     
     // プロフィールボタンのクリックイベントを監視
     document.addEventListener('click', (e) => {
@@ -478,3 +500,5 @@
     });
     
 })();
+
+console.log('[MembersProfileModal] ファイル読み込み完了');

@@ -126,7 +126,13 @@
 
             try {
                 // Supabaseからユーザー情報を取得
-                const { data: userData, error } = await window.supabase
+                const client = window.supabaseClient || window.supabase;
+                if (!client) {
+                    console.error('[ProfilePreview] No Supabase client found');
+                    return;
+                }
+                
+                const { data: userData, error } = await client
                     .from('user_profiles')
                     .select(`
                         id,
