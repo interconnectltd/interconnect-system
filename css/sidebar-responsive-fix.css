@@ -50,11 +50,11 @@
     width: 100%;
 }
 
-/* コンテンツボディ */
+/* コンテンツボディ - 最大幅制限を削除 */
 .dashboard .main-content .content-body {
     padding: 0 2rem !important;
-    max-width: 1200px !important;
-    margin: 0 auto !important;
+    /* max-widthを削除して全幅使用 */
+    margin: 0 !important;
     width: 100%;
 }
 
@@ -83,10 +83,12 @@
         display: none !important;
     }
     
-    /* コンテンツボディの最大幅 */
+    /* コンテンツボディ - 全幅使用 */
     .dashboard .main-content .content-body {
-        max-width: 1200px !important;
-        padding: 0 2rem !important;
+        /* max-widthを削除 */
+        padding: 0 3rem !important;
+        width: 100% !important;
+        box-sizing: border-box;
     }
 }
 
@@ -94,18 +96,18 @@
    大画面対応（1440px以上）
    ============================= */
 @media (min-width: 1440px) {
-    /* コンテンツボディの最大幅を拡大 */
+    /* コンテンツボディのパディングを増やす */
     .dashboard .main-content .content-body {
-        max-width: 1400px !important;
-        padding: 0 3rem !important;
+        /* max-widthなし、全幅使用 */
+        padding: 0 4rem !important;
     }
 }
 
 /* 超大画面（1920px以上） */
 @media (min-width: 1920px) {
     .dashboard .main-content .content-body {
-        max-width: 1600px !important;
-        padding: 0 4rem !important;
+        /* max-widthなし、全幅使用 */
+        padding: 0 5rem !important;
     }
 }
 
@@ -147,7 +149,8 @@
     
     .dashboard .main-content .content-body {
         padding: 0 1.5rem !important;
-        max-width: 100% !important;
+        /* max-widthを削除 */
+        width: 100% !important;
     }
 }
 
@@ -196,7 +199,8 @@
     /* コンテンツボディの余白調整 */
     .dashboard .main-content .content-body {
         padding: 0 1rem !important;
-        max-width: 100% !important;
+        /* max-widthを削除 */
+        width: 100% !important;
     }
     
     /* モバイルナビゲーション表示時 */
