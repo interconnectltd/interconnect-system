@@ -8,10 +8,19 @@
 
     // Service Worker関連のコンソールメッセージをフィルタリング
     // console-history-logger.jsと競合しないように、既に上書きされている場合はスキップ
-    if (console.log.name === 'log' && !window.__serviceWorkerFilterApplied) {
-        const originalLog = console.log;
-        const originalWarn = console.warn;
-        const originalError = console.error;
+    if (!window.__serviceWorkerFilterApplied && !window.__consoleAlreadyWrapped) {
+        // オリジナルのconsoleメソッドを保存（最初の一度だけ）
+        if (!window.__originalConsole) {
+            window.__originalConsole = {
+                log: console.log,
+                warn: console.warn,
+                error: console.error
+            };
+        }
+        
+        const originalLog = window.__originalConsole.log;
+        const originalWarn = window.__originalConsole.warn;
+        const originalError = window.__originalConsole.error;
 
         const filterPatterns = [
             /Skipping cache for invalid URL scheme: chrome-extension/i,

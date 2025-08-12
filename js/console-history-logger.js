@@ -30,14 +30,20 @@
         }
     };
 
-    // オリジナルのconsoleメソッドを保存
-    const originalConsole = {
-        log: console.log,
-        error: console.error,
-        warn: console.warn,
-        info: console.info,
-        debug: console.debug
-    };
+    // オリジナルのconsoleメソッドを保存（既に保存されていれば再利用）
+    if (!window.__originalConsole) {
+        window.__originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info,
+            debug: console.debug
+        };
+    }
+    const originalConsole = window.__originalConsole;
+    
+    // console上書きフラグをセット
+    window.__consoleAlreadyWrapped = true;
 
     // タイムスタンプフォーマット
     function getTimestamp() {

@@ -44,16 +44,32 @@
     // 通知音の準備
     function setupNotificationSound() {
         try {
-            notificationSound = new Audio('/sounds/notification.mp3');
-            notificationSound.volume = 0.5;
-            // 音声ファイルの読み込みエラーをキャッチ
-            notificationSound.addEventListener('error', (e) => {
-                console.warn('[RealtimeNotifications] 通知音ファイルの読み込みに失敗しました。音声なしで続行します。');
-                notificationSound = null;
-            });
-            window.notificationSound = notificationSound;
+            // 音声ファイルのサイズチェック
+            fetch('/sounds/notification.mp3', { method: 'HEAD' })
+                .then(response => {
+                    const contentLength = response.headers.get('content-length');
+                    if (!response.ok || !contentLength || parseInt(contentLength) === 0) {
+                        // ファイルが空または存在しない場合はスキップ
+                        notificationSound = null;
+                        return;
+                    }
+                    
+                    // ファイルが正常な場合のみ Audio オブジェクトを作成
+                    notificationSound = new Audio('/sounds/notification.mp3');
+                    notificationSound.volume = 0.5;
+                    // 音声ファイルの読み込みエラーをキャッチ
+                    notificationSound.addEventListener('error', (e) => {
+                        console.warn('[RealtimeNotifications] 通知音ファイルの読み込みに失敗しました。音声なしで続行します。');
+                        notificationSound = null;
+                    });
+                    window.notificationSound = notificationSound;
+                })
+                .catch(error => {
+                    // ネットワークエラーなどの場合はサイレントに失敗
+                    notificationSound = null;
+                });
         } catch (error) {
-            console.warn('[RealtimeNotifications] 通知音の初期化に失敗しました:', error);
+            // エラーは記録しない（サイレントに失敗）
             notificationSound = null;
         }
     }
