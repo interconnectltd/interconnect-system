@@ -225,8 +225,8 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('change', validateStep);
     });
 
-    // 初期バリデーション実行
-    validateStep();
+    // 初期バリデーション実行を無効化（ユーザーが入力を始めてからバリデーション開始）
+    // validateStep();
 
     // ファイルアップロード処理
     const fileInput = document.getElementById('line-qr');
