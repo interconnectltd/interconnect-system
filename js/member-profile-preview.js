@@ -94,6 +94,35 @@
                     }
                 }
             });
+            
+            // プレビュー内のボタンクリックイベント
+            this.previewElement.addEventListener('click', (e) => {
+                if (e.target.closest('.preview-profile-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const btn = e.target.closest('.preview-profile-btn');
+                    const userId = btn.dataset.userId;
+                    
+                    // モーダル表示を試行
+                    if (window.membersProfileModal && window.membersProfileModal.show) {
+                        window.membersProfileModal.show(userId);
+                        this.hidePreview(); // プレビューを閉じる
+                    } else if (window.showMemberProfileModal) {
+                        window.showMemberProfileModal(userId);
+                        this.hidePreview();
+                    } else {
+                        // フォールバック：モーダルが利用できない場合のみプロフィールページへ
+                        console.warn('[ProfilePreview] Modal not available, redirecting to profile page');
+                        window.location.href = `profile.html?user=${userId}`;
+                    }
+                } else if (e.target.closest('.preview-message-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const btn = e.target.closest('.preview-message-btn');
+                    const userId = btn.dataset.userId;
+                    window.location.href = `messages.html?user=${userId}`;
+                }
+            });
         }
 
         /**
@@ -257,10 +286,10 @@
                 </div>
                 
                 <div class="profile-preview-actions">
-                    <button class="btn btn-sm btn-primary" onclick="window.location.href='profile.html?user=${userData.id}'">
+                    <button class="btn btn-sm btn-primary preview-profile-btn" data-user-id="${userData.id}">
                         <i class="fas fa-user"></i> プロフィールを見る
                     </button>
-                    <button class="btn btn-sm btn-outline" onclick="window.location.href='messages.html?user=${userData.id}'">
+                    <button class="btn btn-sm btn-outline preview-message-btn" data-user-id="${userData.id}">
                         <i class="fas fa-envelope"></i> メッセージ
                     </button>
                 </div>

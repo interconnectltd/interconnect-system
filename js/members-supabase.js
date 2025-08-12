@@ -198,6 +198,44 @@
             }
 
             grid.innerHTML = this.members.map(member => this.createMemberCard(member)).join('');
+            
+            // プロフィールボタンにイベントリスナーを追加
+            this.attachProfileButtonListeners();
+        }
+        
+        /**
+         * プロフィールボタンにイベントリスナーを追加
+         */
+        attachProfileButtonListeners() {
+            document.querySelectorAll('.view-profile-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const memberId = btn.dataset.memberId;
+                    if (!memberId) {
+                        console.error('[MembersSupabase] No member ID found');
+                        return false;
+                    }
+                    
+                    // モーダル表示を試行
+                    if (window.membersProfileModal && window.membersProfileModal.show) {
+                        window.membersProfileModal.show(memberId);
+                    } else {
+                        console.error('[MembersSupabase] Modal not ready, retrying...');
+                        setTimeout(() => {
+                            if (window.membersProfileModal && window.membersProfileModal.show) {
+                                window.membersProfileModal.show(memberId);
+                            } else {
+                                // モーダルが利用できない場合のみアラート表示
+                                alert('プロフィールを読み込み中です。もう一度お試しください。');
+                            }
+                        }, 500);
+                    }
+                    
+                    return false;
+                });
+            });
         }
 
         /**
@@ -259,8 +297,7 @@
                     <div class="member-actions">
                         <button class="btn btn-primary btn-small view-profile-btn" 
                                 data-member-id="${id}"
-                                type="button"
-                                onclick="event.preventDefault(); event.stopPropagation(); if(window.membersProfileModal && window.membersProfileModal.show) { window.membersProfileModal.show('${id}'); } else { console.error('[members-supabase] Modal not ready, retrying...'); setTimeout(function() { if(window.membersProfileModal && window.membersProfileModal.show) { window.membersProfileModal.show('${id}'); } else { alert('プロフィールを読み込み中です。もう一度お試しください。'); } }, 500); } return false;">
+                                type="button">
                             <i class="fas fa-user"></i>
                             <span class="btn-text">プロフィール</span>
                         </button>
@@ -431,6 +468,11 @@
             // UIを更新
             this.updateMembersUI();
             this.updateResultsCount();
+            
+            // フォールバック時もイベントリスナーを追加
+            setTimeout(() => {
+                this.attachProfileButtonListeners();
+            }, 100);
             
             // エラー表示を追加
             const errorBanner = document.createElement('div');
