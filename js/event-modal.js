@@ -44,7 +44,7 @@
                 this.modal.classList.add('show');
 
                 // Supabaseからイベント詳細を取得
-                const { data: event, error } = await window.supabase
+                const { data: event, error } = await window.supabaseClient
                     .from('event_items')
                     .select('*')
                     .eq('id', eventId)
@@ -256,7 +256,7 @@
         async fetchParticipantsCount(eventId) {
             try {
                 // event_participantsテーブルから参加者数を取得
-                const { count, error } = await window.supabase
+                const { count, error } = await window.supabaseClient
                     .from('event_participants')
                     .select('*', { count: 'exact', head: true })
                     .eq('event_id', eventId)
@@ -298,7 +298,7 @@
          */
         async fetchParticipantPreviews(eventId) {
             try {
-                const { data: participants, error } = await window.supabase
+                const { data: participants, error } = await window.supabaseClient
                     .from('event_participants')
                     .select('user_id')
                     .eq('event_id', eventId)
@@ -398,7 +398,7 @@
                 this.eventActionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
 
                 // 既に参加登録しているかチェック
-                const { data: existing, error: checkError } = await window.supabase
+                const { data: existing, error: checkError } = await window.supabaseClient
                     .from('event_participants')
                     .select('id, status')
                     .eq('event_id', this.currentEvent.id)
@@ -413,7 +413,7 @@
                 if (existing) {
                     if (existing.status === 'cancelled') {
                         // キャンセル済みの場合は再登録
-                        const { error: updateError } = await window.supabase
+                        const { error: updateError } = await window.supabaseClient
                             .from('event_participants')
                             .update({ 
                                 status: 'registered',
@@ -431,7 +431,7 @@
                     }
                 } else {
                     // 新規登録
-                    const { error: insertError } = await window.supabase
+                    const { error: insertError } = await window.supabaseClient
                         .from('event_participants')
                         .insert({
                             event_id: this.currentEvent.id,

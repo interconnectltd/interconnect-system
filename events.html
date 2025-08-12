@@ -458,15 +458,13 @@
     <!-- 関数実行トラッカー -->
     <script src="js/function-execution-tracker.js"></script>
     <!-- Supabase統一初期化（最初に読み込む） -->
-    <!-- 統一通知システム -->
-    <script src="js/notification-system-unified.js"></script>
-    <script src="js/supabase-unified.js?v=1.0"></script>
-    <!-- Supabase参照修正（不要になったため無効化） -->
-    <!-- <script src="js/supabase-wait-fix.js"></script> -->
-    <!-- Core initialization (must be first) -->
+    <script src="js/supabase-unified.js?v=1.1"></script>
+    <!-- Core initialization -->
     <script src="js/interconnect-core.js"></script>
     <!-- 統一トースト通知 (must be loaded early) -->
     <script src="js/toast-unified.js"></script>
+    <!-- 統一通知システム -->
+    <script src="js/notification-system-unified.js"></script>
     
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
@@ -474,6 +472,7 @@
     <script src="js/safe-storage.js"></script>
     <!-- <script src="js/debug-logger.js"></script> -->
     <script src="js/global-functions.js"></script>
+    <!-- profile-syncはSupabase初期化後に読み込む -->
     <script src="js/profile-sync.js"></script>
     <script src="js/notifications-realtime-unified.js"></script>
     <script src="js/responsive-menu-simple.js"></script>

@@ -215,65 +215,164 @@
         showEventModal(event);
     }
 
+    // ユーティリティ関数：日付フォーマット
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('ja-JP', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long'
+        });
+    }
+
+    // ユーティリティ関数：時刻フォーマット
+    function formatTime(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleTimeString('ja-JP', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // ユーティリティ関数：HTMLエスケープ
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     // 日付クリック処理
     function handleDateClick(info) {
         // 新規イベント作成モーダルを表示
-        showCreateEventModal(info.dateStr);
+        // TODO: イベント作成機能は別途実装予定
+        console.log('[CalendarIntegration] 日付クリック:', info.dateStr);
+        // 暫定処理：イベントページへ遷移
+        if (confirm(`${info.dateStr} に新しいイベントを作成しますか？`)) {
+            window.location.href = `events.html?action=create&date=${info.dateStr}`;
+        }
     }
 
     // イベント詳細モーダル表示
     function showEventModal(event) {
+        // 既存のモーダルがあれば削除
+        const existingModal = document.querySelector('.calendar-event-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
         const modal = document.createElement('div');
         modal.className = 'modal calendar-event-modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>${escapeHtml(event.title)}</h2>
-                    <button class="close-button" onclick="this.closest('.modal').remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
+        
+        // モーダルコンテンツを構築
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        // ヘッダー
+        const modalHeader = document.createElement('div');
+        modalHeader.className = 'modal-header';
+        
+        const title = document.createElement('h2');
+        title.textContent = event.title;
+        modalHeader.appendChild(title);
+        
+        const closeButton = document.createElement('button');
+        closeButton.className = 'close-button';
+        closeButton.innerHTML = '<i class="fas fa-times"></i>';
+        
+        // イベントリスナーをクリーンアップ関数付きで追加
+        const closeModal = () => {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.remove();
+                }
+            }, 300); // アニメーション完了を待つ
+        };
+        
+        closeButton.addEventListener('click', closeModal);
+        modalHeader.appendChild(closeButton);
+        
+        modalContent.appendChild(modalHeader);
+        
+        // ボディ
+        const modalBody = document.createElement('div');
+        modalBody.className = 'modal-body';
+        modalBody.innerHTML = `
+            <div class="event-info">
+                <div class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>${escapeHtml(formatDate(event.start))}</span>
                 </div>
-                <div class="modal-body">
-                    <div class="event-info">
-                        <div class="info-item">
-                            <i class="fas fa-calendar"></i>
-                            <span>${formatDate(event.start)}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-clock"></i>
-                            <span>${formatTime(event.start)} - ${formatTime(event.end)}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${event.extendedProps.location || 'オンライン'}</span>
-                        </div>
-                        ${event.extendedProps.isOnline && event.extendedProps.meetingUrl ? `
-                            <div class="info-item">
-                                <i class="fas fa-video"></i>
-                                <a href="${event.extendedProps.meetingUrl}" target="_blank">ミーティングリンク</a>
-                            </div>
-                        ` : ''}
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>${escapeHtml(formatTime(event.start))} - ${escapeHtml(formatTime(event.end))}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${escapeHtml(event.extendedProps.location || 'オンライン')}</span>
+                </div>
+                ${event.extendedProps.isOnline && event.extendedProps.meetingUrl ? `
+                    <div class="info-item">
+                        <i class="fas fa-video"></i>
+                        <a href="${escapeHtml(event.extendedProps.meetingUrl)}" target="_blank">ミーティングリンク</a>
                     </div>
-                    ${event.extendedProps.description ? `
-                        <div class="event-description">
-                            <h4>詳細</h4>
-                            <p>${escapeHtml(event.extendedProps.description)}</p>
-                        </div>
-                    ` : ''}
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" onclick="window.CalendarIntegration.addToGoogleCalendar('${event.id}')">
-                        <i class="fab fa-google"></i> Googleカレンダーに追加
-                    </button>
-                    <button class="btn btn-primary" onclick="window.location.href='events.html?id=${event.id}'">
-                        <i class="fas fa-info-circle"></i> 詳細を見る
-                    </button>
-                </div>
+                ` : ''}
             </div>
+            ${event.extendedProps.description ? `
+                <div class="event-description">
+                    <h4>詳細</h4>
+                    <p>${escapeHtml(event.extendedProps.description)}</p>
+                </div>
+            ` : ''}
         `;
-
+        modalContent.appendChild(modalBody);
+        
+        // フッター
+        const modalFooter = document.createElement('div');
+        modalFooter.className = 'modal-footer';
+        
+        const googleBtn = document.createElement('button');
+        googleBtn.className = 'btn btn-outline';
+        googleBtn.innerHTML = '<i class="fab fa-google"></i> Googleカレンダーに追加';
+        googleBtn.addEventListener('click', () => {
+            window.CalendarIntegration.addToGoogleCalendar(event.id);
+        });
+        modalFooter.appendChild(googleBtn);
+        
+        const detailBtn = document.createElement('button');
+        detailBtn.className = 'btn btn-primary';
+        detailBtn.innerHTML = '<i class="fas fa-info-circle"></i> 詳細を見る';
+        detailBtn.addEventListener('click', () => {
+            window.location.href = `events.html?id=${event.id}`;
+        });
+        modalFooter.appendChild(detailBtn);
+        
+        modalContent.appendChild(modalFooter);
+        modal.appendChild(modalContent);
+        
         document.body.appendChild(modal);
         modal.classList.add('active');
+        
+        // ESCキーでモーダルを閉じる
+        const handleEscKey = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', handleEscKey);
+            }
+        };
+        document.addEventListener('keydown', handleEscKey);
+        
+        // モーダル外クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+                document.removeEventListener('keydown', handleEscKey);
+            }
+        });
     }
 
     // Googleカレンダー連携
@@ -287,9 +386,21 @@
 
             // 認証
             await gapi.load('client:auth2');
+            
+            // Google Calendar API設定
+            // 注意: 本番環境では環境変数またはサーバー側で管理すること
+            const GOOGLE_API_KEY = window.GOOGLE_CALENDAR_API_KEY || '';
+            const GOOGLE_CLIENT_ID = window.GOOGLE_CALENDAR_CLIENT_ID || '';
+            
+            if (!GOOGLE_API_KEY || !GOOGLE_CLIENT_ID) {
+                showError('Google Calendar連携が設定されていません');
+                console.warn('[CalendarIntegration] Google API credentials not configured');
+                return;
+            }
+            
             await gapi.client.init({
-                apiKey: 'YOUR_API_KEY', // 実際のAPIキーに置き換え
-                clientId: 'YOUR_CLIENT_ID', // 実際のクライアントIDに置き換え
+                apiKey: GOOGLE_API_KEY,
+                clientId: GOOGLE_CLIENT_ID,
                 discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
                 scope: 'https://www.googleapis.com/auth/calendar.events'
             });
