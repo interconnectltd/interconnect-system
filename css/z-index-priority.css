@@ -56,8 +56,7 @@ header,
 }
 
 /* 第4優先: モーダル・ダイアログ (z-index: 5000番台) */
-/* メンバープロフィールモーダルは除外（専用CSSで管理） */
-.modal:not(#memberProfileModal),
+.modal,
 .modal-backdrop,
 .modal-overlay,
 .dialog {
@@ -67,6 +66,19 @@ header,
 .modal-content,
 .dialog-content {
   z-index: 5100 !important;
+}
+
+/* メンバープロフィールモーダル専用 */
+#memberProfileModal {
+  z-index: 5200 !important;
+}
+
+#memberProfileModal .modal-overlay {
+  z-index: 5199 !important;
+}
+
+#memberProfileModal .modal-content {
+  z-index: 5201 !important;
 }
 
 /* 第5優先: ドロップダウン・ポップアップ (z-index: 3000番台) */

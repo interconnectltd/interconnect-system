@@ -97,6 +97,12 @@
             
             // プレビュー内のボタンクリックイベント
             this.previewElement.addEventListener('click', (e) => {
+                // e.targetがElementであることを確認
+                if (!e.target || !e.target.nodeType || e.target.nodeType !== 1) return;
+                
+                // closestメソッドが使用可能か確認
+                if (typeof e.target.closest !== 'function') return;
+                
                 if (e.target.closest('.preview-profile-btn')) {
                     e.preventDefault();
                     e.stopPropagation();

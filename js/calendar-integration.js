@@ -130,33 +130,48 @@
     // イベントの読み込み
     async function loadEvents() {
         try {
-            // 自分が参加するイベントを取得
+            // まず参加しているイベントIDを取得
             const { data: participations, error: participationError } = await window.supabaseClient
                 .from('event_participants')
-                .select(`
-                    event_id,
-                    attendance_status,
-                    event_items(
-                        id,
-                        title,
-                        description,
-                        event_date,
-                        start_time,
-                        end_time,
-                        location,
-                        event_type,
-                        online_url,
-                        organizer_id
-                    )
-                `)
+                .select('event_id, status')
                 .eq('user_id', currentUserId)
-                .in('attendance_status', ['registered', 'confirmed']);
+                .in('status', ['registered', 'confirmed']);
 
             if (participationError) throw participationError;
 
-            // イベントをカレンダー形式に変換
-            events = (participations || []).map(p => {
-                const event = p.event_items;
+            if (!participations || participations.length === 0) {
+                events = [];
+                if (calendarInstance) {
+                    calendarInstance.removeAllEvents();
+                }
+                return;
+            }
+
+            // イベントIDの配列を作成
+            const eventIds = participations.map(p => p.event_id);
+
+            // イベント詳細を別途取得
+            const { data: eventItems, error: eventError } = await window.supabaseClient
+                .from('event_items')
+                .select(`
+                    id,
+                    title,
+                    description,
+                    event_date,
+                    start_time,
+                    end_time,
+                    location,
+                    event_type,
+                    online_url,
+                    organizer_id
+                `)
+                .in('id', eventIds);
+
+            if (eventError) throw eventError;
+
+            // 参加状態とイベント情報をマージ
+            events = (eventItems || []).map(event => {
+                const participation = participations.find(p => p.event_id === event.id);
                 const startDateTime = combineDateTime(event.event_date, event.start_time);
                 const endDateTime = combineDateTime(event.event_date, event.end_time);
 
@@ -170,7 +185,8 @@
                     extendedProps: {
                         isOnline: event.event_type === 'online' || event.event_type === 'hybrid',
                         meetingUrl: event.online_url,
-                        organizerId: event.organizer_id
+                        organizerId: event.organizer_id,
+                        attendanceStatus: participation ? participation.status : 'registered'
                     }
                 };
             });

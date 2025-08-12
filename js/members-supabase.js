@@ -73,7 +73,9 @@
 
                 // 検索フィルター（nameも検索対象に追加）
                 if (this.filters.search) {
-                    query = query.or(`name.ilike.%${this.filters.search}%,full_name.ilike.%${this.filters.search}%,company.ilike.%${this.filters.search}%,bio.ilike.%${this.filters.search}%`);
+                    // サニタイズ: 特殊文字をエスケープ
+                    const sanitizedSearch = this.filters.search.replace(/[%_\\]/g, '\\$&');
+                    query = query.or(`name.ilike.%${sanitizedSearch}%,full_name.ilike.%${sanitizedSearch}%,company.ilike.%${sanitizedSearch}%,bio.ilike.%${sanitizedSearch}%`);
                 }
 
                 // 業界フィルター
@@ -93,7 +95,12 @@
                     
                     if (roleMap[this.filters.role]) {
                         const positions = roleMap[this.filters.role];
-                        query = query.or(positions.map(pos => `position.ilike.%${pos}%`).join(','));
+                        // サニタイズ: 各役職文字列をエスケープ
+                        const sanitizedPositions = positions.map(pos => {
+                            const sanitized = pos.replace(/[%_\\]/g, '\\$&');
+                            return `position.ilike.%${sanitized}%`;
+                        });
+                        query = query.or(sanitizedPositions.join(','));
                     }
                 }
 

@@ -225,18 +225,43 @@
     // 認証状態をチェック
     async function checkAuthStatus() {
         try {
-            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            const { data: { user }, error } = await window.supabaseClient.auth.getUser();
+            
+            if (error) {
+                // 401/403エラーの場合は認証が必要
+                if (error.status === 401 || error.status === 403) {
+                    // 保護されたページの場合はログインページへリダイレクト
+                    const protectedPages = ['dashboard', 'members', 'events', 'messages', 'matching', 'profile', 'referral', 'notifications', 'settings'];
+                    const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+                    
+                    if (protectedPages.includes(currentPage)) {
+                        console.warn('[SupabaseUnified] 認証が必要です。ログインページへリダイレクトします。');
+                        sessionStorage.setItem('redirectAfterLogin', window.location.href);
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                }
+                throw error;
+            }
             
             if (user) {
                 // console.log('[SupabaseUnified] ログイン済みユーザー:', user.email);
                 
                 // ログインページの場合はダッシュボードへリダイレクト
                 if (window.location.pathname.includes('login.html')) {
-                    window.location.href = 'dashboard.html';
+                    // リダイレクト先があれば優先
+                    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+                    if (redirectUrl) {
+                        sessionStorage.removeItem('redirectAfterLogin');
+                        window.location.href = redirectUrl;
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
                 }
             }
         } catch (err) {
             console.error('[SupabaseUnified] 認証状態チェックエラー:', err);
+            // エラーが発生しても処理を継続（公開ページの場合があるため）
         }
     }
 
