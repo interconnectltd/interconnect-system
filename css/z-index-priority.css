@@ -46,6 +46,15 @@ aside.sidebar,
   z-index: 9300 !important;
 }
 
+/* カレンダー関連 (z-index: 8500番台) */
+.fc-popover,
+.fc-daygrid-event-harness,
+.fc-event,
+.fc-daygrid-day-frame,
+.fc-more-popover {
+  z-index: 8500 !important;
+}
+
 /* 第3優先: ヘッダー・ナビゲーション (z-index: 8000番台) */
 header,
 .header,

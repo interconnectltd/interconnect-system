@@ -113,9 +113,23 @@
     
     // プロフィール更新機能
     async function updateProfile(updates) {
+        // Supabaseクライアントの初期化を待つ
         if (!window.supabaseClient) {
-            console.error('Supabase client not initialized');
-            return { error: 'Supabase not initialized' };
+            // console.error('Supabase client not initialized');
+            // 初期化を待つ
+            return new Promise((resolve) => {
+                const checkInterval = setInterval(() => {
+                    if (window.supabaseClient) {
+                        clearInterval(checkInterval);
+                        updateProfile(updates).then(resolve);
+                    }
+                }, 100);
+                // 5秒でタイムアウト
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                    resolve({ error: 'Supabase initialization timeout' });
+                }, 5000);
+            });
         }
         
         try {

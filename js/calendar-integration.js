@@ -247,12 +247,27 @@
 
     // 日付クリック処理
     function handleDateClick(info) {
-        // 新規イベント作成モーダルを表示
-        // TODO: イベント作成機能は別途実装予定
-        console.log('[CalendarIntegration] 日付クリック:', info.dateStr);
-        // 暫定処理：イベントページへ遷移
-        if (confirm(`${info.dateStr} に新しいイベントを作成しますか？`)) {
-            window.location.href = `events.html?action=create&date=${info.dateStr}`;
+        try {
+            // 新規イベント作成モーダルを表示
+            // TODO: イベント作成機能は別途実装予定
+            // console.log('[CalendarIntegration] 日付クリック:', info.dateStr);
+            
+            // イベント作成モーダルを表示（存在する場合）
+            if (typeof window.showCreateEventModal === 'function') {
+                window.showCreateEventModal(info.dateStr);
+            } else {
+                // モーダルが存在しない場合は、トースト通知で案内
+                if (window.showToast) {
+                    window.showToast(`${info.dateStr} のイベント作成機能は準備中です`, 'info');
+                }
+                // 暫定処理：イベントページへ遷移（confirm使用せず）
+                // window.location.href = `events.html?action=create&date=${info.dateStr}`;
+            }
+        } catch (error) {
+            console.error('[CalendarIntegration] 日付クリックエラー:', error);
+            if (window.showToast) {
+                window.showToast('エラーが発生しました', 'error');
+            }
         }
     }
 

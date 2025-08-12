@@ -660,6 +660,8 @@
                 const detailButtons = container.querySelectorAll('.past-event-detail-btn');
                 detailButtons.forEach(button => {
                     button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const eventId = button.dataset.eventId;
                         if (eventId && window.eventModal) {
                             window.eventModal.show(eventId);

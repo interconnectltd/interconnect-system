@@ -162,9 +162,28 @@
     // 外側クリックで閉じる処理
     function setupOutsideClickHandler() {
         document.addEventListener('click', function(e) {
-            // ドロップダウン要素内のクリックは無視
+            // ドロップダウン関連要素のクリックは無視
             if (e.target.closest('.user-dropdown') || 
-                e.target.closest('.notification-dropdown')) {
+                e.target.closest('.notification-dropdown') ||
+                e.target.closest('.user-profile') ||
+                e.target.closest('.notification-wrapper') ||
+                e.target.closest('.notification-btn')) {
+                return;
+            }
+            
+            // モーダル、カレンダー、その他の重要な要素のクリックは無視
+            if (e.target.closest('.modal') ||
+                e.target.closest('.modal-content') ||
+                e.target.closest('.fc-daygrid-day') ||  // FullCalendarの日付セル
+                e.target.closest('.fc-button') ||        // FullCalendarのボタン
+                e.target.closest('.fc-event') ||         // FullCalendarのイベント
+                e.target.closest('.calendar-container') ||
+                e.target.closest('.btn') ||              // すべてのボタン
+                e.target.closest('button') ||            // すべてのbuttonタグ
+                e.target.closest('a.sidebar-link') ||    // サイドバーリンク
+                e.target.closest('input') ||             // 入力フィールド
+                e.target.closest('select') ||            // セレクトボックス
+                e.target.closest('textarea')) {          // テキストエリア
                 return;
             }
             
