@@ -523,24 +523,36 @@
     // DOM準備後に初期化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            window.eventModal = new EventModal();
-            updateDashboardUI();
-            console.log('[EventModal] Initialized on DOMContentLoaded');
-            
-            // EventModalReadyイベントを発火
-            const event = new CustomEvent('eventModalReady');
-            document.dispatchEvent(event);
+            const modal = new EventModal();
+            // モーダル要素が正常に取得できた場合のみグローバルに設定
+            if (modal.modal) {
+                window.eventModal = modal;
+                updateDashboardUI();
+                console.log('[EventModal] Initialized on DOMContentLoaded');
+                
+                // EventModalReadyイベントを発火
+                const event = new CustomEvent('eventModalReady');
+                document.dispatchEvent(event);
+            } else {
+                console.error('[EventModal] Failed to initialize - modal element not found');
+            }
         });
     } else {
         // 既にDOMが準備できている場合
         setTimeout(() => {
-            window.eventModal = new EventModal();
-            updateDashboardUI();
-            console.log('[EventModal] Initialized immediately');
-            
-            // EventModalReadyイベントを発火
-            const event = new CustomEvent('eventModalReady');
-            document.dispatchEvent(event);
+            const modal = new EventModal();
+            // モーダル要素が正常に取得できた場合のみグローバルに設定
+            if (modal.modal) {
+                window.eventModal = modal;
+                updateDashboardUI();
+                console.log('[EventModal] Initialized immediately');
+                
+                // EventModalReadyイベントを発火
+                const event = new CustomEvent('eventModalReady');
+                document.dispatchEvent(event);
+            } else {
+                console.error('[EventModal] Failed to initialize - modal element not found');
+            }
         }, 0);
     }
     

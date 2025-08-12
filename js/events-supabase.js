@@ -23,10 +23,22 @@
             // 即座にイベントリスナーを設定（静的カード用）
             this.setupEventListeners();
             
-            // 静的カードにもイベントリスナーを追加
-            setTimeout(() => {
-                this.attachCardEventListeners();
-            }, 100);
+            // EventModalの準備を待ってからカードリスナーを追加
+            if (window.eventModal) {
+                // 既に初期化済み
+                setTimeout(() => {
+                    this.attachCardEventListeners();
+                }, 100);
+            } else {
+                // EventModalReadyイベントを待つ
+                document.addEventListener('eventModalReady', () => {
+                    this.attachCardEventListeners();
+                });
+                // フォールバック: 500ms後にも確認
+                setTimeout(() => {
+                    this.attachCardEventListeners();
+                }, 500);
+            }
             
             // supabaseReadyイベントを待ってから動的データを読み込み
             if (window.supabaseClient) {

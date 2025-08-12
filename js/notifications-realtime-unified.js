@@ -43,35 +43,25 @@
 
     // 通知音の準備
     function setupNotificationSound() {
+        // notification.mp3が0バイトなので、音声機能を無効化
+        // TODO: 実際の音声ファイルがアップロードされたら、この関数を元に戻す
+        notificationSound = null;
+        window.notificationSound = null;
+        
+        // 将来的に音声ファイルが準備できた場合のコード（コメントアウト）
+        /*
         try {
-            // 音声ファイルのサイズチェック
-            fetch('/sounds/notification.mp3', { method: 'HEAD' })
-                .then(response => {
-                    const contentLength = response.headers.get('content-length');
-                    if (!response.ok || !contentLength || parseInt(contentLength) === 0) {
-                        // ファイルが空または存在しない場合はスキップ
-                        notificationSound = null;
-                        return;
-                    }
-                    
-                    // ファイルが正常な場合のみ Audio オブジェクトを作成
-                    notificationSound = new Audio('/sounds/notification.mp3');
-                    notificationSound.volume = 0.5;
-                    // 音声ファイルの読み込みエラーをキャッチ
-                    notificationSound.addEventListener('error', (e) => {
-                        console.warn('[RealtimeNotifications] 通知音ファイルの読み込みに失敗しました。音声なしで続行します。');
-                        notificationSound = null;
-                    });
-                    window.notificationSound = notificationSound;
-                })
-                .catch(error => {
-                    // ネットワークエラーなどの場合はサイレントに失敗
-                    notificationSound = null;
-                });
+            notificationSound = new Audio('/sounds/notification.mp3');
+            notificationSound.volume = 0.5;
+            notificationSound.addEventListener('error', (e) => {
+                console.warn('[RealtimeNotifications] 通知音ファイルの読み込みに失敗しました。音声なしで続行します。');
+                notificationSound = null;
+            });
+            window.notificationSound = notificationSound;
         } catch (error) {
-            // エラーは記録しない（サイレントに失敗）
             notificationSound = null;
         }
+        */
     }
 
     // 全てのリアルタイムサブスクリプションを設定
