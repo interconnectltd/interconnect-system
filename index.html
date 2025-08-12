@@ -18,7 +18,8 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Video Preload Optimization（prefetchのみ使用） -->
+    <!-- Video Preload Optimization -->
+    <link rel="preload" href="assets/interconnect-top.mp4" as="video" type="video/mp4" crossorigin="anonymous">
     <link rel="prefetch" href="assets/interconnect-top.mp4" as="video" type="video/mp4">
     <link rel="dns-prefetch" href="assets/">
     
@@ -27,16 +28,25 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/navbar-fresh.css">
-    <!-- homepage-modern.cssとhomepage-complete.cssを統合 -->
+    <link rel="stylesheet" href="css/homepage-modern.css">
     <link rel="stylesheet" href="css/homepage-complete.css">
     <link rel="stylesheet" href="css/contact-balanced.css">
+    <!-- <link rel="stylesheet" href="css/scroll-animations.css"> -->
+    <!-- loading-screen.css は homepage-perfect-final.js に統合済み -->
+    <!-- <link rel="stylesheet" href="css/loading-screen.css"> -->
     <link rel="stylesheet" href="css/news-category-mobile-fix.css">
-    <!-- 動画関連CSS統合 -->
+    <!-- 動画プリロード修正 -->
+    <link rel="stylesheet" href="css/homepage-video-preload-fix.css">
+    <!-- 動画読み込み最適化 -->
     <link rel="stylesheet" href="css/video-loading-optimize.css">
+    <!-- 動画ポスターフォールバック -->
     <link rel="stylesheet" href="css/video-poster-fallback.css">
-    <!-- ヒーローセクション統合 -->
+    <!-- ヒーローセクション -->
     <link rel="stylesheet" href="css/hero.css">
+    <!-- タイプライター初期状態 -->
     <link rel="stylesheet" href="css/typewriter-init.css">
+    <!-- 斜め線の強制削除 -->
+    <link rel="stylesheet" href="css/hero-slant-fix.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
     
@@ -49,16 +59,18 @@
 </head>
 <body>
     <!-- プリローディング画面（最初に表示） -->
-    <div id="instantLoadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;">
-            <div style="color:white;font-size:24px;font-weight:300;letter-spacing:0.2em;margin-bottom:20px;">INTER CONNECT</div>
-            <div style="width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin:0 auto;">
-                <div id="loadingBar" style="height:100%;background:white;width:0%;transition:width 2s ease-out;"></div>
+    <script>
+        // ローディング画面を即座に表示
+        document.write(`
+        <div id="instantLoadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;">
+                <div style="color:white;font-size:24px;font-weight:300;letter-spacing:0.2em;margin-bottom:20px;">INTER CONNECT</div>
+                <div style="width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin:0 auto;">
+                    <div id="loadingBar" style="height:100%;background:white;width:0%;transition:width 2s ease-out;"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <script>
-        // ローディング画面の初期設定
+        `);
         document.body.style.overflow = 'hidden';
         // プログレスバーの制御は homepage-perfect-final.js に統合
     </script>
@@ -97,7 +109,7 @@
                    muted 
                    loop 
                    playsinline 
-                   preload="auto"
+                   preload="metadata"
                    poster="assets/video-poster.svg">
                 <source src="assets/interconnect-top.mp4" type="video/mp4">
                 お使いのブラウザは動画をサポートしていません。
@@ -737,45 +749,31 @@
     </footer>
 
     <!-- Scripts -->
-    <!-- 基本ライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- エラー処理・ユーティリティ（最初に読み込む） -->
+    <script src="js/referral-landing.js"></script>
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    
-    <!-- Supabase初期化（referral-landing.jsより先に） -->
-    <script src="js/supabase-unified.js?v=1.0"></script>
-    
-    <!-- 紹介リンク処理（Supabase初期化後） -->
-    <script src="js/referral-landing.js"></script>
-    
+    <!-- ローディング動画修正 -->
+    <script src="js/homepage-loading-final-fix.js"></script>
+    <script src="js/homepage-loading-video-fix.js"></script>
     <!-- 動画プリロード最適化 -->
     <script src="js/video-preload-optimize.js"></script>
     <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->
     <script src="js/homepage-perfect-final.js"></script>
-    <!-- メインのページ処理 -->
     <script src="js/main.js"></script>
+    <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- 動画パフォーマンス最適化 -->
     <script src="js/video-performance-optimizer.js"></script>
     <!-- Service Worker登録 -->
     <script>
         if ('serviceWorker' in navigator) {
-            // DOMContentLoadedを使用してloadイベントの競合を回避
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => {
-                    navigator.serviceWorker.register('/sw-video-cache.js')
-                        .then(registration => console.log('[SW] 登録成功:', registration.scope))
-                        .catch(err => console.error('[SW] 登録失敗:', err));
-                });
-            } else {
-                // 既に読み込み済みの場合
+            window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw-video-cache.js')
                     .then(registration => console.log('[SW] 登録成功:', registration.scope))
                     .catch(err => console.error('[SW] 登録失敗:', err));
-            }
+            });
         }
     </script>
 </body>
