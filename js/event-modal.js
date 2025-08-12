@@ -14,6 +14,12 @@
             this.eventActionBtn = document.getElementById('eventActionBtn');
             this.currentEvent = null;
             
+            // DOM要素が見つからない場合のエラーチェック
+            if (!this.modal) {
+                console.error('[EventModal] モーダル要素が見つかりません: #eventDetailModal');
+                return;
+            }
+            
             this.init();
         }
 
@@ -37,6 +43,12 @@
          */
         async show(eventId) {
             // console.log('[EventModal] Showing event:', eventId);
+            
+            // モーダルが存在しない場合は終了
+            if (!this.modal) {
+                console.error('[EventModal] モーダルが初期化されていません');
+                return;
+            }
 
             try {
                 // ローディング状態を表示
@@ -513,11 +525,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             window.eventModal = new EventModal();
             updateDashboardUI();
+            console.log('[EventModal] Initialized on DOMContentLoaded');
+            
+            // EventModalReadyイベントを発火
+            const event = new CustomEvent('eventModalReady');
+            document.dispatchEvent(event);
         });
     } else {
         // 既にDOMが準備できている場合
-        window.eventModal = new EventModal();
-        updateDashboardUI();
+        setTimeout(() => {
+            window.eventModal = new EventModal();
+            updateDashboardUI();
+            console.log('[EventModal] Initialized immediately');
+            
+            // EventModalReadyイベントを発火
+            const event = new CustomEvent('eventModalReady');
+            document.dispatchEvent(event);
+        }, 0);
     }
     
     function updateDashboardUI() {

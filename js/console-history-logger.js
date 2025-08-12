@@ -180,7 +180,17 @@
                 return;
             }
             
+            // コメントアウトされたログを検出してスキップ
             const callerInfo = getCallerInfo();
+            if (callerInfo && callerInfo.file) {
+                // スタックトレースにコメント記号が含まれている場合はスキップ
+                const stack = new Error().stack;
+                if (stack && stack.includes('//')) {
+                    // コメントアウトされた行からの呼び出しの可能性があるため無視
+                    return;
+                }
+            }
+            
             trackFunctionCall(callerInfo);
             
             const entry = createLogEntry(method, args, callerInfo);

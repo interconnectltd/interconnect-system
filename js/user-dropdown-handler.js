@@ -183,7 +183,12 @@
                 e.target.closest('a.sidebar-link') ||    // サイドバーリンク
                 e.target.closest('input') ||             // 入力フィールド
                 e.target.closest('select') ||            // セレクトボックス
-                e.target.closest('textarea')) {          // テキストエリア
+                e.target.closest('textarea') ||          // テキストエリア
+                e.target.closest('.event-card') ||       // イベントカード
+                e.target.closest('.past-event-item') ||  // 過去のイベントアイテム
+                e.target.closest('.event-content') ||    // イベントコンテンツ
+                e.target.closest('.event-footer') ||     // イベントフッター
+                e.target.closest('.past-event-action')) { // 過去イベントのアクション
                 return;
             }
             

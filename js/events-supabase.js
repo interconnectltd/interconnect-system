@@ -20,19 +20,36 @@
         }
 
         init() {
-            // supabaseReadyイベントを待ってから初期化
+            // 即座にイベントリスナーを設定（静的カード用）
+            this.setupEventListeners();
+            
+            // 静的カードにもイベントリスナーを追加
+            setTimeout(() => {
+                this.attachCardEventListeners();
+            }, 100);
+            
+            // supabaseReadyイベントを待ってから動的データを読み込み
             if (window.supabaseClient) {
-                this.setupEventListeners();
+                console.log('[EventsSupabase] Supabase ready, loading events...');
                 this.loadEvents();
                 this.loadPastEvents();
             } else {
+                console.log('[EventsSupabase] Waiting for Supabase initialization...');
                 // Supabaseクライアントがまだ初期化されていない場合は待機
                 document.addEventListener('supabaseReady', () => {
-                    // console.log('[EventsSupabase] Supabase client ready, initializing...');
-                    this.setupEventListeners();
+                    console.log('[EventsSupabase] Supabase client ready, initializing...');
                     this.loadEvents();
                     this.loadPastEvents();
                 });
+                
+                // フォールバック: 3秒後にも確認
+                setTimeout(() => {
+                    if (window.supabaseClient && !this.eventsLoaded) {
+                        console.log('[EventsSupabase] Fallback: Loading events after timeout');
+                        this.loadEvents();
+                        this.loadPastEvents();
+                    }
+                }, 3000);
             }
         }
 
@@ -72,6 +89,7 @@
          */
         async loadEvents() {
             try {
+                this.eventsLoaded = true; // フラグをセット
                 this.showLoading();
 
                 // キャッシュチェック
@@ -284,22 +302,52 @@
          */
         attachCardEventListeners() {
             const cards = document.querySelectorAll('.event-card');
+            console.log('[EventsSupabase] Found', cards.length, 'event cards');
+            
             cards.forEach(card => {
+                // 既にリスナーが追加されている場合はスキップ
+                if (card.dataset.listenerAdded === 'true') {
+                    return;
+                }
+                
                 // カード全体のクリックでモーダルを開く
                 card.addEventListener('click', (e) => {
+                    // イベントバブリングを停止
+                    e.stopPropagation();
+                    
                     // ボタンクリックは除外
                     if (!e.target.closest('button')) {
                         const eventId = card.dataset.eventId;
-                        // console.log('[EventsSupabase] Card clicked, eventId:', eventId);
-                        // console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
-                        if (eventId && window.eventModal) {
-                            // console.log('[EventsSupabase] Calling eventModal.show()');
-                            window.eventModal.show(eventId);
+                        console.log('[EventsSupabase] Card clicked, eventId:', eventId);
+                        console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
+                        
+                        // EventModalが存在するまで待つ
+                        if (eventId) {
+                            if (window.eventModal && typeof window.eventModal.show === 'function') {
+                                console.log('[EventsSupabase] Calling eventModal.show()');
+                                window.eventModal.show(eventId);
+                            } else {
+                                console.error('[EventsSupabase] EventModal not ready, retrying...');
+                                // 少し待ってからリトライ
+                                setTimeout(() => {
+                                    if (window.eventModal && typeof window.eventModal.show === 'function') {
+                                        window.eventModal.show(eventId);
+                                    } else {
+                                        console.error('[EventsSupabase] EventModal still not available');
+                                        if (window.showToast) {
+                                            window.showToast('イベント詳細の表示に失敗しました', 'error');
+                                        }
+                                    }
+                                }, 500);
+                            }
                         } else {
-                            // console.error('[EventsSupabase] Missing eventId or eventModal');
+                            console.error('[EventsSupabase] Missing eventId');
                         }
                     }
                 });
+                
+                // リスナー追加済みフラグをセット
+                card.dataset.listenerAdded = 'true';
 
                 // 参加申込ボタン
                 const button = card.querySelector('.btn-primary, .btn-outline');
@@ -666,6 +714,15 @@
                         if (eventId && window.eventModal) {
                             window.eventModal.show(eventId);
                         }
+                    });
+                });
+                
+                // 過去イベントアイテム全体のクリックハンドラー
+                const pastEventItems = container.querySelectorAll('.past-event-item');
+                pastEventItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        // イベントバブリングを停止
+                        e.stopPropagation();
                     });
                 });
 

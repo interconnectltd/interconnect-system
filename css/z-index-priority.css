@@ -118,6 +118,21 @@ header,
   z-index: 5500 !important;
 }
 
+/* イベント詳細モーダル（最優先） */
+#eventDetailModal {
+  z-index: 10500 !important;
+}
+
+#eventDetailModal .modal-overlay {
+  z-index: 10499 !important;
+  pointer-events: auto !important;
+}
+
+#eventDetailModal .modal-content {
+  z-index: 10501 !important;
+  pointer-events: auto !important;
+}
+
 /* 通知トースト */
 .notification-toast,
 .toast-notification,
