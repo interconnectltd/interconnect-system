@@ -71,7 +71,12 @@
             },
             events: [],
             eventClick: handleEventClick,
-            dateClick: handleDateClick,
+            dateClick: function(info) {
+                // handleDateClick関数を安全に呼び出す
+                if (typeof handleDateClick === 'function') {
+                    handleDateClick(info);
+                }
+            },
             eventDisplay: 'block',
             eventColor: '#4a90e2',
             eventTextColor: '#ffffff',
