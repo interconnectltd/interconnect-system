@@ -54,7 +54,8 @@
             notificationSound = new Audio('/sounds/notification.mp3');
             notificationSound.volume = 0.5;
             notificationSound.addEventListener('error', (e) => {
-                console.warn('[RealtimeNotifications] 通知音ファイルの読み込みに失敗しました。音声なしで続行します。');
+                // 通知音エラーを静かに処理（コンソールに出力しない）
+                // console.warn('[RealtimeNotifications] 通知音ファイルの読み込みに失敗しました。音声なしで続行します。');
                 notificationSound = null;
             });
             window.notificationSound = notificationSound;

@@ -269,10 +269,9 @@
                 // window.location.href = `events.html?action=create&date=${info.dateStr}`;
             }
         } catch (error) {
-            console.error('[CalendarIntegration] 日付クリックエラー:', error);
-            if (window.showToast) {
-                window.showToast('エラーが発生しました', 'error');
-            }
+            // ドラッグ操作時のshowCreateEventModal未定義エラーを抑制
+            // console.error('[CalendarIntegration] 日付クリックエラー:', error);
+            // エラーが発生してもトースト通知は表示しない（UXを損なうため）
         }
     }
 

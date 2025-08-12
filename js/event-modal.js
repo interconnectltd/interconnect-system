@@ -527,8 +527,11 @@
             // モーダル要素が正常に取得できた場合のみグローバルに設定
             if (modal.modal) {
                 window.eventModal = modal;
-                updateDashboardUI();
-                console.log('[EventModal] Initialized on DOMContentLoaded');
+                // dashboardUIが存在する場合のみ更新
+                if (window.dashboardUI) {
+                    updateDashboardUI();
+                }
+                // console.log('[EventModal] Initialized on DOMContentLoaded');
                 
                 // EventModalReadyイベントを発火
                 const event = new CustomEvent('eventModalReady');
@@ -544,8 +547,11 @@
             // モーダル要素が正常に取得できた場合のみグローバルに設定
             if (modal.modal) {
                 window.eventModal = modal;
-                updateDashboardUI();
-                console.log('[EventModal] Initialized immediately');
+                // dashboardUIが存在する場合のみ更新
+                if (window.dashboardUI) {
+                    updateDashboardUI();
+                }
+                // console.log('[EventModal] Initialized immediately');
                 
                 // EventModalReadyイベントを発火
                 const event = new CustomEvent('eventModalReady');
