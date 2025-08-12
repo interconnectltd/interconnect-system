@@ -40,10 +40,12 @@
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
     
-    <!-- ヒーロー関連スクリプト（body末尾に移動すべきだが、互換性のため残す） -->
-    <script src="js/hero-simple.js" defer></script>
-    <script src="js/hero-slant-remover.js" defer></script>
-    <script src="js/typewriter-effect.js" defer></script>
+    <!-- ヒーローシンプル表示 -->
+    <script src="js/hero-simple.js"></script>
+    <!-- 斜め線削除スクリプト -->
+    <script src="js/hero-slant-remover.js"></script>
+    <!-- タイプライター効果 -->
+    <script src="js/typewriter-effect.js"></script>
 </head>
 <body>
     <!-- プリローディング画面（最初に表示） -->
@@ -750,14 +752,14 @@
     <!-- 紹介リンク処理（Supabase初期化後） -->
     <script src="js/referral-landing.js"></script>
     
-    <!-- 動画最適化（重複を削除、1つに統合） -->
-    <script src="js/video-performance-optimizer.js"></script>
-    
+    <!-- 動画プリロード最適化 -->
+    <script src="js/video-preload-optimize.js"></script>
+    <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->
+    <script src="js/homepage-perfect-final.js"></script>
     <!-- メインのページ処理 -->
     <script src="js/main.js"></script>
-    
-    <!-- 最終的な調整（main.jsの後に実行） -->
-    <script src="js/homepage-perfect-final.js"></script>
+    <!-- 動画パフォーマンス最適化 -->
+    <script src="js/video-performance-optimizer.js"></script>
     <!-- Service Worker登録 -->
     <script>
         if ('serviceWorker' in navigator) {
