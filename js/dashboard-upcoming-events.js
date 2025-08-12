@@ -71,23 +71,29 @@
             try {
                 const now = new Date().toISOString();
                 
-                // まずevent_dateフィールドで試す
+                // event_itemsテーブルから取得（参加者数も含めて）
                 let { data: events, error } = await window.supabase
-                    .from('events')
-                    .select('*')
+                    .from('event_items')
+                    .select(`
+                        *,
+                        event_participants!left (
+                            id,
+                            status
+                        )
+                    `)
                     .gte('event_date', now)
                     .order('event_date', { ascending: true })
                     .limit(5);
 
-                // event_dateがエラーの場合、dateフィールドで試す
-                if (error && error.message.includes('event_date')) {
-                    // console.log('[UpcomingEvents] event_dateフィールドが存在しません。dateフィールドで再試行...');
+                // event_itemsテーブルが存在しない場合、eventsテーブルで試す（後方互換性）
+                if (error && (error.code === '42P01' || error.message.includes('event_items'))) {
+                    // console.log('[UpcomingEvents] event_itemsテーブルが存在しません。eventsテーブルで再試行...');
                     
                     const result = await window.supabase
                         .from('events')
                         .select('*')
-                        .gte('date', now)
-                        .order('date', { ascending: true })
+                        .gte('event_date', now)
+                        .order('event_date', { ascending: true })
                         .limit(5);
                     
                     events = result.data;
@@ -156,8 +162,8 @@
             const title = event.title || event.name || 'イベント';
             const location = event.location || 'オンライン開催';
             
-            // 参加者数
-            const participantCount = event.participant_count || event.participants?.length || 0;
+            // 参加者数（event_participantsのリレーションから取得）
+            const participantCount = event.event_participants?.length || event.participant_count || event.participants?.length || 0;
             
             return `
                 <div class="event-item" data-event-id="${event.id}">
@@ -266,10 +272,21 @@
          */
         async checkEventTableStructure() {
             try {
-                const { data, error } = await window.supabase
-                    .from('events')
+                // event_itemsテーブルから確認
+                let { data, error } = await window.supabase
+                    .from('event_items')
                     .select('*')
                     .limit(1);
+
+                // event_itemsが存在しない場合はeventsテーブルを確認
+                if (error && (error.code === '42P01' || error.message.includes('event_items'))) {
+                    const result = await window.supabase
+                        .from('events')
+                        .select('*')
+                        .limit(1);
+                    data = result.data;
+                    error = result.error;
+                }
 
                 if (!error && data && data.length > 0) {
                     const columns = Object.keys(data[0]);
