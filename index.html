@@ -40,12 +40,10 @@
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
     
-    <!-- ヒーローシンプル表示 -->
-    <script src="js/hero-simple.js"></script>
-    <!-- 斜め線削除スクリプト -->
-    <script src="js/hero-slant-remover.js"></script>
-    <!-- タイプライター効果 -->
-    <script src="js/typewriter-effect.js"></script>
+    <!-- ヒーロー関連スクリプト（body末尾に移動すべきだが、互換性のため残す） -->
+    <script src="js/hero-simple.js" defer></script>
+    <script src="js/hero-slant-remover.js" defer></script>
+    <script src="js/typewriter-effect.js" defer></script>
 </head>
 <body>
     <!-- プリローディング画面（最初に表示） -->
@@ -737,31 +735,45 @@
     </footer>
 
     <!-- Scripts -->
+    <!-- 基本ライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/referral-landing.js"></script>
+    
+    <!-- エラー処理・ユーティリティ（最初に読み込む） -->
     <script src="js/error-prevention.js"></script>
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <!-- ローディング動画修正（homepage-perfect-final.jsに統合済み） -->
-    <!-- <script src="js/homepage-loading-final-fix.js"></script> -->
-    <!-- <script src="js/homepage-loading-video-fix.js"></script> -->
-    <!-- 動画プリロード最適化 -->
-    <script src="js/video-preload-optimize.js"></script>
-    <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->
-    <script src="js/homepage-perfect-final.js"></script>
-    <script src="js/main.js"></script>
+    
+    <!-- Supabase初期化（referral-landing.jsより先に） -->
     <script src="js/supabase-unified.js?v=1.0"></script>
-    <!-- 動画パフォーマンス最適化 -->
+    
+    <!-- 紹介リンク処理（Supabase初期化後） -->
+    <script src="js/referral-landing.js"></script>
+    
+    <!-- 動画最適化（重複を削除、1つに統合） -->
     <script src="js/video-performance-optimizer.js"></script>
+    
+    <!-- メインのページ処理 -->
+    <script src="js/main.js"></script>
+    
+    <!-- 最終的な調整（main.jsの後に実行） -->
+    <script src="js/homepage-perfect-final.js"></script>
     <!-- Service Worker登録 -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
+            // DOMContentLoadedを使用してloadイベントの競合を回避
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    navigator.serviceWorker.register('/sw-video-cache.js')
+                        .then(registration => console.log('[SW] 登録成功:', registration.scope))
+                        .catch(err => console.error('[SW] 登録失敗:', err));
+                });
+            } else {
+                // 既に読み込み済みの場合
                 navigator.serviceWorker.register('/sw-video-cache.js')
                     .then(registration => console.log('[SW] 登録成功:', registration.scope))
                     .catch(err => console.error('[SW] 登録失敗:', err));
-            });
+            }
         }
     </script>
 </body>

@@ -28,8 +28,9 @@
                 'observeLoadingScreen', 'initLoadingScreen', 'createLoadingScreen',
                 'hideLoadingScreen', 'checkLoadingComplete', 'initHeroAnimation',
                 'animateTitle', 'startPageAnimations',
-                'initScrollAnimations', 'digitalTextEffect', 'LoadingManager',
-                'UnifiedLoader', 'AllConflictsFix', 'initScrollEffects'
+                'digitalTextEffect', 'LoadingManager',
+                'UnifiedLoader', 'AllConflictsFix'
+                // initScrollAnimations と initScrollEffects は main.js で使用されるため除外
             ];
             
             conflictingFunctions.forEach(fn => {
