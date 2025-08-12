@@ -18,8 +18,7 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Video Preload Optimization -->
-    <link rel="preload" href="assets/interconnect-top.mp4" as="video" type="video/mp4" crossorigin="anonymous">
+    <!-- Video Preload Optimization（prefetchのみ使用） -->
     <link rel="prefetch" href="assets/interconnect-top.mp4" as="video" type="video/mp4">
     <link rel="dns-prefetch" href="assets/">
     
@@ -28,25 +27,16 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/navbar-fresh.css">
-    <link rel="stylesheet" href="css/homepage-modern.css">
+    <!-- homepage-modern.cssとhomepage-complete.cssを統合 -->
     <link rel="stylesheet" href="css/homepage-complete.css">
     <link rel="stylesheet" href="css/contact-balanced.css">
-    <!-- <link rel="stylesheet" href="css/scroll-animations.css"> -->
-    <!-- loading-screen.css は homepage-perfect-final.js に統合済み -->
-    <!-- <link rel="stylesheet" href="css/loading-screen.css"> -->
     <link rel="stylesheet" href="css/news-category-mobile-fix.css">
-    <!-- 動画プリロード修正 -->
-    <link rel="stylesheet" href="css/homepage-video-preload-fix.css">
-    <!-- 動画読み込み最適化 -->
+    <!-- 動画関連CSS統合 -->
     <link rel="stylesheet" href="css/video-loading-optimize.css">
-    <!-- 動画ポスターフォールバック -->
     <link rel="stylesheet" href="css/video-poster-fallback.css">
-    <!-- ヒーローセクション -->
+    <!-- ヒーローセクション統合 -->
     <link rel="stylesheet" href="css/hero.css">
-    <!-- タイプライター初期状態 -->
     <link rel="stylesheet" href="css/typewriter-init.css">
-    <!-- 斜め線の強制削除 -->
-    <link rel="stylesheet" href="css/hero-slant-fix.css">
     <!-- z-index優先順位管理 -->
     <link rel="stylesheet" href="css/z-index-priority.css">
     
@@ -59,18 +49,16 @@
 </head>
 <body>
     <!-- プリローディング画面（最初に表示） -->
-    <script>
-        // ローディング画面を即座に表示
-        document.write(`
-        <div id="instantLoadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;">
-            <div style="text-align:center;">
-                <div style="color:white;font-size:24px;font-weight:300;letter-spacing:0.2em;margin-bottom:20px;">INTER CONNECT</div>
-                <div style="width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin:0 auto;">
-                    <div id="loadingBar" style="height:100%;background:white;width:0%;transition:width 2s ease-out;"></div>
-                </div>
+    <div id="instantLoadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;">
+            <div style="color:white;font-size:24px;font-weight:300;letter-spacing:0.2em;margin-bottom:20px;">INTER CONNECT</div>
+            <div style="width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin:0 auto;">
+                <div id="loadingBar" style="height:100%;background:white;width:0%;transition:width 2s ease-out;"></div>
             </div>
         </div>
-        `);
+    </div>
+    <script>
+        // ローディング画面の初期設定
         document.body.style.overflow = 'hidden';
         // プログレスバーの制御は homepage-perfect-final.js に統合
     </script>
@@ -109,7 +97,7 @@
                    muted 
                    loop 
                    playsinline 
-                   preload="metadata"
+                   preload="auto"
                    poster="assets/video-poster.svg">
                 <source src="assets/interconnect-top.mp4" type="video/mp4">
                 お使いのブラウザは動画をサポートしていません。
@@ -755,9 +743,9 @@
     <script src="js/null-check-fixes.js"></script>
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
-    <!-- ローディング動画修正 -->
-    <script src="js/homepage-loading-final-fix.js"></script>
-    <script src="js/homepage-loading-video-fix.js"></script>
+    <!-- ローディング動画修正（homepage-perfect-final.jsに統合済み） -->
+    <!-- <script src="js/homepage-loading-final-fix.js"></script> -->
+    <!-- <script src="js/homepage-loading-video-fix.js"></script> -->
     <!-- 動画プリロード最適化 -->
     <script src="js/video-preload-optimize.js"></script>
     <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->

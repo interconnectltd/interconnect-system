@@ -8,29 +8,35 @@
     
     // console.log('[PerfectFinal] 初期化開始');
     
-    // グローバル状態管理
-    const GlobalState = {
-        initialized: false,
-        loadingComplete: false,
-        animationsStarted: false,
-        scrollObserversSetup: false
-    };
+    // グローバル状態管理（window.HomepageStateに統一）
+    if (!window.HomepageState) {
+        window.HomepageState = {
+            initialized: false,
+            loadingComplete: false,
+            animationsStarted: false,
+            scrollObserversSetup: false
+        };
+    }
+    const GlobalState = window.HomepageState;
     
     // すべての競合スクリプトを無効化
     const DisableConflicts = {
         init() {
-            // 競合する可能性のあるすべての関数を無効化
+            // 競合する可能性のある重複関数のみを選択的に無効化
+            // typewriterEffectなど必要な関数は残す
             const conflictingFunctions = [
                 'observeLoadingScreen', 'initLoadingScreen', 'createLoadingScreen',
                 'hideLoadingScreen', 'checkLoadingComplete', 'initHeroAnimation',
-                'typewriterEffect', 'animateTitle', 'startPageAnimations',
+                'animateTitle', 'startPageAnimations',
                 'initScrollAnimations', 'digitalTextEffect', 'LoadingManager',
                 'UnifiedLoader', 'AllConflictsFix', 'initScrollEffects'
             ];
             
             conflictingFunctions.forEach(fn => {
-                if (window[fn]) {
-                    window[fn] = () => console.log(`[PerfectFinal] ${fn} は無効化されています`);
+                if (window[fn] && typeof window[fn] === 'function') {
+                    // 関数の存在を記録してから無効化
+                    console.log(`[PerfectFinal] ${fn} を安全に無効化`);
+                    window[fn] = () => {};
                 }
             });
             
@@ -39,19 +45,9 @@
         },
         
         overrideEventListeners() {
-            const original = EventTarget.prototype.addEventListener;
-            EventTarget.prototype.addEventListener = function(type, listener, options) {
-                const listenerStr = listener.toString();
-                
-                // ローディング・アニメーション関連のリスナーをブロック
-                if ((type === 'DOMContentLoaded' || type === 'load') && 
-                    /loading|animation|typewriter|scroll.*fade/i.test(listenerStr)) {
-                    // console.log(`[PerfectFinal] ブロック: ${type}イベント`);
-                    return;
-                }
-                
-                return original.call(this, type, listener, options);
-            };
+            // EventListenerの上書きを削除（破壊的な変更を避ける）
+            // 代わりに、競合する関数の無効化のみで対応
+            // console.log('[PerfectFinal] EventListener上書きをスキップ（安全性のため）');
         }
     };
     
@@ -130,6 +126,8 @@
                 setTimeout(() => {
                     screen.style.display = 'none';
                     document.body.style.overflow = '';
+                    // body.loadingクラスを確実に削除
+                    document.body.classList.remove('loading');
                     document.body.classList.add('loading-complete');
                     this.onComplete();
                 }, 800);
