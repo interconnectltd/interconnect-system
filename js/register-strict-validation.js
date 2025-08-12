@@ -303,9 +303,10 @@
     // 初期化
     function init() {
         // 全てのステップのボタンを初期状態に設定
-        for (let i = 1; i <= 5; i++) {
-            updateButtonState(i);
-        }
+        // 初期状態では無効化しない（ユーザーが入力を始めてからバリデーション開始）
+        // for (let i = 1; i <= 5; i++) {
+        //     updateButtonState(i);
+        // }
         
         // テキストフィールドのイベントリスナー
         document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], input[type="tel"]').forEach(field => {
@@ -358,17 +359,22 @@
             fileInput.addEventListener('change', () => validateField(fileInput));
         }
         
-        // 初期バリデーション実行
+        // 初期バリデーション実行を削除（ユーザーが入力を始めてからバリデーション開始）
+        // 値がすでに入力されているフィールドのみバリデーション実行
         document.querySelectorAll('.form-step.active input, .form-step.active textarea').forEach(field => {
-            // フィールドに値がある場合、またはrequired属性がない場合はバリデーション実行
-            validateField(field);
+            // 値がある場合のみバリデーション実行
+            if (field.value && field.value.trim().length > 0) {
+                validateField(field);
+            }
         });
         
-        // チェックボックスの初期状態も確認
+        // チェックボックスの初期状態も値がある場合のみ確認
         const activeStep = document.querySelector('.form-step.active');
         if (activeStep) {
             const stepNum = parseInt(activeStep.getAttribute('data-step'));
-            if (stepNum === 2 || stepNum === 5) {
+            // チェックボックスが選択されている場合のみバリデーション
+            const hasChecked = activeStep.querySelector('input[type="checkbox"]:checked');
+            if (hasChecked && (stepNum === 2 || stepNum === 5)) {
                 validateCheckboxes(stepNum);
             }
         }
