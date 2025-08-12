@@ -29,6 +29,12 @@
 1. fix-event-items-rls.sql
 2. insert-simple-event.sql
 3. fix-event-participants-406.sql（更新版 - 必須）
+4. verify-event-participants.sql（動作確認用 - オプション）
 
 Supabase DashboardのSQL Editorで上記の順番で実行してください。
 特に`fix-event-participants-406.sql`は406エラーを完全に解決するための重要な更新です。
+
+## 動作確認結果
+- ✅ event_participantsテーブルに7件のデータが正常に保存
+- ✅ 406エラーが解決され、データアクセスが正常化
+- ✅ RLSポリシーが適切に設定され、権限管理が機能
