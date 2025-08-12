@@ -137,10 +137,10 @@
                 .sort((a, b) => b[1].count - a[1].count)
                 .forEach(([name, data]) => {
                     // console.log(
-                        `${name}: ${data.count}回`,
-                        `(初回: ${new Date(data.firstCall).toLocaleTimeString()},`,
-                        `最終: ${new Date(data.lastCall).toLocaleTimeString()})`
-                    );
+                    //     `${name}: ${data.count}回`,
+                    //     `(初回: ${new Date(data.firstCall).toLocaleTimeString()},`,
+                    //     `最終: ${new Date(data.lastCall).toLocaleTimeString()})`
+                    // );
                 });
         },
         

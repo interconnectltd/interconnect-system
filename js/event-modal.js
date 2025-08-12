@@ -52,14 +52,14 @@
 
                 if (error) {
                     console.error('[EventModal] Error fetching event:', error);
-                    console.error('[EventModal] Error details:', {
-                        code: error.code,
-                        message: error.message,
-                        details: error.details,
-                        hint: error.hint,
-                        table: 'event_items',
-                        eventId: eventId
-                    });
+                    // console.error('[EventModal] Error details:', {
+                    //     code: error.code,
+                    //     message: error.message,
+                    //     details: error.details,
+                    //     hint: error.hint,
+                    //     table: 'event_items',
+                    //     eventId: eventId
+                    // });
                     this.showError('イベント情報の取得に失敗しました');
                     return;
                 }
@@ -289,7 +289,7 @@
                     await this.fetchParticipantPreviews(eventId);
                 }
             } catch (error) {
-                console.error('[EventModal] Error fetching participants:', error);
+                // console.error('[EventModal] Error fetching participants:', error);
             }
         }
 
@@ -331,7 +331,7 @@
                     }
                 }
             } catch (error) {
-                console.error('[EventModal] Error fetching participant previews:', error);
+                // console.error('[EventModal] Error fetching participant previews:', error);
             }
         }
 
@@ -389,7 +389,9 @@
                 // ユーザー認証チェック
                 const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
-                    alert('ログインが必要です');
+                    if (window.showToast) {
+                        window.showToast('ログインが必要です', 'warning');
+                    }
                     window.location.href = 'login.html';
                     return;
                 }
@@ -423,7 +425,9 @@
 
                         if (updateError) throw updateError;
                     } else {
-                        alert('既に参加登録済みです');
+                        if (window.showToast) {
+                            window.showToast('既に参加登録済みです', 'info');
+                        }
                         this.eventActionBtn.textContent = '参加登録済み';
                         this.eventActionBtn.classList.remove('btn-primary');
                         this.eventActionBtn.classList.add('btn-success');
@@ -451,7 +455,9 @@
 
             } catch (error) {
                 console.error('[EventModal] Error handling action:', error);
-                alert('エラーが発生しました。もう一度お試しください。');
+                if (window.showToast) {
+                    window.showToast('エラーが発生しました。もう一度お試しください。', 'error');
+                }
                 this.updateActionButton(this.currentEvent, 'upcoming');
             }
         }
@@ -501,17 +507,34 @@
 
     // グローバルに公開
     window.EventModal = EventModal;
-    window.eventModal = new EventModal();
-
-    // dashboardUIのメソッドを更新
-    if (window.dashboardUI) {
-        window.dashboardUI.viewEventDetails = function(eventId) {
-            window.eventModal.show(eventId);
-        };
-        
-        window.dashboardUI.closeEventModal = function() {
-            window.eventModal.close();
-        };
+    
+    // DOM準備後に初期化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            window.eventModal = new EventModal();
+            updateDashboardUI();
+        });
+    } else {
+        // 既にDOMが準備できている場合
+        window.eventModal = new EventModal();
+        updateDashboardUI();
+    }
+    
+    function updateDashboardUI() {
+        // dashboardUIのメソッドを更新
+        if (window.dashboardUI) {
+            window.dashboardUI.viewEventDetails = function(eventId) {
+                if (window.eventModal) {
+                    window.eventModal.show(eventId);
+                }
+            };
+            
+            window.dashboardUI.closeEventModal = function() {
+                if (window.eventModal) {
+                    window.eventModal.close();
+                }
+            };
+        }
     }
 
     // console.log('[EventModal] Module loaded');

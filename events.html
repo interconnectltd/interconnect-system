@@ -434,7 +434,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalEventTitle">イベント詳細</h2>
-                <button class="modal-close" onclick="window.eventModal.close()">
+                <button class="modal-close" id="eventModalCloseBtn">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -442,7 +442,7 @@
                 <!-- Event details will be dynamically inserted here -->
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="window.eventModal.close()">閉じる</button>
+                <button class="btn btn-secondary" id="eventModalFooterCloseBtn">閉じる</button>
                 <button class="btn btn-primary" id="eventActionBtn">参加する</button>
             </div>
         </div>
@@ -492,5 +492,29 @@
     <script src="js/user-dropdown-handler.js"></script>
     <!-- アバターサイズ強制適用 -->
     <script src="js/avatar-size-enforcer.js"></script>
+    <!-- イベントモーダルボタンハンドラー -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // モーダル閉じるボタンのイベントリスナー
+        const closeBtn = document.getElementById('eventModalCloseBtn');
+        const footerCloseBtn = document.getElementById('eventModalFooterCloseBtn');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                if (window.eventModal && window.eventModal.close) {
+                    window.eventModal.close();
+                }
+            });
+        }
+        
+        if (footerCloseBtn) {
+            footerCloseBtn.addEventListener('click', function() {
+                if (window.eventModal && window.eventModal.close) {
+                    window.eventModal.close();
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>

@@ -155,7 +155,7 @@
                     });
                 }
             } catch (error) {
-                console.error('[EventsSupabase] Error loading participant counts:', error);
+                // console.error('[EventsSupabase] Error loading participant counts:', error);
             }
         }
 
@@ -296,7 +296,7 @@
                             // console.log('[EventsSupabase] Calling eventModal.show()');
                             window.eventModal.show(eventId);
                         } else {
-                            console.error('[EventsSupabase] Missing eventId or eventModal');
+                            // console.error('[EventsSupabase] Missing eventId or eventModal');
                         }
                     }
                 });
@@ -321,9 +321,8 @@
                 // ユーザー認証チェック
                 const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
-                    // alert('ログインが必要です');
-                    if (window.showError) {
-                        showError('ログインが必要です');
+                    if (window.showToast) {
+                        window.showToast('ログインが必要です', 'warning');
                     }
                     window.location.href = 'login.html';
                     return;
@@ -355,9 +354,8 @@
 
                         if (updateError) throw updateError;
                     } else {
-                        // alert('既に参加登録済みです');
-                        if (window.showInfo) {
-                            showInfo('既に参加登録済みです');
+                        if (window.showToast) {
+                            window.showToast('既に参加登録済みです', 'info');
                         }
                         button.innerHTML = originalText;
                         button.disabled = false;
@@ -388,9 +386,8 @@
 
             } catch (error) {
                 console.error('[EventsSupabase] Registration error:', error);
-                // alert('申込処理中にエラーが発生しました');
-                if (window.showError) {
-                    showError('申込処理中にエラーが発生しました');
+                if (window.showToast) {
+                    window.showToast('申込処理中にエラーが発生しました', 'error');
                 }
                 button.innerHTML = originalText;
                 button.disabled = false;
@@ -621,7 +618,7 @@
                     .limit(5);
 
                 if (error) {
-                    console.error('[EventsSupabase] Error loading past events:', error);
+                    // console.error('[EventsSupabase] Error loading past events:', error);
                     container.innerHTML = '<p class="error-message">過去のイベントの読み込みに失敗しました</p>';
                     return;
                 }
@@ -649,7 +646,7 @@
                                 <p>参加者：${event.participant_count || 0}名${location ? ' | ' + this.escapeHtml(location) : ''}</p>
                             </div>
                             <div class="past-event-action">
-                                <button class="btn btn-text" onclick="window.eventModal.show('${event.id}')">
+                                <button class="btn btn-text past-event-detail-btn" data-event-id="${event.id}">
                                     詳細を見る
                                 </button>
                             </div>
@@ -658,12 +655,23 @@
                 }).join('');
 
                 container.innerHTML = pastEventsHTML;
+                
+                // 過去イベント詳細ボタンにイベントリスナーを追加
+                const detailButtons = container.querySelectorAll('.past-event-detail-btn');
+                detailButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const eventId = button.dataset.eventId;
+                        if (eventId && window.eventModal) {
+                            window.eventModal.show(eventId);
+                        }
+                    });
+                });
 
                 // 参加者数を取得
                 await this.loadPastEventParticipants(events);
 
             } catch (error) {
-                console.error('[EventsSupabase] Error loading past events:', error);
+                // console.error('[EventsSupabase] Error loading past events:', error);
             }
         }
 
@@ -699,7 +707,7 @@
                     });
                 }
             } catch (error) {
-                console.error('[EventsSupabase] Error loading past event participants:', error);
+                // console.error('[EventsSupabase] Error loading past event participants:', error);
             }
         }
     }

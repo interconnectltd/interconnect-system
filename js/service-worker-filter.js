@@ -25,7 +25,7 @@
         return filterPatterns.some(pattern => pattern.test(message));
     }
 
-    // console.log = function(...args) {
+    console.log = function(...args) {
         if (!shouldFilter(args)) {
             originalLog.apply(console, args);
         }
