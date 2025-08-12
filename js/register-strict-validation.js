@@ -227,8 +227,28 @@
     
     // リアルタイム文字数カウンターの更新
     function updateCharCounter(textarea) {
-        const countElement = textarea.parentElement.querySelector('.char-count span');
-        if (!countElement) return;
+        // IDベースでカウント要素を特定（より確実）
+        const idMap = {
+            'revenue-details': 'revenue-count',
+            'hr-details': 'hr-count',
+            'dx-details': 'dx-count',
+            'strategy-details': 'strategy-count',
+            'skills-pr': 'skills-pr-count',
+            'interests-details': 'interests-details-count'
+        };
+        
+        const countId = idMap[textarea.id];
+        let countElement = countId ? document.getElementById(countId) : null;
+        
+        if (!countElement) {
+            // フォールバック: 親要素から探す
+            const countSpan = textarea.parentElement.querySelector('.char-count span');
+            if (countSpan) {
+                countElement = countSpan;
+            } else {
+                return;
+            }
+        }
         
         const currentLength = textarea.value.trim().length;
         const minLength = parseInt(textarea.getAttribute('minlength') || '0');
@@ -236,11 +256,13 @@
         countElement.textContent = currentLength;
         
         // 文字数に応じてスタイルを変更
-        const charCountElement = countElement.parentElement;
-        if (currentLength >= minLength) {
-            charCountElement.style.color = '#10b981'; // 緑
-        } else {
-            charCountElement.style.color = '#ef4444'; // 赤
+        const charCountElement = countElement.closest('.char-count');
+        if (charCountElement) {
+            if (currentLength >= minLength) {
+                charCountElement.style.color = '#10b981'; // 緑
+            } else {
+                charCountElement.style.color = '#ef4444'; // 赤
+            }
         }
         
         // バリデーション実行
