@@ -55,29 +55,32 @@
 
             if (authError) throw authError;
 
-            // プロフィール作成
+            // プロフィール作成（user_profilesテーブルに保存）
             const { error: profileError } = await supabase
-                .from('profiles')
+                .from('user_profiles')
                 .insert({
                     id: authData.user.id,
                     name: formData.name,
+                    full_name: formData.name, // full_nameも設定
                     company: formData.company,
                     position: formData.position,
                     email: formData.email,
                     phone: formData.phone,
                     line_id: formData.lineId,
-                    budget: formData.budget,
-                    challenges: formData.challenges,
+                    budget_range: formData.budget, // budget_rangeフィールド
+                    bio: formData['skills-pr'] || '', // 自己紹介
                     skills: formData.skills,
                     interests: formData.interests,
                     revenue_details: formData['revenue-details'],
                     hr_details: formData['hr-details'],
                     dx_details: formData['dx-details'],
                     strategy_details: formData['strategy-details'],
-                    skills_pr: formData['skills-pr'],
-                    interests_details: formData['interests-details'],
-                    newsletter: formData.newsletter,
-                    created_at: new Date().toISOString()
+                    industry: formData.industry || '', // 業界
+                    is_active: true, // アクティブフラグ
+                    is_online: true, // オンライン状態
+                    last_login_at: new Date().toISOString(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 });
 
             if (profileError) throw profileError;

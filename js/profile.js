@@ -617,7 +617,7 @@ window.InterConnect.Profile = {
     },
     
     // プロフィールを保存
-    saveProfile: function() {
+    saveProfile: async function() {
         // console.log('saveProfile called');
         
         // フォームからデータを取得
@@ -636,7 +636,35 @@ window.InterConnect.Profile = {
         if (positionInput) window.InterConnect.Profile.profileData.position = positionInput.value;
         if (bioInput) window.InterConnect.Profile.profileData.bio = bioInput.value;
         
-        // localStorageに保存
+        // Supabaseに保存
+        if (window.supabaseClient && this.currentUserId) {
+            try {
+                const updateData = {
+                    name: window.InterConnect.Profile.profileData.name,
+                    full_name: window.InterConnect.Profile.profileData.name, // full_nameも更新
+                    company: window.InterConnect.Profile.profileData.company,
+                    position: window.InterConnect.Profile.profileData.position,
+                    bio: window.InterConnect.Profile.profileData.bio,
+                    updated_at: new Date().toISOString()
+                };
+                
+                const { error } = await window.supabaseClient
+                    .from('user_profiles')
+                    .update(updateData)
+                    .eq('id', this.currentUserId);
+                    
+                if (error) {
+                    console.error('[Profile] Supabase更新エラー:', error);
+                    // エラーでもlocalStorageには保存する
+                } else {
+                    console.log('[Profile] Supabaseに正常に保存されました');
+                }
+            } catch (error) {
+                console.error('[Profile] 保存処理エラー:', error);
+            }
+        }
+        
+        // localStorageにも保存（バックアップ）
         if (window.safeLocalStorage) {
             window.safeLocalStorage.setJSON('userProfile', window.InterConnect.Profile.profileData);
             // console.log('Profile saved to localStorage');
