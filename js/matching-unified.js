@@ -279,6 +279,47 @@
         }
     };
     
+    // スキルの市場価値と希少性マップ
+    const skillValueMap = {
+        // 高価値・高需要スキル（80-100点）
+        'AI・機械学習': { value: 95, rarity: 90, demand: 95 },
+        'ブロックチェーン': { value: 85, rarity: 85, demand: 80 },
+        'データサイエンス': { value: 90, rarity: 80, demand: 90 },
+        'データ分析': { value: 85, rarity: 70, demand: 90 },
+        'ビッグデータ': { value: 85, rarity: 75, demand: 85 },
+        'M&A戦略': { value: 85, rarity: 90, demand: 75 },
+        'IoT': { value: 80, rarity: 75, demand: 80 },
+        'DX推進': { value: 90, rarity: 70, demand: 95 },
+        'サイバーセキュリティ': { value: 85, rarity: 80, demand: 90 },
+        
+        // 中価値・安定需要スキル（60-79点）
+        'デジタルマーケティング': { value: 75, rarity: 60, demand: 85 },
+        'プロジェクト管理': { value: 70, rarity: 50, demand: 80 },
+        'プロダクトマネジメント': { value: 75, rarity: 65, demand: 80 },
+        'システム設計': { value: 75, rarity: 65, demand: 75 },
+        'UI/UX': { value: 70, rarity: 60, demand: 75 },
+        'ブランディング': { value: 70, rarity: 55, demand: 75 },
+        'SNSマーケティング': { value: 65, rarity: 50, demand: 75 },
+        'SEO/SEM': { value: 65, rarity: 55, demand: 70 },
+        'CRM': { value: 70, rarity: 60, demand: 75 },
+        '事業開発': { value: 75, rarity: 65, demand: 75 },
+        '経営戦略立案': { value: 75, rarity: 70, demand: 70 },
+        '人材開発': { value: 70, rarity: 60, demand: 75 },
+        '組織開発': { value: 70, rarity: 65, demand: 70 },
+        
+        // 基礎スキル（40-59点）
+        'コミュニケーション': { value: 50, rarity: 30, demand: 70 },
+        'ビジネス': { value: 45, rarity: 25, demand: 65 },
+        'マーケティング': { value: 55, rarity: 40, demand: 65 },
+        'プレゼンテーション': { value: 55, rarity: 40, demand: 60 },
+        'ネゴシエーション': { value: 60, rarity: 50, demand: 65 },
+        'リーダーシップ': { value: 60, rarity: 45, demand: 70 },
+        'チームワーク': { value: 50, rarity: 30, demand: 65 },
+        
+        // デフォルト値
+        default: { value: 50, rarity: 50, demand: 50 }
+    };
+    
     // マッチングスコア計算関数をグローバルに公開（後で設定）
     window.matchingScoreFix = {
         calculateScore: calculateMatchingScore
@@ -550,6 +591,65 @@
         }
     }
 
+    // スキルの質的評価を計算
+    function calculateSkillQuality(skills) {
+        if (!skills || skills.length === 0) return 0;
+        
+        // 配列でない場合の処理
+        const skillArray = Array.isArray(skills) ? skills : 
+            (typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : []);
+        
+        if (skillArray.length === 0) return 0;
+        
+        let totalValue = 0;
+        let totalRarity = 0;
+        let totalDemand = 0;
+        let count = 0;
+        
+        for (const skill of skillArray) {
+            const skillData = skillValueMap[skill] || skillValueMap.default;
+            totalValue += skillData.value;
+            totalRarity += skillData.rarity;
+            totalDemand += skillData.demand;
+            count++;
+        }
+        
+        if (count === 0) return 0;
+        
+        const avgValue = totalValue / count;
+        const avgRarity = totalRarity / count;
+        const avgDemand = totalDemand / count;
+        
+        // 加重平均（需要を重視）
+        return Math.round(avgValue * 0.3 + avgRarity * 0.2 + avgDemand * 0.5);
+    }
+    
+    // 学習機会スコアを計算（相手から学べる価値）
+    function calculateLearningOpportunity(learner, teacher) {
+        const learnerSkills = Array.isArray(learner.skills) ? learner.skills : 
+            (learner.skills ? learner.skills.split(',').map(s => s.trim()) : []);
+        const teacherSkills = Array.isArray(teacher.skills) ? teacher.skills : 
+            (teacher.skills ? teacher.skills.split(',').map(s => s.trim()) : []);
+        
+        // 相手が持っていて自分が持っていないスキル
+        const newSkills = teacherSkills.filter(s => !learnerSkills.includes(s));
+        
+        if (newSkills.length === 0) return 0;
+        
+        // スキルの価値で重み付け
+        let totalValue = 0;
+        for (const skill of newSkills) {
+            const skillData = skillValueMap[skill] || skillValueMap.default;
+            totalValue += skillData.value;
+        }
+        
+        // 学習可能なスキル数と価値のバランス
+        const avgValue = totalValue / newSkills.length;
+        const countBonus = Math.min(newSkills.length * 5, 30); // 最大30点
+        
+        return Math.min(100, avgValue + countBonus);
+    }
+    
     // スキル-課題マッチング計算（新規追加）
     function calculateSkillChallengeMatch(userA, userB) {
         const result = {
@@ -643,13 +743,35 @@
         // バランススコア（双方向の価値が均等なほど高い）
         result.balance = 100 - Math.abs(result.aHelpsB - result.bHelpsA);
         
+        // スキルの質的評価を追加
+        const aSkillQuality = calculateSkillQuality(aSkills);
+        const bSkillQuality = calculateSkillQuality(bSkills);
+        
+        // 学習機会の評価を追加
+        const aLearningOpp = calculateLearningOpportunity(userA, userB);
+        const bLearningOpp = calculateLearningOpportunity(userB, userA);
+        
         // 総合スコア（相互補完性を重視）
         const average = (result.aHelpsB + result.bHelpsA) / 2;
         const hasComplementarity = result.aHelpsB > 0 && result.bHelpsA > 0;
         
+        // 質的評価を加味した最終スコア
+        const qualityBonus = ((aSkillQuality + bSkillQuality) / 200) * 20; // 最大20点のボーナス
+        const learningBonus = ((aLearningOpp + bLearningOpp) / 200) * 10; // 最大10点のボーナス
+        
         result.totalScore = hasComplementarity ? 
-            (average * 0.7 + result.balance * 0.3) : 
-            average * 0.5; // 一方向のみの場合は減点
+            (average * 0.6 + result.balance * 0.2 + qualityBonus + learningBonus) : 
+            (average * 0.4 + qualityBonus + learningBonus); // 一方向のみの場合
+        
+        // 追加情報を結果に含める
+        result.skillQuality = {
+            a: aSkillQuality,
+            b: bSkillQuality
+        };
+        result.learningOpportunity = {
+            aFromB: aLearningOpp,
+            bFromA: bLearningOpp
+        };
         
         return result;
     }
@@ -967,6 +1089,14 @@
                                 <span class="match-percent" style="color: #4A90E2;">${detail.matchRate}%マッチ</span>
                             </div>
                         `).join('')}
+                    </div>
+                ` : ''}
+                ${complementarity.learningOpportunity && (complementarity.learningOpportunity.aFromB > 30 || complementarity.learningOpportunity.bFromA > 30) ? `
+                    <div class="learning-opportunity" style="margin-top: 6px; padding: 4px; background: #fff8e1; border-radius: 4px;">
+                        <span style="font-size: 10px; color: #f57c00;">
+                            <i class="fas fa-graduation-cap" style="margin-right: 3px;"></i>
+                            学習機会: ${Math.max(complementarity.learningOpportunity.aFromB, complementarity.learningOpportunity.bFromA)}%
+                        </span>
                     </div>
                 ` : ''}
             </div>
@@ -2083,6 +2213,8 @@
     window.matchingScoreFix.calculateSkillScore = calculateSkillScore;
     window.matchingScoreFix.calculateInterestScore = calculateInterestScore;
     window.matchingScoreFix.calculateSkillChallengeMatch = calculateSkillChallengeMatch;
+    window.matchingScoreFix.calculateSkillQuality = calculateSkillQuality;
+    window.matchingScoreFix.calculateLearningOpportunity = calculateLearningOpportunity;
 
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
