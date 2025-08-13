@@ -99,7 +99,7 @@
                 .profile-detail-header {
                     position: relative;
                     padding: 40px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
                     color: white;
                     text-align: center;
                     border-radius: 16px 16px 0 0;
@@ -174,7 +174,7 @@
                 }
                 
                 .profile-detail-section-title i {
-                    color: #667eea;
+                    color: #4A90E2;
                 }
                 
                 .profile-detail-grid {
@@ -271,14 +271,14 @@
                 }
                 
                 .profile-detail-btn-primary {
-                    background: #667eea;
+                    background: #4A90E2;
                     color: white;
                 }
                 
                 .profile-detail-btn-primary:hover {
-                    background: #5a67d8;
+                    background: #357ABD;
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
                 }
                 
                 .profile-detail-btn-secondary {
@@ -297,7 +297,7 @@
                 
                 .profile-detail-spinner {
                     border: 4px solid #f3f3f3;
-                    border-top: 4px solid #667eea;
+                    border-top: 4px solid #4A90E2;
                     border-radius: 50%;
                     width: 60px;
                     height: 60px;
@@ -480,7 +480,7 @@
                 <!-- ヘッダー -->
                 <div class="profile-detail-header">
                     <button class="profile-detail-close" onclick="window.profileDetailModal.close()">×</button>
-                    <img src="${profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}&background=667eea&color=fff&size=240`}" 
+                    <img src="${profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}&background=4A90E2&color=fff&size=240`}" 
                          alt="${profile.name}" 
                          class="profile-detail-avatar">
                     <h2 class="profile-detail-name">${profile.name || '名前未設定'}</h2>
@@ -725,8 +725,8 @@
             ];
             
             // データポリゴン
-            ctx.fillStyle = 'rgba(102, 126, 234, 0.3)';
-            ctx.strokeStyle = '#667eea';
+            ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
+            ctx.strokeStyle = '#4A90E2';
             ctx.lineWidth = 2;
             ctx.beginPath();
             
