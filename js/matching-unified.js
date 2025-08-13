@@ -24,8 +24,12 @@
     // グローバル変数
     let currentUserId = null;
     let matchingUsers = [];
+    let currentPage = 1;
+    const itemsPerPage = 12;
     let filters = {
         industry: '',
+        location: '',
+        interest: '',
         skills: [],
         interests: [],
         sortBy: 'score'
@@ -80,7 +84,34 @@
             });
         }
 
-        // フィルター
+        // フィルター - 業界
+        const industrySelect = document.querySelector('[name="industry"]');
+        if (industrySelect) {
+            industrySelect.addEventListener('change', (e) => {
+                filters.industry = e.target.value;
+                displayMatchingUsers();
+            });
+        }
+
+        // フィルター - 地域
+        const locationSelect = document.querySelector('[name="location"]');
+        if (locationSelect) {
+            locationSelect.addEventListener('change', (e) => {
+                filters.location = e.target.value;
+                displayMatchingUsers();
+            });
+        }
+
+        // フィルター - 興味・関心
+        const interestSelect = document.querySelector('[name="interest"]');
+        if (interestSelect) {
+            interestSelect.addEventListener('change', (e) => {
+                filters.interest = e.target.value;
+                displayMatchingUsers();
+            });
+        }
+
+        // フィルター（その他の入力フィールド用）
         document.querySelectorAll('.filter-option input').forEach(input => {
             input.addEventListener('change', updateFilters);
         });
@@ -308,29 +339,44 @@
                     <p>フィルター条件を変更してお試しください</p>
                 </div>
             `;
+            updatePagination(0);
             return;
         }
+
+        // ページネーション処理
+        const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+        // 現在のページが総ページ数を超えている場合は1ページ目にリセット
+        if (currentPage > totalPages) {
+            currentPage = 1;
+        }
+        
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
         // マッチングカードの生成
         container.innerHTML = `
             <div class="matching-grid">
-                ${filteredUsers.map(user => createMatchingCard(user)).join('')}
+                ${paginatedUsers.map(user => createMatchingCard(user)).join('')}
             </div>
         `;
+
+        // ページネーションUI更新
+        updatePagination(filteredUsers.length);
 
         // カード内のイベントリスナー設定
         setupCardEventListeners();
         
         // レーダーチャートを描画（少し遅延させて確実にCanvasが準備されるようにする）
         setTimeout(() => {
-            // console.log('[MatchingUnified] レーダーチャート描画を開始します。ユーザー数:', filteredUsers.length);
+            // console.log('[MatchingUnified] レーダーチャート描画を開始します。ユーザー数:', paginatedUsers.length);
             // 全てのCanvas要素が存在するか確認
             const canvasElements = container.querySelectorAll('canvas[id^="radar-"]');
             // console.log('[MatchingUnified] Canvas要素数:', canvasElements.length);
             
-            filteredUsers.forEach((user, index) => {
+            paginatedUsers.forEach((user, index) => {
                 const userId = user.id;
-                // console.log(`[MatchingUnified] ユーザー ${index + 1}/${filteredUsers.length} のレーダーチャート描画:`, userId);
+                // console.log(`[MatchingUnified] ユーザー ${index + 1}/${paginatedUsers.length} のレーダーチャート描画:`, userId);
                 drawRadarChartForUser(user);
             });
         }, 300);
@@ -467,19 +513,24 @@
             // プロフィール閲覧履歴を記録
             await recordProfileView(userId);
 
-            // プロフィールデータ取得
-            const { data: users, error } = await window.supabaseClient
-                .from('user_profiles')
-                .select('*');
-            
-            if (error) throw error;
-            
-            // idでフィルタリング（user_profilesテーブルではidカラムを使用）
-            const user = users.find(u => u.id === userId);
-            if (!user) throw new Error('ユーザーが見つかりません');
+            // ProfileDetailModalを使用（高機能版）
+            if (window.profileDetailModal && window.profileDetailModal.show) {
+                window.profileDetailModal.show(userId);
+            } else {
+                // フォールバック: 従来のモーダル表示
+                const { data: users, error } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                // idでフィルタリング（user_profilesテーブルではidカラムを使用）
+                const user = users.find(u => u.id === userId);
+                if (!user) throw new Error('ユーザーが見つかりません');
 
-            // モーダルで表示
-            showProfileModal(user);
+                // モーダルで表示
+                showProfileModal(user);
+            }
 
         } catch (error) {
             console.error('[MatchingUnified] プロフィール表示エラー:', error);
@@ -765,8 +816,55 @@
     function filterUsers(users) {
         return users.filter(user => {
             // 業界フィルター
-            if (filters.industry && user.industry !== filters.industry) {
-                return false;
+            if (filters.industry && filters.industry !== '') {
+                // 業界の値をマッピング
+                const industryMap = {
+                    'tech': 'IT・テクノロジー',
+                    'finance': '金融',
+                    'healthcare': '医療・ヘルスケア',
+                    'retail': '小売・流通'
+                };
+                const filterIndustry = industryMap[filters.industry] || filters.industry;
+                if (user.industry !== filterIndustry && user.industry !== filters.industry) {
+                    return false;
+                }
+            }
+
+            // 地域フィルター
+            if (filters.location && filters.location !== '') {
+                // 地域の値をマッピング
+                const locationMap = {
+                    'tokyo': '東京',
+                    'osaka': '大阪',
+                    'nagoya': '名古屋',
+                    'fukuoka': '福岡'
+                };
+                const filterLocation = locationMap[filters.location] || filters.location;
+                if (user.location !== filterLocation && user.location !== filters.location) {
+                    return false;
+                }
+            }
+
+            // 興味・関心フィルター
+            if (filters.interest && filters.interest !== '') {
+                // 興味の値をマッピング
+                const interestMap = {
+                    'collaboration': '協業',
+                    'investment': '投資',
+                    'mentoring': 'メンタリング',
+                    'networking': 'ネットワーキング'
+                };
+                const filterInterest = interestMap[filters.interest] || filters.interest;
+                
+                // user.interestsの配列にfilterInterestが含まれているかチェック
+                if (user.interests && Array.isArray(user.interests)) {
+                    const hasInterest = user.interests.some(interest => 
+                        interest === filterInterest || interest === filters.interest
+                    );
+                    if (!hasInterest) return false;
+                } else {
+                    return false; // interestsがない場合は除外
+                }
             }
 
             // スキルフィルター
@@ -777,7 +875,7 @@
                 if (!hasSkill) return false;
             }
 
-            // 興味フィルター
+            // 興味フィルター（複数選択）
             if (filters.interests.length > 0 && user.interests) {
                 const hasInterest = filters.interests.some(interest => 
                     user.interests.includes(interest)
@@ -810,14 +908,16 @@
 
     // フィルター更新
     function updateFilters() {
-        // 実装予定
+        // ページを1ページ目にリセット
+        currentPage = 1;
         displayMatchingUsers();
     }
 
     // 検索処理
     function handleSearch() {
-        // 実装予定
-        loadMatchingCandidates();
+        // ページを1ページ目にリセット
+        currentPage = 1;
+        displayMatchingUsers();
     }
 
     // 結果カウント更新
@@ -825,6 +925,64 @@
         const countElement = document.querySelector('.results-count');
         if (countElement) {
             countElement.textContent = `${count}件のマッチング候補`;
+        }
+    }
+
+    // ページネーションUI更新
+    function updatePagination(totalItems) {
+        const pagination = document.querySelector('.pagination');
+        if (!pagination) return;
+
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        // 前へボタン
+        const prevBtn = pagination.querySelector('.btn-outline:first-child');
+        if (prevBtn) {
+            prevBtn.disabled = currentPage <= 1;
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayMatchingUsers();
+                }
+            };
+        }
+
+        // 次へボタン
+        const nextBtn = pagination.querySelector('.btn-outline:last-child');
+        if (nextBtn) {
+            nextBtn.disabled = currentPage >= totalPages;
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayMatchingUsers();
+                }
+            };
+        }
+
+        // ページ番号
+        const pageNumbers = pagination.querySelector('.page-numbers');
+        if (pageNumbers) {
+            pageNumbers.innerHTML = '';
+            
+            // 表示するページ番号の範囲を計算
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            // 開始ページを調整
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => {
+                    currentPage = i;
+                    displayMatchingUsers();
+                };
+                pageNumbers.appendChild(pageBtn);
+            }
         }
     }
 
@@ -948,6 +1106,68 @@
         }, 3000);
     }
 
+    // 経験スコアを計算（実データベース）
+    function calculateExperienceScore(user) {
+        let score = 50; // 基準スコア
+        
+        // 役職による加点
+        if (user.position) {
+            const positionKeywords = ['CEO', '代表', '社長', 'CTO', 'CFO', '執行役員', '取締役'];
+            if (positionKeywords.some(keyword => user.position.includes(keyword))) {
+                score += 30;
+            } else if (user.position.includes('部長') || user.position.includes('マネージャー')) {
+                score += 20;
+            } else if (user.position.includes('リーダー') || user.position.includes('主任')) {
+                score += 10;
+            }
+        }
+        
+        // スキル数による加点
+        if (user.skills && user.skills.length > 5) {
+            score += 10;
+        }
+        
+        // 事業課題数による加点（経験の幅）
+        if (user.business_challenges && user.business_challenges.length > 3) {
+            score += 10;
+        }
+        
+        return Math.min(score, 100);
+    }
+    
+    // 活動スコアを計算（実データベース）
+    function calculateActivityScore(user) {
+        let score = 40; // 基準スコア
+        
+        // 最終ログイン時間（もしあれば）
+        if (user.last_login) {
+            const lastLogin = new Date(user.last_login);
+            const now = new Date();
+            const daysSinceLogin = (now - lastLogin) / (1000 * 60 * 60 * 24);
+            
+            if (daysSinceLogin < 1) {
+                score += 40; // 24時間以内
+            } else if (daysSinceLogin < 7) {
+                score += 30; // 1週間以内
+            } else if (daysSinceLogin < 30) {
+                score += 20; // 1ヶ月以内
+            } else {
+                score += 10; // それ以上
+            }
+        }
+        
+        // プロフィール完成度による加点
+        if (user.bio && user.bio.length > 50) {
+            score += 10;
+        }
+        
+        if (user.picture_url) {
+            score += 10;
+        }
+        
+        return Math.min(score, 100);
+    }
+
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
         const userId = user.id;
@@ -1035,10 +1255,10 @@
         // データポイントを計算
         const values = [
             Math.min((user.skills?.length || 0) * 20, 100), // スキル
-            Math.random() * 80 + 20, // 経験（ダミー）
+            calculateExperienceScore(user), // 経験（実データ化）
             user.industry ? 80 : 40, // 業界
             user.location ? 80 : 40, // 地域
-            Math.random() * 80 + 20, // 活動（ダミー）
+            calculateActivityScore(user), // 活動（実データ化）
             Math.min((user.interests?.length || 0) * 25, 100) // 興味
         ];
         
