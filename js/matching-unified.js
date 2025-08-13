@@ -469,6 +469,7 @@
                 .select(`
                     id,
                     name,
+                    title,
                     position,
                     company,
                     location,
@@ -477,6 +478,7 @@
                     interests,
                     business_challenges,
                     picture_url,
+                    avatar_url,
                     last_login,
                     bio,
                     email,
@@ -1976,40 +1978,59 @@
 
     // 経験スコアを計算（実データベース）
     function calculateExperienceScore(user) {
-        let score = 50; // 基準スコア
+        let score = 30; // 基準スコア（差別化のため低めに設定）
         
         // 役職・肩書きによる加点（title フィールドを使用）
         if (user.title || user.position) {
             const titleText = user.title || user.position || '';
             const seniorKeywords = ['CEO', '代表', '社長', 'CTO', 'CFO', '執行役員', '取締役', 'founder', 'co-founder'];
-            const middleKeywords = ['部長', 'マネージャー', 'manager', 'director', 'lead'];
-            const juniorKeywords = ['リーダー', '主任', 'senior', 'チーフ'];
+            const middleKeywords = ['部長', 'マネージャー', 'manager', 'director', 'lead', 'ディレクター'];
+            const juniorKeywords = ['リーダー', '主任', 'senior', 'チーフ', 'スペシャリスト'];
             
             if (seniorKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
-                score += 30;
+                score += 35;
             } else if (middleKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
-                score += 20;
+                score += 25;
             } else if (juniorKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
-                score += 10;
+                score += 15;
             } else if (titleText.length > 0) {
-                score += 5; // 何らかの役職がある
+                score += 8; // 何らかの役職がある
             }
+        } else {
+            // 役職が設定されていない場合のペナルティ
+            score -= 5;
         }
         
         // スキルの深さによる加点（幅広い経験）
         if (user.skills && Array.isArray(user.skills)) {
-            if (user.skills.length > 7) {
+            if (user.skills.length >= 10) {
+                score += 20; // エキスパートレベル
+            } else if (user.skills.length >= 7) {
                 score += 15;
-            } else if (user.skills.length > 5) {
+            } else if (user.skills.length >= 5) {
                 score += 10;
-            } else if (user.skills.length > 3) {
+            } else if (user.skills.length >= 3) {
                 score += 5;
+            } else if (user.skills.length > 0) {
+                score += 3;
             }
         }
         
         // 会社情報による加点（実務経験の証）
-        if (user.company) {
+        if (user.company && user.company.length > 10) {
+            score += 10; // 詳細な会社情報
+        } else if (user.company && user.company.length > 0) {
             score += 5;
+        }
+        
+        // プロフィール完成度ボーナス
+        if (user.bio && user.bio.length > 50) {
+            score += 5;
+        }
+        
+        // 複合評価（役職と会社の両方がある）
+        if ((user.title || user.position) && user.company) {
+            score += 5; // 信頼性ボーナス
         }
         
         return Math.min(score, 100);
@@ -2077,21 +2098,39 @@
     
     // 業界スコアを計算（公平版）
     function calculateIndustryScore(user) {
-        if (!user.industry) return 40; // 業界未設定の基礎スコア
+        if (!user.industry) return 35; // 業界未設定の基礎スコア
         
-        let score = 60; // 業界設定済みの基礎スコア
+        let score = 45; // 業界設定済みの基礎スコア
         
-        // 業界情報の詳細度による加点（どの業界でも平等）
-        if (user.industry && user.industry.length > 0) {
-            score += 20; // 業界を明記している
+        // 業界情報の詳細度による加点
+        if (user.industry && user.industry.length > 15) {
+            score += 20; // 詳細な業界情報（例：IT・テクノロジー・SaaS）
+        } else if (user.industry && user.industry.length > 8) {
+            score += 15; // 標準的な業界情報（例：IT・テクノロジー）
+        } else if (user.industry && user.industry.length > 0) {
+            score += 10; // 簡潔な業界情報（例：IT）
         }
         
-        // 業界に関連するスキルの保有度
-        if (user.skills && Array.isArray(user.skills) && user.skills.length > 0) {
-            // 業界に関わらず、専門スキルの保有を評価
-            const hasSpecializedSkills = user.skills.length >= 3;
-            if (hasSpecializedSkills) {
-                score += 20;
+        // 業界経験の深さを評価（役職との相関）
+        if (user.industry && (user.title || user.position)) {
+            const titleText = (user.title || user.position || '').toLowerCase();
+            if (titleText.includes('ceo') || titleText.includes('代表') || titleText.includes('社長')) {
+                score += 20; // 業界のリーダー
+            } else if (titleText.includes('部長') || titleText.includes('manager')) {
+                score += 15; // 業界の中堅
+            } else if (titleText.length > 0) {
+                score += 10; // 業界の実務者
+            }
+        }
+        
+        // 業界に関連するスキルの深さ
+        if (user.industry && user.skills && Array.isArray(user.skills)) {
+            if (user.skills.length >= 7) {
+                score += 15; // 業界エキスパート
+            } else if (user.skills.length >= 5) {
+                score += 10; // 業界スペシャリスト
+            } else if (user.skills.length >= 3) {
+                score += 5; // 業界プロフェッショナル
             }
         }
         
@@ -2102,17 +2141,25 @@
     function calculateLocationScore(user) {
         if (!user.location) return 40; // 地域未設定の基礎スコア
         
-        let score = 60; // 地域設定済みの基礎スコア
+        let score = 50; // 地域設定済みの基礎スコア
         
-        // 地域情報の明確さによる加点（どの地域でも平等）
-        if (user.location && user.location.length > 0) {
-            score += 20; // 地域を明記している
+        // 地域情報の詳細度による加点
+        if (user.location && user.location.length > 10) {
+            score += 25; // 詳細な地域情報（例：東京都渋谷区）
+        } else if (user.location && user.location.length > 5) {
+            score += 20; // 標準的な地域情報（例：東京都）
+        } else if (user.location && user.location.length > 0) {
+            score += 15; // 簡潔な地域情報（例：東京）
         }
         
-        // オンライン対応可能性を考慮
-        // 全ての地域を平等に評価し、リモート時代を反映
-        if (user.location) {
-            score += 20; // どの地域でも活動可能
+        // プロフィール充実度との相関
+        if (user.location && user.company) {
+            score += 15; // 地域と会社の両方が設定されている
+        }
+        
+        // ビジネス活動の広がりを評価
+        if (user.location && user.skills && user.skills.length > 3) {
+            score += 10; // 地域とスキルの両方が充実
         }
         
         return Math.min(score, 100);
@@ -2356,6 +2403,20 @@
             calculateActivityScore(user), // 活動（実データ：最大100点）
             calculateInterestScore(user) // 興味（質的評価：最大100点）
         ];
+        
+        // デバッグ用：各ユーザーのスコアを確認
+        console.log(`[RadarChart] ${user.name || 'Unknown'}のスコア:`, {
+            name: user.name,
+            title: user.title,
+            position: user.position,
+            skills: user.skills?.length || 0,
+            スキル: values[0],
+            経験: values[1],
+            業界: values[2],
+            地域: values[3],
+            活動: values[4],
+            興味: values[5]
+        });
         
         // データポリゴンを描画
         ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
