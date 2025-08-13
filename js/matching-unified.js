@@ -41,6 +41,244 @@
     // Canvas再試行カウントを管理するWeakMap
     const canvasRetryCount = new WeakMap();
     
+    // スキル-課題マッピング定義
+    const challengeSkillMapping = {
+        // ============ 売上・収益の課題 ============
+        '新規顧客獲得': {
+            requiredSkills: [
+                'デジタルマーケティング',
+                'SNSマーケティング', 
+                'SEO/SEM',
+                'コンテンツマーケティング',
+                'ブランディング',
+                'PR・広報'
+            ],
+            weight: 30,
+            keywords: ['顧客', '獲得', '集客', '新規開拓', 'リード']
+        },
+        
+        '既存顧客単価': {
+            requiredSkills: [
+                'CRM',
+                'データ分析',
+                'マーケティング分析',
+                '商品企画',
+                'サービス開発',
+                'プロダクトマネジメント'
+            ],
+            weight: 25,
+            keywords: ['単価', 'アップセル', 'クロスセル', 'LTV']
+        },
+        
+        '市場シェア拡大': {
+            requiredSkills: [
+                '市場開拓',
+                '事業開発',
+                '経営戦略立案',
+                'M&A戦略',
+                '事業提携・アライアンス'
+            ],
+            weight: 30,
+            keywords: ['シェア', '拡大', '競争', '市場']
+        },
+        
+        'リピート率向上': {
+            requiredSkills: [
+                'CRM',
+                'カスタマーサクセス',
+                'データ分析',
+                'マーケティング分析',
+                'UXデザイン'
+            ],
+            weight: 25,
+            keywords: ['リピート', 'リテンション', '継続率', '顧客満足']
+        },
+        
+        '新規事業開発': {
+            requiredSkills: [
+                '新規事業開発',
+                '事業計画策定',
+                'ビジネスモデル構築',
+                '市場開拓',
+                'プロダクトマネジメント'
+            ],
+            weight: 35,
+            keywords: ['新規事業', '新サービス', 'イノベーション', '事業開発']
+        },
+        
+        // ============ 組織・人材の課題 ============
+        '人材採用': {
+            requiredSkills: [
+                '人材開発',
+                '組織開発',
+                '採用',
+                'HRテック',
+                '評価制度'
+            ],
+            weight: 25,
+            keywords: ['採用', '人材', 'リクルート', '獲得']
+        },
+        
+        '人材育成': {
+            requiredSkills: [
+                '人材開発',
+                '組織開発',
+                'コーチング',
+                'マネジメント',
+                '研修設計'
+            ],
+            weight: 20,
+            keywords: ['育成', '教育', 'スキルアップ', '研修']
+        },
+        
+        '組織文化': {
+            requiredSkills: [
+                '組織変革',
+                '組織開発',
+                'ビジョン構築',
+                'チームビルディング',
+                'ファシリテーション'
+            ],
+            weight: 25,
+            keywords: ['文化', 'カルチャー', '風土', '組織']
+        },
+        
+        '離職防止': {
+            requiredSkills: [
+                '組織文化',
+                '評価制度',
+                '人事制度',
+                'エンゲージメント',
+                '福利厚生設計'
+            ],
+            weight: 25,
+            keywords: ['離職', '定着', 'retention', 'エンゲージメント']
+        },
+        
+        '評価制度': {
+            requiredSkills: [
+                '人事評価制度',
+                '組織開発',
+                'KPI設計',
+                'データ分析',
+                '目標管理'
+            ],
+            weight: 20,
+            keywords: ['評価', '人事制度', 'KPI', '目標']
+        },
+        
+        // ============ 業務効率・DXの課題 ============
+        'DX推進': {
+            requiredSkills: [
+                'DX推進',
+                'AI・機械学習',
+                'IoT',
+                'クラウド',
+                'ビッグデータ',
+                'システム設計'
+            ],
+            weight: 35,
+            keywords: ['DX', 'デジタル', '変革', 'transformation']
+        },
+        
+        '業務自動化': {
+            requiredSkills: [
+                'RPA',
+                'AI・機械学習',
+                'システム設計',
+                'プロセス改善',
+                'BPR'
+            ],
+            weight: 30,
+            keywords: ['自動化', 'RPA', '効率化', 'automation']
+        },
+        
+        'システム統合': {
+            requiredSkills: [
+                'システム設計',
+                'クラウド',
+                'API開発',
+                'データベース設計',
+                'セキュリティ'
+            ],
+            weight: 25,
+            keywords: ['システム', '統合', 'integration', 'API']
+        },
+        
+        'データ活用': {
+            requiredSkills: [
+                'ビッグデータ',
+                'データ分析',
+                'BI',
+                'データサイエンス',
+                'マーケティング分析'
+            ],
+            weight: 30,
+            keywords: ['データ', '分析', 'analytics', 'BI']
+        },
+        
+        'セキュリティ': {
+            requiredSkills: [
+                'サイバーセキュリティ',
+                'セキュリティ',
+                'リスクマネジメント',
+                'コンプライアンス',
+                'ISMS'
+            ],
+            weight: 25,
+            keywords: ['セキュリティ', 'リスク', 'セキュア', '情報保護']
+        },
+        
+        // ============ 事業戦略・競争力の課題 ============
+        '差別化戦略': {
+            requiredSkills: [
+                '経営戦略立案',
+                'ブランディング',
+                'マーケティング戦略',
+                'プロダクト戦略',
+                '競合分析'
+            ],
+            weight: 30,
+            keywords: ['差別化', '競合', '優位性', 'ポジショニング']
+        },
+        
+        'ブランディング': {
+            requiredSkills: [
+                'ブランディング',
+                'PR・広報',
+                'マーケティング',
+                'コンテンツマーケティング',
+                'デザイン思考'
+            ],
+            weight: 25,
+            keywords: ['ブランド', 'ブランディング', '認知', 'イメージ']
+        },
+        
+        '海外展開': {
+            requiredSkills: [
+                '海外事業',
+                'グローバル展開',
+                '国際ビジネス',
+                '多言語対応',
+                'クロスカルチャー'
+            ],
+            weight: 30,
+            keywords: ['海外', 'グローバル', '国際', 'export']
+        },
+        
+        'パートナーシップ': {
+            requiredSkills: [
+                '事業提携・アライアンス',
+                'パートナーシップ構築',
+                'ネゴシエーション',
+                '契約交渉',
+                'リレーション構築'
+            ],
+            weight: 25,
+            keywords: ['提携', 'パートナー', 'アライアンス', '協業']
+        }
+    };
+    
     // マッチングスコア計算関数をグローバルに公開（後で設定）
     window.matchingScoreFix = {
         calculateScore: calculateMatchingScore
@@ -312,40 +550,150 @@
         }
     }
 
+    // スキル-課題マッチング計算（新規追加）
+    function calculateSkillChallengeMatch(userA, userB) {
+        const result = {
+            aHelpsB: 0,      // AがBを助けられる度合い
+            bHelpsA: 0,      // BがAを助けられる度合い
+            details: [],     // 詳細な補完関係
+            totalScore: 0,   // 総合スコア
+            balance: 0       // バランススコア
+        };
+        
+        // Aのスキル、Bの課題を抽出
+        const aSkills = Array.isArray(userA.skills) ? userA.skills : 
+            (userA.skills ? userA.skills.split(',').map(s => s.trim()) : []);
+        const bChallenges = Array.isArray(userB.business_challenges) ? 
+            userB.business_challenges : 
+            (userB.business_challenges ? userB.business_challenges.split(',').map(s => s.trim()) : []);
+        
+        // Bのスキル、Aの課題を抽出
+        const bSkills = Array.isArray(userB.skills) ? userB.skills : 
+            (userB.skills ? userB.skills.split(',').map(s => s.trim()) : []);
+        const aChallenges = Array.isArray(userA.business_challenges) ? 
+            userA.business_challenges : 
+            (userA.business_challenges ? userA.business_challenges.split(',').map(s => s.trim()) : []);
+        
+        // A → B の支援度計算
+        let aHelpsBScore = 0;
+        let aHelpsBCount = 0;
+        
+        for (const challenge of bChallenges) {
+            if (challengeSkillMapping[challenge]) {
+                const mapping = challengeSkillMapping[challenge];
+                const requiredSkills = mapping.requiredSkills;
+                const matchedSkills = aSkills.filter(skill => 
+                    requiredSkills.includes(skill)
+                );
+                
+                if (matchedSkills.length > 0) {
+                    const matchRate = matchedSkills.length / requiredSkills.length;
+                    const weightedScore = matchRate * mapping.weight;
+                    aHelpsBScore += weightedScore;
+                    aHelpsBCount++;
+                    
+                    result.details.push({
+                        direction: 'A→B',
+                        challenge: challenge,
+                        solver: userA.name || 'ユーザーA',
+                        matchedSkills: matchedSkills,
+                        matchRate: Math.round(matchRate * 100),
+                        impact: mapping.weight
+                    });
+                }
+            }
+        }
+        
+        // B → A の支援度計算
+        let bHelpsAScore = 0;
+        let bHelpsACount = 0;
+        
+        for (const challenge of aChallenges) {
+            if (challengeSkillMapping[challenge]) {
+                const mapping = challengeSkillMapping[challenge];
+                const requiredSkills = mapping.requiredSkills;
+                const matchedSkills = bSkills.filter(skill => 
+                    requiredSkills.includes(skill)
+                );
+                
+                if (matchedSkills.length > 0) {
+                    const matchRate = matchedSkills.length / requiredSkills.length;
+                    const weightedScore = matchRate * mapping.weight;
+                    bHelpsAScore += weightedScore;
+                    bHelpsACount++;
+                    
+                    result.details.push({
+                        direction: 'B→A',
+                        challenge: challenge,
+                        solver: userB.name || 'ユーザーB',
+                        matchedSkills: matchedSkills,
+                        matchRate: Math.round(matchRate * 100),
+                        impact: mapping.weight
+                    });
+                }
+            }
+        }
+        
+        // 正規化（0-100スケール）
+        result.aHelpsB = aHelpsBCount > 0 ? 
+            Math.min(100, (aHelpsBScore / aHelpsBCount) * 3) : 0;
+        result.bHelpsA = bHelpsACount > 0 ? 
+            Math.min(100, (bHelpsAScore / bHelpsACount) * 3) : 0;
+        
+        // バランススコア（双方向の価値が均等なほど高い）
+        result.balance = 100 - Math.abs(result.aHelpsB - result.bHelpsA);
+        
+        // 総合スコア（相互補完性を重視）
+        const average = (result.aHelpsB + result.bHelpsA) / 2;
+        const hasComplementarity = result.aHelpsB > 0 && result.bHelpsA > 0;
+        
+        result.totalScore = hasComplementarity ? 
+            (average * 0.7 + result.balance * 0.3) : 
+            average * 0.5; // 一方向のみの場合は減点
+        
+        return result;
+    }
+    
     // 個別のマッチングスコア計算（profile-detail-modalから呼び出し可能）
     function calculateMatchingScore(profileUser, currentUser) {
         if (!profileUser || !currentUser) return 50;
         
+        // 新しい補完性スコアを取得
+        const complementarity = calculateSkillChallengeMatch(currentUser, profileUser);
+        
         let score = 0;
         
-        // スキルの一致度（30点満点）
+        // 補完性スコアを重視（40点満点）
+        score += (complementarity.totalScore * 0.4);
+        
+        // スキルの一致度（20点満点）
         if (profileUser.skills && currentUser.skills) {
             const profileSkills = Array.isArray(profileUser.skills) ? profileUser.skills : [];
             const currentSkills = Array.isArray(currentUser.skills) ? currentUser.skills : [];
             const commonSkills = profileSkills.filter(skill => currentSkills.includes(skill));
-            score += Math.min((commonSkills.length / Math.max(profileSkills.length, 1)) * 30, 30);
+            score += Math.min((commonSkills.length / Math.max(profileSkills.length, 1)) * 20, 20);
         }
         
-        // 興味の一致度（25点満点）
+        // 興味の一致度（15点満点）
         if (profileUser.interests && currentUser.interests) {
             const profileInterests = Array.isArray(profileUser.interests) ? profileUser.interests : [];
             const currentInterests = Array.isArray(currentUser.interests) ? currentUser.interests : [];
             const commonInterests = profileInterests.filter(interest => currentInterests.includes(interest));
-            score += Math.min((commonInterests.length / Math.max(profileInterests.length, 1)) * 25, 25);
+            score += Math.min((commonInterests.length / Math.max(profileInterests.length, 1)) * 15, 15);
         }
         
-        // 業界の一致（20点）
+        // 業界の一致（10点）
         if (profileUser.industry && currentUser.industry && profileUser.industry === currentUser.industry) {
-            score += 20;
+            score += 10;
         }
         
-        // 地域の一致（15点）
+        // 地域の一致（10点）
         if (profileUser.location && currentUser.location && profileUser.location === currentUser.location) {
-            score += 15;
+            score += 10;
         }
         
-        // 基礎スコア（10点）
-        score += 10;
+        // 基礎スコア（5点）
+        score += 5;
         
         return Math.min(Math.round(score), 100);
     }
@@ -373,10 +721,31 @@
 
             // 各ユーザーのスコアを計算
             return users.map(user => {
+                // 新しい補完性ベースのスコア計算
+                const complementarity = calculateSkillChallengeMatch(currentUser, user);
+                
                 let score = 0;
                 const reasons = [];
 
-                // スキルの一致度（文字列型の場合も考慮）
+                // 補完性スコアを最重要視（最大50点）
+                score += (complementarity.totalScore * 0.5);
+                
+                // 補完性の詳細を理由に追加
+                if (complementarity.aHelpsB > 0) {
+                    reasons.push(`あなたが支援可能: ${Math.round(complementarity.aHelpsB)}%`);
+                }
+                if (complementarity.bHelpsA > 0) {
+                    reasons.push(`相手が支援可能: ${Math.round(complementarity.bHelpsA)}%`);
+                }
+                
+                // 補完性の詳細（上位2つ）
+                if (complementarity.details.length > 0) {
+                    complementarity.details.slice(0, 2).forEach(detail => {
+                        reasons.push(`${detail.challenge}: ${detail.matchedSkills.slice(0, 2).join('、')}`);
+                    });
+                }
+
+                // スキルの一致度（最大20点）
                 const userSkills = Array.isArray(user.skills) ? user.skills : 
                     (user.skills ? user.skills.split(',').map(s => s.trim()) : []);
                 const currentSkills = Array.isArray(currentUser.skills) ? currentUser.skills : 
@@ -387,12 +756,15 @@
                         userSkills.includes(skill)
                     );
                     if (commonSkills.length > 0) {
-                        score += commonSkills.length * 10;
-                        reasons.push(`共通スキル: ${commonSkills.join(', ')}`);
+                        const skillScore = Math.min((commonSkills.length / Math.max(currentSkills.length, 1)) * 20, 20);
+                        score += skillScore;
+                        if (commonSkills.length > 0) {
+                            reasons.push(`共通スキル: ${commonSkills.slice(0, 3).join('、')}`);
+                        }
                     }
                 }
 
-                // 興味の一致度（文字列型の場合も考慮）
+                // 興味の一致度（最大15点）
                 const userInterests = Array.isArray(user.interests) ? user.interests : 
                     (user.interests ? user.interests.split(',').map(s => s.trim()) : []);
                 const currentInterests = Array.isArray(currentUser.interests) ? currentUser.interests : 
@@ -403,28 +775,30 @@
                         userInterests.includes(interest)
                     );
                     if (commonInterests.length > 0) {
-                        score += commonInterests.length * 8;
-                        reasons.push(`共通の興味: ${commonInterests.join(', ')}`);
+                        const interestScore = Math.min((commonInterests.length / Math.max(currentInterests.length, 1)) * 15, 15);
+                        score += interestScore;
+                        if (commonInterests.length > 0) {
+                            reasons.push(`共通の興味: ${commonInterests.slice(0, 2).join('、')}`);
+                        }
                     }
                 }
 
-                // ビジネス課題の補完性（存在する場合のみ）
-                const currentChallenges = Array.isArray(currentUser.business_challenges) ? currentUser.business_challenges : 
-                    (currentUser.business_challenges ? currentUser.business_challenges.split(',').map(s => s.trim()) : []);
-                
-                if (currentChallenges.length > 0 && userSkills.length > 0) {
-                    const complementary = currentChallenges.some(challenge =>
-                        userSkills.some(skill => isComplementary(challenge, skill))
-                    );
-                    if (complementary) {
-                        score += 15;
-                        reasons.push('ビジネス課題の解決に貢献可能');
-                    }
+                // 業界の一致（最大10点）
+                if (currentUser.industry && user.industry && currentUser.industry === user.industry) {
+                    score += 10;
+                    reasons.push(`同じ業界: ${user.industry}`);
+                }
+
+                // 地域の一致（最大5点）
+                if (currentUser.location && user.location && currentUser.location === user.location) {
+                    score += 5;
+                    reasons.push(`同じ地域: ${user.location}`);
                 }
 
                 // スコアを0-100に正規化
                 user.matchScore = Math.min(Math.round(score), 100);
                 user.matchReasons = reasons;
+                user.complementarityScore = complementarity; // 補完性スコアを保存
 
                 return user;
             });
@@ -562,8 +936,52 @@
         const userId = user.id;
         // Canvas用のIDを安全にエスケープ（HTML属性用）
         const safeCanvasId = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
+        
+        // 補完性スコアの表示
+        const complementarity = user.complementarityScore;
+        const complementarityHTML = complementarity && (complementarity.aHelpsB > 0 || complementarity.bHelpsA > 0) ? `
+            <div class="complementarity-display" style="padding: 10px; background: #f0f4ff; border-radius: 8px; margin: 10px 0;">
+                <div class="complementarity-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span class="complementarity-label" style="font-size: 12px; color: #666;">相互補完性</span>
+                    <span class="complementarity-total" style="font-size: 16px; font-weight: bold; color: #4A90E2;">${Math.round(complementarity.totalScore)}%</span>
+                </div>
+                <div class="complementarity-directions" style="font-size: 11px; color: #555;">
+                    ${complementarity.aHelpsB > 20 ? `
+                        <div class="complement-arrow" style="margin: 2px 0;">
+                            <i class="fas fa-arrow-right" style="color: #4A90E2; margin-right: 5px;"></i>
+                            <span>支援可能: ${Math.round(complementarity.aHelpsB)}%</span>
+                        </div>
+                    ` : ''}
+                    ${complementarity.bHelpsA > 20 ? `
+                        <div class="complement-arrow" style="margin: 2px 0;">
+                            <i class="fas fa-arrow-left" style="color: #E24A90; margin-right: 5px;"></i>
+                            <span>支援受領: ${Math.round(complementarity.bHelpsA)}%</span>
+                        </div>
+                    ` : ''}
+                </div>
+                ${complementarity.details && complementarity.details.length > 0 ? `
+                    <div class="complement-details" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e7ff;">
+                        ${complementarity.details.slice(0, 1).map(detail => `
+                            <div class="complement-detail-item" style="font-size: 10px; color: #666;">
+                                <span class="challenge-label" style="font-weight: 500;">${escapeHtml(detail.challenge)}</span>:
+                                <span class="match-percent" style="color: #4A90E2;">${detail.matchRate}%マッチ</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        ` : '';
+        
+        // マッチング理由の表示
+        const reasons = user.matchReasons || [];
+        const reasonsHTML = reasons.length > 0 && !complementarity ? `
+            <div class="matching-reasons" style="padding: 8px; background: #f8f9fa; border-radius: 6px; margin: 8px 0;">
+                ${reasons.slice(0, 2).map(reason => `<small style="display: block; font-size: 11px; color: #666; margin: 2px 0;">${escapeHtml(reason)}</small>`).join('')}
+            </div>
+        ` : '';
+        
         return `
-            <div class="matching-card" data-user-id="${userId}">
+            <div class="matching-card enhanced" data-user-id="${userId}" data-profile-id="${userId}" style="position: relative;">
                 <div class="matching-score">${matchScore}%</div>
                 ${user.picture_url ? 
                     `<img src="${sanitizeImageUrl(user.picture_url)}" alt="${escapeHtml(user.name)}" class="matching-avatar">` :
@@ -572,25 +990,28 @@
                     </div>`
                 }
                 <h3>${escapeHtml(user.name || '名前未設定')}</h3>
-                <p class="matching-title">${escapeHtml(user.position || '役職未設定')}</p>
+                <p class="matching-title">${escapeHtml(user.position || user.title || '役職未設定')}</p>
                 <p class="matching-company">${escapeHtml(user.company || '会社名未設定')}</p>
+                
+                <!-- 補完性スコア表示（新規追加） -->
+                ${complementarityHTML}
+                
+                <!-- マッチング理由（補完性がない場合のみ） -->
+                ${reasonsHTML}
+                
                 <div class="matching-tags">
-                    ${skills.map(skill => `<span class="tag">${escapeHtml(skill)}</span>`).join('')}
+                    ${skills.slice(0, 3).map(skill => `<span class="tag">${escapeHtml(skill)}</span>`).join('')}
+                    ${skills.length > 3 ? `<span class="tag">+${skills.length - 3}</span>` : ''}
                 </div>
-                <!-- レーダーチャート追加 -->
+                
+                <!-- レーダーチャート -->
                 <div class="matching-radar">
                     <canvas id="radar-${safeCanvasId}" data-original-user-id="${userId}"></canvas>
                 </div>
-                <!-- 共通スキル表示 -->
-                ${hasCommonSkills ? `
-                    <div class="common-skills">
-                        <i class="fas fa-check-circle"></i>
-                        共通スキル: ビジネス, コミュニケーション
-                    </div>
-                ` : ''}
+                
                 <div class="matching-actions">
-                    <button class="btn btn-outline view-profile-btn" data-user-id="${userId}">
-                        <i class="fas fa-user"></i> プロフィール
+                    <button class="btn btn-outline view-profile-btn btn-view override-btn-secondary" data-user-id="${userId}" data-profile-id="${userId}">
+                        <i class="fas fa-user"></i> 詳細を見る
                     </button>
                     ${renderConnectButton(userId, user.connectionStatus)}
                 </div>
@@ -1661,6 +2082,7 @@
     window.matchingScoreFix.calculateLocationScore = calculateLocationScore;
     window.matchingScoreFix.calculateSkillScore = calculateSkillScore;
     window.matchingScoreFix.calculateInterestScore = calculateInterestScore;
+    window.matchingScoreFix.calculateSkillChallengeMatch = calculateSkillChallengeMatch;
 
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
