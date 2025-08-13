@@ -411,39 +411,54 @@
     }
 
     // カード内のイベントリスナー設定
+    // イベントリスナーの設定フラグ
+    let eventListenersSetup = false;
+    
     function setupCardEventListeners() {
-        // プロフィール表示ボタン
-        document.querySelectorAll('.view-profile-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // 既にイベントリスナーが設定されている場合はスキップ
+        if (eventListenersSetup) {
+            // console.log('[MatchingUnified] イベントリスナーは既に設定済みです');
+            return;
+        }
+        
+        // プロフィール表示ボタン - イベント委譲を使用
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.view-profile-btn');
+            if (btn && !btn.dataset.listenerAttached) {
                 e.preventDefault();
                 e.stopPropagation();
-                const userId = btn.dataset.userId || e.target.closest('.view-profile-btn').dataset.userId;
+                const userId = btn.dataset.userId;
                 if (userId) {
                     showUserProfile(userId);
                 }
-            });
+            }
         });
 
-        // コネクトボタン
-        document.querySelectorAll('.connect-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // コネクトボタン - イベント委譲を使用
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.connect-btn');
+            if (btn && !btn.dataset.listenerAttached) {
                 e.preventDefault();
                 e.stopPropagation();
-                const userId = btn.dataset.userId || e.target.closest('.connect-btn').dataset.userId;
+                const userId = btn.dataset.userId;
                 // console.log('[MatchingUnified] コネクトボタンクリック:', userId);
                 if (userId) {
                     sendConnectRequest(userId);
                 }
-            });
+            }
         });
 
-        // ブックマークボタン
-        document.querySelectorAll('.bookmark-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const userId = e.target.closest('.bookmark-btn').dataset.userId;
-                toggleBookmark(userId, e.target.closest('.bookmark-btn'));
-            });
+        // ブックマークボタン - イベント委譲を使用
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.bookmark-btn');
+            if (btn && !btn.dataset.listenerAttached) {
+                const userId = btn.dataset.userId;
+                toggleBookmark(userId, btn);
+            }
         });
+        
+        // フラグを設定
+        eventListenersSetup = true;
     }
 
     // プロフィール詳細表示
@@ -462,8 +477,6 @@
             // idでフィルタリング（user_profilesテーブルではidカラムを使用）
             const user = users.find(u => u.id === userId);
             if (!user) throw new Error('ユーザーが見つかりません');
-
-            if (error) throw error;
 
             // モーダルで表示
             showProfileModal(user);
@@ -815,24 +828,24 @@
         }
     }
 
-    // コネクトボタンの更新
-    function updateConnectButton(userId, status) {
-        const button = document.querySelector(`.connect-btn[data-user-id="${userId}"]`);
-        if (!button) return;
+    // コネクトボタンの更新（重複定義のため削除 - 886行の定義を使用）
+    // function updateConnectButton(userId, status) {
+    //     const button = document.querySelector(`.connect-btn[data-user-id="${userId}"]`);
+    //     if (!button) return;
 
-        switch (status) {
-            case 'pending':
-                button.textContent = '申請中';
-                button.disabled = true;
-                button.classList.add('btn-disabled');
-                break;
-            case 'accepted':
-                button.textContent = 'コネクト済み';
-                button.disabled = true;
-                button.classList.add('btn-success');
-                break;
-        }
-    }
+    //     switch (status) {
+    //         case 'pending':
+    //             button.textContent = '申請中';
+    //             button.disabled = true;
+    //             button.classList.add('btn-disabled');
+    //             break;
+    //         case 'accepted':
+    //             button.textContent = 'コネクト済み';
+    //             button.disabled = true;
+    //             button.classList.add('btn-success');
+    //             break;
+    //     }
+    // }
 
     // 通知送信
     async function sendNotification(userId, type, title, content, relatedId = null, relatedType = null) {
@@ -1066,13 +1079,13 @@
         // Canvasの表示状態を検証
         const canvasRect = canvas.getBoundingClientRect();
         // console.log('[MatchingUnified] Canvas表示状態:', {
-            userId: userId,
-            visible: canvasRect.width > 0 && canvasRect.height > 0,
-            width: canvasRect.width,
-            height: canvasRect.height,
-            display: window.getComputedStyle(canvas).display,
-            visibility: window.getComputedStyle(canvas).visibility
-        });
+        //     userId: userId,
+        //     visible: canvasRect.width > 0 && canvasRect.height > 0,
+        //     width: canvasRect.width,
+        //     height: canvasRect.height,
+        //     display: window.getComputedStyle(canvas).display,
+        //     visibility: window.getComputedStyle(canvas).visibility
+        // });
     }
 
     // ダミーデータを表示
