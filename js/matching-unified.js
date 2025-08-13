@@ -1978,40 +1978,77 @@
 
     // 経験スコアを計算（実データベース）
     function calculateExperienceScore(user) {
-        let score = 30; // 基準スコア（差別化のため低めに設定）
+        let score = 15; // 基準スコア（より差別化のため低めに設定）
         
         // 役職・肩書きによる加点（title フィールドを使用）
         if (user.title || user.position) {
             const titleText = user.title || user.position || '';
-            const seniorKeywords = ['CEO', '代表', '社長', 'CTO', 'CFO', '執行役員', '取締役', 'founder', 'co-founder'];
-            const middleKeywords = ['部長', 'マネージャー', 'manager', 'director', 'lead', 'ディレクター'];
-            const juniorKeywords = ['リーダー', '主任', 'senior', 'チーフ', 'スペシャリスト'];
+            // 役職レベルをより細かく評価（ユーザーごとの差別化）
+            const titleLower = titleText.toLowerCase();
             
-            if (seniorKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
-                score += 35;
-            } else if (middleKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
-                score += 25;
-            } else if (juniorKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
-                score += 15;
-            } else if (titleText.length > 0) {
-                score += 8; // 何らかの役職がある
+            // タイトルの長さと内容でハッシュ値を生成（個別化）
+            let titleHash = 0;
+            for (let i = 0; i < titleText.length; i++) {
+                titleHash = ((titleHash << 5) - titleHash) + titleText.charCodeAt(i);
+                titleHash = titleHash & titleHash;
             }
-        } else {
-            // 役職が設定されていない場合のペナルティ
-            score -= 5;
+            const variation = (Math.abs(titleHash) % 10) / 10; // 0～0.9の範囲
+            
+            if (titleLower.includes('founder') || titleLower.includes('創業')) {
+                score += 40 + variation * 5;
+            } else if (titleLower.includes('ceo') || titleLower.includes('代表取締役')) {
+                score += 38 + variation * 4;
+            } else if (titleLower.includes('社長')) {
+                score += 36 + variation * 4;
+            } else if (titleLower.includes('cto') || titleLower.includes('cfo') || titleLower.includes('coo')) {
+                score += 34 + variation * 3;
+            } else if (titleLower.includes('執行役員') || titleLower.includes('取締役')) {
+                score += 32 + variation * 3;
+            } else if (titleLower.includes('vp') || titleLower.includes('vice president')) {
+                score += 30 + variation * 3;
+            } else if (titleLower.includes('director') || titleLower.includes('部長')) {
+                score += 25 + variation * 2;
+            } else if (titleLower.includes('manager') || titleLower.includes('マネージャー')) {
+                score += 20 + variation * 2;
+            } else if (titleLower.includes('課長')) {
+                score += 18 + variation * 2;
+            } else if (titleLower.includes('lead') || titleLower.includes('リーダー')) {
+                score += 15 + variation * 2;
+            } else if (titleLower.includes('主任') || titleLower.includes('チーフ')) {
+                score += 12 + variation;
+            } else if (titleLower.includes('senior') || titleLower.includes('シニア')) {
+                score += 10 + variation;
+            } else if (titleLower.includes('specialist') || titleLower.includes('スペシャリスト')) {
+                score += 8 + variation;
+            } else if (titleText.length > 0) {
+                score += 5 + variation; // 何らかの役職がある
+            }
         }
         
-        // スキルの深さによる加点（幅広い経験）
+        // スキルの深さによる加点（より細分化）
         if (user.skills && Array.isArray(user.skills)) {
-            if (user.skills.length >= 10) {
+            const skillCount = user.skills.length;
+            if (skillCount >= 15) {
+                score += 25; // マスターレベル
+            } else if (skillCount >= 12) {
+                score += 22;
+            } else if (skillCount >= 10) {
                 score += 20; // エキスパートレベル
-            } else if (user.skills.length >= 7) {
+            } else if (skillCount >= 8) {
+                score += 17;
+            } else if (skillCount >= 7) {
                 score += 15;
-            } else if (user.skills.length >= 5) {
-                score += 10;
-            } else if (user.skills.length >= 3) {
+            } else if (skillCount >= 6) {
+                score += 13;
+            } else if (skillCount >= 5) {
+                score += 11;
+            } else if (skillCount >= 4) {
+                score += 9;
+            } else if (skillCount >= 3) {
+                score += 7;
+            } else if (skillCount >= 2) {
                 score += 5;
-            } else if (user.skills.length > 0) {
+            } else if (skillCount >= 1) {
                 score += 3;
             }
         }
@@ -2098,38 +2135,68 @@
     
     // 業界スコアを計算（公平版）
     function calculateIndustryScore(user) {
-        if (!user.industry) return 35; // 業界未設定の基礎スコア
+        if (!user.industry) return 20; // 業界未設定の基礎スコア
         
-        let score = 45; // 業界設定済みの基礎スコア
+        let score = 25; // 業界設定済みの基礎スコア
+        
+        // 業界の種類による基本スコア（業界によって差別化）
+        const industryScoreMap = {
+            'IT': 15, 'テクノロジー': 15, 'Tech': 15,
+            '金融': 12, 'Finance': 12, '銀行': 12,
+            '医療': 14, 'ヘルスケア': 14, 'Healthcare': 14,
+            '製造': 10, '小売': 8, 'Retail': 8,
+            'コンサル': 13, 'Consulting': 13,
+            '不動産': 9, 'Real Estate': 9,
+            'メディア': 11, 'Media': 11,
+            '教育': 7, 'Education': 7
+        };
+        
+        // 業界固有のスコアを加算
+        let industryBonus = 5; // デフォルト
+        for (const [key, value] of Object.entries(industryScoreMap)) {
+            if (user.industry.includes(key)) {
+                industryBonus = Math.max(industryBonus, value);
+            }
+        }
+        score += industryBonus;
         
         // 業界情報の詳細度による加点
-        if (user.industry && user.industry.length > 15) {
-            score += 20; // 詳細な業界情報（例：IT・テクノロジー・SaaS）
-        } else if (user.industry && user.industry.length > 8) {
-            score += 15; // 標準的な業界情報（例：IT・テクノロジー）
-        } else if (user.industry && user.industry.length > 0) {
-            score += 10; // 簡潔な業界情報（例：IT）
+        const industryLength = user.industry.length;
+        if (industryLength > 20) {
+            score += 25; // 非常に詳細な業界情報
+        } else if (industryLength > 15) {
+            score += 20; // 詳細な業界情報
+        } else if (industryLength > 8) {
+            score += 15; // 標準的な業界情報
+        } else if (industryLength > 0) {
+            score += 10; // 簡潔な業界情報
         }
         
         // 業界経験の深さを評価（役職との相関）
         if (user.industry && (user.title || user.position)) {
             const titleText = (user.title || user.position || '').toLowerCase();
-            if (titleText.includes('ceo') || titleText.includes('代表') || titleText.includes('社長')) {
-                score += 20; // 業界のリーダー
-            } else if (titleText.includes('部長') || titleText.includes('manager')) {
-                score += 15; // 業界の中堅
+            if (titleText.includes('ceo') || titleText.includes('cto') || titleText.includes('cfo') || 
+                titleText.includes('代表') || titleText.includes('社長') || titleText.includes('執行役員')) {
+                score += 25; // 業界のトップリーダー
+            } else if (titleText.includes('director') || titleText.includes('部長') || titleText.includes('manager')) {
+                score += 18; // 業界の中堅リーダー
+            } else if (titleText.includes('lead') || titleText.includes('主任') || titleText.includes('リーダー')) {
+                score += 12; // 業界のチームリーダー
             } else if (titleText.length > 0) {
-                score += 10; // 業界の実務者
+                score += 8; // 業界の実務者
             }
         }
         
         // 業界に関連するスキルの深さ
         if (user.industry && user.skills && Array.isArray(user.skills)) {
-            if (user.skills.length >= 7) {
+            const skillCount = user.skills.length;
+            if (skillCount >= 10) {
+                score += 20; // 業界マスター
+            } else if (skillCount >= 7) {
                 score += 15; // 業界エキスパート
-            } else if (user.skills.length >= 5) {
+            } else if (skillCount >= 5) {
                 score += 10; // 業界スペシャリスト
-            } else if (user.skills.length >= 3) {
+            } else if (skillCount >= 3) {
                 score += 5; // 業界プロフェッショナル
             }
         }
@@ -2139,17 +2206,26 @@
     
     // 地域スコアを計算（公平版）
     function calculateLocationScore(user) {
-        if (!user.location) return 40; // 地域未設定の基礎スコア
+        if (!user.location) return 20; // 地域未設定の基礎スコア
         
-        let score = 50; // 地域設定済みの基礎スコア
+        let score = 30; // 地域設定済みの基礎スコア
         
-        // 地域情報の詳細度による加点
-        if (user.location && user.location.length > 10) {
-            score += 25; // 詳細な地域情報（例：東京都渋谷区）
-        } else if (user.location && user.location.length > 5) {
+        // 地域情報の詳細度による加点（より差別化）
+        const locationLength = user.location.length;
+        if (locationLength > 15) {
+            score += 40; // 非常に詳細な地域情報（例：東京都渋谷区神宮前）
+        } else if (locationLength > 10) {
+            score += 30; // 詳細な地域情報（例：東京都渋谷区）
+        } else if (locationLength > 5) {
             score += 20; // 標準的な地域情報（例：東京都）
-        } else if (user.location && user.location.length > 0) {
-            score += 15; // 簡潔な地域情報（例：東京）
+        } else if (locationLength > 0) {
+            score += 10; // 簡潔な地域情報（例：東京）
+        }
+        
+        // 地域の特性による加点（主要都市かどうか）
+        const majorCities = ['東京', '大阪', '名古屋', '福岡', '札幌', '横浜', '神戸', '京都'];
+        if (majorCities.some(city => user.location.includes(city))) {
+            score += 15; // 主要都市ボーナス
         }
         
         // プロフィール充実度との相関
@@ -2158,7 +2234,7 @@
         }
         
         // ビジネス活動の広がりを評価
-        if (user.location && user.skills && user.skills.length > 3) {
+        if (user.location && user.skills && user.skills.length > 5) {
             score += 10; // 地域とスキルの両方が充実
         }
         

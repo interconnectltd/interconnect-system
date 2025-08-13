@@ -294,6 +294,32 @@
                         </div>
                     </div>
                     
+                    <!-- コネクト申請の承認UI追加 -->
+                    <div class="notification-item-full unread" data-type="connection">
+                        <div class="notification-icon match">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="notification-details">
+                            <div class="notification-title">
+                                田中花子さんからコネクト申請が届きました
+                            </div>
+                            <div class="notification-time">3時間前</div>
+                            <p class="notification-message">
+                                株式会社イノベーションの田中花子さんがあなたとのコネクションを希望しています。
+                                プロフィールを確認して承認または拒否してください。
+                            </p>
+                            <div class="notification-actions">
+                                <button class="btn btn-small btn-success" onclick="acceptConnectionRequest('user-id-123', '田中花子')">
+                                    <i class="fas fa-check"></i> 承認する
+                                </button>
+                                <button class="btn btn-small btn-outline" onclick="rejectConnectionRequest('user-id-123', '田中花子')">
+                                    <i class="fas fa-times"></i> 拒否する
+                                </button>
+                                <a href="members.html?id=user-id-123" class="btn btn-small btn-outline">プロフィールを見る</a>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="notification-item-full" data-type="message">
                         <div class="notification-icon message">
                             <i class="fas fa-envelope"></i>
@@ -404,5 +430,94 @@
     <script src="js/user-dropdown-handler.js"></script>
     <!-- アバターサイズ強制適用 -->
     <script src="js/avatar-size-enforcer.js"></script>
+    
+    <!-- コネクト申請承認機能 -->
+    <script>
+    // コネクト申請を承認
+    async function acceptConnectionRequest(userId, userName) {
+        try {
+            // Supabaseでコネクション状態を更新
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) {
+                showNotification('ログインが必要です', 'error');
+                return;
+            }
+            
+            // connections テーブルを更新
+            const { error } = await window.supabaseClient
+                .from('connections')
+                .update({ 
+                    status: 'accepted',
+                    responded_at: new Date().toISOString()
+                })
+                .or(`user_id.eq.${userId},connected_user_id.eq.${userId}`)
+                .or(`user_id.eq.${user.id},connected_user_id.eq.${user.id}`);
+            
+            if (error) throw error;
+            
+            // 承認通知を相手に送信
+            await window.supabaseClient
+                .from('notifications')
+                .insert({
+                    user_id: userId,
+                    type: 'connection_accepted',
+                    title: 'コネクト承認',
+                    message: `あなたのコネクト申請が承認されました`,
+                    related_id: user.id,
+                    is_read: false,
+                    created_at: new Date().toISOString()
+                });
+            
+            // UI更新
+            const notificationItem = event.target.closest('.notification-item-full');
+            if (notificationItem) {
+                notificationItem.querySelector('.notification-actions').innerHTML = 
+                    '<span class="text-success"><i class="fas fa-check"></i> 承認済み</span>';
+                notificationItem.classList.remove('unread');
+            }
+            
+            showNotification(`${userName}さんとコネクトしました`, 'success');
+            
+        } catch (error) {
+            console.error('承認エラー:', error);
+            showNotification('承認に失敗しました', 'error');
+        }
+    }
+    
+    // コネクト申請を拒否
+    async function rejectConnectionRequest(userId, userName) {
+        try {
+            // Supabaseでコネクション状態を更新
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) {
+                showNotification('ログインが必要です', 'error');
+                return;
+            }
+            
+            // connections テーブルから削除
+            const { error } = await window.supabaseClient
+                .from('connections')
+                .delete()
+                .or(`user_id.eq.${userId},connected_user_id.eq.${userId}`)
+                .or(`user_id.eq.${user.id},connected_user_id.eq.${user.id}`);
+            
+            if (error) throw error;
+            
+            // UI更新
+            const notificationItem = event.target.closest('.notification-item-full');
+            if (notificationItem) {
+                notificationItem.querySelector('.notification-actions').innerHTML = 
+                    '<span class="text-muted"><i class="fas fa-times"></i> 拒否済み</span>';
+                notificationItem.classList.remove('unread');
+            }
+            
+            showNotification(`コネクト申請を拒否しました`, 'info');
+            
+        } catch (error) {
+            console.error('拒否エラー:', error);
+            showNotification('拒否に失敗しました', 'error');
+        }
+    }
+    </script>
 </body>
 </html>
