@@ -2270,11 +2270,13 @@
         
         // Retina/高DPIディスプレイ対応
         const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
         
-        // Canvas表示サイズ（最大300pxに制限）
-        const displayWidth = Math.min(rect.width || 200, 300);
-        const displayHeight = Math.min(rect.height || 200, 300);
+        // Canvas表示サイズを統一（profile-detail-modalと同じ260pxに）
+        // 元のコード: const rect = canvas.getBoundingClientRect();
+        // 元のコード: const displayWidth = Math.min(rect.width || 200, 300);
+        // 元のコード: const displayHeight = Math.min(rect.height || 200, 300);
+        const displayWidth = 260;  // profile-detail-modalと統一
+        const displayHeight = 260; // profile-detail-modalと統一
         
         // 既存の属性をクリア
         canvas.removeAttribute('width');
@@ -2294,11 +2296,16 @@
         // 描画用の座標（表示サイズベース）
         const centerX = displayWidth / 2;
         const centerY = displayHeight / 2;
-        const radius = Math.min(displayWidth, displayHeight) * 0.4;
+        // 元のコード: const radius = Math.min(displayWidth, displayHeight) * 0.4;
+        const radius = 100;  // profile-detail-modalと統一（固定値100px）
         const sides = 6;
         
         // クリア（スケール後のサイズ）
         ctx.clearRect(0, 0, displayWidth, displayHeight);
+        
+        // 背景色を設定（profile-detail-modalと統一）
+        ctx.fillStyle = '#f8f9fa';
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
         
         // 背景の六角形グリッドを描画
         ctx.strokeStyle = '#e0e0e0';
@@ -2342,8 +2349,8 @@
         
         labels.forEach((label, i) => {
             const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
-            const x = centerX + Math.cos(angle) * (radius + 15);
-            const y = centerY + Math.sin(angle) * (radius + 15);
+            const x = centerX + Math.cos(angle) * (radius + 20);  // profile-detail-modalと統一（+20）
+            const y = centerY + Math.sin(angle) * (radius + 20);  // profile-detail-modalと統一（+20）
             ctx.fillText(label, x, y);
         });
         
