@@ -750,15 +750,17 @@
                 window.matchingScoreFix.calculateExperienceScore &&
                 window.matchingScoreFix.calculateActivityScore &&
                 window.matchingScoreFix.calculateIndustryScore &&
-                window.matchingScoreFix.calculateLocationScore) {
-                // matching-unified.jsの計算関数を使用
+                window.matchingScoreFix.calculateLocationScore &&
+                window.matchingScoreFix.calculateSkillScore &&
+                window.matchingScoreFix.calculateInterestScore) {
+                // matching-unified.jsの計算関数を使用（質的評価）
                 values = [
-                    Math.min((profile.skills?.length || 0) * 20, 100), // スキル（最大100点）
+                    window.matchingScoreFix.calculateSkillScore(profile), // スキル（質的評価）
                     window.matchingScoreFix.calculateExperienceScore(profile), // 経験（実データ）
-                    window.matchingScoreFix.calculateIndustryScore(profile), // 業界（詳細スコア）
-                    window.matchingScoreFix.calculateLocationScore(profile), // 地域（詳細スコア）
+                    window.matchingScoreFix.calculateIndustryScore(profile), // 業界（公平スコア）
+                    window.matchingScoreFix.calculateLocationScore(profile), // 地域（公平スコア）
                     window.matchingScoreFix.calculateActivityScore(profile), // 活動（実データ）
-                    Math.min((profile.interests?.length || 0) * 25, 100) // 興味（最大100点、×25に統一）
+                    window.matchingScoreFix.calculateInterestScore(profile) // 興味（質的評価）
                 ];
             } else {
                 // フォールバック（matching-unified.jsが読み込まれていない場合）

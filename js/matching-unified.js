@@ -1427,26 +1427,38 @@
     function calculateExperienceScore(user) {
         let score = 50; // 基準スコア
         
-        // 役職による加点
-        if (user.position) {
-            const positionKeywords = ['CEO', '代表', '社長', 'CTO', 'CFO', '執行役員', '取締役'];
-            if (positionKeywords.some(keyword => user.position.includes(keyword))) {
+        // 役職・肩書きによる加点（title フィールドを使用）
+        if (user.title || user.position) {
+            const titleText = user.title || user.position || '';
+            const seniorKeywords = ['CEO', '代表', '社長', 'CTO', 'CFO', '執行役員', '取締役', 'founder', 'co-founder'];
+            const middleKeywords = ['部長', 'マネージャー', 'manager', 'director', 'lead'];
+            const juniorKeywords = ['リーダー', '主任', 'senior', 'チーフ'];
+            
+            if (seniorKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
                 score += 30;
-            } else if (user.position.includes('部長') || user.position.includes('マネージャー')) {
+            } else if (middleKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
                 score += 20;
-            } else if (user.position.includes('リーダー') || user.position.includes('主任')) {
+            } else if (juniorKeywords.some(keyword => titleText.toLowerCase().includes(keyword.toLowerCase()))) {
                 score += 10;
+            } else if (titleText.length > 0) {
+                score += 5; // 何らかの役職がある
             }
         }
         
-        // スキル数による加点
-        if (user.skills && user.skills.length > 5) {
-            score += 10;
+        // スキルの深さによる加点（幅広い経験）
+        if (user.skills && Array.isArray(user.skills)) {
+            if (user.skills.length > 7) {
+                score += 15;
+            } else if (user.skills.length > 5) {
+                score += 10;
+            } else if (user.skills.length > 3) {
+                score += 5;
+            }
         }
         
-        // 事業課題数による加点（経験の幅）
-        if (user.business_challenges && user.business_challenges.length > 3) {
-            score += 10;
+        // 会社情報による加点（実務経験の証）
+        if (user.company) {
+            score += 5;
         }
         
         return Math.min(score, 100);
@@ -1456,83 +1468,199 @@
     function calculateActivityScore(user) {
         let score = 40; // 基準スコア
         
-        // 最終ログイン時間（もしあれば）
-        if (user.last_login) {
-            const lastLogin = new Date(user.last_login);
-            const now = new Date();
-            const daysSinceLogin = (now - lastLogin) / (1000 * 60 * 60 * 24);
-            
-            if (daysSinceLogin < 1) {
-                score += 40; // 24時間以内
-            } else if (daysSinceLogin < 7) {
-                score += 30; // 1週間以内
-            } else if (daysSinceLogin < 30) {
-                score += 20; // 1ヶ月以内
-            } else {
-                score += 10; // それ以上
+        // プロフィール完成度による加点（最大30点）
+        let completionScore = 0;
+        
+        // bio の充実度
+        if (user.bio) {
+            if (user.bio.length > 100) {
+                completionScore += 15;
+            } else if (user.bio.length > 50) {
+                completionScore += 10;
+            } else if (user.bio.length > 0) {
+                completionScore += 5;
             }
         }
         
-        // プロフィール完成度による加点
-        if (user.bio && user.bio.length > 50) {
-            score += 10;
+        // プロフィール画像
+        if (user.picture_url || user.avatar_url) {
+            completionScore += 10;
         }
         
-        if (user.picture_url) {
-            score += 10;
+        // 連絡先情報の充実度
+        if (user.phone || user.line_id) {
+            completionScore += 5;
         }
+        
+        score += completionScore;
+        
+        // データの充実度による加点（最大30点）
+        let dataScore = 0;
+        
+        // スキルの充実度
+        if (user.skills && Array.isArray(user.skills)) {
+            if (user.skills.length >= 5) {
+                dataScore += 15;
+            } else if (user.skills.length >= 3) {
+                dataScore += 10;
+            } else if (user.skills.length > 0) {
+                dataScore += 5;
+            }
+        }
+        
+        // 興味・関心の充実度
+        if (user.interests && Array.isArray(user.interests)) {
+            if (user.interests.length >= 4) {
+                dataScore += 15;
+            } else if (user.interests.length >= 2) {
+                dataScore += 10;
+            } else if (user.interests.length > 0) {
+                dataScore += 5;
+            }
+        }
+        
+        score += dataScore;
         
         return Math.min(score, 100);
     }
     
-    // 業界スコアを計算（詳細版）
+    // 業界スコアを計算（公平版）
     function calculateIndustryScore(user) {
-        if (!user.industry) return 30; // 業界未設定の基礎スコア
+        if (!user.industry) return 40; // 業界未設定の基礎スコア
         
-        let score = 50; // 業界設定済みの基礎スコア
+        let score = 60; // 業界設定済みの基礎スコア
         
-        // 業界の詳細度による加点
-        const detailedIndustries = ['IT・テクノロジー', '金融', '医療・ヘルスケア', '製造業', 'サービス業'];
-        if (detailedIndustries.includes(user.industry)) {
-            score += 30;
+        // 業界情報の詳細度による加点（どの業界でも平等）
+        if (user.industry && user.industry.length > 0) {
+            score += 20; // 業界を明記している
         }
         
-        // 業界経験年数があれば加点（フィールドがある場合）
-        if (user.industry_experience) {
-            const years = parseInt(user.industry_experience);
-            if (years >= 10) score += 20;
-            else if (years >= 5) score += 15;
-            else if (years >= 3) score += 10;
+        // 業界に関連するスキルの保有度
+        if (user.skills && Array.isArray(user.skills) && user.skills.length > 0) {
+            // 業界に関わらず、専門スキルの保有を評価
+            const hasSpecializedSkills = user.skills.length >= 3;
+            if (hasSpecializedSkills) {
+                score += 20;
+            }
         }
         
         return Math.min(score, 100);
     }
     
-    // 地域スコアを計算（詳細版）
+    // 地域スコアを計算（公平版）
     function calculateLocationScore(user) {
-        if (!user.location) return 30; // 地域未設定の基礎スコア
+        if (!user.location) return 40; // 地域未設定の基礎スコア
         
-        let score = 50; // 地域設定済みの基礎スコア
+        let score = 60; // 地域設定済みの基礎スコア
         
-        // 主要都市による加点
-        const majorCities = ['東京', '大阪', '名古屋', '福岡', '横浜', '札幌', '神戸', '京都'];
-        if (majorCities.some(city => user.location.includes(city))) {
-            score += 30;
+        // 地域情報の明確さによる加点（どの地域でも平等）
+        if (user.location && user.location.length > 0) {
+            score += 20; // 地域を明記している
         }
         
-        // より詳細な住所情報があれば加点
-        if (user.location.length > 5) {
-            score += 20;
+        // オンライン対応可能性を考慮
+        // 全ての地域を平等に評価し、リモート時代を反映
+        if (user.location) {
+            score += 20; // どの地域でも活動可能
         }
         
         return Math.min(score, 100);
     }
 
+    // スキルスコアを計算（質的評価）
+    function calculateSkillScore(user) {
+        if (!user.skills || !Array.isArray(user.skills) || user.skills.length === 0) {
+            return 30; // スキル未設定の基礎スコア
+        }
+        
+        let score = 40; // スキル設定済みの基礎スコア
+        
+        // スキルの数による段階的評価（最大30点）
+        const skillCount = user.skills.length;
+        if (skillCount >= 7) {
+            score += 30; // 豊富なスキルセット
+        } else if (skillCount >= 5) {
+            score += 25;
+        } else if (skillCount >= 3) {
+            score += 20;
+        } else if (skillCount >= 2) {
+            score += 15;
+        } else if (skillCount >= 1) {
+            score += 10;
+        }
+        
+        // スキルの専門性ボーナス（最大30点）
+        // 技術系、ビジネス系、クリエイティブ系など多様性を評価
+        const techSkills = ['プログラミング', 'AI', 'データ分析', 'システム設計', 'DX'];
+        const businessSkills = ['経営戦略', 'マーケティング', '営業', 'ファイナンス', 'プロジェクト管理'];
+        const creativeSkills = ['デザイン', 'ライティング', '企画', 'ブランディング', 'UI/UX'];
+        
+        let hasSpecialization = false;
+        
+        if (user.skills.some(skill => techSkills.some(tech => skill.includes(tech)))) {
+            hasSpecialization = true;
+        }
+        if (user.skills.some(skill => businessSkills.some(biz => skill.includes(biz)))) {
+            hasSpecialization = true;
+        }
+        if (user.skills.some(skill => creativeSkills.some(creative => skill.includes(creative)))) {
+            hasSpecialization = true;
+        }
+        
+        if (hasSpecialization) {
+            score += 30;
+        }
+        
+        return Math.min(score, 100);
+    }
+    
+    // 興味スコアを計算（質的評価）
+    function calculateInterestScore(user) {
+        if (!user.interests || !Array.isArray(user.interests) || user.interests.length === 0) {
+            return 30; // 興味未設定の基礎スコア
+        }
+        
+        let score = 40; // 興味設定済みの基礎スコア
+        
+        // 興味の数による段階的評価（最大30点）
+        const interestCount = user.interests.length;
+        if (interestCount >= 5) {
+            score += 30; // 幅広い興味
+        } else if (interestCount >= 4) {
+            score += 25;
+        } else if (interestCount >= 3) {
+            score += 20;
+        } else if (interestCount >= 2) {
+            score += 15;
+        } else if (interestCount >= 1) {
+            score += 10;
+        }
+        
+        // 興味の多様性ボーナス（最大30点）
+        // ビジネス、テクノロジー、社会貢献など幅広い関心を評価
+        const hasBusinessInterest = user.interests.some(interest => 
+            interest.includes('ビジネス') || interest.includes('経営') || interest.includes('起業')
+        );
+        const hasTechInterest = user.interests.some(interest => 
+            interest.includes('AI') || interest.includes('DX') || interest.includes('テクノロジー')
+        );
+        const hasSocialInterest = user.interests.some(interest => 
+            interest.includes('SDGs') || interest.includes('社会') || interest.includes('環境')
+        );
+        
+        const diversityCount = [hasBusinessInterest, hasTechInterest, hasSocialInterest].filter(Boolean).length;
+        score += diversityCount * 10;
+        
+        return Math.min(score, 100);
+    }
+    
     // 計算関数をグローバルに追加公開
     window.matchingScoreFix.calculateExperienceScore = calculateExperienceScore;
     window.matchingScoreFix.calculateActivityScore = calculateActivityScore;
     window.matchingScoreFix.calculateIndustryScore = calculateIndustryScore;
     window.matchingScoreFix.calculateLocationScore = calculateLocationScore;
+    window.matchingScoreFix.calculateSkillScore = calculateSkillScore;
+    window.matchingScoreFix.calculateInterestScore = calculateInterestScore;
 
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
@@ -1665,14 +1793,14 @@
             ctx.fillText(label, x, y);
         });
         
-        // データポイントを計算（よりバランスの取れたスコア計算）
+        // データポイントを計算（質的評価を重視）
         const values = [
-            Math.min((user.skills?.length || 0) * 20, 100), // スキル（最大100点）
+            calculateSkillScore(user), // スキル（質的評価：最大100点）
             calculateExperienceScore(user), // 経験（実データ：最大100点）
-            calculateIndustryScore(user), // 業界（詳細スコア：最大100点）
-            calculateLocationScore(user), // 地域（詳細スコア：最大100点）
+            calculateIndustryScore(user), // 業界（公平スコア：最大100点）
+            calculateLocationScore(user), // 地域（公平スコア：最大100点）
             calculateActivityScore(user), // 活動（実データ：最大100点）
-            Math.min((user.interests?.length || 0) * 25, 100) // 興味（最大100点）
+            calculateInterestScore(user) // 興味（質的評価：最大100点）
         ];
         
         // データポリゴンを描画
