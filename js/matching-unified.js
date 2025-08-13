@@ -1136,7 +1136,7 @@
                 
                 <!-- レーダーチャート -->
                 <div class="matching-radar">
-                    <canvas id="radar-${safeCanvasId}" data-original-user-id="${userId}"></canvas>
+                    <canvas id="radar-${safeCanvasId}" width="260" height="260" data-original-user-id="${userId}"></canvas>
                 </div>
                 
                 <div class="matching-actions">
@@ -2272,15 +2272,8 @@
         const dpr = window.devicePixelRatio || 1;
         
         // Canvas表示サイズを統一（profile-detail-modalと同じ260pxに）
-        // 元のコード: const rect = canvas.getBoundingClientRect();
-        // 元のコード: const displayWidth = Math.min(rect.width || 200, 300);
-        // 元のコード: const displayHeight = Math.min(rect.height || 200, 300);
         const displayWidth = 260;  // profile-detail-modalと統一
         const displayHeight = 260; // profile-detail-modalと統一
-        
-        // 既存の属性をクリア
-        canvas.removeAttribute('width');
-        canvas.removeAttribute('height');
         
         // Canvasの実際のピクセルサイズを高DPI対応
         canvas.width = displayWidth * dpr;
