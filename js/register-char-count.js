@@ -227,6 +227,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 初期バリデーション実行を無効化（ユーザーが入力を始めてからバリデーション開始）
     // validateStep();
+    
+    // ただし、文字カウントの初期表示は実行
+    charCountFields.forEach(field => {
+        const textarea = document.getElementById(field.id);
+        const countElement = document.getElementById(field.countId);
+        if (textarea && countElement) {
+            updateCharCount(textarea, countElement, field.min);
+        }
+    });
 
     // ファイルアップロード処理
     const fileInput = document.getElementById('line-qr');

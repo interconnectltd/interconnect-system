@@ -337,12 +337,14 @@
         });
         
         // テキストエリアのイベントリスナー
+        // register-char-count.jsで処理するため、ここでは文字カウントを行わない
         document.querySelectorAll('textarea[minlength]').forEach(textarea => {
             textarea.addEventListener('input', function() {
-                updateCharCounter(this);
+                // updateCharCounter(this); // register-char-count.jsと競合するため無効化
+                validateField(this); // バリデーションのみ実行
             });
             // 初期表示
-            updateCharCounter(textarea);
+            // updateCharCounter(textarea); // 初期表示も無効化
         });
         
         // チェックボックスのイベントリスナー
