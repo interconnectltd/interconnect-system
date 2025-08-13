@@ -34,6 +34,33 @@
         interests: [],
         sortBy: 'score'
     };
+    
+    // タイマー管理用
+    const activeTimers = new Set();
+    
+    // Canvas再試行カウントを管理するWeakMap
+    const canvasRetryCount = new WeakMap();
+    
+    // マッチングスコア計算関数をグローバルに公開（後で設定）
+    window.matchingScoreFix = {
+        calculateScore: calculateMatchingScore
+    };
+    
+    // タイマー管理ヘルパー関数
+    function setManagedTimeout(callback, delay) {
+        const timerId = setTimeout(() => {
+            activeTimers.delete(timerId);
+            callback();
+        }, delay);
+        activeTimers.add(timerId);
+        return timerId;
+    }
+    
+    // 全タイマーのクリーンアップ
+    function clearAllTimers() {
+        activeTimers.forEach(timerId => clearTimeout(timerId));
+        activeTimers.clear();
+    }
 
     // 初期化
     async function initialize() {
@@ -47,8 +74,12 @@
             const { data: { user } } = await window.supabaseClient.auth.getUser();
             if (!user) {
                 console.error('[MatchingUnified] ユーザーが認証されていません');
-                // テスト用にダミーデータを表示
-                displayDummyData();
+                // 開発環境でのみダミーデータを表示
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    displayDummyData();
+                } else {
+                    showLoginRequired();
+                }
                 return;
             }
 
@@ -62,8 +93,12 @@
             await loadMatchingCandidates();
         } catch (error) {
             console.error('[MatchingUnified] 初期化エラー:', error);
-            // エラー時もダミーデータを表示
-            displayDummyData();
+            // 開発環境でのみダミーデータを表示
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                displayDummyData();
+            } else {
+                showErrorMessage('初期化エラーが発生しました。ページを再読み込みしてください。');
+            }
         }
     }
 
@@ -149,14 +184,49 @@
             
             currentUserId = user.id;
             
-            // user_profilesテーブルから全ユーザーを取得
+            // user_profilesテーブルから必要なカラムのみ取得（パフォーマンス改善）
             const { data: allUsers, error } = await window.supabaseClient
                 .from('user_profiles')
-                .select('*');
+                .select(`
+                    id,
+                    name,
+                    position,
+                    company,
+                    location,
+                    industry,
+                    skills,
+                    interests,
+                    business_challenges,
+                    picture_url,
+                    last_login,
+                    bio,
+                    email,
+                    phone,
+                    line_id,
+                    created_at
+                `)
+                .limit(200); // パフォーマンス対策: 最大200件に制限
             
             if (error) {
                 console.error('[MatchingUnified] ユーザー取得エラー:', error);
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>データの取得に失敗しました</h3><p>' + error.message + '</p></div>';
+                // XSS対策: DOM操作で安全に挿入
+                container.innerHTML = '';
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'empty-state';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-exclamation-triangle';
+                
+                const heading = document.createElement('h3');
+                heading.textContent = 'データの取得に失敗しました';
+                
+                const paragraph = document.createElement('p');
+                paragraph.textContent = error.message;
+                
+                errorDiv.appendChild(icon);
+                errorDiv.appendChild(heading);
+                errorDiv.appendChild(paragraph);
+                container.appendChild(errorDiv);
                 return;
             }
             
@@ -220,20 +290,84 @@
             console.error('[MatchingUnified] エラー:', error);
             const container = document.getElementById('matching-container');
             if (container) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>エラーが発生しました</h3><p>' + error.message + '</p></div>';
+                // XSS対策: DOM操作で安全に挿入
+                container.innerHTML = '';
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'empty-state';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-exclamation-triangle';
+                
+                const heading = document.createElement('h3');
+                heading.textContent = 'エラーが発生しました';
+                
+                const paragraph = document.createElement('p');
+                paragraph.textContent = error.message;
+                
+                errorDiv.appendChild(icon);
+                errorDiv.appendChild(heading);
+                errorDiv.appendChild(paragraph);
+                container.appendChild(errorDiv);
             }
         }
     }
 
+    // 個別のマッチングスコア計算（profile-detail-modalから呼び出し可能）
+    function calculateMatchingScore(profileUser, currentUser) {
+        if (!profileUser || !currentUser) return 50;
+        
+        let score = 0;
+        
+        // スキルの一致度（30点満点）
+        if (profileUser.skills && currentUser.skills) {
+            const profileSkills = Array.isArray(profileUser.skills) ? profileUser.skills : [];
+            const currentSkills = Array.isArray(currentUser.skills) ? currentUser.skills : [];
+            const commonSkills = profileSkills.filter(skill => currentSkills.includes(skill));
+            score += Math.min((commonSkills.length / Math.max(profileSkills.length, 1)) * 30, 30);
+        }
+        
+        // 興味の一致度（25点満点）
+        if (profileUser.interests && currentUser.interests) {
+            const profileInterests = Array.isArray(profileUser.interests) ? profileUser.interests : [];
+            const currentInterests = Array.isArray(currentUser.interests) ? currentUser.interests : [];
+            const commonInterests = profileInterests.filter(interest => currentInterests.includes(interest));
+            score += Math.min((commonInterests.length / Math.max(profileInterests.length, 1)) * 25, 25);
+        }
+        
+        // 業界の一致（20点）
+        if (profileUser.industry && currentUser.industry && profileUser.industry === currentUser.industry) {
+            score += 20;
+        }
+        
+        // 地域の一致（15点）
+        if (profileUser.location && currentUser.location && profileUser.location === currentUser.location) {
+            score += 15;
+        }
+        
+        // 基礎スコア（10点）
+        score += 10;
+        
+        return Math.min(Math.round(score), 100);
+    }
+    
     // マッチングスコアの計算
     async function calculateMatchingScores(users) {
         try {
-            // 現在のユーザーのプロフィール取得
-            const { data: allProfiles } = await window.supabaseClient
+            // 現在のユーザーのプロフィール取得（自分のデータのみ）
+            const { data: currentUserData } = await window.supabaseClient
                 .from('user_profiles')
-                .select('*');
+                .select(`
+                    id,
+                    skills,
+                    interests,
+                    business_challenges,
+                    industry,
+                    location
+                `)
+                .eq('id', currentUserId)
+                .single();
             
-            const currentUser = allProfiles ? allProfiles.find(u => u.id === currentUserId) : null;
+            const currentUser = currentUserData;
 
             if (!currentUser) return users;
 
@@ -368,17 +502,25 @@
         setupCardEventListeners();
         
         // レーダーチャートを描画（少し遅延させて確実にCanvasが準備されるようにする）
-        setTimeout(() => {
+        setManagedTimeout(() => {
             // console.log('[MatchingUnified] レーダーチャート描画を開始します。ユーザー数:', paginatedUsers.length);
             // 全てのCanvas要素が存在するか確認
             const canvasElements = container.querySelectorAll('canvas[id^="radar-"]');
             // console.log('[MatchingUnified] Canvas要素数:', canvasElements.length);
             
-            paginatedUsers.forEach((user, index) => {
-                const userId = user.id;
-                // console.log(`[MatchingUnified] ユーザー ${index + 1}/${paginatedUsers.length} のレーダーチャート描画:`, userId);
-                drawRadarChartForUser(user);
-            });
+            // requestAnimationFrameを使用して順次描画（フリーズ防止）
+            let currentIndex = 0;
+            function drawNextChart() {
+                if (currentIndex < paginatedUsers.length) {
+                    const user = paginatedUsers[currentIndex];
+                    const userId = user.id;
+                    // console.log(`[MatchingUnified] ユーザー ${currentIndex + 1}/${paginatedUsers.length} のレーダーチャート描画:`, userId);
+                    drawRadarChartForUser(user);
+                    currentIndex++;
+                    requestAnimationFrame(drawNextChart);
+                }
+            }
+            requestAnimationFrame(drawNextChart);
         }, 300);
     }
 
@@ -401,7 +543,8 @@
 
     // マッチングカードの作成
     function createMatchingCard(user) {
-        const matchScore = user.matchScore || Math.floor(Math.random() * 30 + 70);
+        // スコアが未設定の場合は、ユーザーIDベースの疑似ランダム値を生成（一貫性を保つ）
+        const matchScore = user.matchScore || generateConsistentScore(user.id);
         // スキルデータの処理（配列または文字列）
         let skillsArray = [];
         if (Array.isArray(user.skills)) {
@@ -417,11 +560,13 @@
         const hasCommonSkills = skills.some(skill => commonSkills.includes(skill));
 
         const userId = user.id;
+        // Canvas用のIDを安全にエスケープ（HTML属性用）
+        const safeCanvasId = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
         return `
             <div class="matching-card" data-user-id="${userId}">
                 <div class="matching-score">${matchScore}%</div>
                 ${user.picture_url ? 
-                    `<img src="${user.picture_url}" alt="${user.name}" class="matching-avatar">` :
+                    `<img src="${sanitizeImageUrl(user.picture_url)}" alt="${escapeHtml(user.name)}" class="matching-avatar">` :
                     `<div class="matching-avatar-placeholder">
                         <i class="fas fa-user"></i>
                     </div>`
@@ -434,7 +579,7 @@
                 </div>
                 <!-- レーダーチャート追加 -->
                 <div class="matching-radar">
-                    <canvas id="radar-${userId}" width="200" height="200"></canvas>
+                    <canvas id="radar-${safeCanvasId}" data-original-user-id="${userId}"></canvas>
                 </div>
                 <!-- 共通スキル表示 -->
                 ${hasCommonSkills ? `
@@ -467,44 +612,61 @@
             return;
         }
         
-        // プロフィール表示ボタン - イベント委譲を使用
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.view-profile-btn');
-            if (btn && !btn.dataset.listenerAttached) {
-                e.preventDefault();
-                e.stopPropagation();
-                const userId = btn.dataset.userId;
-                if (userId) {
-                    showUserProfile(userId);
-                }
-            }
-        });
-
-        // コネクトボタン - イベント委譲を使用
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.connect-btn');
-            if (btn && !btn.dataset.listenerAttached) {
-                e.preventDefault();
-                e.stopPropagation();
-                const userId = btn.dataset.userId;
-                // console.log('[MatchingUnified] コネクトボタンクリック:', userId);
-                if (userId) {
-                    sendConnectRequest(userId);
-                }
-            }
-        });
-
-        // ブックマークボタン - イベント委譲を使用
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.bookmark-btn');
-            if (btn && !btn.dataset.listenerAttached) {
-                const userId = btn.dataset.userId;
-                toggleBookmark(userId, btn);
-            }
-        });
-        
-        // フラグを設定
+        // イベントリスナーが設定済みであることをマーク
         eventListenersSetup = true;
+        
+        // プロフィール表示ボタン - イベント委譲を使用（一度だけ設定）
+        document.addEventListener('click', handleCardClick);
+    }
+    
+    // カード内のクリックイベントを一元管理
+    function handleCardClick(e) {
+        // プロフィール表示ボタン
+        const profileBtn = e.target.closest('.view-profile-btn');
+        if (profileBtn && !profileBtn.dataset.listenerAttached) {
+            e.preventDefault();
+            e.stopPropagation();
+            profileBtn.dataset.listenerAttached = 'true';
+            const userId = profileBtn.dataset.userId;
+            if (userId) {
+                showUserProfile(userId);
+            }
+            return;
+        }
+        
+        // コネクトボタン
+        const connectBtn = e.target.closest('.connect-btn');
+        if (connectBtn && !connectBtn.dataset.listenerAttached) {
+            e.preventDefault();
+            e.stopPropagation();
+            connectBtn.dataset.listenerAttached = 'true';
+            const userId = connectBtn.dataset.userId;
+            if (userId) {
+                sendConnectRequest(userId);
+            }
+            return;
+        }
+        
+        // ブックマークボタン
+        const bookmarkBtn = e.target.closest('.bookmark-btn');
+        if (bookmarkBtn && !bookmarkBtn.dataset.listenerAttached) {
+            bookmarkBtn.dataset.listenerAttached = 'true';
+            const userId = bookmarkBtn.dataset.userId;
+            toggleBookmark(userId, bookmarkBtn);
+            return;
+        }
+    }
+
+    // ProfileDetailModalの読み込みを待機する関数
+    async function waitForProfileModal(maxAttempts = 10) {
+        for (let i = 0; i < maxAttempts; i++) {
+            if (window.profileDetailModal && window.profileDetailModal.show) {
+                return true;
+            }
+            // 100ms待機
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return false;
     }
 
     // プロフィール詳細表示
@@ -513,8 +675,11 @@
             // プロフィール閲覧履歴を記録
             await recordProfileView(userId);
 
-            // ProfileDetailModalを使用（高機能版）
-            if (window.profileDetailModal && window.profileDetailModal.show) {
+            // ProfileDetailModalの読み込みを待機（最大1秒）
+            const modalAvailable = await waitForProfileModal();
+            
+            if (modalAvailable) {
+                // ProfileDetailModalを使用（高機能版）
                 window.profileDetailModal.show(userId);
             } else {
                 // フォールバック: 従来のモーダル表示
@@ -522,11 +687,19 @@
                     .from('user_profiles')
                     .select('*');
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('[MatchingUnified] ユーザー取得エラー:', error);
+                    showToast('ユーザー情報の取得に失敗しました', 'error');
+                    return;
+                }
                 
                 // idでフィルタリング（user_profilesテーブルではidカラムを使用）
                 const user = users.find(u => u.id === userId);
-                if (!user) throw new Error('ユーザーが見つかりません');
+                if (!user) {
+                    console.error('[MatchingUnified] ユーザーが見つかりません:', userId);
+                    showToast('ユーザーが見つかりません', 'error');
+                    return;
+                }
 
                 // モーダルで表示
                 showProfileModal(user);
@@ -560,7 +733,7 @@
                 <div class="modal-body">
                     <div class="profile-header">
                         ${user.picture_url ? 
-                            `<img src="${user.picture_url}" alt="${user.name}" class="profile-avatar">` :
+                            `<img src="${sanitizeImageUrl(user.picture_url)}" alt="${escapeHtml(user.name)}" class="profile-avatar">` :
                             `<div class="profile-avatar-placeholder">
                                 <i class="fas fa-user"></i>
                             </div>`
@@ -695,7 +868,11 @@
                     status: 'pending'
                 });
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('[MatchingUnified] コネクト申請エラー:', insertError);
+                showToast('コネクト申請の送信に失敗しました', 'error');
+                return;
+            }
 
             // 通知を送信
             await sendNotification(
@@ -723,6 +900,12 @@
     // メッセージ入力モーダル
     function showMessageModal() {
         return new Promise((resolve) => {
+            // 既存のモーダルがあれば削除
+            const existingModal = document.querySelector('.message-modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
             const modal = document.createElement('div');
             modal.className = 'modal message-modal';
             modal.innerHTML = `
@@ -746,22 +929,22 @@
 
             document.body.appendChild(modal);
 
-            // イベントリスナー
+            // イベントリスナー（once: trueで重複防止）
             modal.querySelector('#send-connect-btn').addEventListener('click', () => {
                 const message = modal.querySelector('#connect-message').value.trim();
                 modal.remove();
                 resolve(message);
-            });
+            }, { once: true });
 
             modal.querySelector('.modal-close').addEventListener('click', () => {
                 modal.remove();
                 resolve(null);
-            });
+            }, { once: true });
             
             modal.querySelector('.btn-secondary').addEventListener('click', () => {
                 modal.remove();
                 resolve(null);
-            });
+            }, { once: true });
         });
     }
 
@@ -784,7 +967,11 @@
                     .eq('user_id', currentUserId)
                     .eq('bookmarked_user_id', userId);
 
-                if (error) throw error;
+                if (error) {
+                    console.error('[MatchingUnified] ブックマーク解除エラー:', error);
+                    showToast('ブックマークの解除に失敗しました', 'error');
+                    return;
+                }
 
                 buttonElement.querySelector('i').classList.remove('fas');
                 buttonElement.querySelector('i').classList.add('far');
@@ -799,7 +986,11 @@
                         bookmarked_user_id: userId
                     });
 
-                if (error) throw error;
+                if (error) {
+                    console.error('[MatchingUnified] ブックマーク追加エラー:', error);
+                    showToast('ブックマークの追加に失敗しました', 'error');
+                    return;
+                }
 
                 buttonElement.querySelector('i').classList.remove('far');
                 buttonElement.querySelector('i').classList.add('fas');
@@ -928,6 +1119,23 @@
         }
     }
 
+    // ページネーションボタンのハンドラー（グローバルに定義して再利用）
+    function handlePrevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            displayMatchingUsers();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // スクロール位置をトップに
+        }
+    }
+
+    function handleNextPage(totalPages) {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayMatchingUsers();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // スクロール位置をトップに
+        }
+    }
+
     // ページネーションUI更新
     function updatePagination(totalItems) {
         const pagination = document.querySelector('.pagination');
@@ -939,24 +1147,20 @@
         const prevBtn = pagination.querySelector('.btn-outline:first-child');
         if (prevBtn) {
             prevBtn.disabled = currentPage <= 1;
-            prevBtn.onclick = () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    displayMatchingUsers();
-                }
-            };
+            // removeEventListenerで既存のイベントをクリア
+            const newPrevBtn = prevBtn.cloneNode(true);
+            prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+            newPrevBtn.addEventListener('click', handlePrevPage);
         }
 
         // 次へボタン
         const nextBtn = pagination.querySelector('.btn-outline:last-child');
         if (nextBtn) {
             nextBtn.disabled = currentPage >= totalPages;
-            nextBtn.onclick = () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    displayMatchingUsers();
-                }
-            };
+            // removeEventListenerで既存のイベントをクリア
+            const newNextBtn = nextBtn.cloneNode(true);
+            nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+            newNextBtn.addEventListener('click', () => handleNextPage(totalPages));
         }
 
         // ページ番号
@@ -977,10 +1181,14 @@
                 const pageBtn = document.createElement('button');
                 pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
                 pageBtn.textContent = i;
-                pageBtn.onclick = () => {
-                    currentPage = i;
-                    displayMatchingUsers();
-                };
+                // onclickの代わりにaddEventListenerを使用
+                pageBtn.addEventListener('click', ((pageNum) => {
+                    return () => {
+                        currentPage = pageNum;
+                        displayMatchingUsers();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    };
+                })(i));
                 pageNumbers.appendChild(pageBtn);
             }
         }
@@ -1025,7 +1233,10 @@
                     is_read: false
                 });
 
-            if (error) throw error;
+            if (error) {
+                console.error('[MatchingUnified] 通知送信エラー:', error);
+                // 通知送信失敗はサイレントに処理（UIの流れを止めない）
+            }
             // console.log('[MatchingUnified] 通知送信成功');
             
         } catch (error) {
@@ -1045,7 +1256,10 @@
                     related_user_id: relatedUserId
                 });
 
-            if (error) throw error;
+            if (error) {
+                console.error('[MatchingUnified] アクティビティ記録エラー:', error);
+                // アクティビティ記録失敗はサイレントに処理（UIの流れを止めない）
+            }
             // console.log('[MatchingUnified] アクティビティ記録成功');
             
         } catch (error) {
@@ -1059,12 +1273,22 @@
         buttons.forEach(button => {
             if (status === 'pending') {
                 button.disabled = true;
-                button.innerHTML = '<i class="fas fa-clock"></i> 申請中';
+                // XSS対策: DOM操作で安全に挿入
+                button.innerHTML = '';
+                const clockIcon = document.createElement('i');
+                clockIcon.className = 'fas fa-clock';
+                button.appendChild(clockIcon);
+                button.appendChild(document.createTextNode(' 申請中'));
                 button.classList.remove('btn-primary');
                 button.classList.add('btn-secondary');
             } else if (status === 'accepted') {
                 button.disabled = true;
-                button.innerHTML = '<i class="fas fa-check"></i> コネクト済み';
+                // XSS対策: DOM操作で安全に挿入
+                button.innerHTML = '';
+                const checkIcon = document.createElement('i');
+                checkIcon.className = 'fas fa-check';
+                button.appendChild(checkIcon);
+                button.appendChild(document.createTextNode(' コネクト済み'));
                 button.classList.remove('btn-primary');
                 button.classList.add('btn-success');
             }
@@ -1073,9 +1297,57 @@
 
     // ユーティリティ関数
     function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        if (!text) return '';
+        const escapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;'
+        };
+        return String(text).replace(/[&<>"'\/]/g, char => escapeMap[char]);
+    }
+    
+    // ユーザーIDから一貫したスコアを生成（再描画でも同じ値）
+    function generateConsistentScore(userId) {
+        if (!userId) return 75;
+        
+        // userIdから疑似ランダムな値を生成（常に同じIDは同じ値）
+        let hash = 0;
+        for (let i = 0; i < userId.length; i++) {
+            const char = userId.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        
+        // 70-100の範囲に収める
+        const score = 70 + (Math.abs(hash) % 31);
+        return score;
+    }
+    
+    // 画像URLのサニタイズ（XSS対策）
+    function sanitizeImageUrl(url) {
+        if (!url) return '';
+        
+        // javascript:, data:, vbscript: などの危険なスキームをブロック
+        const dangerousSchemes = ['javascript:', 'data:', 'vbscript:', 'file:', 'about:'];
+        const lowerUrl = url.toLowerCase().trim();
+        
+        for (const scheme of dangerousSchemes) {
+            if (lowerUrl.startsWith(scheme)) {
+                console.warn('[MatchingUnified] 危険なURLスキームをブロック:', scheme);
+                return ''; // 安全なデフォルト画像URLまたは空文字を返す
+            }
+        }
+        
+        // 相対URLまたはhttps/httpのみ許可
+        if (lowerUrl.startsWith('http://') || lowerUrl.startsWith('https://') || lowerUrl.startsWith('/')) {
+            return url;
+        }
+        
+        // その他の場合は相対URLとして扱う
+        return url;
     }
 
     function showSuccess(message) {
@@ -1089,20 +1361,65 @@
     function showInfo(message) {
         showToast(message, 'info');
     }
+    
+    // ログイン要求メッセージを表示
+    function showLoginRequired() {
+        const container = document.getElementById('matching-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-lock"></i>
+                    <h3>ログインが必要です</h3>
+                    <p>マッチング機能を利用するにはログインしてください</p>
+                    <a href="login.html" class="btn btn-primary">ログインページへ</a>
+                </div>
+            `;
+        }
+    }
+    
+    // エラーメッセージを表示
+    function showErrorMessage(message) {
+        const container = document.getElementById('matching-container');
+        if (container) {
+            container.innerHTML = '';
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'empty-state';
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-exclamation-triangle';
+            
+            const heading = document.createElement('h3');
+            heading.textContent = 'エラーが発生しました';
+            
+            const paragraph = document.createElement('p');
+            paragraph.textContent = message;
+            
+            errorDiv.appendChild(icon);
+            errorDiv.appendChild(heading);
+            errorDiv.appendChild(paragraph);
+            container.appendChild(errorDiv);
+        }
+    }
 
     function showToast(message, type = 'info') {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-            <span>${message}</span>
-        `;
+        
+        // XSS対策: innerHTMLではなくDOM操作で要素を構築
+        const icon = document.createElement('i');
+        icon.className = `fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}`;
+        
+        const span = document.createElement('span');
+        span.textContent = message; // textContentで安全にテキストを設定
+        
+        toast.appendChild(icon);
+        toast.appendChild(span);
         document.body.appendChild(toast);
 
-        setTimeout(() => toast.classList.add('show'), 100);
-        setTimeout(() => {
+        setManagedTimeout(() => toast.classList.add('show'), 100);
+        setManagedTimeout(() => {
             toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
+            setManagedTimeout(() => toast.remove(), 300);
         }, 3000);
     }
 
@@ -1167,17 +1484,79 @@
         
         return Math.min(score, 100);
     }
+    
+    // 業界スコアを計算（詳細版）
+    function calculateIndustryScore(user) {
+        if (!user.industry) return 30; // 業界未設定の基礎スコア
+        
+        let score = 50; // 業界設定済みの基礎スコア
+        
+        // 業界の詳細度による加点
+        const detailedIndustries = ['IT・テクノロジー', '金融', '医療・ヘルスケア', '製造業', 'サービス業'];
+        if (detailedIndustries.includes(user.industry)) {
+            score += 30;
+        }
+        
+        // 業界経験年数があれば加点（フィールドがある場合）
+        if (user.industry_experience) {
+            const years = parseInt(user.industry_experience);
+            if (years >= 10) score += 20;
+            else if (years >= 5) score += 15;
+            else if (years >= 3) score += 10;
+        }
+        
+        return Math.min(score, 100);
+    }
+    
+    // 地域スコアを計算（詳細版）
+    function calculateLocationScore(user) {
+        if (!user.location) return 30; // 地域未設定の基礎スコア
+        
+        let score = 50; // 地域設定済みの基礎スコア
+        
+        // 主要都市による加点
+        const majorCities = ['東京', '大阪', '名古屋', '福岡', '横浜', '札幌', '神戸', '京都'];
+        if (majorCities.some(city => user.location.includes(city))) {
+            score += 30;
+        }
+        
+        // より詳細な住所情報があれば加点
+        if (user.location.length > 5) {
+            score += 20;
+        }
+        
+        return Math.min(score, 100);
+    }
+
+    // 計算関数をグローバルに追加公開
+    window.matchingScoreFix.calculateExperienceScore = calculateExperienceScore;
+    window.matchingScoreFix.calculateActivityScore = calculateActivityScore;
+    window.matchingScoreFix.calculateIndustryScore = calculateIndustryScore;
+    window.matchingScoreFix.calculateLocationScore = calculateLocationScore;
 
     // レーダーチャートを描画
     function drawRadarChartForUser(user) {
         const userId = user.id;
+        // Canvas用のIDを安全にエスケープ（同じロジックを使用）
+        const safeCanvasId = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
         // console.log('[MatchingUnified] レーダーチャート描画開始:', userId);
-        const canvas = document.getElementById(`radar-${userId}`);
+        const canvas = document.getElementById(`radar-${safeCanvasId}`);
         if (!canvas) {
-            console.error('[MatchingUnified] Canvas要素が見つかりません:', `radar-${userId}`);
+            // 再試行回数を制限（無限ループ防止）
+            let retryCount = canvasRetryCount.get(user) || 0;
+            if (retryCount >= 3) {
+                console.error('[MatchingUnified] Canvas要素が見つかりません（最大試行回数到達）:', `radar-${safeCanvasId}`);
+                canvasRetryCount.delete(user); // メモリリーク防止
+                return;
+            }
+            
+            retryCount++;
+            canvasRetryCount.set(user, retryCount);
+            // console.log('[MatchingUnified] Canvas要素再試行:', retryCount, '回目');
+            
             // 再試行
-            setTimeout(() => {
-                const retryCanvas = document.getElementById(`radar-${userId}`);
+            setManagedTimeout(() => {
+                const retryCanvas = document.getElementById(`radar-${safeCanvasId}`);
                 if (retryCanvas) {
                     // console.log('[MatchingUnified] Canvas要素が見つかりました（再試行）');
                     drawRadarChartForUser(user);
@@ -1186,24 +1565,58 @@
             return;
         }
         
-        const ctx = canvas.getContext('2d');
-        // console.log('[MatchingUnified] Canvas取得成功:', canvas.width, 'x', canvas.height);
-        
-        // Canvasのサイズを確認
-        if (canvas.width === 0 || canvas.height === 0) {
-            console.error('[MatchingUnified] Canvasのサイズが0です');
-            // サイズを強制的に設定
-            canvas.width = 200;
-            canvas.height = 200;
+        // Canvas要素が見つかったら再試行カウントをクリア
+        if (canvasRetryCount.has(user)) {
+            canvasRetryCount.delete(user);
         }
         
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = Math.min(canvas.width, canvas.height) * 0.4;
+        // 既に描画済みの場合はスキップ
+        if (canvas.dataset.rendered === 'true') {
+            // console.log('[MatchingUnified] レーダーチャート既に描画済み:', safeCanvasId);
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            console.error('[MatchingUnified] Canvas 2Dコンテキストの取得に失敗');
+            return;
+        }
+        // console.log('[MatchingUnified] Canvas取得成功:', canvas.width, 'x', canvas.height);
+        
+        // 描画状態を保存
+        ctx.save();
+        
+        // Retina/高DPIディスプレイ対応
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        
+        // Canvas表示サイズ（最大300pxに制限）
+        const displayWidth = Math.min(rect.width || 200, 300);
+        const displayHeight = Math.min(rect.height || 200, 300);
+        
+        // 既存の属性をクリア
+        canvas.removeAttribute('width');
+        canvas.removeAttribute('height');
+        
+        // Canvasの実際のピクセルサイズを高DPI対応
+        canvas.width = displayWidth * dpr;
+        canvas.height = displayHeight * dpr;
+        
+        // CSSで表示サイズを設定
+        canvas.style.width = displayWidth + 'px';
+        canvas.style.height = displayHeight + 'px';
+        
+        // 描画コンテキストをスケール
+        ctx.scale(dpr, dpr);
+        
+        // 描画用の座標（表示サイズベース）
+        const centerX = displayWidth / 2;
+        const centerY = displayHeight / 2;
+        const radius = Math.min(displayWidth, displayHeight) * 0.4;
         const sides = 6;
         
-        // クリア
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // クリア（スケール後のサイズ）
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
         
         // 背景の六角形グリッドを描画
         ctx.strokeStyle = '#e0e0e0';
@@ -1252,14 +1665,14 @@
             ctx.fillText(label, x, y);
         });
         
-        // データポイントを計算
+        // データポイントを計算（よりバランスの取れたスコア計算）
         const values = [
-            Math.min((user.skills?.length || 0) * 20, 100), // スキル
-            calculateExperienceScore(user), // 経験（実データ化）
-            user.industry ? 80 : 40, // 業界
-            user.location ? 80 : 40, // 地域
-            calculateActivityScore(user), // 活動（実データ化）
-            Math.min((user.interests?.length || 0) * 25, 100) // 興味
+            Math.min((user.skills?.length || 0) * 20, 100), // スキル（最大100点）
+            calculateExperienceScore(user), // 経験（実データ：最大100点）
+            calculateIndustryScore(user), // 業界（詳細スコア：最大100点）
+            calculateLocationScore(user), // 地域（詳細スコア：最大100点）
+            calculateActivityScore(user), // 活動（実データ：最大100点）
+            Math.min((user.interests?.length || 0) * 25, 100) // 興味（最大100点）
         ];
         
         // データポリゴンを描画
@@ -1294,10 +1707,13 @@
             ctx.fill();
         });
         
-        // console.log('[MatchingUnified] レーダーチャート描画完了:', userId);
+        // 描画状態を復元
+        ctx.restore();
         
-        // Canvasの表示状態を検証
-        const canvasRect = canvas.getBoundingClientRect();
+        // 描画完了フラグを設定
+        canvas.dataset.rendered = 'true';
+        
+        // console.log('[MatchingUnified] レーダーチャート描画完了:', userId);
         // console.log('[MatchingUnified] Canvas表示状態:', {
         //     userId: userId,
         //     visible: canvasRect.width > 0 && canvasRect.height > 0,
@@ -1402,5 +1818,10 @@
             window.addEventListener('supabaseReady', initialize, { once: true });
         }
     }
+    
+    // ページアンロード時にタイマーをクリーンアップ
+    window.addEventListener('beforeunload', () => {
+        clearAllTimers();
+    });
 
 })();

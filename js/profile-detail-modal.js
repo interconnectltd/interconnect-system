@@ -531,7 +531,7 @@
                             
                             <!-- レーダーチャート -->
                             <div class="profile-detail-radar" id="profile-detail-radar">
-                                <canvas width="260" height="260"></canvas>
+                                <canvas></canvas>
                             </div>
                         </div>
                     </div>
@@ -675,14 +675,44 @@
             const canvas = document.querySelector('#profile-detail-radar canvas');
             if (!canvas) return;
             
+            // 既に描画済みの場合はスキップ
+            if (canvas.dataset.rendered === 'true') {
+                // console.log('[ProfileDetailModal] レーダーチャート既に描画済み');
+                return;
+            }
+            
             const ctx = canvas.getContext('2d');
-            const centerX = 130;
-            const centerY = 130;
+            if (!ctx) return;
+            
+            // Retina/高DPIディスプレイ対応
+            const dpr = window.devicePixelRatio || 1;
+            
+            // Canvas表示サイズ
+            const displayWidth = 260;
+            const displayHeight = 260;
+            
+            // 既存の属性をクリア
+            canvas.removeAttribute('width');
+            canvas.removeAttribute('height');
+            
+            // Canvasの実際のピクセルサイズを高DPI対応
+            canvas.width = displayWidth * dpr;
+            canvas.height = displayHeight * dpr;
+            
+            // CSSで表示サイズを設定
+            canvas.style.width = displayWidth + 'px';
+            canvas.style.height = displayHeight + 'px';
+            
+            // 描画コンテキストをスケール
+            ctx.scale(dpr, dpr);
+            
+            const centerX = displayWidth / 2;
+            const centerY = displayHeight / 2;
             const radius = 100;
             
             // 背景
             ctx.fillStyle = '#f8f9fa';
-            ctx.fillRect(0, 0, 260, 260);
+            ctx.fillRect(0, 0, displayWidth, displayHeight);
             
             // グリッド
             ctx.strokeStyle = '#e0e0e0';
@@ -701,8 +731,8 @@
                 ctx.stroke();
             }
             
-            // 軸
-            const labels = ['スキル', '経験', '地域', '業界', '活動', '興味'];
+            // 軸（matching-unified.jsと同じ順序）
+            const labels = ['スキル', '経験', '業界', '地域', '活動', '興味'];
             ctx.fillStyle = '#666';
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
@@ -714,15 +744,33 @@
                 ctx.fillText(labels[i], x, y);
             }
             
-            // データ
-            const values = [
-                (profile.skills?.length || 0) * 20,
-                Math.random() * 80 + 20,
-                profile.location ? 80 : 20,
-                profile.industry ? 80 : 20,
-                Math.random() * 80 + 20,
-                (profile.interests?.length || 0) * 20
-            ];
+            // データ（matching-unified.jsの計算関数を使用）
+            let values;
+            if (window.matchingScoreFix && 
+                window.matchingScoreFix.calculateExperienceScore &&
+                window.matchingScoreFix.calculateActivityScore &&
+                window.matchingScoreFix.calculateIndustryScore &&
+                window.matchingScoreFix.calculateLocationScore) {
+                // matching-unified.jsの計算関数を使用
+                values = [
+                    Math.min((profile.skills?.length || 0) * 20, 100), // スキル（最大100点）
+                    window.matchingScoreFix.calculateExperienceScore(profile), // 経験（実データ）
+                    window.matchingScoreFix.calculateIndustryScore(profile), // 業界（詳細スコア）
+                    window.matchingScoreFix.calculateLocationScore(profile), // 地域（詳細スコア）
+                    window.matchingScoreFix.calculateActivityScore(profile), // 活動（実データ）
+                    Math.min((profile.interests?.length || 0) * 25, 100) // 興味（最大100点、×25に統一）
+                ];
+            } else {
+                // フォールバック（matching-unified.jsが読み込まれていない場合）
+                values = [
+                    Math.min((profile.skills?.length || 0) * 20, 100),
+                    50, // 経験（固定値）
+                    profile.industry ? 80 : 30,
+                    profile.location ? 80 : 30,
+                    50, // 活動（固定値）
+                    Math.min((profile.interests?.length || 0) * 25, 100)
+                ];
+            }
             
             // データポリゴン
             ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
@@ -741,6 +789,9 @@
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
+            
+            // 描画完了フラグを設定
+            canvas.dataset.rendered = 'true';
         }
         
         async sendConnect(profileId) {
@@ -823,6 +874,12 @@
         
         close() {
             if (this.modal) {
+                // Canvas描画フラグをリセット
+                const canvas = this.modal.querySelector('#profile-detail-radar canvas');
+                if (canvas) {
+                    canvas.dataset.rendered = 'false';
+                }
+                
                 this.modal.classList.remove('show');
                 setTimeout(() => {
                     this.modal.remove();
