@@ -2661,6 +2661,10 @@
         }
     }
     
+    // グローバルに関数を公開（他のスクリプトから呼び出せるように）
+    window.drawRadarChartForUser = drawRadarChartForUser;
+    window.displayDummyData = displayDummyData;
+    
     // ページアンロード時にタイマーをクリーンアップ
     window.addEventListener('beforeunload', () => {
         clearAllTimers();
