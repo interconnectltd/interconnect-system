@@ -1010,7 +1010,8 @@
             let currentIndex = 0;
             function drawNextChart() {
                 if (currentIndex < paginatedUsers.length) {
-                    const user = paginatedUsers[currentIndex];
+                    // クロージャー問題を防ぐためユーザーデータをコピー（修正3）
+                    const user = Object.assign({}, paginatedUsers[currentIndex]);
                     const userId = user.id;
                     // console.log(`[MatchingUnified] ユーザー ${currentIndex + 1}/${paginatedUsers.length} のレーダーチャート描画:`, userId);
                     drawRadarChartForUser(user);
@@ -2346,6 +2347,16 @@
         const safeCanvasId = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
         // console.log('[MatchingUnified] レーダーチャート描画開始:', userId);
         const canvas = document.getElementById(`radar-${safeCanvasId}`);
+        
+        // data-original-user-idから正しいユーザーデータを取得（修正1）
+        if (canvas && canvas.dataset.originalUserId) {
+            const correctUserId = canvas.dataset.originalUserId;
+            const correctUser = matchingUsers.find(u => u.id === correctUserId);
+            if (correctUser) {
+                user = correctUser; // 正しいユーザーデータで上書き
+                // console.log('[MatchingUnified] data-original-user-idから正しいユーザーを取得:', correctUser.name);
+            }
+        }
         if (!canvas) {
             // 再試行回数を制限（無限ループ防止）
             let retryCount = canvasRetryCount.get(user) || 0;
@@ -2375,9 +2386,9 @@
             canvasRetryCount.delete(user);
         }
         
-        // 既に描画済みの場合はスキップ
-        if (canvas.dataset.rendered === 'true') {
-            // console.log('[MatchingUnified] レーダーチャート既に描画済み:', safeCanvasId);
+        // 既に描画済みの場合でも、ユーザーIDが異なる場合は再描画（修正2）
+        if (canvas.dataset.rendered === 'true' && canvas.dataset.renderedUserId === userId) {
+            // console.log('[MatchingUnified] レーダーチャート既に描画済み（同じユーザー）:', safeCanvasId);
             return;
         }
         
@@ -2416,8 +2427,8 @@
         const radius = 100;  // profile-detail-modalと統一（固定値100px）
         const sides = 6;
         
-        // クリア（スケール後のサイズ）
-        ctx.clearRect(0, 0, displayWidth, displayHeight);
+        // クリア（実際のcanvasサイズでクリア - 修正4）
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
         
         // 背景色を設定（profile-detail-modalと統一）
         ctx.fillStyle = '#f8f9fa';
@@ -2529,8 +2540,9 @@
         // 描画状態を復元
         ctx.restore();
         
-        // 描画完了フラグを設定
+        // 描画完了フラグとユーザーIDを設定（修正2）
         canvas.dataset.rendered = 'true';
+        canvas.dataset.renderedUserId = userId;
         
         // console.log('[MatchingUnified] レーダーチャート描画完了:', userId);
         // console.log('[MatchingUnified] Canvas表示状態:', {
