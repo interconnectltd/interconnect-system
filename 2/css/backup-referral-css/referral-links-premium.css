@@ -1,0 +1,277 @@
+/* ===========================
+   紹介リンクセクション プレミアムUI
+   =========================== */
+
+/* セクション全体 */
+.referral-links {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.referral-links::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+/* セクションヘッダー */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-header h2 i {
+    /* referral-icon-style.cssで定義済み - 競合を避けるためコメントアウト */
+    /* color: #ffffff !important; */
+    /* background: #1e40af; */
+}
+
+/* 新しいリンク作成ボタン */
+#create-link-btn {
+    background: linear-gradient(45deg, #ffffff 0%, #e8f8ff 100%);
+    border: none;
+    color: #1e40af;
+    padding: 0.875rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+#create-link-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+#create-link-btn:hover::before {
+    left: 100%;
+}
+
+#create-link-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,255,255,0.5);
+    background: linear-gradient(45deg, #ffffff 0%, #dbeafe 100%);
+}
+
+#create-link-btn:active {
+    transform: translateY(0);
+}
+
+/* リンク作成フォーム（プレミアム版） */
+.link-create-form {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+    animation: fadeInScale 0.4s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.link-create-form #link-description {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.link-create-form #link-description:focus {
+    outline: none;
+    border-color: #ffd89b;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 216, 155, 0.3);
+    transform: translateY(-1px);
+}
+
+.link-create-form #link-description::placeholder {
+    color: #888;
+    font-style: italic;
+}
+
+/* フォームアクション */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+}
+
+.form-actions .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-actions .btn-primary {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.form-actions .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.5);
+}
+
+.form-actions .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.form-actions .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* リンクリスト */
+.links-list {
+    position: relative;
+    z-index: 1;
+}
+
+/* 空状態のメッセージ */
+.empty-links {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.empty-links i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.empty-links h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.empty-links p {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .referral-links {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+    
+    #create-link-btn {
+        justify-content: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        justify-content: center;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .link-create-form #link-description {
+        background: rgba(255, 255, 255, 0.95);
+        color: #333;
+    }
+    
+    .link-create-form #link-description:focus {
+        background: white;
+    }
+}
+
+/* ホバーエフェクト強化 */
+.referral-links:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(79, 172, 254, 0.5);
+}
+
+.referral-links {
+    transition: all 0.3s ease;
+}
+
+/* パルス効果（新機能アピール） */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.referral-links.highlight {
+    animation: pulse 2s infinite;
+}

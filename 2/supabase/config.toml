@@ -1,0 +1,49 @@
+# Supabase Project Configuration
+
+[api]
+# APIのエンドポイント設定
+enabled = true
+# APIのポート番号
+port = 54321
+# APIで使用可能なスキーマ
+schemas = ["public", "storage", "graphql_public"]
+# 追加の拡張機能
+extra_search_path = ["extensions"]
+# 最大行数
+max_rows = 1000
+
+[db]
+# データベースのポート
+port = 54322
+# データベースの最大接続数
+max_connections = 100
+
+[storage]
+# ストレージの設定
+enabled = true
+# ファイルサイズの上限 (bytes)
+file_size_limit = 52428800
+
+[auth]
+# 認証の設定
+enable_signup = true
+# JWTの有効期限
+jwt_expiry = 3600
+# パスワードの最小文字数
+password_min_length = 8
+# メール確認
+enable_confirmations = true
+
+[auth.external.github]
+enabled = true
+client_id = "YOUR_GITHUB_CLIENT_ID"
+secret = "YOUR_GITHUB_SECRET"
+
+[local]
+# ローカル開発用の設定
+health_check_endpoint = "127.0.0.1:54321"
+
+[studio]
+# Supabase Studioの設定
+enabled = true
+port = 54323

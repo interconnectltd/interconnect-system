@@ -1,0 +1,188 @@
+/* Activity & Event Filter Styles */
+
+/* Filter containers */
+.activity-filters,
+.event-filters {
+    display: flex;
+    gap: var(--space-sm);
+    margin-left: auto;
+}
+
+/* Filter select */
+.filter-select {
+    padding: var(--space-xs) var(--space-md);
+    padding-right: calc(var(--space-md) + 20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: white;
+    color: var(--text-primary);
+    font-size: var(--font-sm);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-sm) center;
+    background-size: 10px;
+    min-width: 120px;
+    transition: all 0.2s ease;
+}
+
+.filter-select:hover {
+    border-color: var(--primary-color);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Card header adjustments */
+.content-card .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.content-card .card-header h3 {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Activity item types */
+.activity-item[data-type="member_joined"] .activity-icon {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.activity-item[data-type="event_completed"] .activity-icon {
+    background: #d1fae5;
+    color: #10b981;
+}
+
+.activity-item[data-type="matching_success"] .activity-icon {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.activity-item[data-type="message_sent"] .activity-icon {
+    background: #e0e7ff;
+    color: #6366f1;
+}
+
+.activity-item[data-type="connection_made"] .activity-icon {
+    background: #fce7f3;
+    color: #ec4899;
+}
+
+/* Event item enhancements */
+.event-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: var(--space-md);
+    margin: 0 calc(var(--space-md) * -1);
+    border-radius: var(--radius-md);
+}
+
+.event-item:hover {
+    background: var(--gray-50);
+    transform: translateX(4px);
+}
+
+.event-meta {
+    display: flex;
+    gap: var(--space-md);
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    margin-top: var(--space-xs);
+}
+
+.event-meta span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.event-meta i {
+    font-size: var(--font-xs);
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--gray-500);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+    color: var(--gray-400);
+}
+
+.empty-state p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+/* Loading state */
+.filter-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-2xl);
+    color: var(--gray-500);
+}
+
+.filter-loading i {
+    font-size: var(--font-2xl);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content-card .card-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .activity-filters,
+    .event-filters {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .filter-select {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .event-item {
+        margin: 0;
+        padding: var(--space-sm);
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .filter-select {
+        background: var(--dark-bg-secondary);
+        border-color: var(--dark-border-color);
+        color: var(--dark-text-primary);
+    }
+    
+    .filter-select:hover,
+    .filter-select:focus {
+        border-color: var(--primary-color);
+    }
+    
+    .event-item:hover {
+        background: var(--dark-bg-tertiary);
+    }
+}

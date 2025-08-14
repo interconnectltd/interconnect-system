@@ -1,0 +1,209 @@
+/* Dashboard Charts Styles */
+
+/* Charts Section */
+.charts-section {
+    margin-top: var(--space-xl);
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* Chart Card */
+.chart-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chart-card-wide {
+    grid-column: 1 / -1;
+}
+
+/* Chart Header */
+.chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+}
+
+.chart-header h3 {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Chart Period Select */
+.chart-period-select {
+    padding: var(--space-xs) var(--space-md);
+    padding-right: calc(var(--space-md) + 20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: white;
+    color: var(--text-primary);
+    font-size: var(--font-sm);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-sm) center;
+    background-size: 10px;
+    transition: all 0.2s ease;
+}
+
+.chart-period-select:hover {
+    border-color: var(--primary-color);
+}
+
+.chart-period-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Chart Body */
+.chart-body {
+    position: relative;
+    height: 300px;
+}
+
+.chart-card-wide .chart-body {
+    height: 200px;
+}
+
+/* Canvas */
+.chart-body canvas {
+    max-height: 100%;
+}
+
+/* Chart Loading */
+.chart-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+}
+
+.chart-loading i {
+    font-size: var(--font-2xl);
+    color: var(--primary-color);
+    animation: spin 1s linear infinite;
+}
+
+/* Chart Error */
+.chart-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--gray-500);
+    text-align: center;
+}
+
+.chart-error i {
+    font-size: var(--font-3xl);
+    margin-bottom: var(--space-md);
+    color: var(--gray-400);
+}
+
+.chart-error p {
+    margin: 0;
+    font-size: var(--font-sm);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-card-wide {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .charts-section {
+        margin-top: var(--space-lg);
+    }
+    
+    .charts-grid {
+        gap: var(--space-md);
+    }
+    
+    .chart-card {
+        padding: var(--space-md);
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-sm);
+    }
+    
+    .chart-period-select {
+        width: 100%;
+    }
+    
+    .chart-body {
+        height: 250px;
+    }
+    
+    .chart-card-wide .chart-body {
+        height: 200px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .chart-card {
+        background: var(--dark-bg-secondary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .chart-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    
+    .chart-header h3 {
+        color: var(--dark-text-primary);
+    }
+    
+    .chart-period-select {
+        background: var(--dark-bg-tertiary);
+        border-color: var(--dark-border-color);
+        color: var(--dark-text-primary);
+    }
+    
+    .chart-period-select:hover,
+    .chart-period-select:focus {
+        border-color: var(--primary-color);
+    }
+    
+    .chart-loading {
+        background: rgba(17, 24, 39, 0.9);
+    }
+}
+
+/* Animation */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

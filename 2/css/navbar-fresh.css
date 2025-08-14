@@ -1,0 +1,250 @@
+/* ===========================
+   新しいナビゲーションスタイル
+   0から作り直し
+   =========================== */
+
+/* 新しいナビゲーション */
+nav.navbar {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 64px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    z-index: 1000 !important;
+}
+
+nav.navbar .container {
+    max-width: 1400px !important;
+    height: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+/* ロゴエリア */
+.navbar-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-shrink: 0 !important;
+}
+
+.navbar-brand h1 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #0066ff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+.navbar-brand .tagline {
+    font-size: 12px !important;
+    color: #6b7280 !important;
+    font-weight: 400 !important;
+    white-space: nowrap !important;
+}
+
+/* ナビゲーションメニュー */
+.navbar-nav {
+    display: flex !important;
+    align-items: center !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 24px !important;
+    height: 100% !important;
+}
+
+.navbar-nav li {
+    display: flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* リンクスタイル */
+.nav-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #374151 !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    position: relative !important;
+}
+
+/* 通常のリンクホバー */
+.nav-link:not(.btn-login):not(.btn-register):not(.btn-contact):hover {
+    color: #0066ff !important;
+    background: rgba(0, 102, 255, 0.05) !important;
+}
+
+/* ボタンスタイル */
+.nav-link.btn-login {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+}
+
+.nav-link.btn-login:hover {
+    background: #e5e7eb !important;
+    transform: translateY(-1px) !important;
+}
+
+.nav-link.btn-register {
+    background: #0066ff !important;
+    color: white !important;
+}
+
+.nav-link.btn-register:hover {
+    background: #0052cc !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25) !important;
+}
+
+.nav-link.btn-contact {
+    background: #10b981 !important;
+    color: white !important;
+}
+
+.nav-link.btn-contact:hover {
+    background: #059669 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* ハンバーガーメニュー */
+.navbar-toggler {
+    display: none !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    position: relative !important;
+}
+
+.navbar-toggler span {
+    display: block !important;
+    position: absolute !important;
+    left: 10px !important;
+    width: 20px !important;
+    height: 2px !important;
+    background: #374151 !important;
+    transition: all 0.3s ease !important;
+}
+
+.navbar-toggler span:nth-child(1) {
+    top: 12px !important;
+}
+
+.navbar-toggler span:nth-child(2) {
+    top: 19px !important;
+}
+
+.navbar-toggler span:nth-child(3) {
+    top: 26px !important;
+}
+
+/* 1200px以下 */
+@media (max-width: 1200px) {
+    .navbar-nav {
+        gap: 16px !important;
+    }
+    
+    .nav-link {
+        font-size: 13px !important;
+        padding: 6px 12px !important;
+    }
+    
+    .navbar-brand .tagline {
+        display: none !important;
+    }
+}
+
+/* 1024px以下 - タブレット */
+@media (max-width: 1024px) {
+    .navbar-toggler {
+        display: block !important;
+    }
+    
+    .navbar-nav {
+        display: none !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: white !important;
+        flex-direction: column !important;
+        padding: 20px !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+        gap: 8px !important;
+        height: auto !important;
+    }
+    
+    .navbar-nav.active {
+        display: flex !important;
+    }
+    
+    .navbar-nav li {
+        width: 100% !important;
+    }
+    
+    .nav-link {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 12px 20px !important;
+        font-size: 15px !important;
+    }
+}
+
+/* 768px以下 - モバイル */
+@media (max-width: 768px) {
+    nav.navbar {
+        height: 56px !important;
+    }
+    
+    nav.navbar .container {
+        padding: 0 16px !important;
+    }
+    
+    .navbar-brand h1 {
+        font-size: 18px !important;
+    }
+}
+
+/* ヒーローセクション調整 */
+.hero {
+    margin-top: 64px !important;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        margin-top: 56px !important;
+    }
+}
+
+/* ハンバーガーアニメーション */
+.navbar-toggler.active span:nth-child(1) {
+    transform: rotate(45deg) translateY(7px) !important;
+}
+
+.navbar-toggler.active span:nth-child(2) {
+    opacity: 0 !important;
+}
+
+.navbar-toggler.active span:nth-child(3) {
+    transform: rotate(-45deg) translateY(-7px) !important;
+}

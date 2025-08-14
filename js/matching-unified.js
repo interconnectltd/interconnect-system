@@ -14,16 +14,40 @@
 
     console.log('[MatchingUnified] スクリプト実行開始');
     
-    try {
-    
-    // console.log('[MatchingUnified] マッチングシステム初期化');
-    
-    // 他のレーダーチャート関数との競合を防ぐ
-    if (window.drawRadarChart || window.drawRadarChartForUser) {
-        console.warn('[MatchingUnified] 既存のレーダーチャート関数を検出。上書きします。');
-        delete window.drawRadarChart;
-        delete window.drawRadarChartForUser;
+    // Supabaseの準備ができていない場合は待機
+    if (!window.waitForSupabase || !window.supabaseClient) {
+        console.log('[MatchingUnified] Supabaseの初期化を待機中...');
+        const retryCount = { count: 0, maxRetries: 50 };
+        const retryInterval = setInterval(() => {
+            retryCount.count++;
+            if (window.waitForSupabase && window.supabaseClient) {
+                clearInterval(retryInterval);
+                console.log('[MatchingUnified] Supabaseが準備できました。初期化を開始します。');
+                initializeMatchingSystem();
+            } else if (retryCount.count >= retryCount.maxRetries) {
+                clearInterval(retryInterval);
+                console.error('[MatchingUnified] Supabaseの初期化がタイムアウトしました');
+            }
+        }, 100);
+        return;
     }
+    
+    // 即座に初期化
+    initializeMatchingSystem();
+    
+    function initializeMatchingSystem() {
+        console.log('[MatchingUnified] マッチングシステム初期化開始');
+        
+        try {
+        
+        // console.log('[MatchingUnified] マッチングシステム初期化');
+        
+        // 他のレーダーチャート関数との競合を防ぐ
+        if (window.drawRadarChart || window.drawRadarChartForUser) {
+            console.warn('[MatchingUnified] 既存のレーダーチャート関数を検出。上書きします。');
+            delete window.drawRadarChart;
+            delete window.drawRadarChartForUser;
+        }
 
     // グローバル変数
     let currentUserId = null;
@@ -2666,19 +2690,20 @@
     }
     
     // グローバルに関数を公開（他のスクリプトから呼び出せるように）
-    window.drawRadarChartForUser = drawRadarChartForUser;
-    window.displayDummyData = displayDummyData;
-    
-    // ページアンロード時にタイマーをクリーンアップ
-    window.addEventListener('beforeunload', () => {
-        clearAllTimers();
-    });
-    
-    console.log('[MatchingUnified] スクリプト実行完了');
-    
-    } catch (error) {
-        console.error('[MatchingUnified] スクリプト実行エラー:', error);
-        console.error('[MatchingUnified] エラースタック:', error.stack);
-    }
+        window.drawRadarChartForUser = drawRadarChartForUser;
+        window.displayDummyData = displayDummyData;
+        
+        // ページアンロード時にタイマーをクリーンアップ
+        window.addEventListener('beforeunload', () => {
+            clearAllTimers();
+        });
+        
+        console.log('[MatchingUnified] スクリプト実行完了');
+        
+        } catch (error) {
+            console.error('[MatchingUnified] スクリプト実行エラー:', error);
+            console.error('[MatchingUnified] エラースタック:', error.stack);
+        }
+    } // initializeMatchingSystem終了
 
 })();

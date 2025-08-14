@@ -1,0 +1,141 @@
+/**
+ * Performance-optimized animations
+ * 無限ループアニメーションのパフォーマンス最適化
+ */
+
+/* GPU accelerated animations */
+@supports (will-change: transform) {
+    .hero-video,
+    .loading-video,
+    .scroll-indicator,
+    .industry-tags {
+        will-change: transform;
+    }
+}
+
+/* Reduce animation on low-power devices */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .hero-video,
+    .loading-video {
+        display: none !important;
+    }
+    
+    .hero-fallback,
+    .hero-fallback-image {
+        display: block !important;
+    }
+}
+
+/* Pause animations when not visible */
+.paused-animation {
+    animation-play-state: paused !important;
+}
+
+/* Replace infinite animations with finite ones */
+.gradient-animated {
+    background: linear-gradient(90deg, #0066ff 0%, #3b82f6 50%, #0066ff 100%);
+    background-size: 200% 100%;
+    animation: gradientSlide 3s ease 3; /* 3回で停止 */
+}
+
+.spinner {
+    animation: spin 0.8s linear 10; /* 10回で停止 */
+}
+
+/* Scroll animations - pause when out of view */
+.industry-carousel {
+    animation-play-state: paused;
+}
+
+.industry-carousel.in-view {
+    animation: scroll-right 30s linear 1; /* 1回で停止 */
+}
+
+/* Optimize bounce animation */
+.scroll-indicator {
+    animation: bounce 2s ease-in-out 3; /* 3回で停止 */
+    animation-fill-mode: forwards;
+}
+
+/* Counter animation optimization */
+.data-value {
+    contain: layout style;
+    will-change: contents;
+}
+
+/* Video performance */
+.hero-video,
+.loading-video {
+    transform: translateZ(0); /* GPU acceleration */
+    backface-visibility: hidden;
+}
+
+/* Reduce particle density on mobile */
+@media (max-width: 768px) {
+    .auth-container canvas {
+        opacity: 0.5; /* 負荷軽減 */
+    }
+}
+
+/* Battery saving mode */
+@media (prefers-reduced-motion: no-preference) and (prefers-color-scheme: dark) {
+    /* Dark mode users might be on battery */
+    .gradient-animated,
+    .spinner,
+    .scroll-indicator {
+        animation-iteration-count: 1 !important;
+    }
+}
+
+/* IntersectionObserver用のクラス */
+.animation-paused {
+    animation-play-state: paused !important;
+}
+
+.animation-running {
+    animation-play-state: running !important;
+}
+
+/* Memory optimization for transform animations */
+.about-item,
+.feature-card,
+.event-card,
+.achievement-item,
+.service-card,
+.comparison-item,
+.case-study,
+.data-card,
+.pricing-card,
+.process-step,
+.faq-category,
+.news-month,
+.cta-card {
+    transform: translateY(20px);
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    contain: layout style paint;
+}
+
+.about-item.visible,
+.feature-card.visible,
+.event-card.visible,
+.achievement-item.visible,
+.service-card.visible,
+.comparison-item.visible,
+.case-study.visible,
+.data-card.visible,
+.pricing-card.visible,
+.process-step.visible,
+.faq-category.visible,
+.news-month.visible,
+.cta-card.visible {
+    transform: translateY(0);
+    opacity: 1;
+}

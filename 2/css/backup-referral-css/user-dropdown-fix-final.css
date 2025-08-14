@@ -1,0 +1,131 @@
+/* ===========================
+   User Dropdown 最終修正
+   すべてのページで最前面に表示
+   =========================== */
+
+/* ユーザードロップダウンを最前面に */
+.user-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    margin-top: 0.5rem !important;
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    min-width: 200px !important;
+    display: none;
+    z-index: 99999 !important; /* 最高優先度 */
+    overflow: visible !important;
+}
+
+/* 表示状態 */
+.user-dropdown.show {
+    display: block !important;
+    animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* リンクスタイル */
+.user-dropdown a {
+    display: block !important;
+    padding: 0.75rem 1.25rem !important;
+    color: #374151 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    font-size: 0.95rem !important;
+    position: relative !important;
+    z-index: 99999 !important;
+}
+
+.user-dropdown a:hover {
+    background: #f3f4f6 !important;
+    color: #3b82f6 !important;
+    padding-left: 1.5rem !important;
+}
+
+.user-dropdown a:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.user-dropdown a:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+/* 区切り線 */
+.user-dropdown hr {
+    margin: 0.5rem 0 !important;
+    border: none !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+/* 親要素の設定 */
+.user-profile,
+.user-menu {
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .user-dropdown {
+        position: fixed !important;
+        top: 60px !important;
+        right: 1rem !important;
+        left: auto !important;
+        width: calc(100vw - 2rem) !important;
+        max-width: 300px !important;
+        z-index: 99999 !important;
+    }
+}
+
+/* 他の要素との競合を防ぐ */
+.modal,
+.modal-backdrop,
+.notification-popup,
+.notification-dropdown {
+    z-index: 9000 !important; /* ドロップダウンより低く設定 */
+}
+
+/* アクティブ状態のスタイル */
+.user-dropdown a:active {
+    background: #e5e7eb !important;
+    transform: scale(0.98);
+}
+
+/* フォーカス状態 */
+.user-dropdown a:focus {
+    outline: 2px solid #3b82f6 !important;
+    outline-offset: -2px;
+}
+
+/* ダークモード対応（必要に応じて） */
+@media (prefers-color-scheme: dark) {
+    .user-dropdown {
+        background: #1f2937 !important;
+        border-color: #374151 !important;
+    }
+    
+    .user-dropdown a {
+        color: #e5e7eb !important;
+    }
+    
+    .user-dropdown a:hover {
+        background: #374151 !important;
+        color: #60a5fa !important;
+    }
+    
+    .user-dropdown hr {
+        border-top-color: #374151 !important;
+    }
+}

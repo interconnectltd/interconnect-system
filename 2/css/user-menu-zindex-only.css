@@ -1,0 +1,45 @@
+/* ===========================
+   User Menu Z-Index Only
+   ユーザーメニューのz-index調整のみ
+   =========================== */
+
+/* ユーザーメニューのz-index階層 */
+.user-menu {
+    position: relative;
+    z-index: 100;
+}
+
+.user-dropdown,
+.user-menu-dropdown {
+    z-index: 200;
+}
+
+/* 通知ドロップダウン */
+.notification-dropdown {
+    z-index: 200;
+}
+
+/* モバイルヘッダー */
+.mobile-header {
+    z-index: 300;
+}
+
+/* モバイルナビゲーション */
+.mobile-nav {
+    z-index: 400;
+}
+
+/* モバイルバックドロップ */
+.mobile-backdrop {
+    z-index: 399;
+}
+
+/* モーダル */
+.modal {
+    z-index: 1000;
+}
+
+/* 通知ポップアップ */
+.notification-popup {
+    z-index: 1100;
+}

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>紹介システムセットアップ確認</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .section h2 {
+            margin-bottom: 15px;
+            color: #2563eb;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        .warning {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        .button {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .button:hover {
+            background: #1d4ed8;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>紹介システムセットアップ確認</h1>
+        
+        <div class="section">
+            <h2>1. SQLスクリプト</h2>
+            <p>以下のSQLをSupabaseのSQLエディタで実行してください：</p>
+            <pre>-- 紹介プログラム完全セットアップSQL
+-- /sql/complete-referral-setup.sql の内容をコピー＆ペースト</pre>
+            <a href="/sql/complete-referral-setup.sql" download class="button">SQLファイルをダウンロード</a>
+        </div>
+
+        <div class="section">
+            <h2>2. Supabase接続テスト</h2>
+            <button onclick="testConnection()" class="button">接続テスト実行</button>
+            <div id="connection-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>3. テーブル存在確認</h2>
+            <button onclick="checkTables()" class="button">テーブル確認</button>
+            <div id="tables-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>4. 関数確認</h2>
+            <button onclick="checkFunctions()" class="button">関数確認</button>
+            <div id="functions-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>5. テストリンク作成</h2>
+            <button onclick="createTestLink()" class="button">テストリンク作成</button>
+            <div id="link-result"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script>
+        async function testConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    resultDiv.innerHTML = '<p class="success">✓ Supabase接続成功</p>';
+                } else {
+                    resultDiv.innerHTML = '<p class="warning">⚠ ログインが必要です</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">✗ 接続エラー: ${error.message}</p>`;
+            }
+        }
+
+        async function checkTables() {
+            const resultDiv = document.getElementById('tables-result');
+            const tables = ['invite_links', 'invitations', 'point_transactions', 'cashout_requests'];
+            let html = '';
+            
+            for (const table of tables) {
+                try {
+                    const { data, error } = await supabase.from(table).select('count', { count: 'exact', head: true });
+                    if (error) {
+                        html += `<div class="result-item"><span class="error">✗ ${table}</span>: ${error.message}</div>`;
+                    } else {
+                        html += `<div class="result-item"><span class="success">✓ ${table}</span>: 存在確認OK</div>`;
+                    }
+                } catch (e) {
+                    html += `<div class="result-item"><span class="error">✗ ${table}</span>: ${e.message}</div>`;
+                }
+            }
+            resultDiv.innerHTML = html;
+        }
+
+        async function checkFunctions() {
+            const resultDiv = document.getElementById('functions-result');
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    resultDiv.innerHTML = '<p class="warning">⚠ ログインが必要です</p>';
+                    return;
+                }
+                
+                const { data, error } = await supabase.rpc('get_referral_stats', { p_user_id: user.id });
+                if (error) {
+                    resultDiv.innerHTML = `<p class="error">✗ get_referral_stats関数エラー: ${error.message}</p>`;
+                } else {
+                    resultDiv.innerHTML = '<p class="success">✓ get_referral_stats関数: OK</p>';
+                    console.log('Stats data:', data);
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">✗ 関数確認エラー: ${e.message}</p>`;
+            }
+        }
+
+        async function createTestLink() {
+            const resultDiv = document.getElementById('link-result');
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    resultDiv.innerHTML = '<p class="warning">⚠ ログインが必要です</p>';
+                    return;
+                }
+                
+                const { data, error } = await supabase.rpc('create_invite_link', {
+                    p_user_id: user.id,
+                    p_description: 'テストリンク'
+                });
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p class="error">✗ リンク作成エラー: ${error.message}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p class="success">✓ リンク作成成功: ${data}</p>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">✗ リンク作成エラー: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

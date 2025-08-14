@@ -1,0 +1,147 @@
+/* ===========================
+   CSS競合修正
+   =========================== */
+
+/* register.htmlの重複CSS修正 */
+.auth-page .auth-container {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 50%, #f0f7ff 100%) !important;
+}
+
+/* auth.cssとauth-unified.cssの競合を解決 */
+.auth-page body::before {
+    z-index: 0;
+}
+
+/* ダッシュボードのCSS競合修正 */
+.dashboard-page .card {
+    isolation: isolate;
+}
+
+/* z-index競合の修正 */
+.modal {
+    z-index: 9999;
+}
+
+.notification-popup {
+    z-index: 10000;
+}
+
+.user-menu-dropdown {
+    z-index: 9998;
+}
+
+/* レスポンシブメニューの競合修正 */
+.mobile-nav {
+    z-index: 9997;
+}
+
+/* ボタンスタイルの統一 */
+.btn-primary,
+.button-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-secondary,
+.button-secondary {
+    background-color: var(--secondary-color) !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* グラスエフェクトの統一 */
+.glass-effect,
+.glass {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* カードスタイルの統一 */
+.card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+/* フォントサイズの統一 */
+body {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+}
+
+/* リンクホバーエフェクトの統一 */
+a:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+/* フォーム要素の統一 */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    width: 100%;
+    padding: var(--space-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-family: inherit;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+    .mobile-only {
+        display: block !important;
+    }
+    
+    .desktop-only {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-only {
+        display: none !important;
+    }
+    
+    .desktop-only {
+        display: block !important;
+    }
+}
+
+/* アニメーション競合の修正 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* スクロールバーの統一 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

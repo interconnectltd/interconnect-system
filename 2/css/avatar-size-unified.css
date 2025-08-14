@@ -1,0 +1,179 @@
+/**
+ * アバターサイズ統一管理CSS
+ * 全ページで一貫したアバターサイズを強制
+ * 
+ * 問題: 5つの異なるCSSファイルが競合していた
+ * 解決: 最高特異性で統一
+ */
+
+/* ==========================================
+   統一アバターサイズ（最高優先度）
+   ========================================== */
+
+/* ヘッダー内のユーザーアバター（全ページ共通） */
+.navbar .user-profile .user-avatar,
+.header .user-profile .user-avatar,
+#userAvatar {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* ホバー時のエフェクト */
+.navbar .user-profile:hover .user-avatar,
+.header .user-profile:hover .user-avatar {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================
+   コンテキスト別サイズ定義
+   ========================================== */
+
+/* メンバーリスト・検索結果用（大きめ） */
+.member-card .user-avatar,
+.search-result .user-avatar,
+.member-item .user-avatar {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 3px solid #f0f0f0 !important;
+}
+
+/* プロフィールページ（特大） */
+.profile-header .user-avatar,
+.profile-main .user-avatar {
+    width: 120px !important;
+    height: 120px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 4px solid #fff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* メッセージ・チャット用（小さめ） */
+.message-item .user-avatar,
+.chat-message .user-avatar,
+.notification-item .user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: none !important;
+}
+
+/* サイドバー内 */
+.sidebar .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ==========================================
+   競合CSS無効化（既存の定義を上書き）
+   ========================================== */
+
+/* presentation.cssの60px定義を無効化 */
+.user-avatar:not(.member-card *):not(.search-result *):not(.profile-header *) {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+/* advanced-search.cssの80px定義を無効化 */
+.advanced-search .user-avatar {
+    width: 60px !important;  /* 検索結果用に調整 */
+    height: 60px !important;
+}
+
+/* ==========================================
+   レスポンシブ対応
+   ========================================== */
+
+@media (max-width: 768px) {
+    /* モバイルではヘッダーアバターを少し小さく */
+    .navbar .user-profile .user-avatar,
+    .header .user-profile .user-avatar,
+    #userAvatar {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    /* メンバーカードも調整 */
+    .member-card .user-avatar,
+    .search-result .user-avatar {
+        width: 48px !important;
+        height: 48px !important;
+    }
+    
+    /* プロフィールページ */
+    .profile-header .user-avatar {
+        width: 100px !important;
+        height: 100px !important;
+    }
+}
+
+/* ==========================================
+   アニメーション統一
+   ========================================== */
+
+.user-avatar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.user-avatar:hover {
+    filter: brightness(1.05);
+}
+
+/* ==========================================
+   デフォルト画像の処理
+   ========================================== */
+
+.user-avatar[src*="default-avatar"],
+.user-avatar[src*="placeholder"],
+.user-avatar:not([src]),
+.user-avatar[src=""] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    position: relative;
+}
+
+/* デフォルト時はイニシャルを表示 */
+.user-avatar[src*="default-avatar"]::after {
+    content: attr(data-initials);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+/* ==========================================
+   デバッグ用（本番では削除）
+   ========================================== */
+
+/* アバターサイズを可視化（開発時のみ） */
+.debug-avatar-size .user-avatar::before {
+    content: attr(data-size);
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: red;
+    color: white;
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 3px;
+    z-index: 9999;
+}

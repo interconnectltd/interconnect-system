@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メンバー - INTERCONNECT</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- ログアウトボタンUI修正 -->
+    <link rel="stylesheet" href="css/logout-button-fix.css">
+    <link rel="stylesheet" href="css/members.css">
+    <link rel="stylesheet" href="css/member-profile-preview.css">
+    <link rel="stylesheet" href="css/members-profile-modal.css?v=20250811-2">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/realtime-notifications.css">
+    <link rel="stylesheet" href="css/responsive-menu.css">
+    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
+    <link rel="stylesheet" href="css/responsive-complete.css">
+    <!-- z-index優先順位管理 -->
+    <link rel="stylesheet" href="css/z-index-priority.css">
+    <!-- アバターサイズ統一 -->
+    <link rel="stylesheet" href="css/avatar-size-unified.css">
+    <!-- サイドバーレスポンシブ統一修正 -->
+    <link rel="stylesheet" href="css/sidebar-responsive-fix.css">
+    <!-- 高度な検索機能 -->
+    <link rel="stylesheet" href="css/advanced-search.css">
+    <!-- ヘッダー余白修正 -->
+    <link rel="stylesheet" href="css/header-padding-fix.css">
+</head>
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button class="mobile-menu-toggle" id="membersSidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1>INTERCONNECT</h1>
+        <div class="mobile-header-actions">
+            <a href="notifications.html" class="notification-btn">
+                <i class="fas fa-bell"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-header">
+            <h1>INTERCONNECT</h1>
+            <button class="mobile-nav-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-menu">
+            <ul>
+                <li>
+                    <a href="dashboard.html" class="mobile-nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>ダッシュボード</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="mobile-nav-link active">
+                        <i class="fas fa-users"></i>
+                        <span>メンバー</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="events.html" class="mobile-nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>イベント</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="messages.html" class="mobile-nav-link">
+                        <i class="fas fa-envelope"></i>
+                        <span>メッセージ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="matching.html" class="mobile-nav-link">
+                        <i class="fas fa-handshake"></i>
+                        <span>マッチング</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="referral.html" class="mobile-nav-link">
+                        <i class="fas fa-user-plus"></i>
+                        <span>紹介プログラム</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html" class="mobile-nav-link">
+                        <i class="fas fa-user"></i>
+                        <span>プロフィール</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.html" class="mobile-nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>設定</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="mobile-nav-footer">
+            <a href="#" class="mobile-nav-link" onclick="logout(); return false;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>ログアウト</span>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Mobile Backdrop -->
+    <div class="mobile-backdrop"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="membersSidebar">
+            <div class="sidebar-header">
+                <h1>INTERCONNECT</h1>
+                <button class="sidebar-toggle" aria-label="メニュー">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html" class="sidebar-link">
+                            <i class="fas fa-home"></i>
+                            <span>ダッシュボード</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link active">
+                            <i class="fas fa-users"></i>
+                            <span>メンバー</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="events.html" class="sidebar-link">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>イベント</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="messages.html" class="sidebar-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>メッセージ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="matching.html" class="sidebar-link">
+                            <i class="fas fa-handshake"></i>
+                            <span>マッチング</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="referral.html" class="sidebar-link">
+                            <i class="fas fa-user-plus"></i>
+                            <span>紹介プログラム</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="profile.html" class="sidebar-link">
+                            <i class="fas fa-user"></i>
+                            <span>プロフィール</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>設定</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" class="sidebar-link" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>ログアウト</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <div>
+                        <h1 class="page-title">
+                            <i class="fas fa-users"></i>
+                            メンバー
+                        </h1>
+                        <nav class="breadcrumb">
+                            <a href="dashboard.html">ダッシュボード</a>
+                            <i class="fas fa-chevron-right"></i>
+                            <span>メンバー</span>
+                        </nav>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="notification-wrapper">
+                            <button class="notification-btn">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <div class="notification-dropdown">
+                                <div class="notification-header">
+                                    <h3>通知</h3>
+                                    <button class="mark-all-read">すべて既読にする</button>
+                                </div>
+                                <div class="notification-list">
+                                    <div class="empty-notifications">
+                                        <i class="fas fa-bell-slash"></i>
+                                        <p>新しい通知はありません</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-profile">
+                            <img src="assets/default-avatar.svg" alt="User Avatar" class="user-avatar">
+                            <span class="user-name" id="userName">ゲスト</span>
+                            <i class="fas fa-chevron-down"></i>
+                            <div class="user-dropdown">
+                                <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
+                                <a href="settings.html"><i class="fas fa-cog"></i> 設定</a>
+                                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Members Content -->
+            <div class="content-container">
+                <!-- Advanced Search Container -->
+                <div class="advanced-search-container">
+                    <!-- 高度な検索UIがここに動的に生成されます -->
+                </div>
+                
+                <!-- Members Grid -->
+                <div class="members-grid">
+                    <!-- メンバーカードはJavaScriptで動的に生成されます -->
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>メンバーを読み込み中...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="btn btn-outline" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                        <span>前へ</span>
+                    </button>
+                    <div class="page-numbers">
+                        <button class="page-number active">1</button>
+                        <button class="page-number">2</button>
+                        <button class="page-number">3</button>
+                        <button class="page-number">4</button>
+                        <button class="page-number">5</button>
+                    </div>
+                    <button class="btn btn-outline">
+                        <span>次へ</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <!-- Core initialization (must be first) -->
+    <script src="js/interconnect-core.js"></script>
+    
+    <script src="js/error-prevention.js"></script>
+    <script src="js/null-check-fixes.js"></script>
+    <script src="js/safe-dom-utils.js"></script>
+    <script src="js/safe-storage.js"></script>
+    <script src="js/global-functions.js"></script>
+    <script src="js/profile-sync.js"></script>
+    <script src="js/notifications-realtime-unified.js"></script>
+    <script src="js/responsive-menu-simple.js"></script>
+    <script src="js/dashboard.js"></script>
+    <!-- Members specific scripts -->
+    <!-- モーダルを先に読み込む（members-supabaseより前） -->
+    <script src="js/members-profile-modal.js?v=20250812"></script>
+    <script>
+        // モーダルの初期化を確実に行う
+        (function() {
+            function ensureModalInitialized() {
+                // 既にインスタンスがある場合は作成しない（重複防止）
+                if (window.membersProfileModal && window.membersProfileModal.show) {
+                    console.log('[members.html] Modal instance already exists');
+                    return;
+                }
+                
+                if (typeof MembersProfileModal === 'undefined') {
+                    console.error('[CRITICAL] members-profile-modal.js failed to load!');
+                    // エラー時はモーダル表示を試みる（リダイレクトしない）
+                    window.membersProfileModal = {
+                        show: function(userId) {
+                            console.log('[Fallback] Modal not available, but NOT redirecting');
+                            alert('プロフィールを読み込めませんでした。ページを再読み込みしてください。');
+                        }
+                    };
+                } else {
+                    console.log('[members.html] Creating modal instance');
+                    window.membersProfileModal = new MembersProfileModal();
+                    console.log('[members.html] Modal instance created:', !!window.membersProfileModal);
+                }
+            }
+            
+            // 即座に実行
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', ensureModalInitialized);
+            } else {
+                ensureModalInitialized();
+            }
+        })();
+    </script>
+    <script>
+        // モーダルの初期化を確認
+        console.log('[members.html] After members-profile-modal.js load:');
+        console.log('  - window.MembersProfileModal:', !!window.MembersProfileModal);
+        console.log('  - window.membersProfileModal:', !!window.membersProfileModal);
+        console.log('  - window.showMemberProfileModal:', !!window.showMemberProfileModal);
+        
+        // 動作テスト用の関数
+        window.testModal = function() {
+            console.log('[TEST] Modal test function called');
+            if (window.showMemberProfileModal) {
+                window.showMemberProfileModal('test-user-id');
+            } else {
+                console.error('[TEST] showMemberProfileModal not available');
+            }
+        };
+        
+        // デモユーザーのモーダル表示テスト
+        window.testDemoModal = function(userId = 'fallback-1') {
+            console.log('[TEST] Demo modal test for userId:', userId);
+            if (window.showMemberProfileModal) {
+                window.showMemberProfileModal(userId);
+            } else {
+                console.error('[TEST] showMemberProfileModal not available');
+            }
+        };
+        
+        // モーダル状態の診断
+        window.diagnoseModal = function() {
+            console.log('=== Modal Diagnosis ===');
+            console.log('MembersProfileModal class:', !!window.MembersProfileModal);
+            console.log('membersProfileModal instance:', !!window.membersProfileModal);
+            console.log('showMemberProfileModal function:', !!window.showMemberProfileModal);
+            console.log('Modal element in DOM:', !!document.getElementById('memberProfileModal'));
+            
+            if (window.membersProfileModal) {
+                console.log('Modal instance details:');
+                console.log('  - modal element:', !!window.membersProfileModal.modal);
+                console.log('  - currentUserId:', window.membersProfileModal.currentUserId);
+                console.log('  - currentTab:', window.membersProfileModal.currentTab);
+            }
+            
+            const profileButtons = document.querySelectorAll('.view-profile-btn');
+            console.log('Profile buttons found:', profileButtons.length);
+            profileButtons.forEach((btn, index) => {
+                console.log(`  Button ${index + 1}:`, btn.dataset.memberId);
+            });
+        };
+        
+        // 1秒後に最終確認（デバッグ用）
+        setTimeout(() => {
+            console.log('[members.html] Final check at 1 second:');
+            console.log('  - membersProfileModal exists:', !!window.membersProfileModal);
+            console.log('  - membersProfileModal.show exists:', !!(window.membersProfileModal && window.membersProfileModal.show));
+            
+            // モーダルのDOM状態を確認
+            const modalElement = document.getElementById('memberProfileModal');
+            if (modalElement) {
+                // モーダルが誤って表示されている場合は隠す
+                if (window.getComputedStyle(modalElement).display !== 'none' && !modalElement.classList.contains('show')) {
+                    console.log('[members.html] Hiding unintentionally visible modal');
+                    modalElement.style.display = 'none';
+                }
+            }
+            
+            // モーダルインスタンスが存在しない場合の最終フォールバック
+            if (!window.membersProfileModal || !window.membersProfileModal.show) {
+                console.error('[CRITICAL] Modal still not initialized after 1 second!');
+                // 再度初期化を試みる（既存インスタンスがない場合のみ）
+                if (window.MembersProfileModal && !window.membersProfileModal) {
+                    window.membersProfileModal = new window.MembersProfileModal();
+                    console.log('[members.html] Emergency modal creation completed');
+                }
+            }
+        }, 1000);
+        
+        // デバッグ用: プロフィールボタンクリックの監視
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.view-profile-btn')) {
+                console.log('[members.html] Profile button click detected');
+                console.log('  - Button element:', e.target.closest('.view-profile-btn'));
+                console.log('  - User ID:', e.target.closest('.view-profile-btn').dataset.memberId);
+            }
+        });
+    </script>
+    <script src="js/members-supabase.js?v=20250812"></script>
+    <script src="js/member-profile-preview.js?v=20250812"></script>
+    <script src="js/members-search.js?v=20250812"></script>
+    <script src="js/members-connection.js?v=20250812"></script>
+    <script src="js/members-view-mode.js?v=20250812"></script>
+    
+    <!-- グローバル閲覧履歴 -->
+    <script src="js/global-viewing-history.js"></script>
+    <!-- <script src="js/notifications.js"></script> -->
+    <!-- ユーザードロップダウンハンドラー -->
+    <script src="js/user-dropdown-handler.js"></script>
+    <!-- 統一通知システム -->
+    <script src="js/notification-system-unified.js"></script>
+    <script src="js/supabase-unified.js?v=1.0"></script>
+    <!-- 高度な検索機能 -->
+    <script src="js/advanced-search.js"></script>
+    <!-- アバターサイズ強制適用 -->
+    <script src="js/avatar-size-enforcer.js"></script>
+</body>
+</html>

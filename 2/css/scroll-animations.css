@@ -1,0 +1,293 @@
+/* ===========================
+   スクロールフェードインアニメーション
+   =========================== */
+
+/* パフォーマンス最適化 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* フェードイン基本設定 */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+    will-change: transform, opacity;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 左からフェードイン */
+.fade-in-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.8s ease-out;
+}
+
+.fade-in-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* 右からフェードイン */
+.fade-in-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.8s ease-out;
+}
+
+.fade-in-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* スケールアップフェードイン */
+.fade-in-scale {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.8s ease-out;
+}
+
+.fade-in-scale.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 遅延クラス */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+
+/* ===========================
+   デジタルテキスト表示エフェクト
+   =========================== */
+
+/* ヒーローテキストのデジタル表示 */
+.digital-text {
+    position: relative;
+    display: inline-block;
+}
+
+.digital-text::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: rgba(0, 102, 255, 0.3);
+    animation: digital-glitch 2s ease-in-out;
+    animation-fill-mode: forwards;
+    z-index: -1;
+}
+
+@keyframes digital-glitch {
+    0% {
+        opacity: 0;
+        transform: translateX(-2px);
+        filter: blur(2px);
+    }
+    20% {
+        opacity: 0.5;
+        transform: translateX(2px);
+        filter: blur(1px);
+    }
+    40% {
+        opacity: 0.8;
+        transform: translateX(-1px);
+        filter: blur(0.5px);
+    }
+    60% {
+        opacity: 0.4;
+        transform: translateX(1px);
+        filter: blur(1px);
+    }
+    80% {
+        opacity: 0.6;
+        transform: translateX(0);
+        filter: blur(0.5px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(0);
+        filter: blur(0);
+    }
+}
+
+/* タイプライター効果 */
+.typewriter {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0 auto;
+    animation: typing 3s steps(40, end);
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+/* デジタル表示用カーソル */
+.digital-cursor::after {
+    content: '|';
+    display: inline-block;
+    animation: blink 1s infinite;
+    color: #0066ff;
+    font-weight: 300;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* ===========================
+   セクション別アニメーション設定
+   =========================== */
+
+/* サービスカード */
+.service-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+.service-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.service-card:nth-child(1) { transition-delay: 0.1s; }
+.service-card:nth-child(2) { transition-delay: 0.2s; }
+.service-card:nth-child(3) { transition-delay: 0.3s; }
+
+/* 比較アイテム */
+.comparison-item {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease-out;
+}
+
+.comparison-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ケーススタディ */
+.case-study {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.8s ease-out;
+}
+
+.case-study.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.case-study:nth-child(even) {
+    transform: translateX(30px);
+}
+
+.case-study:nth-child(even).visible {
+    transform: translateX(0);
+}
+
+/* データカード */
+.data-card {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.6s ease-out;
+}
+
+.data-card.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.data-card:nth-child(1) { transition-delay: 0.05s; }
+.data-card:nth-child(2) { transition-delay: 0.1s; }
+.data-card:nth-child(3) { transition-delay: 0.15s; }
+.data-card:nth-child(4) { transition-delay: 0.2s; }
+.data-card:nth-child(5) { transition-delay: 0.25s; }
+.data-card:nth-child(6) { transition-delay: 0.3s; }
+
+/* 価格カード */
+.pricing-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.pricing-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.pricing-card:nth-child(1) { transition-delay: 0.2s; }
+.pricing-card:nth-child(2) { transition-delay: 0.4s; }
+
+/* プロセスステップ */
+.process-step {
+    opacity: 0;
+    transform: scale(0.7);
+    transition: all 0.6s ease-out;
+}
+
+.process-step.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.process-step:nth-child(1) { transition-delay: 0.1s; }
+.process-step:nth-child(2) { transition-delay: 0.3s; }
+.process-step:nth-child(3) { transition-delay: 0.5s; }
+
+/* FAQカテゴリ */
+.faq-category {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.faq-category.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ニュース月 */
+.news-month {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.8s ease-out;
+}
+
+.news-month.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* CTAカード */
+.cta-card {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease-out;
+}
+
+.cta-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cta-card:nth-child(1) { transition-delay: 0.1s; }
+.cta-card:nth-child(2) { transition-delay: 0.2s; }
+.cta-card:nth-child(3) { transition-delay: 0.3s; }

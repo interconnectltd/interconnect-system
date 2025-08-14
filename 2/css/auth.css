@@ -1,0 +1,726 @@
+/* ===========================
+   Auth Pages Styles
+   =========================== */
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e6f4ff 0%, #b3d9ff 50%, #e6f4ff 100%);
+    padding: var(--space-sm);
+    position: relative;
+    overflow: auto;
+}
+
+/* 背景パターン */
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(0, 79, 196, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 800px;
+    height: 90vh;
+    max-height: 900px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 40px rgba(0, 102, 255, 0.1);
+    padding: var(--space-md) var(--space-lg);
+    margin: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.auth-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: var(--space-xs);
+}
+
+.auth-header p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.auth-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+}
+
+.auth-form {
+    margin-bottom: var(--space-xl);
+}
+
+.auth-form .form-group {
+    margin-bottom: var(--space-md);
+}
+
+.auth-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"],
+.auth-form input[type="tel"] {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: var(--transition-base);
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--space-sm);
+}
+
+.password-toggle:hover {
+    color: var(--text-primary);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    font-size: 0.875rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.forgot-link {
+    color: var(--primary-color);
+    transition: var(--transition-base);
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.auth-button {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.auth-button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* ゲストボタン */
+.guest-button {
+    background: var(--secondary-color, #6c757d);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.guest-button:hover {
+    background: var(--secondary-dark, #5a6268);
+}
+
+/* 区切り線 */
+.auth-divider {
+    text-align: center;
+    margin: var(--space-lg) 0;
+    position: relative;
+}
+
+.auth-divider span {
+    background: white;
+    padding: 0 var(--space-md);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+    z-index: -1;
+}
+
+.auth-footer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-md);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.auth-back {
+    text-align: center;
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-color);
+}
+
+.auth-back a {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    transition: var(--transition-base);
+}
+
+.auth-back a:hover {
+    color: var(--primary-color);
+}
+
+/* Error and Success Messages */
+.auth-message {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+    font-size: 0.875rem;
+}
+
+.auth-message.error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.auth-message.success {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+/* Multi-step Registration Form */
+.registration-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    flex-shrink: 0;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: var(--transition-base);
+}
+
+.progress-step.active .step-number {
+    background: var(--primary-color);
+    color: white;
+}
+
+.progress-step.completed .step-number {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.progress-step.active .step-label {
+    color: var(--primary-color);
+}
+
+.progress-line {
+    width: 40px;
+    height: 2px;
+    background: var(--border-color);
+    margin: 0 var(--space-xs);
+    flex-shrink: 0;
+}
+
+.form-step {
+    display: none;
+    position: relative;
+}
+
+.form-step.active {
+    display: block;
+}
+
+/* 4,5ページ目は特別な処理 */
+.form-step[data-step="4"].active,
+.form-step[data-step="5"].active {
+    padding-bottom: 120px;
+    height: calc(90vh - 250px);
+    display: flex;
+    flex-direction: column;
+}
+
+.form-step[data-step="4"] > *:not(.form-navigation),
+.form-step[data-step="5"] > *:not(.form-navigation) {
+    flex-shrink: 0;
+}
+
+/* 各ステップの高さを制限 */
+.form-step {
+    max-height: calc(90vh - 200px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.form-step h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.challenges-section {
+    margin-bottom: var(--space-xl);
+}
+
+.challenge-group {
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.challenge-group h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: linear-gradient(135deg, #0080ff 0%, #00b4ff 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 180, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 128, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.challenge-group h4::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.challenge-group h4 i {
+    color: white;
+    font-size: 1.125rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.challenge-group .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    cursor: pointer;
+}
+
+.challenge-group .checkbox-label:last-child {
+    margin-bottom: 0;
+}
+
+.auth-form select {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.auth-form select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-help {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-xs);
+}
+
+.form-navigation {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+}
+
+/* 4,5ページ目のナビゲーション */
+.form-step[data-step="4"] .form-navigation,
+.form-step[data-step="5"] .form-navigation {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 760px;
+    padding: var(--space-lg) var(--space-lg);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+    z-index: 10;
+}
+
+.form-navigation button {
+    flex: 1;
+}
+
+.auth-button-outline {
+    width: 100%;
+    padding: var(--space-md);
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.auth-button-outline:hover {
+    background: var(--primary-light);
+}
+
+/* Responsive */
+/* Textarea styles for challenge details */
+.auth-form textarea {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: var(--transition-base);
+    resize: vertical;
+    min-height: 100px;
+    margin-top: var(--space-sm);
+}
+
+.auth-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Character count */
+.char-count {
+    display: block;
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-xs);
+}
+
+/* Required field indicator */
+.required {
+    color: var(--error-color);
+    margin-left: var(--space-xs);
+}
+
+@media (max-width: 1024px) {
+    .challenges-section {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-card {
+        max-width: 100%;
+        margin: var(--space-md);
+    }
+    
+    .registration-progress {
+        font-size: 0.875rem;
+        max-width: 100%;
+        padding: 0 var(--space-sm);
+    }
+    
+    .step-number {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    
+    .step-label {
+        font-size: 0.625rem;
+    }
+    
+    .progress-line {
+        width: 25px;
+        margin: 0 2px;
+    }
+    
+    .challenges-section {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    
+    .challenge-group {
+        padding: var(--space-md);
+    }
+}
+
+/* Skills and Interests Selection */
+.skills-selection-container,
+.interests-selection-container {
+    margin-bottom: var(--space-lg);
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: var(--space-sm);
+}
+
+.skill-category-section,
+.interest-category-section {
+    margin-bottom: var(--space-lg);
+}
+
+.skill-category-section h4,
+.interest-category-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: var(--space-md);
+    padding: var(--space-sm) var(--space-md) var(--space-sm) calc(var(--space-md) + 24px);
+    background: linear-gradient(135deg, #0080ff 0%, #00b4ff 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 180, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 128, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.skill-category-section h4::before,
+.interest-category-section h4::before {
+    content: '◆';
+    position: absolute;
+    left: var(--space-md);
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.skill-category-section h4::after,
+.interest-category-section h4::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+.skills-checkbox-grid,
+.interests-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-sm);
+}
+
+.skill-checkbox,
+.interest-checkbox {
+    display: flex;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.skill-checkbox:hover,
+.interest-checkbox:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.skill-checkbox input[type="checkbox"],
+.interest-checkbox input[type="checkbox"] {
+    margin-right: var(--space-sm);
+    cursor: pointer;
+}
+
+.skill-checkbox input[type="checkbox"]:checked + span,
+.interest-checkbox input[type="checkbox"]:checked + span {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.skill-checkbox:has(input:checked),
+.interest-checkbox:has(input:checked) {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+.step-description {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+    font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+    .skills-checkbox-grid,
+    .interests-checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .skills-selection-container,
+    .interests-selection-container {
+        max-height: 400px;
+    }
+    
+    /* モバイルでのナビゲーション調整 */
+    .form-step[data-step="4"] .form-navigation,
+    .form-step[data-step="5"] .form-navigation {
+        max-width: calc(100% - 40px);
+        padding: var(--space-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: var(--space-lg);
+        margin: var(--space-sm);
+    }
+    
+    .step-label {
+        display: none;
+    }
+    
+    .challenge-group {
+        padding: var(--space-sm);
+    }
+    
+    .challenge-group h4 {
+        font-size: 0.9375rem;
+    }
+    
+    .challenge-group .checkbox-label {
+        font-size: 0.875rem;
+    }
+    
+    .auth-form textarea {
+        min-height: 80px;
+        font-size: 0.875rem;
+    }
+    
+    .skill-checkbox,
+    .interest-checkbox {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.875rem;
+    }
+}
