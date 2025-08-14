@@ -12,6 +12,10 @@
 (function() {
     'use strict';
 
+    console.log('[MatchingUnified] スクリプト実行開始');
+    
+    try {
+    
     // console.log('[MatchingUnified] マッチングシステム初期化');
     
     // 他のレーダーチャート関数との競合を防ぐ
@@ -2669,5 +2673,12 @@
     window.addEventListener('beforeunload', () => {
         clearAllTimers();
     });
+    
+    console.log('[MatchingUnified] スクリプト実行完了');
+    
+    } catch (error) {
+        console.error('[MatchingUnified] スクリプト実行エラー:', error);
+        console.error('[MatchingUnified] エラースタック:', error.stack);
+    }
 
 })();
