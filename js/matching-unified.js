@@ -956,6 +956,7 @@
 
         // フィルタリング
         let filteredUsers = filterUsers(matchingUsers);
+        console.log('[MatchingUnified] フィルター前:', matchingUsers.length, 'フィルター後:', filteredUsers.length);
 
         // ソート
         filteredUsers = sortUsers(filteredUsers);
@@ -2557,7 +2558,7 @@
 
     // ダミーデータを表示
     function displayDummyData() {
-        // console.log('[MatchingUnified] ダミーデータを表示します');
+        console.log('[MatchingUnified] ダミーデータを表示します');
         const dummyUsers = [
             {
                 id: 'dummy1',
@@ -2637,6 +2638,7 @@
         ];
 
         matchingUsers = dummyUsers;
+        console.log('[MatchingUnified] ダミーユーザー数:', dummyUsers.length);
         displayMatchingUsers();
     }
 
