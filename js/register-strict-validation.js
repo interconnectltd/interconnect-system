@@ -75,8 +75,14 @@
                 const noChallengeCheckbox = challengeGroup.querySelector('input[value="現状課題なし"]:checked');
                 const otherChallenges = challengeGroup.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])');
                 
-                // 「現状課題なし」でない場合、詳細が必要
-                if (!noChallengeCheckbox && otherChallenges.length > 0) {
+                // 「現状課題なし」がチェックされている場合は詳細不要
+                if (noChallengeCheckbox) {
+                    // 現状課題なしの場合はスキップ
+                    continue;
+                }
+                
+                // その他の課題が選択されている場合、詳細が必要
+                if (otherChallenges.length > 0) {
                     if (!stepState[`${group}Details`]) return false;
                 }
             }
@@ -305,8 +311,22 @@
                 const stepKey = `step${currentStepNum}`;
                 const stepState = validationState[stepKey];
                 
-                // 各フィールドのエラーをチェック
+                // 各フィールドのエラーをチェック（現状課題なしの場合は詳細をスキップ）
                 Object.keys(stepState).forEach(key => {
+                    // 詳細フィールドの場合、現状課題なしがチェックされていればスキップ
+                    if (key.endsWith('Details') && currentStepNum === 2) {
+                        const groupName = key.replace('Details', '').toLowerCase();
+                        const textarea = document.getElementById(`${groupName}-details`);
+                        if (textarea) {
+                            const challengeGroup = textarea.closest('.challenge-group');
+                            const noChallengeChecked = challengeGroup ? 
+                                challengeGroup.querySelector('input[value="現状課題なし"]:checked') : null;
+                            if (noChallengeChecked) {
+                                return; // このフィールドのエラーチェックをスキップ
+                            }
+                        }
+                    }
+                    
                     if (!stepState[key]) {
                         switch(key) {
                             case 'name': errors.push('お名前を入力してください'); break;

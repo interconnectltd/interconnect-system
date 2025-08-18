@@ -690,7 +690,8 @@
             //     button.parentNode.replaceChild(newButton, button);
             // });
             
-            // 新しいリスナーを設定
+            // この重複リスナー設定を無効化（global-functions.jsで既に設定済み）
+            /*
             setTimeout(() => {
                 document.querySelectorAll('[data-action="next"]').forEach(button => {
                     // 重複防止チェック
@@ -749,6 +750,7 @@
                 
                 // console.log('[FINAL FIX] Button handlers setup complete');
             }, 100);
+            */
             
             // パスワードトグル機能の修正
             setTimeout(() => {

@@ -216,8 +216,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
-            // 「現状課題なし」でない場合のみ、詳細の文字数をチェック
-            if (!noChallengeCheckbox && otherChallenges.length > 0) {
+            // 「現状課題なし」がチェックされている場合はテキストエリアのチェックをスキップ
+            if (noChallengeCheckbox) {
+                continue; // このグループはスキップ
+            }
+            
+            // その他の課題が選択されている場合のみ、詳細の文字数をチェック
+            if (otherChallenges.length > 0) {
                 if (textarea.value.trim().length < 50) {
                     return false;
                 }
