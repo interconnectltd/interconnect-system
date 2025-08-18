@@ -39,10 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 textarea.addEventListener('input', function() {
                     if (DEBUG) console.log(`[CharCount] Input event for ${field.id}, value length:`, this.value.length);
                     updateCharCount(this, countElement, field.min);
-                    // validateStepは存在しない可能性があるため条件付き呼び出し
-                    if (typeof validateStep === 'function') {
-                        validateStep();
-                    }
+                    // ローカルのバリデーション関数を呼び出し
+                    validateCharCountStep();
                 });
             }
         } else {
@@ -61,7 +59,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // 親要素の.char-countを取得
         const charCountWrapper = countElement.closest('.char-count');
         if (charCountWrapper) {
-            if (currentLength >= minLength) {
+            // 初期状態（0文字）の場合はエラークラスを付けない
+            if (currentLength === 0) {
+                charCountWrapper.classList.remove('error');
+                charCountWrapper.classList.remove('success');
+            } else if (currentLength >= minLength) {
                 charCountWrapper.classList.remove('error');
                 charCountWrapper.classList.add('success');
             } else {
@@ -71,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ステップバリデーション関数
-    function validateStep() {
+    // ステップバリデーション関数（ローカル用）
+    function validateCharCountStep() {
         const activeStep = document.querySelector('.form-step.active');
         if (!activeStep) return;
 
@@ -244,8 +246,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 全ての入力フィールドに対してイベントリスナーを設定
     const allInputs = document.querySelectorAll('#registerForm input, #registerForm textarea, #registerForm select');
     allInputs.forEach(input => {
-        input.addEventListener('input', validateStep);
-        input.addEventListener('change', validateStep);
+        input.addEventListener('input', validateCharCountStep);
+        input.addEventListener('change', validateCharCountStep);
     });
 
     // 初期バリデーション実行を無効化（ユーザーが入力を始めてからバリデーション開始）
@@ -297,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // バリデーション更新
-            validateStep();
+            validateCharCountStep();
         });
     }
 });

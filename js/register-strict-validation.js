@@ -269,58 +269,61 @@
         validateField(textarea);
     }
     
-    // nextStep関数のオーバーライド
+    // nextStep実行前のバリデーションフック
+    // global-functions.jsのnextStepに処理を委譲
     const originalNextStep = window.nextStep;
-    window.nextStep = function() {
-        const currentStepElement = document.querySelector('.form-step.active');
-        if (!currentStepElement) return;
-        
-        const currentStepNum = parseInt(currentStepElement.getAttribute('data-step'));
-        
-        // 厳密なバリデーションチェック
-        if (!isStepValid(currentStepNum)) {
-            // エラーメッセージを表示
-            const errors = [];
-            const stepKey = `step${currentStepNum}`;
-            const stepState = validationState[stepKey];
+    if (originalNextStep) {
+        // 既存のnextStepをラップしてバリデーションを追加
+        const wrappedNextStep = originalNextStep;
+        window.nextStep = function() {
+            const currentStepElement = document.querySelector('.form-step.active');
+            if (!currentStepElement) return;
             
-            // 各フィールドのエラーをチェック
-            Object.keys(stepState).forEach(key => {
-                if (!stepState[key]) {
-                    switch(key) {
-                        case 'name': errors.push('お名前を入力してください'); break;
-                        case 'company': errors.push('会社名を入力してください'); break;
-                        case 'email': errors.push('有効なメールアドレスを入力してください'); break;
-                        case 'password': errors.push('パスワードは8文字以上で入力してください'); break;
-                        case 'passwordConfirm': errors.push('パスワードが一致しません'); break;
-                        case 'challenges': errors.push('各カテゴリーで少なくとも1つの課題を選択してください'); break;
-                        case 'budget': errors.push('年間予算規模を数字で入力してください'); break;
-                        case 'phone': errors.push('電話番号を入力してください'); break;
-                        case 'lineId': errors.push('LINE IDまたはURLを入力してください'); break;
-                        case 'lineQr': errors.push('LINE QRコードをアップロードしてください'); break;
-                        case 'position': errors.push('役職を入力してください'); break;
-                        case 'revenueDetails': errors.push('売上・収益課題の詳細を50文字以上で入力してください'); break;
-                        case 'hrDetails': errors.push('組織・人材課題の詳細を50文字以上で入力してください'); break;
-                        case 'dxDetails': errors.push('業務効率・DX課題の詳細を50文字以上で入力してください'); break;
-                        case 'strategyDetails': errors.push('事業戦略課題の詳細を50文字以上で入力してください'); break;
-                        case 'skillsPr': errors.push('スキル・専門分野のPRを100文字以上で入力してください'); break;
-                        case 'interestsDetails': errors.push('興味・困りごとの詳細を100文字以上で入力してください'); break;
-                        case 'agree': errors.push('利用規約に同意してください'); break;
+            const currentStepNum = parseInt(currentStepElement.getAttribute('data-step'));
+            
+            // 厳密なバリデーションチェック
+            if (!isStepValid(currentStepNum)) {
+                // エラーメッセージを表示
+                const errors = [];
+                const stepKey = `step${currentStepNum}`;
+                const stepState = validationState[stepKey];
+                
+                // 各フィールドのエラーをチェック
+                Object.keys(stepState).forEach(key => {
+                    if (!stepState[key]) {
+                        switch(key) {
+                            case 'name': errors.push('お名前を入力してください'); break;
+                            case 'company': errors.push('会社名を入力してください'); break;
+                            case 'email': errors.push('有効なメールアドレスを入力してください'); break;
+                            case 'password': errors.push('パスワードは8文字以上で入力してください'); break;
+                            case 'passwordConfirm': errors.push('パスワードが一致しません'); break;
+                            case 'challenges': errors.push('各カテゴリーで少なくとも1つの課題を選択してください'); break;
+                            case 'budget': errors.push('年間予算規模を数字で入力してください'); break;
+                            case 'phone': errors.push('電話番号を入力してください'); break;
+                            case 'lineId': errors.push('LINE IDまたはURLを入力してください'); break;
+                            case 'lineQr': errors.push('LINE QRコードをアップロードしてください'); break;
+                            case 'position': errors.push('役職を入力してください'); break;
+                            case 'revenueDetails': errors.push('売上・収益課題の詳細を50文字以上で入力してください'); break;
+                            case 'hrDetails': errors.push('組織・人材課題の詳細を50文字以上で入力してください'); break;
+                            case 'dxDetails': errors.push('業務効率・DX課題の詳細を50文字以上で入力してください'); break;
+                            case 'strategyDetails': errors.push('事業戦略課題の詳細を50文字以上で入力してください'); break;
+                            case 'skillsPr': errors.push('スキル・専門分野のPRを100文字以上で入力してください'); break;
+                            case 'interestsDetails': errors.push('興味・困りごとの詳細を100文字以上で入力してください'); break;
+                            case 'agree': errors.push('利用規約に同意してください'); break;
+                        }
                     }
+                });
+                
+                if (errors.length > 0) {
+                    alert('以下の項目を確認してください：\n\n' + errors.join('\n'));
+                    return;
                 }
-            });
-            
-            if (errors.length > 0) {
-                alert('以下の項目を確認してください：\n\n' + errors.join('\n'));
-                return;
             }
-        }
-        
-        // 元のnextStep関数を呼び出す
-        if (originalNextStep) {
-            originalNextStep();
-        }
-    };
+            
+            // 元のnextStep関数を呼び出す
+            wrappedNextStep();
+        };
+    }
     
     // 初期化
     function init() {
