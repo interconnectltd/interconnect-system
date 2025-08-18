@@ -38,6 +38,17 @@
         submitButton.textContent = '登録処理中...';
 
         try {
+            // まず既存ユーザーをチェック
+            const { data: existingUser, error: checkError } = await supabase
+                .from('user_profiles')
+                .select('email')
+                .eq('email', formData.email)
+                .single();
+            
+            if (existingUser) {
+                throw new Error('このメールアドレスは既に登録されています。ログインページへお進みください。');
+            }
+
             // Supabaseでユーザー登録
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email: formData.email,
@@ -53,7 +64,17 @@
                 }
             });
 
-            if (authError) throw authError;
+            if (authError) {
+                // Supabaseのエラーメッセージを日本語化
+                if (authError.message.includes('User already registered')) {
+                    throw new Error('このメールアドレスは既に登録されています。');
+                } else if (authError.message.includes('Password should be at least')) {
+                    throw new Error('パスワードは8文字以上で入力してください。');
+                } else if (authError.message.includes('Invalid email')) {
+                    throw new Error('有効なメールアドレスを入力してください。');
+                }
+                throw authError;
+            }
 
             // プロフィール作成（user_profilesテーブルに保存）
             const { error: profileError } = await supabase
