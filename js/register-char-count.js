@@ -185,25 +185,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 事業課題のバリデーション
     function validateChallenges() {
-        // 少なくとも1つのチャレンジが選択されているか
-        const checkedChallenges = document.querySelectorAll('input[name="challenges"]:checked');
-        if (checkedChallenges.length === 0) {
-            return false;
+        // 各課題グループでのチェック
+        const groups = ['revenue', 'hr', 'dx', 'strategy'];
+        for (let group of groups) {
+            const textarea = document.getElementById(`${group}-details`);
+            if (!textarea) continue;
+            
+            const challengeGroup = textarea.closest('.challenge-group');
+            if (!challengeGroup) continue;
+            
+            const noChallengeCheckbox = challengeGroup.querySelector('input[value="現状課題なし"]:checked');
+            const otherChallenges = challengeGroup.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])');
+            
+            // グループごとに少なくとも1つは選択必要
+            if (!noChallengeCheckbox && otherChallenges.length === 0) {
+                return false;
+            }
+            
+            // 「現状課題なし」でない場合のみ、詳細の文字数をチェック
+            if (!noChallengeCheckbox && otherChallenges.length > 0) {
+                if (textarea.value.trim().length < 50) {
+                    return false;
+                }
+            }
         }
 
         // 予算が入力されているか
         const budget = document.getElementById('budget');
         if (!budget || !budget.value.trim()) {
             return false;
-        }
-
-        // 詳細が必要な場合の文字数チェック
-        const detailFields = ['revenue-details', 'hr-details', 'dx-details', 'strategy-details'];
-        for (let fieldId of detailFields) {
-            const field = document.getElementById(fieldId);
-            if (field && field.value.trim() && field.value.length < 50) {
-                return false;
-            }
         }
 
         return true;

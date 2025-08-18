@@ -62,11 +62,18 @@
             // 必須項目のチェック
             if (!stepState.challenges || !stepState.budget) return false;
             
-            // 各課題グループのチェック
+            // 各課題グループのチェック（:has()を使わない方法）
             const groups = ['revenue', 'hr', 'dx', 'strategy'];
             for (const group of groups) {
-                const noChallengeCheckbox = document.querySelector(`.challenge-group:has(#${group}-details) input[value="現状課題なし"]:checked`);
-                const otherChallenges = document.querySelectorAll(`.challenge-group:has(#${group}-details) input[name="challenges"]:checked:not([value="現状課題なし"])`);
+                // textareaのIDから親のchallenge-groupを探す
+                const textarea = document.getElementById(`${group}-details`);
+                if (!textarea) continue;
+                
+                const challengeGroup = textarea.closest('.challenge-group');
+                if (!challengeGroup) continue;
+                
+                const noChallengeCheckbox = challengeGroup.querySelector('input[value="現状課題なし"]:checked');
+                const otherChallenges = challengeGroup.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])');
                 
                 // 「現状課題なし」でない場合、詳細が必要
                 if (!noChallengeCheckbox && otherChallenges.length > 0) {
@@ -212,6 +219,14 @@
                 const checkedBoxes = group.querySelectorAll('input[name="challenges"]:checked');
                 if (checkedBoxes.length === 0) {
                     allGroupsValid = false;
+                } else {
+                    // 「現状課題なし」がチェックされている場合はtextareaのvalidationStateをtrueに
+                    const noChallengeChecked = group.querySelector('input[value="現状課題なし"]:checked');
+                    const textarea = group.querySelector('textarea');
+                    if (noChallengeChecked && textarea) {
+                        const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
+                        validationState.step2[fieldKey] = true;
+                    }
                 }
             });
             
@@ -366,14 +381,28 @@
                     if (e.target.checked && textarea) {
                         const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
                         validationState.step2[fieldKey] = true; // 現状課題なしの場合は詳細不要
+                    } else if (!e.target.checked && textarea) {
+                        // 現状課題なしのチェックを外した場合
+                        const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
+                        validationState.step2[fieldKey] = false;
                     }
                 } else {
                     // 他の課題が選択された場合
                     const noChallengeCheckbox = group.querySelector('input[value="現状課題なし"]:checked');
                     const otherChecked = group.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])').length > 0;
                     
-                    if (textarea && otherChecked && !noChallengeCheckbox) {
-                        validateField(textarea);
+                    if (textarea) {
+                        const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
+                        if (noChallengeCheckbox) {
+                            // 現状課題なしがチェックされている場合は詳細不要
+                            validationState.step2[fieldKey] = true;
+                        } else if (otherChecked) {
+                            // 他の課題が選択されている場合はvalidateFieldで検証
+                            validateField(textarea);
+                        } else {
+                            // 何も選択されていない場合
+                            validationState.step2[fieldKey] = false;
+                        }
                     }
                 }
                 
