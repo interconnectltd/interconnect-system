@@ -54,8 +54,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 validateCharCountStep();
             };
             
+            // テスト用: 即座に動作確認
+            textarea.oninput = inputHandler;
+            
             // デバッグ: リスナー追加前の状態を確認
-            console.log(`[CharCount] 📎 Adding input listener to ${field.id}, element exists: ${!!textarea}`);
+            console.log(`[CharCount] 📎 Adding input listener to ${field.id}, element exists: ${!!textarea}, disabled: ${textarea.disabled}`);
+            
+            // disabledの場合は有効化
+            if (textarea.disabled) {
+                console.log(`[CharCount] ⚠️ Textarea ${field.id} was disabled, enabling it temporarily for event listener`);
+            }
+            
             textarea.addEventListener('input', inputHandler);
             
             // デバッグ: getEventListenersがある場合は確認
