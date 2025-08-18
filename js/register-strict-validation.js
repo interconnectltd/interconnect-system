@@ -190,7 +190,14 @@
             case 'dx-details':
             case 'strategy-details':
                 fieldKey = field.id.replace('-', '').replace('details', 'Details');
-                isValid = field.value.trim().length >= 50;
+                // 現状課題なしがチェックされている場合はバリデーションをスキップ
+                const group = field.closest('.challenge-group');
+                const noChallenge = group ? group.querySelector('input[value="現状課題なし"]:checked') : null;
+                if (noChallenge) {
+                    isValid = true; // 現状課題なしの場合は常にtrue
+                } else {
+                    isValid = field.value.trim().length >= 50;
+                }
                 break;
                 
             case 'skills-pr':

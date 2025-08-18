@@ -72,6 +72,20 @@
             // バリデーション - 複数の場所に定義があるため統合
             let isValid = true;
             
+            // ステップ2の場合、「現状課題なし」の特別処理
+            if (currentStepNum === 2) {
+                // 各グループで「現状課題なし」がチェックされているテキストエリアは無効化
+                document.querySelectorAll('.challenge-group').forEach(group => {
+                    const noChallengeCheckbox = group.querySelector('input[value="現状課題なし"]:checked');
+                    const textarea = group.querySelector('textarea');
+                    if (noChallengeCheckbox && textarea) {
+                        textarea.disabled = true;
+                        textarea.removeAttribute('data-required');
+                        textarea.setAttribute('data-no-validate', 'true');
+                    }
+                });
+            }
+            
             // registration-flow.jsのバリデーション
             if (window.InterConnect && window.InterConnect.Registration && typeof window.InterConnect.Registration.validateCurrentStep === 'function') {
                 // console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');

@@ -35,11 +35,19 @@
                 textarea.value = '';
                 textarea.disabled = true;
                 textarea.removeAttribute('data-required');
+                textarea.removeAttribute('minlength'); // minlength属性も削除
+                textarea.setAttribute('data-no-validate', 'true'); // バリデーションスキップフラグ
                 
                 // 文字カウント表示を非表示にする
                 const charCountElement = textarea.parentElement.querySelector('.char-count');
                 if (charCountElement) {
                     charCountElement.style.display = 'none';
+                }
+                
+                // エラー表示もクリア
+                const errorElement = textarea.parentElement.querySelector('.error-message');
+                if (errorElement) {
+                    errorElement.style.display = 'none';
                 }
             }
         } else {
@@ -50,6 +58,9 @@
             // テキストエリアを有効化
             if (textarea) {
                 textarea.disabled = false;
+                textarea.setAttribute('data-required', 'true');
+                textarea.setAttribute('minlength', '50'); // minlength属性を復元
+                textarea.removeAttribute('data-no-validate'); // バリデーションスキップフラグを削除
                 
                 // 文字カウント表示を再表示
                 const charCountElement = textarea.parentElement.querySelector('.char-count');
@@ -102,18 +113,26 @@
         // 必須フィールドのチェック
         const requiredFields = stepElement.querySelectorAll('[data-required="true"]:not(:disabled)');
         requiredFields.forEach(field => {
-            if (field.type === 'checkbox') {
+            // テキストエリアの場合、現状課題なしがチェックされていればスキップ
+            if (field.tagName === 'TEXTAREA') {
+                const challengeGroup = field.closest('.challenge-group');
+                if (challengeGroup) {
+                    const noChallengeChecked = challengeGroup.querySelector('input[value="現状課題なし"]:checked');
+                    if (noChallengeChecked) {
+                        return; // このテキストエリアのバリデーションをスキップ
+                    }
+                }
+                const minLength = parseInt(field.getAttribute('minlength') || '0');
+                if (field.value.trim().length < minLength) {
+                    errors.push(`${field.closest('.form-group').querySelector('label').textContent.replace('*', '').trim()}は${minLength}文字以上で入力してください`);
+                }
+            } else if (field.type === 'checkbox') {
                 if (!field.checked) {
                     errors.push('利用規約に同意してください');
                 }
             } else if (field.type === 'file') {
                 if (!field.files || field.files.length === 0) {
                     errors.push(`${field.closest('.form-group').querySelector('label').textContent.replace('*', '').trim()}を選択してください`);
-                }
-            } else if (field.tagName === 'TEXTAREA') {
-                const minLength = parseInt(field.getAttribute('minlength') || '0');
-                if (field.value.trim().length < minLength) {
-                    errors.push(`${field.closest('.form-group').querySelector('label').textContent.replace('*', '').trim()}は${minLength}文字以上で入力してください`);
                 }
             } else {
                 if (!field.value.trim()) {
