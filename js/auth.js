@@ -12,27 +12,39 @@
     });
 
     /**
-     * Initialize password visibility toggle
+     * Initialize password visibility toggle（統一版）
      */
     function initPasswordToggle() {
+        // 重複登録を防ぐためのフラグチェック
+        if (window.passwordToggleInitialized) return;
+        
         const toggleButtons = document.querySelectorAll('.password-toggle');
         
         toggleButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const input = this.parentElement.querySelector('input');
+            // 既存のイベントリスナーを削除してから新規登録
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            newButton.addEventListener('click', function() {
+                const wrapper = this.closest('.password-input-wrapper');
+                const input = wrapper ? wrapper.querySelector('input[type="password"], input[type="text"]') : null;
                 const icon = this.querySelector('i');
                 
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    input.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
+                if (input && icon) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
                 }
             });
         });
+        
+        window.passwordToggleInitialized = true;
     }
 
     /**
@@ -138,11 +150,11 @@
                 
                 // Here you would normally send registration request to server
                 // console.log('Registration data:', { 
-                    name, company, email, position,
-                    challenges, budget,
-                    phone, lineId,
-                    newsletter
-                });
+                //     name, company, email, position,
+                //     challenges, budget,
+                //     phone, lineId,
+                //     newsletter
+                // });
                 
                 showMessage('登録が完了しました。ログインページに移動します...', 'success');
                 

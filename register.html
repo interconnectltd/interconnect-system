@@ -16,17 +16,13 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
+    <!-- 認証ページ基本スタイル -->
     <link rel="stylesheet" href="css/auth.css">
+    <!-- 認証ページ統一スタイル（auth.cssの後に読み込む） -->
     <link rel="stylesheet" href="css/auth-unified.css">
-    <!-- レジスター画面のレイアウト修正 -->
+    <!-- 登録ページ固有の修正（最後に読み込む） -->
     <link rel="stylesheet" href="css/auth-register-fix.css">
-    <!-- SNS登録セクション削除 -->
-    <link rel="stylesheet" href="css/register-sns-removal.css">
-    <!-- CSS競合修正 -->
-    <link rel="stylesheet" href="css/css-conflict-fix.css">
-    <!-- 登録ページUI修正（招待リンク対応） -->
     <link rel="stylesheet" href="css/register-ui-fix.css">
-    <!-- レスポンシブ対応 -->
     <link rel="stylesheet" href="css/register-responsive.css">
 </head>
 <body>
@@ -44,8 +40,7 @@
             </div>
             
             <button type="button" class="auth-button line-button" id="lineRegisterBtn" 
-                    style="background: #00C300 !important; color: white !important; border: none !important;"
-                    onclick="console.log('LINE button clicked (inline)'); if(window.handleLineLogin) window.handleLineLogin(event); return false;">
+                    style="background: #00C300 !important; color: white !important; border: none !important;">
                 <i class="fab fa-line"></i>
                 LINEで登録
             </button>
@@ -103,7 +98,7 @@
                     <div class="form-group">
                         <label for="password">パスワード<span class="required">*</span></label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="password" name="password" required>
+                            <input type="password" id="password" name="password" autocomplete="new-password" required>
                             <button type="button" class="password-toggle" aria-label="パスワードを表示">
                                 <i class="fas fa-eye"></i>
                             </button>
@@ -113,14 +108,14 @@
                     <div class="form-group">
                         <label for="password-confirm">パスワード（確認）<span class="required">*</span></label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="password-confirm" name="password-confirm" required>
+                            <input type="password" id="password-confirm" name="password-confirm" autocomplete="new-password" required>
                             <button type="button" class="password-toggle" aria-label="パスワードを表示">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
                     
-                    <button type="button" class="auth-button" onclick="nextStep()">次へ</button>
+                    <button type="button" class="auth-button" data-action="next">次へ</button>
                 </div>
                 
                 <!-- Step 2: Business Challenges -->
@@ -264,8 +259,8 @@
                     </div>
                     
                     <div class="form-navigation">
-                        <button type="button" class="auth-button-outline" onclick="prevStep()">戻る</button>
-                        <button type="button" class="auth-button" onclick="nextStep()">次へ</button>
+                        <button type="button" class="auth-button-outline" data-action="prev">戻る</button>
+                        <button type="button" class="auth-button" data-action="next">次へ</button>
                     </div>
                 </div>
                 
@@ -303,8 +298,8 @@
                     </div>
                     
                     <div class="form-navigation">
-                        <button type="button" class="auth-button-outline" onclick="prevStep()">戻る</button>
-                        <button type="button" class="auth-button" onclick="nextStep()">次へ</button>
+                        <button type="button" class="auth-button-outline" data-action="prev">戻る</button>
+                        <button type="button" class="auth-button" data-action="next">次へ</button>
                     </div>
                 </div>
                 
@@ -466,8 +461,8 @@
                     </div>
                     
                     <div class="form-navigation">
-                        <button type="button" class="auth-button-outline" onclick="prevStep()">戻る</button>
-                        <button type="button" class="auth-button" onclick="nextStep()">次へ</button>
+                        <button type="button" class="auth-button-outline" data-action="prev">戻る</button>
+                        <button type="button" class="auth-button" data-action="next">次へ</button>
                     </div>
                 </div>
                 
@@ -639,7 +634,7 @@
                     </div>
                     
                     <div class="form-navigation">
-                        <button type="button" class="auth-button-outline" onclick="prevStep()">戻る</button>
+                        <button type="button" class="auth-button-outline" data-action="prev">戻る</button>
                         <button type="submit" class="auth-button">登録する</button>
                     </div>
                 </div>
@@ -668,21 +663,151 @@
     <script src="js/safe-dom-utils.js"></script>
     <script src="js/safe-storage.js"></script>
     <script src="js/auth.js"></script>
-    <!-- auth-toggle.js は存在しないため削除 -->
     <script src="js/global-functions.js"></script>
     <script src="js/registration-flow.js"></script>
-    <script src="js/register-functions-fix.js"></script>
-    <script src="js/register-nextstep-final-fix.js"></script>
-    <!-- line-integration.js は存在しないため削除 -->
-    <script src="js/register-button-fix-complete.js"></script>
-    <!-- 強化されたバリデーション -->
+    <!-- バリデーション統合版 -->
     <script src="js/register-enhanced-validation.js"></script>
-    <!-- 厳密なバリデーションとボタン制御 -->
-    <script src="js/register-strict-validation.js"></script>
     <!-- 招待コード対応の登録処理 -->
     <script src="js/register-with-invite.js"></script>
     <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- 文字カウントとバリデーション -->
     <script src="js/register-char-count.js"></script>
+    
+    <!-- 最終的な次へボタンの修正 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[FINAL FIX] Setting up next/prev button handlers');
+            
+            // 既存のリスナーをすべてクリア
+            document.querySelectorAll('[data-action="next"]').forEach(button => {
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+            });
+            
+            document.querySelectorAll('[data-action="prev"]').forEach(button => {
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+            });
+            
+            // 新しいリスナーを設定
+            setTimeout(() => {
+                document.querySelectorAll('[data-action="next"]').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[FINAL FIX] Next button clicked');
+                        
+                        const currentStep = document.querySelector('.form-step.active');
+                        if (!currentStep) {
+                            console.error('[FINAL FIX] No active step found');
+                            return;
+                        }
+                        
+                        const currentStepNum = parseInt(currentStep.dataset.step);
+                        const nextStep = document.querySelector(`.form-step[data-step="${currentStepNum + 1}"]`);
+                        
+                        if (nextStep) {
+                            console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum + 1}`);
+                            currentStep.classList.remove('active');
+                            nextStep.classList.add('active');
+                            
+                            // プログレスインジケーター更新
+                            document.querySelectorAll('.progress-step').forEach(step => {
+                                const stepNum = parseInt(step.dataset.step);
+                                if (stepNum <= currentStepNum + 1) {
+                                    step.classList.add('active');
+                                } else {
+                                    step.classList.remove('active');
+                                }
+                            });
+                            
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        } else {
+                            console.log('[FINAL FIX] No next step available');
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('[data-action="prev"]').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[FINAL FIX] Prev button clicked');
+                        
+                        const currentStep = document.querySelector('.form-step.active');
+                        if (!currentStep) return;
+                        
+                        const currentStepNum = parseInt(currentStep.dataset.step);
+                        const prevStep = document.querySelector(`.form-step[data-step="${currentStepNum - 1}"]`);
+                        
+                        if (prevStep) {
+                            console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum - 1}`);
+                            currentStep.classList.remove('active');
+                            prevStep.classList.add('active');
+                            
+                            // プログレスインジケーター更新
+                            document.querySelectorAll('.progress-step').forEach(step => {
+                                const stepNum = parseInt(step.dataset.step);
+                                if (stepNum <= currentStepNum - 1) {
+                                    step.classList.add('active');
+                                } else {
+                                    step.classList.remove('active');
+                                }
+                            });
+                            
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    });
+                });
+                
+                console.log('[FINAL FIX] Button handlers setup complete');
+            }, 100);
+            
+            // パスワードトグル機能の修正
+            setTimeout(() => {
+                console.log('[Password Toggle Fix] Setting up password toggle buttons');
+                const toggleButtons = document.querySelectorAll('.password-toggle');
+                
+                toggleButtons.forEach((button, index) => {
+                    console.log(`[Password Toggle Fix] Found button ${index}:`, button);
+                    
+                    // 既存のリスナーをクリア
+                    const newButton = button.cloneNode(true);
+                    button.parentNode.replaceChild(newButton, button);
+                    
+                    newButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const wrapper = this.closest('.password-input-wrapper');
+                        const input = wrapper ? wrapper.querySelector('input[type="password"], input[type="text"]') : null;
+                        const icon = this.querySelector('i');
+                        
+                        console.log('[Password Toggle Fix] Toggling:', { wrapper, input, icon });
+                        
+                        if (input && icon) {
+                            if (input.type === 'password') {
+                                input.type = 'text';
+                                icon.classList.remove('fa-eye');
+                                icon.classList.add('fa-eye-slash');
+                                this.setAttribute('aria-label', 'パスワードを非表示');
+                                console.log('[Password Toggle Fix] Changed to text');
+                            } else {
+                                input.type = 'password';
+                                icon.classList.remove('fa-eye-slash');
+                                icon.classList.add('fa-eye');
+                                this.setAttribute('aria-label', 'パスワードを表示');
+                                console.log('[Password Toggle Fix] Changed to password');
+                            }
+                        } else {
+                            console.error('[Password Toggle Fix] Could not find input or icon');
+                        }
+                    });
+                });
+                
+                console.log('[Password Toggle Fix] Setup complete');
+            }, 200);
+        });
+    </script>
 </body>
 </html>

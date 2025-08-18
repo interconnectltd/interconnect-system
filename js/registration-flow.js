@@ -25,15 +25,9 @@ window.InterConnect.Registration = {
     }
 };
 
-// nextStep/prevStep は global-functions.js で定義済み
-// InterConnect.Registration の関数を global-functions.js の関数から呼び出すように設定
-window.addEventListener('DOMContentLoaded', function() {
-    // global-functions.js のステップ変更イベントを監視
-    window.addEventListener('stepChanged', function(e) {
-        // 必要に応じて registration-flow.js 側の処理を実行
-        // console.log('Step changed:', e.detail);
-    });
-});
+// global-functions.js の nextStep と連携するため、
+// InterConnect.Registration の関数をグローバルからも呼べるようにする
+// 関数が定義された後に設定されるように後で移動
 
 // 関数を名前空間内に移動
 window.InterConnect.Registration.moveToStep = function(step) {
@@ -168,6 +162,10 @@ window.InterConnect.Registration.validateCurrentStep = function(stepNum) {
 };
 
 // ヘルパー関数も名前空間内に移動
+
+// 関数が定義された後にグローバルに公開
+window.validateCurrentStep = window.InterConnect.Registration.validateCurrentStep;
+window.moveToStep = window.InterConnect.Registration.moveToStep;
 window.InterConnect.Registration.showFieldError = function(field, message) {
     if (!field) return;
     
@@ -392,7 +390,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ステップナビゲーション
-    document.querySelectorAll('[data-action]').forEach(button => {
+    // global-functions.jsが既に[data-action="next"]と[data-action="prev"]を処理しているため、
+    // ここではnext-stepとprev-stepのみ処理
+    document.querySelectorAll('[data-action="next-step"], [data-action="prev-step"]').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const action = this.getAttribute('data-action');
@@ -408,6 +408,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // data-action="next"と"prev"は global-functions.js が処理するため、
+    // ここでは何もしない
+    console.log('[registration-flow] Button handlers set up for next-step and prev-step only');
     
     // ローカルのmoveToStep関数は削除（グローバルで定義済み）
     

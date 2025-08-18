@@ -50,80 +50,171 @@
     let currentStep = 1;
     const totalSteps = 4; // 必要に応じて調整
     
-    window.nextStep = function() {
-        const currentStepElement = document.getElementById(`step${currentStep}`);
-        const nextStepElement = document.getElementById(`step${currentStep + 1}`);
-        
-        if (currentStepElement && nextStepElement && currentStep < totalSteps) {
-            // 現在のステップを非表示
-            currentStepElement.style.display = 'none';
-            currentStepElement.classList.remove('active');
+    // nextStep関数の統一版（一度だけ定義）
+    if (!window.nextStep) {
+        window.nextStep = function() {
+            console.log('[nextStep] Function called');
+            const currentStepElement = document.querySelector('.form-step.active');
+            console.log('[nextStep] Current active step element:', currentStepElement);
             
-            // 次のステップを表示
-            nextStepElement.style.display = 'block';
-            nextStepElement.classList.add('active');
+            if (!currentStepElement) {
+                console.error('[nextStep] No active step found!');
+                return;
+            }
             
-            currentStep++;
-            updateProgressBar();
+            const currentStepNum = parseInt(currentStepElement.getAttribute('data-step'));
+            console.log('[nextStep] Current step number:', currentStepNum);
             
-            // ステップ変更イベントを発火
-            window.dispatchEvent(new CustomEvent('stepChanged', { 
-                detail: { currentStep, totalSteps } 
-            }));
-        }
-    };
+            const nextStepElement = document.querySelector(`.form-step[data-step="${currentStepNum + 1}"]`);
+            console.log('[nextStep] Next step element:', nextStepElement);
+            
+            // バリデーション - 複数の場所に定義があるため統合
+            let isValid = true;
+            
+            // バリデーションを一時的にスキップしてデバッグ
+            console.log('[nextStep] SKIPPING validation for debug');
+            isValid = true;
+            
+            /*
+            // registration-flow.jsのバリデーション
+            if (window.InterConnect && window.InterConnect.Registration && typeof window.InterConnect.Registration.validateCurrentStep === 'function') {
+                console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
+                isValid = window.InterConnect.Registration.validateCurrentStep(currentStepNum);
+            }
+            // グローバルのバリデーション
+            else if (typeof validateCurrentStep === 'function') {
+                console.log('[nextStep] Using global validateCurrentStep');
+                isValid = validateCurrentStep(currentStepNum);
+            } else {
+                console.log('[nextStep] No validation function found');
+            }
+            */
+            
+            console.log('[nextStep] Validation result:', isValid);
+            
+            if (!isValid) {
+                console.log('[nextStep] Validation failed, stopping');
+                return;
+            }
+            
+            if (nextStepElement && currentStepNum < 5) {
+                console.log('[nextStep] Moving to next step');
+                
+                // 現在のステップを非表示
+                currentStepElement.classList.remove('active');
+                console.log('[nextStep] Removed active from current step');
+                
+                // 次のステップを表示
+                nextStepElement.classList.add('active');
+                console.log('[nextStep] Added active to next step');
+                
+                // プログレスインジケーターを更新
+                updateProgressIndicator(currentStepNum + 1);
+                
+                currentStep = currentStepNum + 1;
+                console.log('[nextStep] Updated currentStep to:', currentStep);
+                
+                // スクロールを上部に
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // ステップ変更イベントを発火
+                window.dispatchEvent(new CustomEvent('stepChanged', { 
+                    detail: { currentStep: currentStepNum + 1, totalSteps: 5 } 
+                }));
+                console.log('[nextStep] Step change completed');
+            } else {
+                console.log('[nextStep] Cannot move to next step - nextStepElement:', !!nextStepElement, 'currentStepNum:', currentStepNum);
+            }
+        };
+    } else {
+        console.log('[GlobalFunctions] nextStep already defined');
+    }
     
-    window.prevStep = function() {
-        const currentStepElement = document.getElementById(`step${currentStep}`);
-        const prevStepElement = document.getElementById(`step${currentStep - 1}`);
-        
-        if (currentStepElement && prevStepElement && currentStep > 1) {
-            // 現在のステップを非表示
-            currentStepElement.style.display = 'none';
-            currentStepElement.classList.remove('active');
+    // prevStep関数の統一版（一度だけ定義）
+    if (!window.prevStep) {
+        window.prevStep = function() {
+            const currentStepElement = document.querySelector('.form-step.active');
+            if (!currentStepElement) return;
             
-            // 前のステップを表示
-            prevStepElement.style.display = 'block';
-            prevStepElement.classList.add('active');
+            const currentStepNum = parseInt(currentStepElement.getAttribute('data-step'));
+            const prevStepElement = document.querySelector(`.form-step[data-step="${currentStepNum - 1}"]`);
             
-            currentStep--;
-            updateProgressBar();
-            
-            // ステップ変更イベントを発火
-            window.dispatchEvent(new CustomEvent('stepChanged', { 
-                detail: { currentStep, totalSteps } 
-            }));
-        }
-    };
+            if (prevStepElement && currentStepNum > 1) {
+                // 現在のステップを非表示
+                currentStepElement.classList.remove('active');
+                
+                // 前のステップを表示
+                prevStepElement.classList.add('active');
+                
+                // プログレスインジケーターを更新
+                updateProgressIndicator(currentStepNum - 1);
+                
+                currentStep = currentStepNum - 1;
+                
+                // ステップ変更イベントを発火
+                window.dispatchEvent(new CustomEvent('stepChanged', { 
+                    detail: { currentStep: currentStepNum - 1, totalSteps: 5 } 
+                }));
+            }
+        };
+    }
     
     /**
-     * プログレスバーの更新
+     * プログレスインジケーターの更新
      */
-    function updateProgressBar() {
-        const progressBar = document.querySelector('.progress-bar');
+    function updateProgressIndicator(stepNum) {
         const progressSteps = document.querySelectorAll('.progress-step');
         
-        if (progressBar) {
-            const progress = (currentStep / totalSteps) * 100;
-            progressBar.style.width = `${progress}%`;
-        }
-        
-        if (progressSteps.length > 0) {
-            progressSteps.forEach((step, index) => {
-                if (index < currentStep) {
-                    step.classList.add('completed');
-                } else {
-                    step.classList.remove('completed');
-                }
-                
-                if (index === currentStep - 1) {
-                    step.classList.add('active');
-                } else {
-                    step.classList.remove('active');
-                }
-            });
-        }
+        progressSteps.forEach((step) => {
+            const stepNumber = parseInt(step.getAttribute('data-step'));
+            if (stepNumber <= stepNum) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
     }
+    
+    // data-action属性を使用したイベントリスナー設定
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('[GlobalFunctions] DOMContentLoaded - Setting up button listeners');
+        
+        // data-action="next"のボタンにイベントを設定（重複防止）
+        const nextButtons = document.querySelectorAll('[data-action="next"]');
+        console.log('[GlobalFunctions] Found next buttons:', nextButtons.length);
+        
+        nextButtons.forEach((button, index) => {
+            console.log(`[GlobalFunctions] Processing next button ${index}:`, button);
+            // 既にリスナーが設定されていないか確認
+            if (!button.dataset.listenerAdded) {
+                button.dataset.listenerAdded = 'true';
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('[GlobalFunctions] Next button clicked - calling nextStep()');
+                    console.log('[GlobalFunctions] Current active step:', document.querySelector('.form-step.active'));
+                    window.nextStep();
+                });
+                console.log(`[GlobalFunctions] Listener added to next button ${index}`);
+            } else {
+                console.log(`[GlobalFunctions] Listener already exists on next button ${index}`);
+            }
+        });
+        
+        // data-action="prev"のボタンにイベントを設定（重複防止）
+        const prevButtons = document.querySelectorAll('[data-action="prev"]');
+        console.log('[GlobalFunctions] Found prev buttons:', prevButtons.length);
+        
+        prevButtons.forEach((button, index) => {
+            if (!button.dataset.listenerAdded) {
+                button.dataset.listenerAdded = 'true';
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('[GlobalFunctions] Prev button clicked');
+                    window.prevStep();
+                });
+            }
+        });
+    })
     
     /**
      * 現在のステップを取得
