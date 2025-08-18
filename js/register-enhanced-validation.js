@@ -170,8 +170,11 @@
         */
         
         // 初期状態のチェック - 「現状課題なし」がチェックされていたら処理
+        console.log('[RegisterEnhanced] 🔍 Checking initial checkbox states...');
         document.querySelectorAll('input[value="現状課題なし"]').forEach(checkbox => {
+            console.log(`[RegisterEnhanced] Checkbox "現状課題なし" checked: ${checkbox.checked}`);
             if (checkbox.checked) {
+                console.log('[RegisterEnhanced] ⚠️ Processing checked "現状課題なし"');
                 handleNoChallengeCheckbox(checkbox);
             }
         });

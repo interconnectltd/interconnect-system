@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // デバッグ用 
     const DEBUG = false; 
-    if (DEBUG) console.log('[CharCount] Initializing character count feature');
+    console.log('[CharCount] 🚀 Initializing character count feature...');
     
     // 文字カウントが必要な要素の設定
     const charCountFields = [
@@ -31,18 +31,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         if (textarea && countElement) {
+            console.log(`[CharCount] ✅ Found elements for ${field.id}`);
             // 初期値設定
             updateCharCount(textarea, countElement, field.min);
+            console.log(`[CharCount] ✅ Initial count set for ${field.id}`);
             
             // 既存のイベントリスナーをクリアしてから新規追加
             // ただしcloneNodeは使わない（disabled状態もコピーされるため）
             
             // 既存のイベントリスナーを上書き
             textarea.addEventListener('input', function(e) {
-                if (DEBUG) console.log(`[CharCount] Input event for ${field.id}, value:`, this.value, 'length:', this.value.length);
+                console.log(`[CharCount] ✅ Input event triggered for ${field.id}, length: ${this.value.length}`);
                 const count = document.getElementById(field.countId);
                 if (count) {
                     updateCharCount(this, count, field.min);
+                    console.log(`[CharCount] ✅ Updated count display to: ${this.value.length}`);
+                } else {
+                    console.error(`[CharCount] ❌ Count element not found: ${field.countId}`);
                 }
                 // ローカルのバリデーション関数を呼び出し
                 validateCharCountStep();
@@ -67,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCharCount(textarea, countElement, minLength) {
         const currentLength = textarea.value.length;
         countElement.textContent = currentLength;
+        console.log(`[updateCharCount] Setting ${countElement.id} to ${currentLength}`);
         
         // 親要素の.char-countを取得
         const charCountWrapper = countElement.closest('.char-count');
