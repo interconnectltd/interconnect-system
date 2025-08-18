@@ -26,38 +26,35 @@ document.addEventListener('DOMContentLoaded', function() {
             textarea: !!textarea, 
             countElement: !!countElement,
             textareaId: field.id,
-            countId: field.countId
+            countId: field.countId,
+            textareaDisabled: textarea ? textarea.disabled : 'N/A'
         });
         
         if (textarea && countElement) {
             // 初期値設定
             updateCharCount(textarea, countElement, field.min);
             
-            // 既存のリスナーを削除して新しく設定
-            const newTextarea = textarea.cloneNode(true);
-            textarea.parentNode.replaceChild(newTextarea, textarea);
+            // 既存のイベントリスナーをクリアしてから新規追加
+            // ただしcloneNodeは使わない（disabled状態もコピーされるため）
             
-            // 新しい要素に再度イベントリスナーを設定
-            const finalTextarea = document.getElementById(field.id);
-            if (finalTextarea) {
-                finalTextarea.addEventListener('input', function(e) {
-                    if (DEBUG) console.log(`[CharCount] Input event for ${field.id}, value:`, this.value, 'length:', this.value.length);
-                    const count = document.getElementById(field.countId);
-                    if (count) {
-                        updateCharCount(this, count, field.min);
-                    }
-                    // ローカルのバリデーション関数を呼び出し
-                    validateCharCountStep();
-                });
-                
-                // キーアップイベントも追加（念のため）
-                finalTextarea.addEventListener('keyup', function(e) {
-                    const count = document.getElementById(field.countId);
-                    if (count) {
-                        updateCharCount(this, count, field.min);
-                    }
-                });
-            }
+            // 既存のイベントリスナーを上書き
+            textarea.addEventListener('input', function(e) {
+                if (DEBUG) console.log(`[CharCount] Input event for ${field.id}, value:`, this.value, 'length:', this.value.length);
+                const count = document.getElementById(field.countId);
+                if (count) {
+                    updateCharCount(this, count, field.min);
+                }
+                // ローカルのバリデーション関数を呼び出し
+                validateCharCountStep();
+            });
+            
+            // キーアップイベントも追加（念のため）
+            textarea.addEventListener('keyup', function(e) {
+                const count = document.getElementById(field.countId);
+                if (count) {
+                    updateCharCount(this, count, field.min);
+                }
+            });
         } else {
             if (DEBUG) console.error(`[CharCount] Missing elements for ${field.id}:`, {
                 textarea: textarea,

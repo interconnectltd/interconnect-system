@@ -169,6 +169,13 @@
         });
         */
         
+        // 初期状態のチェック - 「現状課題なし」がチェックされていたら処理
+        document.querySelectorAll('input[value="現状課題なし"]').forEach(checkbox => {
+            if (checkbox.checked) {
+                handleNoChallengeCheckbox(checkbox);
+            }
+        });
+        
         // チェックボックスのイベントリスナー
         document.addEventListener('change', function(e) {
             if (e.target.matches('input[type="checkbox"][name="challenges"]')) {
