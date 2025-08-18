@@ -102,7 +102,8 @@
                         this.cancelConnection(btn.dataset.connectionId);
                         break;
                     case 'view-profile':
-                        window.location.href = `profile.html?user=${btn.dataset.userId}`;
+                        // プロフィールモーダルを表示
+                        this.showProfileModal(btn.dataset.userId);
                         break;
                     case 'message':
                         window.location.href = `messages.html?to=${btn.dataset.userId}`;
@@ -884,6 +885,27 @@
                 return `${days}日前`;
             } else {
                 return date.toLocaleDateString('ja-JP');
+            }
+        }
+
+        // プロフィールモーダル表示
+        showProfileModal(userId) {
+            console.log('[ConnectionsManager] プロフィール表示:', userId);
+            
+            // プロフィールモーダル関数が利用可能か確認
+            if (window.ProfileDetailModal && window.profileDetailModal) {
+                // profile-detail-modal.jsのインスタンスを使用
+                window.profileDetailModal.show(userId);
+            } else if (window.showMemberProfileModal) {
+                // members-profile-modal.jsの関数を使用
+                window.showMemberProfileModal(userId);
+            } else if (window.membersProfileModal) {
+                // members-profile-modal.jsのインスタンスを使用
+                window.membersProfileModal.show(userId);
+            } else {
+                // フォールバック: 従来のページ遷移
+                console.warn('[ConnectionsManager] プロフィールモーダルが利用できません。ページ遷移します。');
+                window.location.href = `profile.html?user=${userId}`;
             }
         }
     }

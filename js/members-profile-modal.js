@@ -705,6 +705,14 @@ if (document.readyState === 'loading') {
     });
 }
 
+// ProfileDetailModalとの互換性のため、同じインターフェースを提供
+if (!window.ProfileDetailModal) {
+    window.ProfileDetailModal = window.MembersProfileModal;
+}
+if (!window.profileDetailModal && window.membersProfileModal) {
+    window.profileDetailModal = window.membersProfileModal;
+}
+
 console.log('[DEBUG] 5. ファイル読み込み完了時点');
 console.log('[DEBUG] window.MembersProfileModal:', !!window.MembersProfileModal);
 console.log('[DEBUG] window.showMemberProfileModal:', !!window.showMemberProfileModal);
