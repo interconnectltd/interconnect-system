@@ -21,11 +21,11 @@
     // 「現状課題なし」チェックボックスの処理
     function handleNoChallengeCheckbox(checkbox) {
         const group = checkbox.closest('.challenge-group');
-        const otherCheckboxes = group.querySelectorAll('input[type="checkbox"][name="challenges"]');
+        const otherCheckboxes = group.querySelectorAll('input[type="checkbox"][name="challenges"]:not([value="現状課題なし"])');
         const textarea = group.querySelector('textarea');
         
         if (checkbox.checked) {
-            // 他のチェックボックスを無効化
+            // 他のチェックボックスを無効化（現状課題なし以外）
             otherCheckboxes.forEach(cb => {
                 cb.checked = false;
                 cb.disabled = true;
@@ -35,7 +35,7 @@
                 textarea.value = '';
                 textarea.disabled = true;
                 textarea.removeAttribute('data-required');
-                updateCharCount(textarea);
+                // updateCharCountは存在しないので削除
             }
         } else {
             // 他のチェックボックスを有効化
