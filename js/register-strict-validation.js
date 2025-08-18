@@ -225,7 +225,8 @@
         updateButtonState(stepNum);
     }
     
-    // リアルタイム文字数カウンターの更新
+    // リアルタイム文字数カウンターの更新（register-char-count.jsと重複するため無効化）
+    /*
     function updateCharCounter(textarea) {
         // IDベースでカウント要素を特定（より確実）
         const idMap = {
@@ -268,6 +269,7 @@
         // バリデーション実行
         validateField(textarea);
     }
+    */
     
     // nextStep実行前のバリデーションフック
     // global-functions.jsのnextStepに処理を委譲

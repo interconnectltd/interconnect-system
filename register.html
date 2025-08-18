@@ -672,6 +672,7 @@
     <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- 文字カウントとバリデーション -->
     <script src="js/register-char-count.js"></script>
+    <script src="js/register-strict-validation.js"></script>
     
     <!-- 最終的な次へボタンの修正 -->
     <script>
@@ -698,35 +699,13 @@
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        // console.log('[FINAL FIX] Next button clicked');
+                        console.log('[FINAL FIX] Next button clicked - calling window.nextStep()');
                         
-                        const currentStep = document.querySelector('.form-step.active');
-                        if (!currentStep) {
-                            // console.error('[FINAL FIX] No active step found');
-                            return;
-                        }
-                        
-                        const currentStepNum = parseInt(currentStep.dataset.step);
-                        const nextStep = document.querySelector(`.form-step[data-step="${currentStepNum + 1}"]`);
-                        
-                        if (nextStep) {
-                            // console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum + 1}`);
-                            currentStep.classList.remove('active');
-                            nextStep.classList.add('active');
-                            
-                            // プログレスインジケーター更新
-                            document.querySelectorAll('.progress-step').forEach(step => {
-                                const stepNum = parseInt(step.dataset.step);
-                                if (stepNum <= currentStepNum + 1) {
-                                    step.classList.add('active');
-                                } else {
-                                    step.classList.remove('active');
-                                }
-                            });
-                            
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        // global-functions.jsのnextStep関数を呼び出す（バリデーション付き）
+                        if (typeof window.nextStep === 'function') {
+                            window.nextStep();
                         } else {
-                            // console.log('[FINAL FIX] No next step available');
+                            console.error('[FINAL FIX] window.nextStep is not a function');
                         }
                     });
                     }

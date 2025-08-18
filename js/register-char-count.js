@@ -63,13 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`[CharCount] Current listeners on ${field.id}:`, getEventListeners(textarea));
             }
             
-            // キーアップイベントも追加（念のため）
-            textarea.addEventListener('keyup', function(e) {
-                const count = document.getElementById(field.countId);
-                if (count) {
-                    updateCharCount(this, count, field.min);
-                }
-            });
+            // キーアップイベントは削除（inputイベントで十分）
         } else {
             if (DEBUG) console.error(`[CharCount] Missing elements for ${field.id}:`, {
                 textarea: textarea,
@@ -271,8 +265,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return emailRegex.test(email);
     }
 
-    // 全ての入力フィールドに対してイベントリスナーを設定
-    const allInputs = document.querySelectorAll('#registerForm input, #registerForm textarea, #registerForm select');
+    // 全ての入力フィールドに対してイベントリスナーを設定（textareaは除く、上で既に設定済み）
+    const allInputs = document.querySelectorAll('#registerForm input:not([type="file"]), #registerForm select');
     allInputs.forEach(input => {
         input.addEventListener('input', validateCharCountStep);
         input.addEventListener('change', validateCharCountStep);

@@ -13,10 +13,10 @@
     
     // 文字数カウンター更新
     // この関数は無効化（register-char-count.js で統一処理）
-    function updateCharCount(textarea) {
-        // 何もしない（register-char-count.js が処理）
-        return;
-    }
+    // function updateCharCount(textarea) {
+    //     // 何もしない（register-char-count.js が処理）
+    //     return;
+    // }
     
     // 「現状課題なし」チェックボックスの処理
     function handleNoChallengeCheckbox(checkbox) {
@@ -160,14 +160,6 @@
     // 初期化
     function init() {
         // 文字数カウンターの初期化は無効化（register-char-count.jsが処理）
-        /*
-        document.querySelectorAll('textarea[minlength]').forEach(textarea => {
-            textarea.addEventListener('input', function() {
-                updateCharCount(this);
-            });
-            updateCharCount(textarea);
-        });
-        */
         
         // 初期状態のチェック - 「現状課題なし」がチェックされていたら処理
         console.log('[RegisterEnhanced] 🔍 Checking initial checkbox states...');

@@ -16,8 +16,6 @@
     });
 
     async function handleRegistrationWithInvite(e) {
-        // 他のハンドラーも実行させないようにする
-        e.stopImmediatePropagation();
         e.preventDefault();
 
         const form = e.target;

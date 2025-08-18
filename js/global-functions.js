@@ -72,24 +72,23 @@
             // バリデーション - 複数の場所に定義があるため統合
             let isValid = true;
             
-            // バリデーションを一時的にスキップしてデバッグ
-            // console.log('[nextStep] SKIPPING validation for debug');
-            isValid = true;
-            
-            /*
             // registration-flow.jsのバリデーション
             if (window.InterConnect && window.InterConnect.Registration && typeof window.InterConnect.Registration.validateCurrentStep === 'function') {
-                // console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
+                console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
                 isValid = window.InterConnect.Registration.validateCurrentStep(currentStepNum);
             }
             // グローバルのバリデーション
             else if (typeof validateCurrentStep === 'function') {
-                // console.log('[nextStep] Using global validateCurrentStep');
+                console.log('[nextStep] Using global validateCurrentStep');
                 isValid = validateCurrentStep(currentStepNum);
-            } else {
-                // console.log('[nextStep] No validation function found');
             }
-            */
+            // register-enhanced-validation.jsのバリデーション
+            else if (typeof validateStep === 'function') {
+                console.log('[nextStep] Using validateStep');
+                isValid = validateStep(currentStepNum);
+            } else {
+                console.log('[nextStep] No validation function found');
+            }
             
             // console.log('[nextStep] Validation result:', isValid);
             
