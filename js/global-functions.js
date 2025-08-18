@@ -74,20 +74,20 @@
             
             // registration-flow.jsのバリデーション
             if (window.InterConnect && window.InterConnect.Registration && typeof window.InterConnect.Registration.validateCurrentStep === 'function') {
-                console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
+                // console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
                 isValid = window.InterConnect.Registration.validateCurrentStep(currentStepNum);
             }
             // グローバルのバリデーション
             else if (typeof validateCurrentStep === 'function') {
-                console.log('[nextStep] Using global validateCurrentStep');
+                // console.log('[nextStep] Using global validateCurrentStep');
                 isValid = validateCurrentStep(currentStepNum);
             }
             // register-enhanced-validation.jsのバリデーション
             else if (typeof validateStep === 'function') {
-                console.log('[nextStep] Using validateStep');
+                // console.log('[nextStep] Using validateStep');
                 isValid = validateStep(currentStepNum);
             } else {
-                console.log('[nextStep] No validation function found');
+                // console.log('[nextStep] No validation function found');
             }
             
             // console.log('[nextStep] Validation result:', isValid);
@@ -127,7 +127,7 @@
             }
         };
     } else {
-        console.log('[GlobalFunctions] nextStep already defined');
+        // console.log('[GlobalFunctions] nextStep already defined');
     }
     
     // prevStep関数の統一版（一度だけ定義）
@@ -177,39 +177,39 @@
     
     // data-action属性を使用したイベントリスナー設定
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('[GlobalFunctions] DOMContentLoaded - Setting up button listeners');
+        // console.log('[GlobalFunctions] DOMContentLoaded - Setting up button listeners');
         
         // data-action="next"のボタンにイベントを設定（重複防止）
         const nextButtons = document.querySelectorAll('[data-action="next"]');
-        console.log('[GlobalFunctions] Found next buttons:', nextButtons.length);
+        // console.log('[GlobalFunctions] Found next buttons:', nextButtons.length);
         
         nextButtons.forEach((button, index) => {
-            console.log(`[GlobalFunctions] Processing next button ${index}:`, button);
+            // console.log(`[GlobalFunctions] Processing next button ${index}:`, button);
             // 既にリスナーが設定されていないか確認
             if (!button.dataset.listenerAdded) {
                 button.dataset.listenerAdded = 'true';
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log('[GlobalFunctions] Next button clicked - calling nextStep()');
-                    console.log('[GlobalFunctions] Current active step:', document.querySelector('.form-step.active'));
+                    // console.log('[GlobalFunctions] Next button clicked - calling nextStep()');
+                    // console.log('[GlobalFunctions] Current active step:', document.querySelector('.form-step.active'));
                     window.nextStep();
                 });
-                console.log(`[GlobalFunctions] Listener added to next button ${index}`);
+                // console.log(`[GlobalFunctions] Listener added to next button ${index}`);
             } else {
-                console.log(`[GlobalFunctions] Listener already exists on next button ${index}`);
+                // console.log(`[GlobalFunctions] Listener already exists on next button ${index}`);
             }
         });
         
         // data-action="prev"のボタンにイベントを設定（重複防止）
         const prevButtons = document.querySelectorAll('[data-action="prev"]');
-        console.log('[GlobalFunctions] Found prev buttons:', prevButtons.length);
+        // console.log('[GlobalFunctions] Found prev buttons:', prevButtons.length);
         
         prevButtons.forEach((button, index) => {
             if (!button.dataset.listenerAdded) {
                 button.dataset.listenerAdded = 'true';
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log('[GlobalFunctions] Prev button clicked');
+                    // console.log('[GlobalFunctions] Prev button clicked');
                     window.prevStep();
                 });
             }

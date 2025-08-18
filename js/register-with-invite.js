@@ -119,7 +119,7 @@
                     });
 
                 if (invitationError) {
-                    console.error('招待記録の作成エラー:', invitationError);
+                    // console.error('招待記録の作成エラー:', invitationError);
                     // エラーが発生しても登録処理は継続
                 }
 
@@ -163,7 +163,7 @@
             }, 1500);
 
         } catch (error) {
-            console.error('登録エラー:', error);
+            // console.error('登録エラー:', error);
             showToast(error.message || '登録に失敗しました', 'error');
             
             submitButton.disabled = false;

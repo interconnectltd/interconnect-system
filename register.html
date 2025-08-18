@@ -699,13 +699,13 @@
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('[FINAL FIX] Next button clicked - calling window.nextStep()');
+                        // console.log('[FINAL FIX] Next button clicked - calling window.nextStep()');
                         
                         // global-functions.jsのnextStep関数を呼び出す（バリデーション付き）
                         if (typeof window.nextStep === 'function') {
                             window.nextStep();
                         } else {
-                            console.error('[FINAL FIX] window.nextStep is not a function');
+                            // console.error('[FINAL FIX] window.nextStep is not a function');
                         }
                     });
                     }

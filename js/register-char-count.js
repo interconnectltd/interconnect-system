@@ -5,8 +5,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // デバッグ用 
     const DEBUG = false; 
-    console.log('[CharCount] 🚀 Initializing character count feature...');
-    console.log('[CharCount] ⏰ DOMContentLoaded at:', new Date().toISOString());
+    // console.log('[CharCount] 🚀 Initializing character count feature...');
+    // console.log('[CharCount] ⏰ DOMContentLoaded at:', new Date().toISOString());
     
     // 文字カウントが必要な要素の設定
     const charCountFields = [
@@ -32,23 +32,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         if (textarea && countElement) {
-            console.log(`[CharCount] ✅ Found elements for ${field.id}`);
+            // console.log(`[CharCount] ✅ Found elements for ${field.id}`);
             // 初期値設定
             updateCharCount(textarea, countElement, field.min);
-            console.log(`[CharCount] ✅ Initial count set for ${field.id}`);
+            // console.log(`[CharCount] ✅ Initial count set for ${field.id}`);
             
             // 既存のイベントリスナーをクリアしてから新規追加
             // ただしcloneNodeは使わない（disabled状態もコピーされるため）
             
             // 既存のイベントリスナーを上書き
             const inputHandler = function(e) {
-                console.log(`[CharCount] ✅ Input event triggered for ${field.id}, length: ${this.value.length}`);
+                // console.log(`[CharCount] ✅ Input event triggered for ${field.id}, length: ${this.value.length}`);
                 const count = document.getElementById(field.countId);
                 if (count) {
                     updateCharCount(this, count, field.min);
-                    console.log(`[CharCount] ✅ Updated count display to: ${this.value.length}`);
+                    // console.log(`[CharCount] ✅ Updated count display to: ${this.value.length}`);
                 } else {
-                    console.error(`[CharCount] ❌ Count element not found: ${field.countId}`);
+                    // console.error(`[CharCount] ❌ Count element not found: ${field.countId}`);
                 }
                 // ローカルのバリデーション関数を呼び出し
                 validateCharCountStep();
@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
             textarea.addEventListener('input', inputHandler);
             
             // デバッグ: リスナー追加後の確認
-            console.log(`[CharCount] 📎 Added input listener to ${field.id}, disabled: ${textarea.disabled}`);
+            // console.log(`[CharCount] 📎 Added input listener to ${field.id}, disabled: ${textarea.disabled}`);
             
             // デバッグ: getEventListenersがある場合は確認
-            if (typeof getEventListeners !== 'undefined') {
-                console.log(`[CharCount] Current listeners on ${field.id}:`, getEventListeners(textarea));
-            }
+            // if (typeof getEventListeners !== 'undefined') {
+            //     console.log(`[CharCount] Current listeners on ${field.id}:`, getEventListeners(textarea));
+            // }
             
             // キーアップイベントは削除（inputイベントで十分）
         } else {
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCharCount(textarea, countElement, minLength) {
         const currentLength = textarea.value.length;
         countElement.textContent = currentLength;
-        console.log(`[updateCharCount] Setting ${countElement.id} to ${currentLength}`);
+        // console.log(`[updateCharCount] Setting ${countElement.id} to ${currentLength}`);
         
         // 親要素の.char-countを取得
         const charCountWrapper = countElement.closest('.char-count');

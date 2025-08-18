@@ -344,7 +344,7 @@
         // budgetフィールド専用の処理（確実にイベントリスナーを追加）
         const budgetField = document.getElementById('budget');
         if (budgetField) {
-            console.log('[RegisterStrict] Adding validation to budget field');
+            // console.log('[RegisterStrict] Adding validation to budget field');
             budgetField.addEventListener('input', () => validateField(budgetField));
             budgetField.addEventListener('blur', () => validateField(budgetField));
         }
