@@ -341,6 +341,14 @@
             field.addEventListener('blur', () => validateField(field));
         });
         
+        // budgetフィールド専用の処理（確実にイベントリスナーを追加）
+        const budgetField = document.getElementById('budget');
+        if (budgetField) {
+            console.log('[RegisterStrict] Adding validation to budget field');
+            budgetField.addEventListener('input', () => validateField(budgetField));
+            budgetField.addEventListener('blur', () => validateField(budgetField));
+        }
+        
         // テキストエリアのイベントリスナー
         // register-char-count.jsで処理するため、ここではバリデーションのみ
         // ただし、register-char-count.jsで既にcloneNodeしているので、ここでは追加しない

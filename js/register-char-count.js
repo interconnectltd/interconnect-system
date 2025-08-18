@@ -54,18 +54,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 validateCharCountStep();
             };
             
-            // テスト用: 即座に動作確認
+            // inputイベントを両方の方法で設定（確実性のため）
             textarea.oninput = inputHandler;
-            
-            // デバッグ: リスナー追加前の状態を確認
-            console.log(`[CharCount] 📎 Adding input listener to ${field.id}, element exists: ${!!textarea}, disabled: ${textarea.disabled}`);
-            
-            // disabledの場合は有効化
-            if (textarea.disabled) {
-                console.log(`[CharCount] ⚠️ Textarea ${field.id} was disabled, enabling it temporarily for event listener`);
-            }
-            
             textarea.addEventListener('input', inputHandler);
+            
+            // デバッグ: リスナー追加後の確認
+            console.log(`[CharCount] 📎 Added input listener to ${field.id}, disabled: ${textarea.disabled}`);
             
             // デバッグ: getEventListenersがある場合は確認
             if (typeof getEventListeners !== 'undefined') {
@@ -90,6 +84,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // 親要素の.char-countを取得
         const charCountWrapper = countElement.closest('.char-count');
         if (charCountWrapper) {
+            // textareaがdisabledの場合は非表示
+            if (textarea.disabled) {
+                charCountWrapper.style.display = 'none';
+                return;
+            } else {
+                charCountWrapper.style.display = '';
+            }
+            
             // 初期状態（0文字）の場合はエラークラスを付けない
             if (currentLength === 0) {
                 charCountWrapper.classList.remove('error');

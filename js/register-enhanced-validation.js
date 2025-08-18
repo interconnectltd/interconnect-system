@@ -35,7 +35,12 @@
                 textarea.value = '';
                 textarea.disabled = true;
                 textarea.removeAttribute('data-required');
-                // updateCharCountは存在しないので削除
+                
+                // 文字カウント表示を非表示にする
+                const charCountElement = textarea.parentElement.querySelector('.char-count');
+                if (charCountElement) {
+                    charCountElement.style.display = 'none';
+                }
             }
         } else {
             // 他のチェックボックスを有効化
@@ -45,6 +50,12 @@
             // テキストエリアを有効化
             if (textarea) {
                 textarea.disabled = false;
+                
+                // 文字カウント表示を再表示
+                const charCountElement = textarea.parentElement.querySelector('.char-count');
+                if (charCountElement) {
+                    charCountElement.style.display = '';
+                }
             }
         }
     }
@@ -61,7 +72,14 @@
             noChallengeCheckbox.checked = false;
             const otherCheckboxes = group.querySelectorAll('input[type="checkbox"][name="challenges"]');
             otherCheckboxes.forEach(cb => cb.disabled = false);
-            if (textarea) textarea.disabled = false;
+            if (textarea) {
+                textarea.disabled = false;
+                // 文字カウント表示を再表示
+                const charCountElement = textarea.parentElement.querySelector('.char-count');
+                if (charCountElement) {
+                    charCountElement.style.display = '';
+                }
+            }
         }
         
         // 課題が選択されている場合、テキストエリアを必須にする
@@ -147,10 +165,7 @@
         
         // エラー表示
         if (errors.length > 0) {
-            // alert(errors.join('\n'));
-            if (window.showError) {
-                showError(errors.join('\n'));
-            }
+            alert(errors.join('\n'));
             return false;
         }
         
