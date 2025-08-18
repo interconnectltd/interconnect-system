@@ -234,7 +234,7 @@
                         </div>
                         <div class="user-profile">
                             <img src="assets/default-avatar.svg" alt="User Avatar" class="user-avatar">
-                            <span class="user-name" id="userName">ゲスト</span>
+                            <span class="user-name userName">ゲスト</span>
                             <i class="fas fa-chevron-down"></i>
                             <div class="user-dropdown">
                                 <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
@@ -511,21 +511,16 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
             });
         });
         
-        // ログアウト機能
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            
-            try {
-                const { error } = await supabaseClient.auth.signOut();
-                if (error) throw error;
-                
-                // ログインページへリダイレクト
-                window.location.href = '/login.html';
-            } catch (error) {
-                console.error('ログアウトエラー:', error);
-                alert('ログアウトに失敗しました');
-            }
-        });
+        // ログアウト機能 - global-functions.jsのwindow.logoutを使用
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (typeof window.logout === 'function') {
+                    await window.logout();
+                }
+            });
+        }
         
         // モーダル関数はreferral-unified.jsで定義済み
     </script>

@@ -125,13 +125,14 @@
                     // console.log('[UserDropdown] ログアウト処理を開始');
                     
                     try {
-                        // グローバルなlogout関数があれば使用
+                        // グローバルなlogout関数を使用
                         if (typeof window.logout === 'function') {
                             await window.logout();
                         } else {
-                            // Supabaseログアウト
-                            if (window.supabaseClient) {
-                                const { error } = await window.supabaseClient.auth.signOut();
+                            // フォールバック処理
+                            const client = window.supabaseClient || window.supabase;
+                            if (client) {
+                                const { error } = await client.auth.signOut();
                                 if (error) {
                                     console.error('[UserDropdown] ログアウトエラー:', error);
                                     throw error;
@@ -229,14 +230,15 @@
         
         try {
             // Supabaseから通知を取得
-            if (window.supabaseClient) {
-                const { data: { user } } = await window.supabaseClient.auth.getUser();
+            const client = window.supabaseClient || window.supabase;
+            if (client) {
+                const { data: { user } } = await client.auth.getUser();
                 if (!user) {
                     // console.log('[UserDropdown] ユーザーが認証されていません');
                     return;
                 }
                 
-                const { data: notifications, error } = await window.supabaseClient
+                const { data: notifications, error } = await client
                     .from('notifications')
                     .select('*')
                     .eq('user_id', user.id)
@@ -278,11 +280,12 @@
         // console.log('[UserDropdown] すべての通知を既読にしています...');
         
         try {
-            if (window.supabaseClient) {
-                const { data: { user } } = await window.supabaseClient.auth.getUser();
+            const client = window.supabaseClient || window.supabase;
+            if (client) {
+                const { data: { user } } = await client.auth.getUser();
                 if (!user) return;
                 
-                const { error } = await window.supabaseClient
+                const { error } = await client
                     .from('notifications')
                     .update({ is_read: true })
                     .eq('user_id', user.id)
