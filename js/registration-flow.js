@@ -301,7 +301,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // スキル管理用の配列
     let selectedSkills = [];
     
-    // 文字数カウント機能
+    // 文字数カウント機能は register-char-count.js で統一処理するため無効化
+    // registration-flow.js での処理は ID変換ロジックが不完全（skills-prなどに対応できない）
+    /*
     const textareas = document.querySelectorAll('textarea[minlength]');
     textareas.forEach(textarea => {
         const counterId = textarea.id ? textarea.id.replace('-details', '-count') : null;
@@ -331,6 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
             textarea._inputHandler = inputHandler;
         }
     });
+    */
     
     // ファイルアップロード機能
     const fileInput = document.getElementById('line-qr');

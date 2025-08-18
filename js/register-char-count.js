@@ -3,6 +3,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[CharCount] Initializing character count feature');
+    
     // 文字カウントが必要な要素の設定
     const charCountFields = [
         { id: 'revenue-details', countId: 'revenue-count', min: 50 },
@@ -18,14 +20,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const textarea = document.getElementById(field.id);
         const countElement = document.getElementById(field.countId);
         
+        console.log(`[CharCount] Setting up ${field.id}:`, { textarea: !!textarea, countElement: !!countElement });
+        
         if (textarea && countElement) {
             // 初期値設定
             updateCharCount(textarea, countElement, field.min);
             
+            // 既存のリスナーをクリア（重複防止）
+            const newTextarea = textarea.cloneNode(true);
+            textarea.parentNode.replaceChild(newTextarea, textarea);
+            
             // 入力イベント
-            textarea.addEventListener('input', () => {
-                updateCharCount(textarea, countElement, field.min);
+            newTextarea.addEventListener('input', () => {
+                console.log(`[CharCount] Input event for ${field.id}, value length:`, newTextarea.value.length);
+                updateCharCount(newTextarea, countElement, field.min);
                 validateStep(); // ステップのバリデーションを更新
+            });
+            
+            // 初期値を再設定
+            updateCharCount(newTextarea, countElement, field.min);
+        } else {
+            console.warn(`[CharCount] Missing elements for ${field.id}:`, {
+                textarea: textarea,
+                countElement: countElement
             });
         }
     });

@@ -12,11 +12,16 @@
     let currentStep = 1;
     
     // 文字数カウンター更新
+    // register-char-count.js で統一処理するため、ここでは簡易版のみ
     function updateCharCount(textarea) {
+        // register-char-count.js が処理するため、処理をスキップ
+        return;
+        /*
         const countElement = textarea.parentElement.querySelector('.char-count span');
         if (countElement) {
             countElement.textContent = textarea.value.length;
         }
+        */
     }
     
     // 「現状課題なし」チェックボックスの処理
