@@ -113,19 +113,7 @@ function updateUserDisplay(user, profile) {
     });
 }
 
-// ログアウト機能
-window.logout = async function() {
-    // console.log('[UserMenu] Logout initiated');
-    try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-        
-        // console.log('[UserMenu] Logout successful');
-        window.location.href = '/login.html';
-    } catch (error) {
-        console.error('[UserMenu] Logout error:', error);
-        alert('ログアウトに失敗しました');
-    }
-};
+// ログアウト機能はglobal-functions.jsで定義済み
+// window.logoutを使用
 
 // console.log('[UserMenu] user-menu.js setup complete');
