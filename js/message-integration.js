@@ -142,10 +142,10 @@
 
                 // 現在はメッセージテーブルがないため、成功として扱う
                 // console.log('[MessageIntegration] Message would be sent:', {
-                    sender: user.id,
-                    recipient: recipientId,
-                    content: content
-                });
+                //     sender: user.id,
+                //     recipient: recipientId,
+                //     content: content
+                // });
 
                 return { success: true };
 
