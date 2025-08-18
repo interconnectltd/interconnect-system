@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // デバッグ用 
     const DEBUG = false; 
     console.log('[CharCount] 🚀 Initializing character count feature...');
+    console.log('[CharCount] ⏰ DOMContentLoaded at:', new Date().toISOString());
     
     // 文字カウントが必要な要素の設定
     const charCountFields = [
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ただしcloneNodeは使わない（disabled状態もコピーされるため）
             
             // 既存のイベントリスナーを上書き
-            textarea.addEventListener('input', function(e) {
+            const inputHandler = function(e) {
                 console.log(`[CharCount] ✅ Input event triggered for ${field.id}, length: ${this.value.length}`);
                 const count = document.getElementById(field.countId);
                 if (count) {
@@ -51,7 +52,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 // ローカルのバリデーション関数を呼び出し
                 validateCharCountStep();
-            });
+            };
+            
+            // デバッグ: リスナー追加前の状態を確認
+            console.log(`[CharCount] 📎 Adding input listener to ${field.id}, element exists: ${!!textarea}`);
+            textarea.addEventListener('input', inputHandler);
+            
+            // デバッグ: getEventListenersがある場合は確認
+            if (typeof getEventListeners !== 'undefined') {
+                console.log(`[CharCount] Current listeners on ${field.id}:`, getEventListeners(textarea));
+            }
             
             // キーアップイベントも追加（念のため）
             textarea.addEventListener('keyup', function(e) {
@@ -271,14 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初期バリデーション実行を無効化（ユーザーが入力を始めてからバリデーション開始）
     // validateStep();
     
-    // ただし、文字カウントの初期表示は実行
-    charCountFields.forEach(field => {
-        const textarea = document.getElementById(field.id);
-        const countElement = document.getElementById(field.countId);
-        if (textarea && countElement) {
-            updateCharCount(textarea, countElement, field.min);
-        }
-    });
+    // 初期表示は上で既に実行済みなので、ここでは重複実行しない
 
     // ファイルアップロード処理
     const fileInput = document.getElementById('line-qr');

@@ -10,15 +10,14 @@
         const form = document.getElementById('registerForm');
         if (!form) return;
 
-        // オリジナルのsubmitイベントリスナーを削除
-        const newForm = form.cloneNode(true);
-        form.parentNode.replaceChild(newForm, form);
-
-        // 新しいsubmitハンドラーを追加
-        newForm.addEventListener('submit', handleRegistrationWithInvite);
+        // cloneNodeを使わずに、既存のイベントリスナーをオーバーライド
+        // submitイベントをキャプチャフェーズで先に処理
+        form.addEventListener('submit', handleRegistrationWithInvite, true);
     });
 
     async function handleRegistrationWithInvite(e) {
+        // 他のハンドラーも実行させないようにする
+        e.stopImmediatePropagation();
         e.preventDefault();
 
         const form = e.target;
