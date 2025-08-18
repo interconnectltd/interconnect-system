@@ -437,6 +437,19 @@
                 validateCheckboxes(stepNum);
             }
         }
+        
+        // ステップ2の「現状課題なし」の初期状態を処理
+        document.querySelectorAll('.challenge-group').forEach(group => {
+            const noChallengeCheckbox = group.querySelector('input[value="現状課題なし"]:checked');
+            if (noChallengeCheckbox) {
+                const textarea = group.querySelector('textarea');
+                if (textarea) {
+                    const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
+                    validationState.step2[fieldKey] = true;
+                    // console.log(`[Init] Setting ${fieldKey} to true due to 現状課題なし`);
+                }
+            }
+        });
     }
     
     // DOMContentLoadedで初期化

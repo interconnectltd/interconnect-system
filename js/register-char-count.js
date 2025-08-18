@@ -33,8 +33,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (textarea && countElement) {
             // console.log(`[CharCount] ✅ Found elements for ${field.id}`);
-            // 初期値設定
-            updateCharCount(textarea, countElement, field.min);
+            
+            // 「現状課題なし」がチェックされているか確認
+            const challengeGroup = textarea.closest('.challenge-group');
+            const noChallengeChecked = challengeGroup ? 
+                challengeGroup.querySelector('input[value="現状課題なし"]:checked') : null;
+            
+            // 初期値設定（現状課題なしの場合は特別処理）
+            if (noChallengeChecked) {
+                // 現状課題なしの場合は文字カウント非表示
+                const charCountWrapper = countElement.closest('.char-count');
+                if (charCountWrapper) {
+                    charCountWrapper.style.display = 'none';
+                }
+            } else {
+                updateCharCount(textarea, countElement, field.min);
+            }
             // console.log(`[CharCount] ✅ Initial count set for ${field.id}`);
             
             // 既存のイベントリスナーをクリアしてから新規追加
