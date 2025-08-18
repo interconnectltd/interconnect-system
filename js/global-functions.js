@@ -20,7 +20,7 @@
             if (window.supabaseClient) {
                 const { error } = await window.supabaseClient.auth.signOut();
                 if (error) {
-                    console.error('Logout error:', error);
+                    // console.error('Logout error:', error);
                     throw error;
                 }
             }
@@ -38,7 +38,7 @@
             window.location.href = '/login.html';
             
         } catch (error) {
-            console.error('Logout failed:', error);
+            // console.error('Logout failed:', error);
             // エラーが発生してもログインページへ
             window.location.href = '/login.html';
         }
@@ -53,66 +53,66 @@
     // nextStep関数の統一版（一度だけ定義）
     if (!window.nextStep) {
         window.nextStep = function() {
-            console.log('[nextStep] Function called');
+            // console.log('[nextStep] Function called');
             const currentStepElement = document.querySelector('.form-step.active');
-            console.log('[nextStep] Current active step element:', currentStepElement);
+            // console.log('[nextStep] Current active step element:', currentStepElement);
             
             if (!currentStepElement) {
-                console.error('[nextStep] No active step found!');
+                // console.error('[nextStep] No active step found!');
                 return;
             }
             
             const currentStepNum = parseInt(currentStepElement.getAttribute('data-step'));
-            console.log('[nextStep] Current step number:', currentStepNum);
+            // console.log('[nextStep] Current step number:', currentStepNum);
             
             const nextStepElement = document.querySelector(`.form-step[data-step="${currentStepNum + 1}"]`);
-            console.log('[nextStep] Next step element:', nextStepElement);
+            // console.log('[nextStep] Next step element:', nextStepElement);
             
             // バリデーション - 複数の場所に定義があるため統合
             let isValid = true;
             
             // バリデーションを一時的にスキップしてデバッグ
-            console.log('[nextStep] SKIPPING validation for debug');
+            // console.log('[nextStep] SKIPPING validation for debug');
             isValid = true;
             
             /*
             // registration-flow.jsのバリデーション
             if (window.InterConnect && window.InterConnect.Registration && typeof window.InterConnect.Registration.validateCurrentStep === 'function') {
-                console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
+                // console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
                 isValid = window.InterConnect.Registration.validateCurrentStep(currentStepNum);
             }
             // グローバルのバリデーション
             else if (typeof validateCurrentStep === 'function') {
-                console.log('[nextStep] Using global validateCurrentStep');
+                // console.log('[nextStep] Using global validateCurrentStep');
                 isValid = validateCurrentStep(currentStepNum);
             } else {
-                console.log('[nextStep] No validation function found');
+                // console.log('[nextStep] No validation function found');
             }
             */
             
-            console.log('[nextStep] Validation result:', isValid);
+            // console.log('[nextStep] Validation result:', isValid);
             
             if (!isValid) {
-                console.log('[nextStep] Validation failed, stopping');
+                // console.log('[nextStep] Validation failed, stopping');
                 return;
             }
             
             if (nextStepElement && currentStepNum < 5) {
-                console.log('[nextStep] Moving to next step');
+                // console.log('[nextStep] Moving to next step');
                 
                 // 現在のステップを非表示
                 currentStepElement.classList.remove('active');
-                console.log('[nextStep] Removed active from current step');
+                // console.log('[nextStep] Removed active from current step');
                 
                 // 次のステップを表示
                 nextStepElement.classList.add('active');
-                console.log('[nextStep] Added active to next step');
+                // console.log('[nextStep] Added active to next step');
                 
                 // プログレスインジケーターを更新
                 updateProgressIndicator(currentStepNum + 1);
                 
                 currentStep = currentStepNum + 1;
-                console.log('[nextStep] Updated currentStep to:', currentStep);
+                // console.log('[nextStep] Updated currentStep to:', currentStep);
                 
                 // スクロールを上部に
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -121,9 +121,9 @@
                 window.dispatchEvent(new CustomEvent('stepChanged', { 
                     detail: { currentStep: currentStepNum + 1, totalSteps: 5 } 
                 }));
-                console.log('[nextStep] Step change completed');
+                // console.log('[nextStep] Step change completed');
             } else {
-                console.log('[nextStep] Cannot move to next step - nextStepElement:', !!nextStepElement, 'currentStepNum:', currentStepNum);
+                // console.log('[nextStep] Cannot move to next step - nextStepElement:', !!nextStepElement, 'currentStepNum:', currentStepNum);
             }
         };
     } else {

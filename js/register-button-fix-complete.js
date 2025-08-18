@@ -239,7 +239,8 @@
             });
         });
         
-        // 文字数カウント機能
+        // 文字数カウント機能は無効化（register-char-count.jsが処理）
+        /*
         const textareas = document.querySelectorAll('textarea[minlength]');
         // console.log('[RegisterButtonFix] 文字数カウント対象のテキストエリア数:', textareas.length);
         
@@ -252,6 +253,7 @@
                 });
             }
         });
+        */
         
         // 初期ステップの確認
         const activeStep = document.querySelector('.form-step.active');

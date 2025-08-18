@@ -12,16 +12,10 @@
     let currentStep = 1;
     
     // 文字数カウンター更新
-    // register-char-count.js で統一処理するため、ここでは簡易版のみ
+    // この関数は無効化（register-char-count.js で統一処理）
     function updateCharCount(textarea) {
-        // register-char-count.js が処理するため、処理をスキップ
+        // 何もしない（register-char-count.js が処理）
         return;
-        /*
-        const countElement = textarea.parentElement.querySelector('.char-count span');
-        if (countElement) {
-            countElement.textContent = textarea.value.length;
-        }
-        */
     }
     
     // 「現状課題なし」チェックボックスの処理
@@ -165,13 +159,15 @@
     
     // 初期化
     function init() {
-        // 文字数カウンターの初期化
+        // 文字数カウンターの初期化は無効化（register-char-count.jsが処理）
+        /*
         document.querySelectorAll('textarea[minlength]').forEach(textarea => {
             textarea.addEventListener('input', function() {
                 updateCharCount(this);
             });
             updateCharCount(textarea);
         });
+        */
         
         // チェックボックスのイベントリスナー
         document.addEventListener('change', function(e) {

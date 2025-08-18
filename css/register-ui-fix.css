@@ -197,9 +197,13 @@
 .registration-progress {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 0;
     margin: 2rem 0;
     position: relative;
+    padding: 0 1rem;
+    overflow-x: auto;
+    overflow-y: visible;
 }
 
 .progress-step {
@@ -208,6 +212,8 @@
     align-items: center;
     position: relative;
     z-index: 2;
+    flex-shrink: 0;
+    min-width: 70px;
 }
 
 .step-number {
@@ -242,19 +248,25 @@
 }
 
 .progress-line {
-    position: absolute;
-    top: 20px;
-    width: 100%;
+    width: 40px;
     height: 2px;
     background: #e5e7eb;
-    z-index: 1;
+    margin: 0 -5px;
+    position: relative;
+    top: -24px;
+    flex-shrink: 0;
 }
 
 /* レスポンシブ調整 */
 @media (max-width: 640px) {
     .registration-progress {
-        overflow-x: auto;
-        padding-bottom: 1rem;
+        justify-content: flex-start;
+        padding: 0 0.5rem 1rem;
+        margin: 1.5rem -0.5rem;
+    }
+    
+    .progress-step {
+        min-width: 60px;
     }
     
     .step-label {

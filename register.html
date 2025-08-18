@@ -676,30 +676,33 @@
     <!-- 最終的な次へボタンの修正 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('[FINAL FIX] Setting up next/prev button handlers');
+            // console.log('[FINAL FIX] Setting up next/prev button handlers');
             
-            // 既存のリスナーをすべてクリア
-            document.querySelectorAll('[data-action="next"]').forEach(button => {
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-            });
+            // 既存のリスナーをクリアしない（cloneNodeは他のイベントリスナーも削除してしまうため）
+            // document.querySelectorAll('[data-action="next"]').forEach(button => {
+            //     const newButton = button.cloneNode(true);
+            //     button.parentNode.replaceChild(newButton, button);
+            // });
             
-            document.querySelectorAll('[data-action="prev"]').forEach(button => {
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-            });
+            // document.querySelectorAll('[data-action="prev"]').forEach(button => {
+            //     const newButton = button.cloneNode(true);
+            //     button.parentNode.replaceChild(newButton, button);
+            // });
             
             // 新しいリスナーを設定
             setTimeout(() => {
                 document.querySelectorAll('[data-action="next"]').forEach(button => {
+                    // 重複防止チェック
+                    if (!button.dataset.nextInitialized) {
+                        button.dataset.nextInitialized = 'true';
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('[FINAL FIX] Next button clicked');
+                        // console.log('[FINAL FIX] Next button clicked');
                         
                         const currentStep = document.querySelector('.form-step.active');
                         if (!currentStep) {
-                            console.error('[FINAL FIX] No active step found');
+                            // console.error('[FINAL FIX] No active step found');
                             return;
                         }
                         
@@ -707,7 +710,7 @@
                         const nextStep = document.querySelector(`.form-step[data-step="${currentStepNum + 1}"]`);
                         
                         if (nextStep) {
-                            console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum + 1}`);
+                            // console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum + 1}`);
                             currentStep.classList.remove('active');
                             nextStep.classList.add('active');
                             
@@ -723,16 +726,20 @@
                             
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                         } else {
-                            console.log('[FINAL FIX] No next step available');
+                            // console.log('[FINAL FIX] No next step available');
                         }
                     });
+                    }
                 });
                 
                 document.querySelectorAll('[data-action="prev"]').forEach(button => {
+                    // 重複防止チェック
+                    if (!button.dataset.prevInitialized) {
+                        button.dataset.prevInitialized = 'true';
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('[FINAL FIX] Prev button clicked');
+                        // console.log('[FINAL FIX] Prev button clicked');
                         
                         const currentStep = document.querySelector('.form-step.active');
                         if (!currentStep) return;
@@ -741,7 +748,7 @@
                         const prevStep = document.querySelector(`.form-step[data-step="${currentStepNum - 1}"]`);
                         
                         if (prevStep) {
-                            console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum - 1}`);
+                            // console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum - 1}`);
                             currentStep.classList.remove('active');
                             prevStep.classList.add('active');
                             
@@ -758,24 +765,29 @@
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                         }
                     });
+                    }
                 });
                 
-                console.log('[FINAL FIX] Button handlers setup complete');
+                // console.log('[FINAL FIX] Button handlers setup complete');
             }, 100);
             
             // パスワードトグル機能の修正
             setTimeout(() => {
-                console.log('[Password Toggle Fix] Setting up password toggle buttons');
+                // console.log('[Password Toggle Fix] Setting up password toggle buttons');
                 const toggleButtons = document.querySelectorAll('.password-toggle');
                 
                 toggleButtons.forEach((button, index) => {
-                    console.log(`[Password Toggle Fix] Found button ${index}:`, button);
+                    // console.log(`[Password Toggle Fix] Found button ${index}:`, button);
                     
-                    // 既存のリスナーをクリア
-                    const newButton = button.cloneNode(true);
-                    button.parentNode.replaceChild(newButton, button);
+                    // 既存のリスナーをクリアしない（cloneNodeは他の機能も壊すため）
+                    // const newButton = button.cloneNode(true);
+                    // button.parentNode.replaceChild(newButton, button);
                     
-                    newButton.addEventListener('click', function(e) {
+                    // データ属性で重複チェック
+                    if (!button.dataset.toggleInitialized) {
+                        button.dataset.toggleInitialized = 'true';
+                        
+                    button.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         
@@ -783,7 +795,7 @@
                         const input = wrapper ? wrapper.querySelector('input[type="password"], input[type="text"]') : null;
                         const icon = this.querySelector('i');
                         
-                        console.log('[Password Toggle Fix] Toggling:', { wrapper, input, icon });
+                        // console.log('[Password Toggle Fix] Toggling:', { wrapper, input, icon });
                         
                         if (input && icon) {
                             if (input.type === 'password') {
@@ -791,21 +803,22 @@
                                 icon.classList.remove('fa-eye');
                                 icon.classList.add('fa-eye-slash');
                                 this.setAttribute('aria-label', 'パスワードを非表示');
-                                console.log('[Password Toggle Fix] Changed to text');
+                                // console.log('[Password Toggle Fix] Changed to text');
                             } else {
                                 input.type = 'password';
                                 icon.classList.remove('fa-eye-slash');
                                 icon.classList.add('fa-eye');
                                 this.setAttribute('aria-label', 'パスワードを表示');
-                                console.log('[Password Toggle Fix] Changed to password');
+                                // console.log('[Password Toggle Fix] Changed to password');
                             }
                         } else {
-                            console.error('[Password Toggle Fix] Could not find input or icon');
+                            // console.error('[Password Toggle Fix] Could not find input or icon');
                         }
                     });
+                    }
                 });
                 
-                console.log('[Password Toggle Fix] Setup complete');
+                // console.log('[Password Toggle Fix] Setup complete');
             }, 200);
         });
     </script>

@@ -16,10 +16,8 @@
     display: none !important;
 }
 
-/* auth-divider「または」も非表示 */
-.auth-divider {
-    display: none !important;
-}
+/* auth-divider「または」は残す（プログレスバー前の区切り線として必要） */
+/* :has()セレクタは一部ブラウザで未対応のため、別の方法で制御 */
 
 /* タイトルとプログレスの間のスペースを調整 */
 .auth-title {
@@ -28,5 +26,6 @@
 
 /* プログレスインジケーターの位置調整 */
 .registration-progress {
-    margin-top: 0 !important;
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
 }

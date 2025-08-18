@@ -3,7 +3,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[CharCount] Initializing character count feature');
+    // デバッグ用 - 本番環境では削除
+    const DEBUG = false; // true に変更してデバッグ
+    if (DEBUG) console.log('[CharCount] Initializing character count feature');
     
     // 文字カウントが必要な要素の設定
     const charCountFields = [
@@ -20,27 +22,31 @@ document.addEventListener('DOMContentLoaded', function() {
         const textarea = document.getElementById(field.id);
         const countElement = document.getElementById(field.countId);
         
-        console.log(`[CharCount] Setting up ${field.id}:`, { textarea: !!textarea, countElement: !!countElement });
+        if (DEBUG) console.log(`[CharCount] Setting up ${field.id}:`, { textarea: !!textarea, countElement: !!countElement });
         
         if (textarea && countElement) {
             // 初期値設定
             updateCharCount(textarea, countElement, field.min);
             
-            // 既存のリスナーをクリア（重複防止）
-            const newTextarea = textarea.cloneNode(true);
-            textarea.parentNode.replaceChild(newTextarea, textarea);
+            // 既存のリスナーをクリアせず、直接イベントリスナーを追加
+            // cloneNodeは要素の参照を破壊するため使用しない
             
-            // 入力イベント
-            newTextarea.addEventListener('input', () => {
-                console.log(`[CharCount] Input event for ${field.id}, value length:`, newTextarea.value.length);
-                updateCharCount(newTextarea, countElement, field.min);
-                validateStep(); // ステップのバリデーションを更新
-            });
-            
-            // 初期値を再設定
-            updateCharCount(newTextarea, countElement, field.min);
+            // データ属性で重複チェック
+            if (!textarea.dataset.charCountInitialized) {
+                textarea.dataset.charCountInitialized = 'true';
+                
+                // 入力イベント
+                textarea.addEventListener('input', function() {
+                    if (DEBUG) console.log(`[CharCount] Input event for ${field.id}, value length:`, this.value.length);
+                    updateCharCount(this, countElement, field.min);
+                    // validateStepは存在しない可能性があるため条件付き呼び出し
+                    if (typeof validateStep === 'function') {
+                        validateStep();
+                    }
+                });
+            }
         } else {
-            console.warn(`[CharCount] Missing elements for ${field.id}:`, {
+            if (DEBUG) console.warn(`[CharCount] Missing elements for ${field.id}:`, {
                 textarea: textarea,
                 countElement: countElement
             });
