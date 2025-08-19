@@ -69,13 +69,14 @@
                 return;
             }
             
-            // プログレスバーアニメーションを開始（インラインスクリプトの代わり）
+            // プログレスバーアニメーションを開始（段階的に）
             const bar = document.getElementById('loadingBar');
             if (bar) {
-                // インラインスクリプトと同じタイミング
-                setTimeout(() => {
-                    bar.style.width = '100%';
-                }, 10);
+                // 段階的にプログレスを進める
+                setTimeout(() => bar.style.width = '30%', 100);
+                setTimeout(() => bar.style.width = '60%', 500);
+                setTimeout(() => bar.style.width = '90%', 1000);
+                setTimeout(() => bar.style.width = '100%', 1800);
             }
             
             // 動画の追加（重複チェック付き）
@@ -118,6 +119,9 @@
             const minTime = 2000;
             const startTime = Date.now();
             
+            // thisを保存
+            const self = this;
+            
             const complete = () => {
                 if (GlobalState.loadingComplete) return;
                 GlobalState.loadingComplete = true;
@@ -131,15 +135,13 @@
                     screen.style.display = 'none';
                     document.body.style.overflow = '';
                     document.body.classList.add('loading-complete');
-                    this.onComplete();
+                    self.onComplete(); // thisではなくselfを使用
                 }, 800);
             };
             
             // 最小時間経過後に完了
             setTimeout(() => {
-                if (Date.now() - startTime >= minTime) {
-                    complete();
-                }
+                complete(); // 条件は不要（常にtrue）
             }, minTime);
         },
         

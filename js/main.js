@@ -289,20 +289,8 @@
             heroVideo.classList.remove('loading');
             heroVideo.classList.add('loaded');
             
-            // Try to play the video
-            const playPromise = heroVideo.play();
-            
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(function() {
-                        // console.log('Video autoplay started');
-                    })
-                    .catch(function(error) {
-                        console.warn('Autoplay was prevented:', error);
-                        // Video is loaded but autoplay failed - this is okay
-                        // User can still play manually if needed
-                    });
-            }
+            // homepage-perfect-final.jsで再生するため、ここでは再生しない
+            // 重複再生を防ぐ
         });
 
         // Handle stalled video

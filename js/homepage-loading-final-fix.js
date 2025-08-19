@@ -93,15 +93,22 @@
             video.style.objectFit = 'cover';
             video.style.zIndex = '1';
             
-            // 再生を試みる
+            // 再生を試みる（最大3回まで）
+            let retryCount = 0;
+            const maxRetries = 3;
+            
             const playVideo = () => {
                 video.play().then(() => {
                     // console.log('[LoadingFinalFix] 動画再生成功');
                     video.playbackRate = 2.0;
                 }).catch(err => {
                     console.error('[LoadingFinalFix] 動画再生エラー:', err);
-                    // エラー時は再試行
-                    setTimeout(playVideo, 100);
+                    // エラー時は再試行（最大3回まで）
+                    if (retryCount < maxRetries) {
+                        retryCount++;
+                        setTimeout(playVideo, 500);
+                    }
+                    // 3回失敗したら諦める（ローディングは続行）
                 });
             };
             

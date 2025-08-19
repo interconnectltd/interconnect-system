@@ -16,21 +16,20 @@
         .hero-buttons,
         .btn-primary,
         .btn-outline {
-            opacity: 0 !important;
-            visibility: hidden !important;
-            display: none !important;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease-out;
         }
         
         /* ローディング完了フラグ */
-        body.instant-loading-complete .hero-content,
-        body.instant-loading-complete .section-badge,
-        body.instant-loading-complete .hero-subtitle,
-        body.instant-loading-complete .hero-buttons,
-        body.instant-loading-complete .btn-primary,
-        body.instant-loading-complete .btn-outline {
-            display: block !important;
-            opacity: 1 !important;
-            visibility: visible !important;
+        body.loading-complete .hero-content,
+        body.loading-complete .section-badge,
+        body.loading-complete .hero-subtitle,
+        body.loading-complete .hero-buttons,
+        body.loading-complete .btn-primary,
+        body.loading-complete .btn-outline {
+            opacity: 1;
+            visibility: visible;
         }
     `;
     
@@ -46,11 +45,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             const heroContent = document.querySelector('.hero-content');
             if (heroContent && !document.body.classList.contains('loading-complete')) {
-                heroContent.style.cssText = 'opacity: 0 !important; visibility: hidden !important;';
+                heroContent.style.opacity = '0';
+                heroContent.style.visibility = 'hidden';
                 
-                // 子要素も非表示
+                // 子要素も非表示（!importantは使わない）
                 heroContent.querySelectorAll('*').forEach(el => {
-                    el.style.cssText = 'opacity: 0 !important; visibility: hidden !important;';
+                    el.style.opacity = '0';
+                    el.style.visibility = 'hidden';
                 });
             }
         });
@@ -63,7 +64,7 @@
                 mutation.attributeName === 'class' &&
                 document.body.classList.contains('loading-complete')) {
                 
-                document.body.classList.add('instant-loading-complete');
+                // instant-loading-completeクラスは不要（loading-completeで統一）
                 
                 const heroContent = document.querySelector('.hero-content');
                 if (heroContent) {
