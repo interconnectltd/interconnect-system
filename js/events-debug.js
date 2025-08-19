@@ -6,7 +6,7 @@
 (function() {
     'use strict';
 
-    console.log('🔧 [EventsDebug] デバッグツール起動');
+    // console.log('🔧 [EventsDebug] デバッグツール起動');
 
     // デバッグ情報を収集
     window.EventsDebug = {
@@ -21,12 +21,12 @@
 
         // 問題診断
         diagnose: async function() {
-            console.log('🏥 [EventsDebug] 診断開始...');
+            // console.log('🏥 [EventsDebug] 診断開始...');
             
             // 1. Supabase接続チェック
             if (window.supabaseClient) {
                 this.diagnosis.supabaseReady = true;
-                console.log('✅ Supabase: 接続OK');
+                // console.log('✅ Supabase: 接続OK');
                 
                 // 接続テスト
                 try {
@@ -42,7 +42,7 @@
                             error: error
                         });
                     } else {
-                        console.log('✅ Supabase: クエリテスト成功');
+                        // console.log('✅ Supabase: クエリテスト成功');
                     }
                 } catch (e) {
                     console.error('❌ Supabase: 接続エラー', e);
@@ -62,7 +62,7 @@
             // 2. EventModal存在チェック
             if (window.eventModal) {
                 this.diagnosis.eventModalReady = true;
-                console.log('✅ EventModal: 初期化済み');
+                // console.log('✅ EventModal: 初期化済み');
             } else {
                 console.warn('⚠️ EventModal: 未初期化');
                 this.diagnosis.errors.push({
@@ -77,7 +77,7 @@
                 const eventCards = eventsGrid.querySelectorAll('.event-card');
                 if (eventCards.length > 0) {
                     this.diagnosis.eventsLoaded = true;
-                    console.log(`✅ イベント: ${eventCards.length}件表示中`);
+                    // console.log(`✅ イベント: ${eventCards.length}件表示中`);
                 } else {
                     console.warn('⚠️ イベント: 0件（データなし）');
                 }
@@ -120,11 +120,11 @@
 
         // 自動修復試行
         autoFix: async function() {
-            console.log('🔧 [EventsDebug] 自動修復開始...');
+            // console.log('🔧 [EventsDebug] 自動修復開始...');
 
             // 1. Supabaseの再初期化
             if (!window.supabaseClient) {
-                console.log('🔄 Supabase再初期化を試行...');
+                // console.log('🔄 Supabase再初期化を試行...');
                 if (window.initSupabase && typeof window.initSupabase === 'function') {
                     await window.initSupabase();
                     await this.wait(1000);
@@ -133,19 +133,19 @@
 
             // 2. EventModalの再初期化
             if (!window.eventModal) {
-                console.log('🔄 EventModal再初期化を試行...');
+                // console.log('🔄 EventModal再初期化を試行...');
                 if (window.EventModal) {
                     const modal = new window.EventModal();
                     if (modal.modal) {
                         window.eventModal = modal;
-                        console.log('✅ EventModal再初期化成功');
+                        // console.log('✅ EventModal再初期化成功');
                     }
                 }
             }
 
             // 3. イベントの再読み込み
             if (window.eventsSupabase) {
-                console.log('🔄 イベント再読み込みを試行...');
+                // console.log('🔄 イベント再読み込みを試行...');
                 await window.eventsSupabase.loadEvents();
                 await window.eventsSupabase.loadPastEvents();
             }
@@ -157,7 +157,7 @@
 
         // サンプルデータで強制表示（フォールバック）
         showFallbackEvents: function() {
-            console.log('📦 [EventsDebug] フォールバックイベントを表示...');
+            // console.log('📦 [EventsDebug] フォールバックイベントを表示...');
             
             const eventsGrid = document.querySelector('.events-grid');
             if (!eventsGrid) return;
@@ -216,7 +216,7 @@
 
         // 完全リセット
         fullReset: function() {
-            console.log('🔄 [EventsDebug] 完全リセット実行...');
+            // console.log('🔄 [EventsDebug] 完全リセット実行...');
             
             // キャッシュクリア
             if ('caches' in window) {
@@ -246,7 +246,7 @@
         
         // 問題がある場合は自動修復を試行
         if (diagnosis.errorCount > 0 || !diagnosis.eventsLoaded) {
-            console.log('⚠️ 問題を検出しました。自動修復を開始します...');
+            // console.log('⚠️ 問題を検出しました。自動修復を開始します...');
             
             const fixResult = await EventsDebug.autoFix();
             
@@ -266,7 +266,7 @@
     });
 
     // コンソールコマンド
-    console.log(`
+    // console.log(`
 🛠️ デバッグコマンド:
   EventsDebug.diagnose()     - 問題診断
   EventsDebug.autoFix()      - 自動修復

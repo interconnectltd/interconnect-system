@@ -231,7 +231,7 @@
     function setupServiceWorker() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw-video-cache.js')
-                .then(() => console.log('[VideoOptimizer] Service Worker登録成功'))
+                .then(() => // console.log('[VideoOptimizer] Service Worker登録成功'))
                 .catch(err => console.error('[VideoOptimizer] Service Worker登録失敗:', err));
         }
     }

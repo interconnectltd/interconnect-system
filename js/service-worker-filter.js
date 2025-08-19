@@ -12,7 +12,7 @@
         // オリジナルのconsoleメソッドを保存（最初の一度だけ）
         if (!window.__originalConsole) {
             window.__originalConsole = {
-                log: console.log,
+                log: // console.log,
                 warn: console.warn,
                 error: console.error
             };
@@ -36,7 +36,7 @@
             return filterPatterns.some(pattern => pattern.test(message));
         }
 
-        console.log = function(...args) {
+        // console.log = function(...args) {
             if (!shouldFilter(args)) {
                 originalLog.apply(console, args);
             }

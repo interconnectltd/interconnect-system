@@ -67,7 +67,7 @@ if (window.ReferralManager) {
             await originalCreateLink.call(this, description);
             
             // 作成されたリンクデータを取得
-            const lastLog = console.log.calls ? console.log.calls[console.log.calls.length - 1] : null;
+            const lastLog = // console.log.calls ? // console.log.calls[console.log.calls.length - 1] : null;
             
             // 強制表示
             setTimeout(() => {

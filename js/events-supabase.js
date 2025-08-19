@@ -42,14 +42,14 @@
             
             // supabaseReadyイベントを待ってから動的データを読み込み
             if (window.supabaseClient) {
-                console.log('[EventsSupabase] Supabase ready, loading events...');
+                // console.log('[EventsSupabase] Supabase ready, loading events...');
                 this.loadEvents();
                 this.loadPastEvents();
             } else {
-                console.log('[EventsSupabase] Waiting for Supabase initialization...');
+                // console.log('[EventsSupabase] Waiting for Supabase initialization...');
                 // Supabaseクライアントがまだ初期化されていない場合は待機
                 document.addEventListener('supabaseReady', () => {
-                    console.log('[EventsSupabase] Supabase client ready, initializing...');
+                    // console.log('[EventsSupabase] Supabase client ready, initializing...');
                     this.loadEvents();
                     this.loadPastEvents();
                 });
@@ -57,7 +57,7 @@
                 // フォールバック: 3秒後にも確認
                 setTimeout(() => {
                     if (window.supabaseClient && !this.eventsLoaded) {
-                        console.log('[EventsSupabase] Fallback: Loading events after timeout');
+                        // console.log('[EventsSupabase] Fallback: Loading events after timeout');
                         this.loadEvents();
                         this.loadPastEvents();
                     }
@@ -314,7 +314,7 @@
          */
         attachCardEventListeners() {
             const cards = document.querySelectorAll('.event-card');
-            console.log('[EventsSupabase] Found', cards.length, 'event cards');
+            // console.log('[EventsSupabase] Found', cards.length, 'event cards');
             
             cards.forEach(card => {
                 // 既にリスナーが追加されている場合はスキップ
@@ -330,13 +330,13 @@
                     // ボタンクリックは除外
                     if (!e.target.closest('button')) {
                         const eventId = card.dataset.eventId;
-                        console.log('[EventsSupabase] Card clicked, eventId:', eventId);
-                        console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
+                        // console.log('[EventsSupabase] Card clicked, eventId:', eventId);
+                        // console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
                         
                         // EventModalが存在するまで待つ
                         if (eventId) {
                             if (window.eventModal && typeof window.eventModal.show === 'function') {
-                                console.log('[EventsSupabase] Calling eventModal.show()');
+                                // console.log('[EventsSupabase] Calling eventModal.show()');
                                 window.eventModal.show(eventId);
                             } else {
                                 console.error('[EventsSupabase] EventModal not ready, retrying...');

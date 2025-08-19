@@ -216,45 +216,7 @@
         };
     }
 
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `registration-toast ${type}`;
-        
-        const icon = document.createElement('i');
-        const iconClass = type === 'success' ? 'fa-check-circle' : 
-                         type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-        icon.className = `fas ${iconClass}`;
-        
-        const messageSpan = document.createElement('span');
-        messageSpan.textContent = message;
-        
-        toast.appendChild(icon);
-        toast.appendChild(messageSpan);
-        
-        Object.assign(toast.style, {
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0066ff',
-            color: 'white',
-            padding: '16px 24px',
-            borderRadius: '12px',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            fontSize: '16px',
-            fontWeight: '500',
-            zIndex: '10000',
-            animation: 'slideInRight 0.3s ease'
-        });
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'slideOutRight 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
+    // showToast関数は toast-unified-global.js で定義済み
+    // 既存のshowToast関数を使用
 
 })();

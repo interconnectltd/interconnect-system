@@ -657,7 +657,7 @@ window.InterConnect.Profile = {
                     console.error('[Profile] Supabase更新エラー:', error);
                     // エラーでもlocalStorageには保存する
                 } else {
-                    console.log('[Profile] Supabaseに正常に保存されました');
+                    // console.log('[Profile] Supabaseに正常に保存されました');
                 }
             } catch (error) {
                 console.error('[Profile] 保存処理エラー:', error);

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const textarea = document.getElementById(field.id);
         const countElement = document.getElementById(field.countId);
         
-        if (DEBUG) console.log(`[CharCount] Setting up ${field.id}:`, { 
+        if (DEBUG) // console.log(`[CharCount] Setting up ${field.id}:`, { 
             textarea: !!textarea, 
             countElement: !!countElement,
             textareaId: field.id,
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // デバッグ: getEventListenersがある場合は確認
             // if (typeof getEventListeners !== 'undefined') {
-            //     console.log(`[CharCount] Current listeners on ${field.id}:`, getEventListeners(textarea));
+            //     // console.log(`[CharCount] Current listeners on ${field.id}:`, getEventListeners(textarea));
             // }
             
             // キーアップイベントは削除（inputイベントで十分）

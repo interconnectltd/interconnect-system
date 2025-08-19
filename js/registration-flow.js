@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // data-action="next"と"prev"は global-functions.js が処理するため、
     // ここでは何もしない
-    console.log('[registration-flow] Button handlers set up for next-step and prev-step only');
+    // console.log('[registration-flow] Button handlers set up for next-step and prev-step only');
     
     // ローカルのmoveToStep関数は削除（グローバルで定義済み）
     

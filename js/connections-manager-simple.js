@@ -132,7 +132,7 @@
 
         async loadAllConnectionsSimple() {
             try {
-                console.log('[ConnectionsManager Simple] データ読み込み開始');
+                // console.log('[ConnectionsManager Simple] データ読み込み開始');
                 
                 // 1. connectionsテーブルのデータを取得（外部キー参照なし）
                 const { data: allConnections, error: connError } = await window.supabaseClient
@@ -145,10 +145,10 @@
                     return;
                 }
                 
-                console.log('[ConnectionsManager Simple] 取得したconnections:', allConnections);
+                // console.log('[ConnectionsManager Simple] 取得したconnections:', allConnections);
                 
                 if (!allConnections || allConnections.length === 0) {
-                    console.log('[ConnectionsManager Simple] コネクションが存在しません');
+                    // console.log('[ConnectionsManager Simple] コネクションが存在しません');
                     this.updateUI();
                     return;
                 }
@@ -182,7 +182,7 @@
                     }
                 }
                 
-                console.log('[ConnectionsManager Simple] 取得したprofiles:', profileMap);
+                // console.log('[ConnectionsManager Simple] 取得したprofiles:', profileMap);
                 
                 // 4. connectionsとprofilesを結合してカテゴリ分け
                 this.connections.received = [];
@@ -255,7 +255,7 @@
                 this.connections.connected.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
                 this.connections.rejected.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
                 
-                console.log('[ConnectionsManager Simple] カテゴリ分け完了:', {
+                // console.log('[ConnectionsManager Simple] カテゴリ分け完了:', {
                     received: this.connections.received.length,
                     sent: this.connections.sent.length,
                     connected: this.connections.connected.length,
@@ -890,7 +890,7 @@
 
         // プロフィールモーダル表示
         showProfileModal(userId) {
-            console.log('[ConnectionsManager] プロフィール表示:', userId);
+            // console.log('[ConnectionsManager] プロフィール表示:', userId);
             
             // プロフィールモーダル関数が利用可能か確認
             if (window.ProfileDetailModal && window.profileDetailModal) {

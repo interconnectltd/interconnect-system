@@ -86,8 +86,16 @@
                 });
             }
             
+            // register-strict-validation.jsの厳密なバリデーション
+            if (typeof window.nextStepValidation === 'function') {
+                // console.log('[nextStep] Using nextStepValidation');
+                isValid = window.nextStepValidation();
+                if (!isValid) {
+                    return; // バリデーション失敗時はここで終了
+                }
+            }
             // registration-flow.jsのバリデーション
-            if (window.InterConnect && window.InterConnect.Registration && typeof window.InterConnect.Registration.validateCurrentStep === 'function') {
+            else if (window.InterConnect && window.InterConnect.Registration && typeof window.InterConnect.Registration.validateCurrentStep === 'function') {
                 // console.log('[nextStep] Using InterConnect.Registration.validateCurrentStep');
                 isValid = window.InterConnect.Registration.validateCurrentStep(currentStepNum);
             }

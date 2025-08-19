@@ -310,13 +310,11 @@
     
     // nextStep実行前のバリデーションフック
     // global-functions.jsのnextStepに処理を委譲
-    const originalNextStep = window.nextStep;
-    if (originalNextStep) {
-        // 既存のnextStepをラップしてバリデーションを追加
-        const wrappedNextStep = originalNextStep;
-        window.nextStep = function() {
+    // 既にwindow.nextStepValidationが定義されていない場合のみ設定
+    if (!window.nextStepValidation) {
+        window.nextStepValidation = function() {
             const currentStepElement = document.querySelector('.form-step.active');
-            if (!currentStepElement) return;
+            if (!currentStepElement) return false;
             
             const currentStepNum = parseInt(currentStepElement.getAttribute('data-step'));
             
@@ -383,12 +381,12 @@
                 
                 if (errors.length > 0) {
                     alert('以下の項目を確認してください：\n\n' + errors.join('\n'));
-                    return;
+                    return false;
                 }
             }
             
-            // 元のnextStep関数を呼び出す
-            wrappedNextStep();
+            // バリデーション成功を返す
+            return true;
         };
     }
     

@@ -12,17 +12,17 @@
 (function() {
     'use strict';
 
-    console.log('[MatchingUnified] スクリプト実行開始');
+    // console.log('[MatchingUnified] スクリプト実行開始');
     
     // Supabaseの準備ができていない場合は待機
     if (!window.waitForSupabase || !window.supabaseClient) {
-        console.log('[MatchingUnified] Supabaseの初期化を待機中...');
+        // console.log('[MatchingUnified] Supabaseの初期化を待機中...');
         const retryCount = { count: 0, maxRetries: 50 };
         const retryInterval = setInterval(() => {
             retryCount.count++;
             if (window.waitForSupabase && window.supabaseClient) {
                 clearInterval(retryInterval);
-                console.log('[MatchingUnified] Supabaseが準備できました。初期化を開始します。');
+                // console.log('[MatchingUnified] Supabaseが準備できました。初期化を開始します。');
                 initializeMatchingSystem();
             } else if (retryCount.count >= retryCount.maxRetries) {
                 clearInterval(retryInterval);
@@ -36,7 +36,7 @@
     initializeMatchingSystem();
     
     function initializeMatchingSystem() {
-        console.log('[MatchingUnified] マッチングシステム初期化開始');
+        // console.log('[MatchingUnified] マッチングシステム初期化開始');
         
         try {
         
@@ -984,7 +984,7 @@
 
         // フィルタリング
         let filteredUsers = filterUsers(matchingUsers);
-        console.log('[MatchingUnified] フィルター前:', matchingUsers.length, 'フィルター後:', filteredUsers.length);
+        // console.log('[MatchingUnified] フィルター前:', matchingUsers.length, 'フィルター後:', filteredUsers.length);
 
         // ソート
         filteredUsers = sortUsers(filteredUsers);
@@ -2521,7 +2521,7 @@
         ];
         
         // デバッグ用：各ユーザーのスコアを確認
-        console.log(`[RadarChart] ${user.name || 'Unknown'}のスコア:`, {
+        // console.log(`[RadarChart] ${user.name || 'Unknown'}のスコア:`, {
             name: user.name,
             title: user.title,
             position: user.position,
@@ -2586,7 +2586,7 @@
 
     // ダミーデータを表示
     function displayDummyData() {
-        console.log('[MatchingUnified] ダミーデータを表示します');
+        // console.log('[MatchingUnified] ダミーデータを表示します');
         const dummyUsers = [
             {
                 id: 'dummy1',
@@ -2666,7 +2666,7 @@
         ];
 
         matchingUsers = dummyUsers;
-        console.log('[MatchingUnified] ダミーユーザー数:', dummyUsers.length);
+        // console.log('[MatchingUnified] ダミーユーザー数:', dummyUsers.length);
         displayMatchingUsers();
     }
 
@@ -2698,7 +2698,7 @@
             clearAllTimers();
         });
         
-        console.log('[MatchingUnified] スクリプト実行完了');
+        // console.log('[MatchingUnified] スクリプト実行完了');
         
         } catch (error) {
             console.error('[MatchingUnified] スクリプト実行エラー:', error);

@@ -30,7 +30,7 @@
             
             conflictingFunctions.forEach(fn => {
                 if (window[fn]) {
-                    window[fn] = () => console.log(`[PerfectFinal] ${fn} は無効化されています`);
+                    window[fn] = () => // console.log(`[PerfectFinal] ${fn} は無効化されています`);
                 }
             });
             
@@ -110,7 +110,7 @@
             
             if (video) {
                 video.playbackRate = 2.0;
-                video.play().catch(err => console.log('[PerfectFinal] 動画再生エラー:', err));
+                video.play().catch(err => // console.log('[PerfectFinal] 動画再生エラー:', err));
             }
         },
         

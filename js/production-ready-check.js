@@ -14,7 +14,7 @@
             errors: []
         },
 
-        // 1. console.log削除チェック
+        // 1. // console.log削除チェック
         checkConsoleLogs: function() {
             const scripts = document.querySelectorAll('script[src]');
             const productionScripts = [
@@ -33,7 +33,7 @@
                 if (productionScripts.includes(filename)) {
                     // 実際のチェックはサーバーサイドで必要
                     // ここでは警告として記録
-                    this.results.warnings.push(`${filename} - console.log確認が必要`);
+                    this.results.warnings.push(`${filename} - // console.log確認が必要`);
                 }
             });
         },
@@ -250,17 +250,17 @@
             
             if (this.results.passed.length > 0) {
                 // console.log('✅ 合格項目 (' + this.results.passed.length + '件):');
-                this.results.passed.forEach(item => console.log('   ✓ ' + item));
+                this.results.passed.forEach(item => // console.log('   ✓ ' + item));
             }
 
             if (this.results.warnings.length > 0) {
                 // console.log('\n⚠️  警告項目 (' + this.results.warnings.length + '件):');
-                this.results.warnings.forEach(item => console.log('   ⚠ ' + item));
+                this.results.warnings.forEach(item => // console.log('   ⚠ ' + item));
             }
 
             if (this.results.errors.length > 0) {
                 // console.log('\n❌ エラー項目 (' + this.results.errors.length + '件):');
-                this.results.errors.forEach(item => console.log('   ✗ ' + item));
+                this.results.errors.forEach(item => // console.log('   ✗ ' + item));
             }
 
             // サマリー
