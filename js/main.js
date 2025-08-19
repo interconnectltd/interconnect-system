@@ -289,8 +289,12 @@
             heroVideo.classList.remove('loading');
             heroVideo.classList.add('loaded');
             
-            // homepage-perfect-final.jsで再生するため、ここでは再生しない
-            // 重複再生を防ぐ
+            // 動画を遅延再生（パフォーマンス改善）
+            setTimeout(() => {
+                heroVideo.play().catch(err => {
+                    // console.log('Video play failed:', err);
+                });
+            }, 100);
         });
 
         // Handle stalled video

@@ -53,7 +53,11 @@
         
         // メモリ監視
         startMemoryMonitoring() {
-            setInterval(() => {
+            // 既存のインターバルをクリア
+            if (this.memoryInterval) {
+                clearInterval(this.memoryInterval);
+            }
+            this.memoryInterval = setInterval(() => {
                 const currentMemory = performance.memory.usedJSHeapSize;
                 const memoryIncrease = currentMemory - this.data.initialMemory;
                 
@@ -76,7 +80,11 @@
         
         // アニメーション監視
         startAnimationMonitoring() {
-            setInterval(() => {
+            // 既存のインターバルをクリア
+            if (this.animationInterval) {
+                clearInterval(this.animationInterval);
+            }
+            this.animationInterval = setInterval(() => {
                 // CSS アニメーション検出
                 const animatedElements = document.querySelectorAll('*');
                 let infiniteAnimations = 0;
@@ -219,6 +227,19 @@
         clearReports() {
             localStorage.removeItem('performanceReports');
             // console.log('Performance reports cleared');
+        },
+        
+        // クリーンアップ
+        cleanup() {
+            if (this.memoryInterval) {
+                clearInterval(this.memoryInterval);
+                this.memoryInterval = null;
+            }
+            if (this.animationInterval) {
+                clearInterval(this.animationInterval);
+                this.animationInterval = null;
+            }
+            // console.log('Performance monitor cleaned up');
         },
         
         // 監視を停止

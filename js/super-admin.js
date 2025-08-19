@@ -354,7 +354,10 @@
 
     function initializeNotificationPolling() {
         // Poll for new notifications every 30 seconds
-        setInterval(() => {
+        if (window.notificationPollingInterval) {
+            clearInterval(window.notificationPollingInterval);
+        }
+        window.notificationPollingInterval = setInterval(() => {
             // In a real app, this would check for new notifications
             // console.log('Checking for new notifications...');
         }, 30000);

@@ -4,8 +4,73 @@
 document.addEventListener('DOMContentLoaded', () => {
     // console.log('[Sidebar] DOM loaded, initializing sidebar toggles');
     
-    // すべてのサイドバートグルボタンを取得
-    const toggleButtons = document.querySelectorAll('.mobile-menu-toggle');
+    // ダッシュボード用の特別処理（disabled-scripts/sidebar-toggle-fixed.jsから救出）
+    const dashboardToggle = document.getElementById('dashboardSidebarToggle');
+    if (dashboardToggle) {
+        // console.log('[Sidebar] Dashboard toggle found, setting up with priority');
+        
+        // モバイルバックドロップを作成（存在しない場合）
+        let mobileBackdrop = document.querySelector('.mobile-backdrop');
+        if (!mobileBackdrop) {
+            mobileBackdrop = document.createElement('div');
+            mobileBackdrop.className = 'mobile-backdrop';
+            document.body.appendChild(mobileBackdrop);
+            // console.log('[Sidebar] Mobile backdrop created for dashboard');
+        }
+        
+        // ダッシュボード用の開閉関数
+        function openDashboardSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.add('active');
+                mobileBackdrop.classList.add('active');
+                document.body.classList.add('menu-open');
+            }
+        }
+        
+        function closeDashboardSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('active');
+                mobileBackdrop.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            }
+        }
+        
+        // キャプチャフェーズで優先的に処理（disabled-scripts/sidebar-toggle-fixed.jsから）
+        dashboardToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar && sidebar.classList.contains('active')) {
+                closeDashboardSidebar();
+            } else {
+                openDashboardSidebar();
+            }
+        }, true); // キャプチャフェーズで処理
+        
+        // バックドロップクリックで閉じる
+        mobileBackdrop.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeDashboardSidebar();
+        });
+        
+        // サイドバー内のリンククリックで閉じる（モバイルのみ）
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            sidebar.addEventListener('click', (e) => {
+                if (window.innerWidth <= 991 && e.target.closest('.sidebar-link')) {
+                    setTimeout(closeDashboardSidebar, 200); // リンク遷移を待つ
+                }
+            });
+        }
+    }
+    
+    // すべてのサイドバートグルボタンを取得（ダッシュボード以外）
+    const toggleButtons = document.querySelectorAll('.mobile-menu-toggle:not(#dashboardSidebarToggle)');
     // console.log(`[Sidebar] Found ${toggleButtons.length} toggle buttons`);
     
     toggleButtons.forEach((button, index) => {

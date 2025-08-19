@@ -27,7 +27,10 @@
                 this.loadUpcomingEvents();
                 
                 // 定期的に更新（5分ごと）
-                setInterval(() => {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                }
+                this.updateInterval = setInterval(() => {
                     this.loadUpcomingEvents();
                 }, 300000);
             }

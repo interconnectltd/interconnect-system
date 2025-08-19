@@ -270,7 +270,10 @@
 
                 // 開発者ツールの使用検出
                 let devtools = { open: false, orientation: null };
-                setInterval(function() {
+                if (window.devtoolsInterval) {
+                    clearInterval(window.devtoolsInterval);
+                }
+                window.devtoolsInterval = setInterval(function() {
                     if (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200) {
                         if (!devtools.open) {
                             devtools.open = true;
@@ -311,7 +314,10 @@
         // 初期化
         init: function() {
             // セッション有効性の定期チェック
-            setInterval(() => {
+            if (window.sessionCheckInterval) {
+                clearInterval(window.sessionCheckInterval);
+            }
+            window.sessionCheckInterval = setInterval(() => {
                 if (!this.session.isValid()) {
                     console.warn('Invalid session detected');
                     window.location.href = 'login.html';
