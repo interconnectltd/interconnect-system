@@ -326,6 +326,17 @@
     // 初期化実行
     DisableConflicts.init();
     
+    // エラーハンドリング追加
+    window.addEventListener('error', (e) => {
+        // console.error('エラー検出:', e);
+        // ローディング画面が残っている場合は強制削除
+        const screen = document.getElementById('instantLoadingScreen');
+        if (screen && screen.style.display !== 'none') {
+            screen.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    });
+    
     // DOMContentLoadedで初期化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {

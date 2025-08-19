@@ -3,20 +3,25 @@
    優先順位: サイドバー > プロフィール・通知ボタン > その他
    ========================================== */
 
-/* 最優先: サイドバー関連 (z-index: 10000番台) */
+/* ローディング画面のみ最高優先度 */
+#instantLoadingScreen {
+  z-index: 99999 !important;
+}
+
+/* 最優先: サイドバー関連 (z-index: 2000番台に変更) */
 .sidebar,
 .mobile-sidebar,
 .sidebar-overlay,
 nav.sidebar,
 aside.sidebar,
 [class*="sidebar"] {
-  z-index: 10000 !important;
+  z-index: 2000 !important;
 }
 
 .sidebar-toggle,
 .menu-toggle,
 .hamburger-menu {
-  z-index: 10001 !important;
+  z-index: 2001 !important;
 }
 
 /* 第2優先: プロフィール・通知ボタン (z-index: 9000番台) */
@@ -26,7 +31,7 @@ aside.sidebar,
 .user-profile-button,
 [class*="profile"][class*="button"],
 [class*="profile"][class*="menu"] {
-  z-index: 9500 !important;
+  z-index: 1950 !important;
 }
 
 .notification-button,
@@ -36,14 +41,14 @@ aside.sidebar,
 .notification-dropdown,
 [class*="notification"][class*="button"],
 [class*="notification"][class*="icon"] {
-  z-index: 9400 !important;
+  z-index: 1940 !important;
 }
 
 /* 通知ドロップダウン */
 .notification-list,
 .notification-panel,
 .notification-dropdown-content {
-  z-index: 9300 !important;
+  z-index: 1930 !important;
 }
 
 /* カレンダー関連 (z-index: 8500番台) */
@@ -52,7 +57,7 @@ aside.sidebar,
 .fc-event,
 .fc-daygrid-day-frame,
 .fc-more-popover {
-  z-index: 8500 !important;
+  z-index: 1850 !important;
 }
 
 /* 第3優先: ヘッダー・ナビゲーション (z-index: 8000番台) */
@@ -61,7 +66,7 @@ header,
 .navbar,
 .nav-bar,
 .top-bar {
-  z-index: 8000 !important;
+  z-index: 1800 !important;
 }
 
 /* 第4優先: モーダル・ダイアログ (z-index: 5000番台) */
@@ -118,18 +123,18 @@ header,
   z-index: 5500 !important;
 }
 
-/* イベント詳細モーダル（最優先） */
+/* イベント詳細モーダル */
 #eventDetailModal {
-  z-index: 10500 !important;
+  z-index: 5500 !important;
 }
 
 #eventDetailModal .modal-overlay {
-  z-index: 10499 !important;
+  z-index: 5499 !important;
   pointer-events: auto !important;
 }
 
 #eventDetailModal .modal-content {
-  z-index: 10501 !important;
+  z-index: 5501 !important;
   pointer-events: auto !important;
 }
 
@@ -145,19 +150,19 @@ header,
   /* モバイルサイドバーは最優先 */
   .mobile-sidebar,
   .sidebar.mobile-open {
-    z-index: 10100 !important;
+    z-index: 2100 !important;
   }
   
   /* モバイルメニューボタン */
   .mobile-menu-button,
   .mobile-nav-toggle {
-    z-index: 10101 !important;
+    z-index: 2101 !important;
   }
   
   /* モバイル時のプロフィール・通知 */
   .mobile .profile-button,
   .mobile .notification-button {
-    z-index: 9600 !important;
+    z-index: 1960 !important;
   }
 }
 
