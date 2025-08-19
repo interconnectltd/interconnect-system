@@ -46,8 +46,8 @@
             
             try {
                 // Supabaseを使用してパスワードリセットメールを送信
-                if (window.supabase) {
-                    const { error } = await window.supabase.auth.resetPasswordForEmail(email, {
+                if (window.supabaseClient) {
+                    const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
                         redirectTo: `${window.location.origin}/reset-password.html`
                     });
                     

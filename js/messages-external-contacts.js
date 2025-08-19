@@ -28,7 +28,7 @@
 
             try {
                 // Supabase接続確認
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     await this.loadFromSupabase();
                 } else {
                     // ダミーデータを使用
@@ -48,7 +48,7 @@
         async loadFromSupabase() {
             try {
                 // 現在のユーザーを取得
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     this.loadDummyData();
                     return;

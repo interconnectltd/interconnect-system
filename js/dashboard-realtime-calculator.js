@@ -134,7 +134,7 @@
          */
         async calculateUnreadMessages() {
             try {
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) return 0;
 
                 // まずメッセージテーブルの構造を確認

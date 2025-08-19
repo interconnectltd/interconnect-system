@@ -55,10 +55,10 @@
         
         interceptSupabaseQueries() {
             // window.supabaseが存在する場合、クエリをインターセプト
-            if (window.supabase) {
-                const originalFrom = window.supabase.from.bind(window.supabase);
+            if (window.supabaseClient) {
+                const originalFrom = window.supabaseClient.from.bind(window.supabaseClient);
                 
-                window.supabase.from = (table) => {
+                window.supabaseClient.from = (table) => {
                     if (this.isGuestMode) {
                         // console.log(`[GuestMode] Supabaseクエリをインターセプト: ${table}`);
                         

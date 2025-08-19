@@ -34,7 +34,7 @@
             
             // 認証状態を確認
             try {
-                const { data: { user }, error } = await window.supabase.auth.getUser();
+                const { data: { user }, error } = await window.supabaseClient.auth.getUser();
                 if (error || !user) {
                     console.warn('[DashboardStats] No authenticated user, using fallback data');
                     // 認証なしでも動作を続ける
@@ -55,13 +55,13 @@
          */
         waitForSupabase() {
             return new Promise((resolve) => {
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     resolve();
                     return;
                 }
                 
                 const checkSupabase = () => {
-                    if (window.supabase) {
+                    if (window.supabaseClient) {
                         resolve();
                     } else {
                         setTimeout(checkSupabase, 100);
@@ -222,7 +222,7 @@
          */
         async calculateUnreadMessages() {
             try {
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) return 0;
 
                 const { count, error } = await window.supabase
@@ -246,7 +246,7 @@
          */
         async createSampleActivities() {
             // 既存のテーブル構造に合わせてサンプルアクティビティを作成
-            const { data: { user } } = await window.supabase.auth.getUser();
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
             if (!user) {
                 // console.log('[DashboardStats] No authenticated user for sample activities');
                 return;
@@ -373,7 +373,7 @@
                         try {
                             // auth.usersテーブルへの直接アクセスができない場合があるため、
                             // エラーハンドリングを追加
-                            const { data: { user } } = await window.supabase.auth.getUser();
+                            const { data: { user } } = await window.supabaseClient.auth.getUser();
                             
                             // 現在のユーザーのアクティビティの場合、ローカルデータを使用
                             if (activity.user_id === user?.id) {
@@ -598,7 +598,7 @@
         
         // 1. Supabase接続確認
         // console.log('1. Checking Supabase connection...');
-        if (window.supabase) {
+        if (window.supabaseClient) {
             // console.log('✓ Supabase is available');
         } else {
             console.error('✗ Supabase is NOT available');
@@ -607,7 +607,7 @@
         
         // 2. 認証状態確認
         // console.log('2. Checking authentication...');
-        const { data: { user }, error: authError } = await window.supabase.auth.getUser();
+        const { data: { user }, error: authError } = await window.supabaseClient.auth.getUser();
         if (authError) {
             console.warn('✗ Auth error:', authError);
         } else if (!user) {

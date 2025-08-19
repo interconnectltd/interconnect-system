@@ -103,9 +103,9 @@ class CalendlyBooking {
   
   async recordBookingIntent(referralCode) {
     // Supabaseが利用可能な場合は予約意図を記録
-    if (window.supabase) {
+    if (window.supabaseClient) {
       try {
-        const { data: { user } } = await window.supabase.auth.getUser();
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
         
         if (user) {
           const { error } = await window.supabase

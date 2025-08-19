@@ -288,7 +288,7 @@
 
             // クエリの構築
             let query = window.supabaseClient
-                .from('user_profiles')
+                .from('profiles')
                 .select('*')
                 .neq('id', currentUserId);
 

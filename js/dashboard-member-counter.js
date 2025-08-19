@@ -131,7 +131,7 @@
         async countFromUsers() {
             try {
                 const { count, error } = await window.supabase
-                    .from('user_profiles')
+                    .from('profiles')
                     .select('*', { count: 'exact', head: true });
 
                 if (!error && count !== null) {

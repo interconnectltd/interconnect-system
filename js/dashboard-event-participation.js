@@ -142,8 +142,8 @@
         async getCurrentUserId() {
             try {
                 // Supabaseの認証から取得
-                if (window.supabase) {
-                    const { data: { user } } = await window.supabase.auth.getUser();
+                if (window.supabaseClient) {
+                    const { data: { user } } = await window.supabaseClient.auth.getUser();
                     if (user) return user.id;
                 }
 
@@ -177,7 +177,7 @@
                     return;
                 }
 
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     if (this.useActivityTable) {
                         // user_activitiesに参加記録を追加
                         const { error } = await window.supabase
@@ -249,7 +249,7 @@
                     return;
                 }
 
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     if (this.useActivityTable) {
                         // user_activitiesから削除
                         const { error } = await window.supabase

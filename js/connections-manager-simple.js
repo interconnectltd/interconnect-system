@@ -142,6 +142,34 @@
                 
                 if (connError) {
                     console.error('[ConnectionsManager Simple] connections取得エラー:', connError);
+                    console.error('[ConnectionsManager Simple] エラー詳細:', {
+                        message: connError.message,
+                        details: connError.details,
+                        hint: connError.hint,
+                        code: connError.code
+                    });
+                    
+                    // エラー表示
+                    document.querySelectorAll('.connection-list').forEach(list => {
+                        list.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>データの読み込みに失敗しました</h3>
+                                <p>${connError.message || 'connectionsテーブルが存在しない可能性があります'}</p>
+                                <small>エラーコード: ${connError.code || 'unknown'}</small>
+                            </div>
+                        `;
+                    });
+                    
+                    // テーブル存在チェック（デバッグ用）
+                    console.log('[ConnectionsManager Simple] connectionsテーブルの存在を確認中...');
+                    const { data: test } = await window.supabaseClient
+                        .from('connections')
+                        .select('id')
+                        .limit(1);
+                    if (test) {
+                        console.log('[ConnectionsManager Simple] connectionsテーブルは存在し、アクセス可能です');
+                    }
                     return;
                 }
                 

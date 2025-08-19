@@ -11,7 +11,7 @@
     // Supabaseクライアントの初期化を待つ
     function waitForSupabase() {
         return new Promise((resolve) => {
-            if (window.supabase) {
+            if (window.supabaseClient) {
                 resolve();
                 return;
             }
@@ -23,7 +23,7 @@
             
             // タイムアウト後も確認
             setTimeout(() => {
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     resolve();
                 }
             }, 3000);

@@ -75,7 +75,7 @@
                 return null;
             }
 
-            let query = window.supabase.from('events').select('*', { count: 'exact', head: true });
+            let query = window.supabaseClient.from('events').select('*', { count: 'exact', head: true });
             
             // 日付フィールドの優先順位
             const dateFields = ['event_date', 'date', 'start_date', 'created_at'];
@@ -136,7 +136,7 @@
                 return null;
             }
 
-            let query = window.supabase.from('messages').select('*', { count: 'exact', head: true });
+            let query = window.supabaseClient.from('messages').select('*', { count: 'exact', head: true });
             
             // 受信者フィールドの判定
             const recipientFields = ['recipient_id', 'to_user_id', 'receiver_id'];

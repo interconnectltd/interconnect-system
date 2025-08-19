@@ -493,7 +493,7 @@
             
             // user_profilesテーブルから必要なカラムのみ取得（パフォーマンス改善）
             const { data: allUsers, error } = await window.supabaseClient
-                .from('user_profiles')
+                .from('profiles')
                 .select(`
                     id,
                     name,
@@ -517,7 +517,13 @@
                 .limit(200); // パフォーマンス対策: 最大200件に制限
             
             if (error) {
-                console.error('[MatchingUnified] ユーザー取得エラー:', error);
+                console.error('[MatchingUnified] プロファイル取得エラー:', error);
+                console.error('[MatchingUnified] エラー詳細:', {
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint,
+                    code: error.code
+                });
                 // XSS対策: DOM操作で安全に挿入
                 container.innerHTML = '';
                 const errorDiv = document.createElement('div');
@@ -530,12 +536,26 @@
                 heading.textContent = 'データの取得に失敗しました';
                 
                 const paragraph = document.createElement('p');
-                paragraph.textContent = error.message;
+                paragraph.textContent = error.message || 'profilesテーブルが存在しない可能性があります';
+                
+                const detail = document.createElement('small');
+                detail.textContent = `エラーコード: ${error.code || 'unknown'}`;
                 
                 errorDiv.appendChild(icon);
                 errorDiv.appendChild(heading);
                 errorDiv.appendChild(paragraph);
+                errorDiv.appendChild(detail);
                 container.appendChild(errorDiv);
+                
+                // テーブル存在チェック（デバッグ用）
+                console.log('[MatchingUnified] profilesテーブルの存在を確認中...');
+                const { data: test } = await window.supabaseClient
+                    .from('profiles')
+                    .select('id')
+                    .limit(1);
+                if (test) {
+                    console.log('[MatchingUnified] profilesテーブルは存在し、アクセス可能です');
+                }
                 return;
             }
             
@@ -855,7 +875,7 @@
         try {
             // 現在のユーザーのプロフィール取得（自分のデータのみ）
             const { data: currentUserData } = await window.supabaseClient
-                .from('user_profiles')
+                .from('profiles')
                 .select(`
                     id,
                     skills,
@@ -1267,7 +1287,7 @@
             } else {
                 // フォールバック: 従来のモーダル表示
                 const { data: users, error } = await window.supabaseClient
-                    .from('user_profiles')
+                    .from('profiles')
                     .select('*');
                 
                 if (error) {

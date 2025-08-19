@@ -571,7 +571,7 @@
          */
         async fetchMemberGrowthData(period) {
             try {
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     // Supabaseからメンバー成長データを取得
                     const { data, error } = await window.supabase
                         .from('member_growth_stats')
@@ -626,7 +626,7 @@
          */
         async fetchEventStatsData(period) {
             try {
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     // Supabaseからイベント統計データを取得
                     const { data, error } = await window.supabase
                         .from('event_stats')
@@ -695,7 +695,7 @@
          */
         async fetchIndustryData() {
             try {
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     // Supabaseから業界別分布データを取得
                     const { data, error } = await window.supabase
                         .from('industry_distribution')
@@ -725,7 +725,7 @@
          */
         async fetchActivityHeatmapData() {
             try {
-                if (window.supabase) {
+                if (window.supabaseClient) {
                     // 過去1週間のアクティビティを取得
                     const oneWeekAgo = new Date();
                     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);

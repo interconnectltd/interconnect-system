@@ -20,7 +20,7 @@
             if (this.currentUser) return this.currentUser;
             
             try {
-                const { data: { user } } = await window.supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 this.currentUser = user;
                 return user;
             } catch (error) {

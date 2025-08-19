@@ -61,7 +61,7 @@
             }
 
             try {
-                const { data, error } = await window.supabase.auth.getSession();
+                const { data, error } = await window.supabaseClient.auth.getSession();
                 if (error) {
                     this.results.errors.push(`Supabase認証エラー: ${error.message}`);
                 } else {

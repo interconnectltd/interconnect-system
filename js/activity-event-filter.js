@@ -110,7 +110,7 @@
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabase && window.supabase.from) {
+                if (window.supabase && window.supabaseClient.from) {
                     // Supabaseからアクティビティを取得
                     const { data, error } = await window.supabase
                         .from('activities')
@@ -224,7 +224,7 @@
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabase && window.supabase.from) {
+                if (window.supabase && window.supabaseClient.from) {
                     // イベントデータを取得
                     const { data: events, error } = await window.supabase
                         .from('event_items')

@@ -25,7 +25,7 @@
             }
 
             // 現在のユーザーを取得
-            const { data: { user } } = await window.supabase.auth.getUser();
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
             if (!user) {
                 // console.log('[ProfileViewer] Not authenticated');
                 return;

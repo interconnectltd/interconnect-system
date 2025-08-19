@@ -469,7 +469,7 @@
     };
 
     // Supabase準備完了後に初期化
-    if (window.supabase) {
+    if (window.supabaseClient) {
         init();
     } else {
         window.addEventListener('supabaseReady', init);

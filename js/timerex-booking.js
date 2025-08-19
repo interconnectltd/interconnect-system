@@ -29,7 +29,7 @@ class TimeRexBooking {
   async startBooking() {
     try {
       // supabaseが存在するかチェック
-      if (!window.supabase || !window.supabase.auth) {
+      if (!window.supabase || !window.supabaseClient.auth) {
         // console.log('Supabaseクライアントが利用できません。ゲストとして処理します。');
         const referralCode = this.getReferralCode();
         const bookingUrl = this.buildFallbackUrl(null, referralCode);
@@ -38,7 +38,7 @@ class TimeRexBooking {
       }
       
       // 現在のユーザー情報を取得（ログインしていない場合はゲストとして処理）
-      const { data: { user } } = await window.supabase.auth.getUser().catch(() => ({ data: { user: null } }));
+      const { data: { user } } = await window.supabaseClient.auth.getUser().catch(() => ({ data: { user: null } }));
       
       // 紹介コードを取得
       const referralCode = this.getReferralCode();
@@ -52,7 +52,7 @@ class TimeRexBooking {
             showNotification('予約ページを準備中...', 'info');
           }
           
-          const response = await window.supabase.functions.invoke('timerex-booking', {
+          const response = await window.supabaseClient.functions.invoke('timerex-booking', {
             body: {
               referralCode: referralCode,
               userId: user.id,
