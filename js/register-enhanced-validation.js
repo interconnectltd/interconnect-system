@@ -169,7 +169,7 @@
         // ステップ4の特別なバリデーション（PR欄）
         if (step === 4) {
             const prTextarea = stepElement.querySelector('#skills-pr');
-            if (prTextarea && prTextarea.value.trim().length < 100) {
+            if (prTextarea && prTextarea.value.length < 100) {  // trimを削除して表示と一致させる
                 errors.push('スキル・専門分野のPRは100文字以上で入力してください');
             }
         }
@@ -177,7 +177,7 @@
         // ステップ5の特別なバリデーション（詳細欄）
         if (step === 5) {
             const detailsTextarea = stepElement.querySelector('#interests-details');
-            if (detailsTextarea && detailsTextarea.value.trim().length < 100) {
+            if (detailsTextarea && detailsTextarea.value.length < 100) {  // trimを削除して表示と一致させる
                 errors.push('興味・困りごとの詳細は100文字以上で入力してください');
             }
         }

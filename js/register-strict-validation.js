@@ -196,18 +196,18 @@
                 if (noChallenge) {
                     isValid = true; // 現状課題なしの場合は常にtrue
                 } else {
-                    isValid = field.value.trim().length >= 50;
+                    isValid = field.value.length >= 50;  // trimを削除して表示と一致させる
                 }
                 break;
                 
             case 'skills-pr':
                 fieldKey = 'skillsPr';
-                isValid = field.value.trim().length >= 100;
+                isValid = field.value.length >= 100;  // trimを削除して表示と一致させる
                 break;
                 
             case 'interests-details':
                 fieldKey = 'interestsDetails';
-                isValid = field.value.trim().length >= 100;
+                isValid = field.value.length >= 100;  // trimを削除して表示と一致させる
                 break;
         }
         
