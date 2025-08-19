@@ -182,9 +182,14 @@
         
         animateHeroTitle() {
             // タイプライター効果を無効化
+            const badge = document.querySelector('.section-badge');
             const title = document.querySelector('.hero-title');
             const subtitle = document.querySelector('.hero-subtitle');
             
+            if (badge) {
+                badge.style.opacity = '1';
+                badge.style.visibility = 'visible';
+            }
             if (title) {
                 title.style.opacity = '1';
                 title.style.visibility = 'visible';
