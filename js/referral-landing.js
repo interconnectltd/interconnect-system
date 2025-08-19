@@ -47,6 +47,8 @@
 // 紹介リンクの訪問を記録
 async function recordReferralVisit(code) {
     try {
+        // Supabaseが初期化されるまで待つ
+        await window.waitForSupabase();
         if (window.supabaseClient) {
             // invite_historyに記録
             const { error } = await window.supabaseClient

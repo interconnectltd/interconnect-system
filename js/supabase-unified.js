@@ -224,6 +224,22 @@
 
     // 認証状態をチェック
     async function checkAuthStatus() {
+        // 公開ページでは認証チェックをスキップ
+        const currentPath = window.location.pathname;
+        const publicPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'line-callback.html', 'invite.html'];
+        const isPublicPage = publicPages.some(page => {
+            if (page === '/' || page === '') {
+                return currentPath === '/' || currentPath === '/index.html' || currentPath === '';
+            }
+            return currentPath.includes(page);
+        });
+        
+        // 公開ページの場合は認証チェックをスキップ
+        if (isPublicPage) {
+            // console.log('[SupabaseUnified] 公開ページのため認証チェックをスキップ');
+            return;
+        }
+        
         try {
             const { data: { user }, error } = await window.supabaseClient.auth.getUser();
             
@@ -241,7 +257,8 @@
                         return;
                     }
                 }
-                throw error;
+                // 公開ページではエラーを無視
+                return;
             }
             
             if (user) {
@@ -260,8 +277,11 @@
                 }
             }
         } catch (err) {
-            console.error('[SupabaseUnified] 認証状態チェックエラー:', err);
-            // エラーが発生しても処理を継続（公開ページの場合があるため）
+            // 公開ページではエラーを無視（ログも出さない）
+            if (!isPublicPage) {
+                console.error('[SupabaseUnified] 認証状態チェックエラー:', err);
+            }
+            // エラーが発生しても処理を継続
         }
     }
 
