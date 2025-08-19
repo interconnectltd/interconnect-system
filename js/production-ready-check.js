@@ -250,17 +250,17 @@
             
             if (this.results.passed.length > 0) {
                 // console.log('✅ 合格項目 (' + this.results.passed.length + '件):');
-                this.results.passed.forEach(item => // console.log('   ✓ ' + item));
+                this.results.passed.forEach(item => {}); // console.log('   ✓ ' + item)
             }
 
             if (this.results.warnings.length > 0) {
                 // console.log('\n⚠️  警告項目 (' + this.results.warnings.length + '件):');
-                this.results.warnings.forEach(item => // console.log('   ⚠ ' + item));
+                this.results.warnings.forEach(item => {}); // console.log('   ⚠ ' + item)
             }
 
             if (this.results.errors.length > 0) {
                 // console.log('\n❌ エラー項目 (' + this.results.errors.length + '件):');
-                this.results.errors.forEach(item => // console.log('   ✗ ' + item));
+                this.results.errors.forEach(item => {}); // console.log('   ✗ ' + item)
             }
 
             // サマリー

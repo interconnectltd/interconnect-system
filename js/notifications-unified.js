@@ -435,7 +435,7 @@
 
         // 音を鳴らす
         if (window.notificationSound) {
-            window.notificationSound.play().catch(e => // console.log('通知音の再生に失敗:', e));
+            window.notificationSound.play().catch(e => {}); // console.log('通知音の再生に失敗:', e)
         }
     }
 
