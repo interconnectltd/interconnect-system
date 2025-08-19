@@ -78,15 +78,24 @@
         }
         
         // Web Audio APIを使用した音声の事前準備（ミュート動画でも）
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioContext.createMediaElementSource(video);
-        source.connect(audioContext.destination);
+        // 既存のAudioContextがあるかチェック
+        if (!video.audioSource) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaElementSource(video);
+                source.connect(audioContext.destination);
+                video.audioSource = source; // マークしておく
+            } catch (e) {
+                // 既に接続されている場合はスキップ
+                // console.log('[VideoOptimize] AudioContext already connected');
+            }
+        }
         
         // 再生速度の調整（ローディング中は高速）
         video.playbackRate = 2.0;
         
-        // バッファリング戦略の設定
-        video.preload = 'auto';
+        // バッファリング戦略の設定（最初はメタデータのみ）
+        video.preload = 'metadata';
         
         // 自動再生の最適化
         const playPromise = video.play();
@@ -134,7 +143,7 @@
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
-        video.preload = 'auto';
+        video.preload = 'metadata';
         
         // スタイル設定
         Object.assign(video.style, {

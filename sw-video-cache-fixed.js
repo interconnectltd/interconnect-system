@@ -22,17 +22,17 @@ function isValidUrl(url) {
     }
 }
 
-// インストール時に動画をプリキャッシュ
+// インストール時に動画をプリキャッシュ（一時的に無効化）
 self.addEventListener('install', (event) => {
     console.log('[SW] Installing Service Worker');
     
+    // 動画のプリキャッシュを無効化（パフォーマンス改善のため）
     event.waitUntil(
-        caches.open(VIDEO_CACHE_NAME)
-            .then(cache => {
-                console.log('[SW] Caching video files');
-                return cache.addAll(VIDEO_URLS);
+        Promise.resolve()
+            .then(() => {
+                console.log('[SW] Skipping video pre-cache for performance');
+                return self.skipWaiting();
             })
-            .then(() => self.skipWaiting())
     );
 });
 

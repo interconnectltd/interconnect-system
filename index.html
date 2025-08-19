@@ -758,16 +758,16 @@
     <!-- ローディング動画修正 -->
     <script src="js/homepage-loading-final-fix.js"></script>
     <script src="js/homepage-loading-video-fix.js"></script>
-    <!-- 動画プリロード最適化 -->
-    <script src="js/video-preload-optimize.js"></script>
+    <!-- 動画プリロード最適化（video-performance-optimizer.jsと重複するため無効化） -->
+    <!-- <script src="js/video-preload-optimize.js"></script> -->
     <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->
     <script src="js/homepage-perfect-final.js"></script>
     <script src="js/main.js"></script>
     <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- 動画パフォーマンス最適化 -->
     <script src="js/video-performance-optimizer.js"></script>
-    <!-- Service Worker登録 -->
-    <script>
+    <!-- Service Worker登録（video-performance-optimizer.jsで登録済みのため無効化） -->
+    <!-- <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw-video-cache.js')
@@ -775,6 +775,6 @@
                     .catch(err => console.error('[SW] 登録失敗:', err));
             });
         }
-    </script>
+    </script> -->
 </body>
 </html>

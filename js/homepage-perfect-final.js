@@ -30,7 +30,7 @@
             
             conflictingFunctions.forEach(fn => {
                 if (window[fn]) {
-                    window[fn] = () => // console.log(`[PerfectFinal] ${fn} は無効化されています`);
+                    window[fn] = () => {}; // console.log(`[PerfectFinal] ${fn} は無効化されています`);
                 }
             });
             
@@ -144,6 +144,12 @@
         },
         
         onComplete() {
+            // ローディング画面を消す
+            const screen = document.getElementById('instantLoadingScreen');
+            if (screen) {
+                screen.style.display = 'none';
+            }
+            
             // アニメーション開始
             PerfectAnimator.start();
             // スクロールオブザーバー設定
