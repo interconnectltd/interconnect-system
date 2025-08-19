@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マッチング機能詳細テスト</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .console {
+            background: #000;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin: 10px 0;
+            height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+        }
+        .log-error { color: #ff0000; }
+        .log-warn { color: #ffff00; }
+        .log-info { color: #00ffff; }
+        .log-success { color: #00ff00; }
+        button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        .section {
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        h2 { color: #00ff00; }
+        .status { padding: 5px; margin: 5px 0; }
+        .status.ok { background: #003300; }
+        .status.error { background: #330000; }
+        .status.warn { background: #333300; }
+    </style>
+</head>
+<body>
+    <h1>🔍 マッチング機能詳細デバッグ</h1>
+
+    <div class="section">
+        <h2>1. 初期化チェック</h2>
+        <button onclick="checkInitialization()">初期化状態確認</button>
+        <button onclick="forceInit()">強制初期化</button>
+        <div id="init-status"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. テーブルアクセステスト</h2>
+        <button onclick="testProfiles()">profilesテーブル</button>
+        <button onclick="testConnections()">connectionsテーブル</button>
+        <button onclick="testAllTables()">全テーブル確認</button>
+        <div id="table-status"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. 実際のコード実行テスト</h2>
+        <button onclick="testMatchingCode()">matching-unified.js テスト</button>
+        <button onclick="testConnectionsCode()">connections-manager-simple.js テスト</button>
+        <div id="code-status"></div>
+    </div>
+
+    <div class="section">
+        <h2>コンソールログ</h2>
+        <button onclick="clearConsole()">クリア</button>
+        <button onclick="downloadLogs()">ログダウンロード</button>
+        <div id="console" class="console"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-unified.js"></script>
+    
+    <script>
+        const consoleDiv = document.getElementById('console');
+        const logs = [];
+        
+        // コンソールをオーバーライド
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog('info', args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog('error', args.join(' '));
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addLog('warn', args.join(' '));
+        };
+        
+        function addLog(type, message) {
+            const timestamp = new Date().toISOString().substr(11, 12);
+            const entry = `[${timestamp}] ${message}`;
+            logs.push({ type, message: entry });
+            
+            const div = document.createElement('div');
+            div.className = `log-entry log-${type}`;
+            div.textContent = entry;
+            consoleDiv.appendChild(div);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+            logs.length = 0;
+        }
+        
+        function downloadLogs() {
+            const text = logs.map(l => l.message).join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `debug-logs-${Date.now()}.txt`;
+            a.click();
+        }
+        
+        // 初期化チェック
+        async function checkInitialization() {
+            const status = document.getElementById('init-status');
+            status.innerHTML = '';
+            
+            const checks = [];
+            
+            // Supabaseクライアント
+            if (window.supabaseClient) {
+                checks.push('<div class="status ok">✅ supabaseClient: 存在</div>');
+                console.log('supabaseClient exists:', window.supabaseClient);
+            } else {
+                checks.push('<div class="status error">❌ supabaseClient: 未定義</div>');
+            }
+            
+            // waitForSupabase
+            if (window.waitForSupabase) {
+                checks.push('<div class="status ok">✅ waitForSupabase: 存在</div>');
+            } else {
+                checks.push('<div class="status error">❌ waitForSupabase: 未定義</div>');
+            }
+            
+            // 認証状態
+            try {
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                if (user) {
+                    checks.push(`<div class="status ok">✅ 認証: ${user.email}</div>`);
+                } else {
+                    checks.push('<div class="status warn">⚠️ 認証: 未ログイン</div>');
+                }
+            } catch (e) {
+                checks.push(`<div class="status error">❌ 認証エラー: ${e.message}</div>`);
+            }
+            
+            // matching-unified
+            if (window.drawRadarChartForUser) {
+                checks.push('<div class="status ok">✅ matching-unified: 初期化済み</div>');
+            } else {
+                checks.push('<div class="status error">❌ matching-unified: 未初期化</div>');
+            }
+            
+            // connections-manager
+            if (window.connectionsManager) {
+                checks.push('<div class="status ok">✅ connections-manager: 初期化済み</div>');
+            } else {
+                checks.push('<div class="status error">❌ connections-manager: 未初期化</div>');
+            }
+            
+            status.innerHTML = checks.join('');
+        }
+        
+        // 強制初期化
+        function forceInit() {
+            console.log('強制初期化開始...');
+            
+            // matching-unified.jsを再読み込み
+            const script = document.createElement('script');
+            script.src = 'js/matching-unified.js?' + Date.now();
+            document.body.appendChild(script);
+            
+            setTimeout(() => {
+                console.log('matching-unified.js 再読み込み完了');
+                checkInitialization();
+            }, 1000);
+        }
+        
+        // profilesテーブルテスト
+        async function testProfiles() {
+            const status = document.getElementById('table-status');
+            status.innerHTML = '<div class="status">テスト中...</div>';
+            
+            try {
+                console.log('profilesテーブルクエリ開始');
+                const { data, error } = await window.supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .limit(3);
+                
+                if (error) {
+                    console.error('profilesエラー:', error);
+                    status.innerHTML = `<div class="status error">❌ エラー: ${error.message}<br>Code: ${error.code}<br>Details: ${error.details}</div>`;
+                } else {
+                    console.log('profiles取得成功:', data);
+                    status.innerHTML = `<div class="status ok">✅ 成功: ${data.length}件取得<br><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+                }
+            } catch (e) {
+                console.error('profiles例外:', e);
+                status.innerHTML = `<div class="status error">❌ 例外: ${e.message}</div>`;
+            }
+        }
+        
+        // connectionsテーブルテスト
+        async function testConnections() {
+            const status = document.getElementById('table-status');
+            status.innerHTML = '<div class="status">テスト中...</div>';
+            
+            try {
+                console.log('connectionsテーブルクエリ開始');
+                const { data, error } = await window.supabaseClient
+                    .from('connections')
+                    .select('*')
+                    .limit(3);
+                
+                if (error) {
+                    console.error('connectionsエラー:', error);
+                    status.innerHTML = `<div class="status error">❌ エラー: ${error.message}<br>Code: ${error.code}<br>Details: ${error.details}</div>`;
+                } else {
+                    console.log('connections取得成功:', data);
+                    status.innerHTML = `<div class="status ok">✅ 成功: ${data.length}件取得<br><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+                }
+            } catch (e) {
+                console.error('connections例外:', e);
+                status.innerHTML = `<div class="status error">❌ 例外: ${e.message}</div>`;
+            }
+        }
+        
+        // 全テーブル確認
+        async function testAllTables() {
+            const tables = ['profiles', 'connections', 'users', 'user_profiles', 'matchings', 'user_activities'];
+            const results = [];
+            
+            for (const table of tables) {
+                try {
+                    const { data, error } = await window.supabaseClient
+                        .from(table)
+                        .select('*')
+                        .limit(1);
+                    
+                    if (error) {
+                        results.push(`❌ ${table}: ${error.code}`);
+                        console.error(`${table}:`, error);
+                    } else {
+                        results.push(`✅ ${table}: OK (${data.length}件)`);
+                        console.log(`${table}: OK`);
+                    }
+                } catch (e) {
+                    results.push(`❌ ${table}: 例外`);
+                }
+            }
+            
+            document.getElementById('table-status').innerHTML = 
+                '<div class="status">' + results.join('<br>') + '</div>';
+        }
+        
+        // matching-unified.jsのテスト
+        async function testMatchingCode() {
+            const status = document.getElementById('code-status');
+            status.innerHTML = '<div class="status">matching-unified.js テスト中...</div>';
+            
+            try {
+                // コンテナ作成
+                const container = document.createElement('div');
+                container.id = 'matching-container';
+                document.body.appendChild(container);
+                
+                // matching-unified.jsの関数を直接呼び出す
+                if (window.displayDummyData) {
+                    console.log('displayDummyData関数を実行');
+                    window.displayDummyData();
+                    status.innerHTML = '<div class="status ok">✅ ダミーデータ表示成功</div>';
+                } else {
+                    console.error('displayDummyData関数が見つかりません');
+                    status.innerHTML = '<div class="status error">❌ displayDummyData関数が未定義</div>';
+                }
+            } catch (e) {
+                console.error('matching-unified.jsテストエラー:', e);
+                status.innerHTML = `<div class="status error">❌ エラー: ${e.message}</div>`;
+            }
+        }
+        
+        // connections-manager-simple.jsのテスト
+        async function testConnectionsCode() {
+            const status = document.getElementById('code-status');
+            status.innerHTML = '<div class="status">connections-manager-simple.js テスト中...</div>';
+            
+            try {
+                if (window.connectionsManager) {
+                    console.log('connectionsManager.loadAllConnectionsSimple()を実行');
+                    await window.connectionsManager.loadAllConnectionsSimple();
+                    status.innerHTML = '<div class="status ok">✅ データ読み込み完了</div>';
+                } else {
+                    console.error('connectionsManagerが見つかりません');
+                    status.innerHTML = '<div class="status error">❌ connectionsManagerが未定義</div>';
+                }
+            } catch (e) {
+                console.error('connections-manager-simple.jsテストエラー:', e);
+                status.innerHTML = `<div class="status error">❌ エラー: ${e.message}</div>`;
+            }
+        }
+        
+        // 起動時に自動チェック
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('=== 自動初期化チェック開始 ===');
+                checkInitialization();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

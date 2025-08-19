@@ -2694,19 +2694,17 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             // Supabase初期化完了を待つ
-            if (window.supabaseClient) {
+            console.log('[MatchingUnified] DOM読み込み完了、初期化を実行');
+            setTimeout(() => {
                 initialize();
-            } else {
-                window.addEventListener('supabaseReady', initialize, { once: true });
-            }
+            }, 500); // 他のスクリプトの初期化を待つ
         });
     } else {
         // 既にDOMが読み込まれている場合
-        if (window.supabaseClient) {
+        console.log('[MatchingUnified] DOM既に準備完了、初期化を実行');
+        setTimeout(() => {
             initialize();
-        } else {
-            window.addEventListener('supabaseReady', initialize, { once: true });
-        }
+        }, 500); // 他のスクリプトの初期化を待つ
     }
     
     // グローバルに関数を公開（他のスクリプトから呼び出せるように）
