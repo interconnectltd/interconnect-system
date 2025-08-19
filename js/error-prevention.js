@@ -6,21 +6,22 @@
 (function() {
     'use strict';
 
-    // グローバルエラーハンドラー
+    // グローバルエラーハンドラー（本番環境では静かに処理）
     window.addEventListener('error', function(event) {
-        console.error('Global error caught:', event.error);
-        console.error('Error message:', event.message);
-        console.error('Error filename:', event.filename);
-        console.error('Error line:', event.lineno);
-        console.error('Error column:', event.colno);
-        console.error('Full event:', event);
+        // 開発環境でのみログ出力
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.error('Global error caught:', event.error);
+        }
         // エラーを記録するが、ユーザーには表示しない
         event.preventDefault();
     });
 
-    // Promiseの未処理エラーをキャッチ
+    // Promiseの未処理エラーをキャッチ（本番環境では静かに処理）
     window.addEventListener('unhandledrejection', function(event) {
-        console.error('Unhandled promise rejection:', event.reason);
+        // 開発環境でのみログ出力
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.error('Unhandled promise rejection:', event.reason);
+        }
         event.preventDefault();
     });
 
