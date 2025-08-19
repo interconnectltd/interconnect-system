@@ -104,9 +104,9 @@
         const isValid = isStepValid(stepNum);
         
         // console.log(`[RegisterStrictValidation] Step ${stepNum} validation:`, {
-            isValid,
-            state: validationState[`step${stepNum}`]
-        });
+        //     isValid,
+        //     state: validationState[`step${stepNum}`]
+        // });
         
         if (isValid) {
             nextButton.disabled = false;
@@ -244,7 +244,16 @@
             });
             
             validationState.step2.challenges = allGroupsValid;
+        } else if (stepNum === 4) {
+            // スキルチェックボックスの確認
+            const skillCheckboxes = stepElement.querySelectorAll('input[name="skills"]:checked');
+            // スキルは任意なので、チェックボックスの状態は確認しない
+            // ただし、スキルPRテキストエリアは必須なので、その状態はvalidateFieldで処理される
         } else if (stepNum === 5) {
+            // 興味・関心チェックボックスの確認
+            const interestCheckboxes = stepElement.querySelectorAll('input[name="interests"]:checked');
+            // 興味・関心も任意なので、チェックボックスの状態は確認しない
+            
             // 利用規約の同意
             const agreeCheckbox = stepElement.querySelector('input[name="agree"]');
             validationState.step5.agree = agreeCheckbox && agreeCheckbox.checked;
@@ -335,6 +344,20 @@
                     }
                     
                     if (!stepState[key]) {
+                        // 現在のステップに関連するフィールドのみエラーをチェック
+                        const stepFields = {
+                            1: ['name', 'company', 'email', 'password', 'passwordConfirm'],
+                            2: ['challenges', 'budget', 'revenueDetails', 'hrDetails', 'dxDetails', 'strategyDetails'],
+                            3: ['phone', 'lineId', 'lineQr', 'position'],
+                            4: ['skillsPr'],
+                            5: ['interestsDetails', 'agree']
+                        };
+                        
+                        // 現在のステップのフィールドのみ処理
+                        if (!stepFields[currentStepNum] || !stepFields[currentStepNum].includes(key)) {
+                            return; // 他のステップのフィールドはスキップ
+                        }
+                        
                         switch(key) {
                             case 'name': errors.push('お名前を入力してください'); break;
                             case 'company': errors.push('会社名を入力してください'); break;
@@ -434,7 +457,14 @@
                 }
                 
                 updateButtonState(2);
+            } else if (e.target.matches('input[name="skills"]')) {
+                // スキルチェックボックスの変更時
+                validateCheckboxes(4);
+            } else if (e.target.matches('input[name="interests"]')) {
+                // 興味・関心チェックボックスの変更時
+                validateCheckboxes(5);
             } else if (e.target.matches('input[name="agree"]')) {
+                // 利用規約の同意チェックボックス
                 validateCheckboxes(5);
             }
         });
