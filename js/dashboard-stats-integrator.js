@@ -215,10 +215,17 @@
                 this.integrateAllStats();
             }, 2000); // 他のモジュールが読み込まれるのを待つ
             
-            // 30秒ごとに更新
-            setInterval(() => {
+            // 30秒ごとに更新（メモリリーク対策）
+            this.updateInterval = setInterval(() => {
                 this.integrateAllStats();
             }, 30000);
+            
+            // ページ離脱時にクリーンアップ
+            window.addEventListener('beforeunload', () => {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                }
+            });
         }
     }
 
