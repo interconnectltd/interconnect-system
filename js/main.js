@@ -241,7 +241,7 @@
         function checkVideoSource() {
             const videoSource = heroVideo.querySelector('source');
             if (!videoSource) {
-                console.error('No video source found');
+                // console.error('No video source found');
                 showFallback();
                 return false;
             }
@@ -256,7 +256,7 @@
         // Handle various video errors
         heroVideo.addEventListener('error', function(e) {
             loadAttempts++;
-            console.error(`Video load error (attempt ${loadAttempts}/${maxAttempts}):`, e);
+            // console.error(`Video load error (attempt ${loadAttempts}/${maxAttempts}):`, e);
             
             if (loadAttempts >= maxAttempts) {
                 showFallback();
@@ -272,7 +272,7 @@
         const videoSource = heroVideo.querySelector('source');
         if (videoSource) {
             videoSource.addEventListener('error', function(e) {
-                console.error('Video source error:', e);
+                // console.error('Video source error:', e);
                 showFallback();
             });
         }
@@ -295,13 +295,13 @@
 
         // Handle stalled video
         heroVideo.addEventListener('stalled', function() {
-            console.warn('Video stalled');
+            // console.warn('Video stalled');
         });
 
         // Handle slow loading
         let loadingTimeout = setTimeout(function() {
             if (heroVideo.readyState < 3) { // HAVE_FUTURE_DATA
-                console.warn('Video loading timeout - showing fallback');
+                // console.warn('Video loading timeout - showing fallback');
                 showFallback();
             }
         }, 30000); // 30 second timeout for Netlify CDN

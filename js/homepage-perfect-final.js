@@ -170,7 +170,7 @@
             // ヒーロー動画再生
             const heroVideo = document.querySelector('.hero-video');
             if (heroVideo) {
-                heroVideo.play().catch(err => console.warn('[PerfectFinal] Hero video error:', err));
+                heroVideo.play().catch(err => {});
             }
             
             // タイトルアニメーション
