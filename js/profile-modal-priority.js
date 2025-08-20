@@ -13,16 +13,16 @@
         if (container) {
             // 既存のイベントリスナーは残したまま、優先度の高いリスナーを追加
             container.addEventListener('click', function(e) {
-                // プロフィールボタンの場合、既存のイベントを停止
+                // プロフィールボタンの場合、処理を続行させる
+                // stopImmediatePropagationを削除して、他のイベントハンドラーも動作するようにする
                 if (e.target.classList.contains('view-profile-btn') || 
                     e.target.closest('.view-profile-btn') ||
                     e.target.classList.contains('btn-profile') ||
                     e.target.closest('.btn-profile') ||
                     e.target.classList.contains('btn-view') ||
                     e.target.closest('.btn-view')) {
-                    // 他のリスナーの実行を防ぐ
-                    e.stopImmediatePropagation();
-                    // profile-detail-modal.jsに処理を委譲
+                    // 何もせず、イベントを通過させる
+                    // 両方のハンドラー（matching-unified.jsとprofile-detail-modal.js）を動作させる
                     return;
                 }
             }, true); // キャプチャフェーズで実行（優先度を上げる）

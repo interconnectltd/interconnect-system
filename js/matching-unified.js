@@ -1494,8 +1494,9 @@
                 profileId: profileBtn.dataset.profileId
             });
             
-            e.preventDefault();
-            e.stopPropagation();
+            // profile-detail-modal.jsも動作させるため、preventDefaultとstopPropagationを削除
+            // e.preventDefault(); // 削除
+            // e.stopPropagation(); // 削除
             
             // 連続クリック防止
             if (profileBtn.dataset.processing === 'true') {
@@ -1509,7 +1510,13 @@
             
             if (userId) {
                 console.error('[MatchingUnified] showUserProfile呼び出し前');
-                showUserProfile(userId);
+                // profile-detail-modal.jsが優先されるので、フォールバックとして動作
+                // ProfileDetailModalが存在しない場合のみ実行
+                if (!window.profileDetailModal) {
+                    showUserProfile(userId);
+                } else {
+                    console.error('[MatchingUnified] ProfileDetailModalが存在するため、そちらに処理を委譲');
+                }
                 // 1秒後にフラグをリセット
                 setTimeout(() => {
                     profileBtn.dataset.processing = 'false';

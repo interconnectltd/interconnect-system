@@ -364,7 +364,7 @@
                     e.target.closest('.view-profile-btn')) {
                     
                     e.preventDefault();
-                    e.stopPropagation();
+                    // stopPropagationを削除 - matching-unified.jsのハンドラーも動作させる
                     
                     const button = e.target.classList.contains('btn-profile') || e.target.classList.contains('view-profile-btn') 
                         ? e.target 
@@ -378,7 +378,7 @@
                                         button.dataset.userId || 
                                         button.dataset.profileId;
                         if (profileId) {
-                            // console.log('[ProfileDetailModal] プロフィールボタンクリック - ID:', profileId);
+                            console.error('[ProfileDetailModal] プロフィールボタンクリック - ID:', profileId);
                             await this.show(profileId);
                         }
                     }
