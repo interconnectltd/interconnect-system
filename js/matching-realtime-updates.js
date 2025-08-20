@@ -27,7 +27,7 @@
                 .on('postgres_changes', {
                     event: '*',
                     schema: 'public',
-                    table: 'profiles'
+                    table: 'user_profiles'
                 }, (payload) => {
                     handleProfileUpdate(payload);
                 })

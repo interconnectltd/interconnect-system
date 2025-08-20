@@ -12,7 +12,7 @@
 (function() {
     'use strict';
 
-    console.log('[MatchingUnified] スクリプト実行開始', new Date().toISOString());
+    // console.log('[MatchingUnified] スクリプト実行開始', new Date().toISOString());
     
     // Supabaseの準備ができていない場合は待機
     if (!window.waitForSupabase || !window.supabaseClient) {
@@ -619,9 +619,9 @@
             console.log('[MatchingUnified] 現在のユーザーID:', currentUserId);
             
             // user_profilesテーブルから必要なカラムのみ取得（パフォーマンス改善）
-            console.log('[MatchingUnified] profilesテーブルからデータ取得開始...');
+            console.log('[MatchingUnified] user_profilesテーブルからデータ取得開始...');
             const { data: allUsers, error } = await window.supabaseClient
-                .from('profiles')
+                .from('user_profiles')
                 .select(`
                     id,
                     name,
@@ -644,7 +644,7 @@
                 `)
                 .limit(200); // パフォーマンス対策: 最大200件に制限
             
-            console.log('[MatchingUnified] profilesテーブル応答:', {
+            console.log('[MatchingUnified] user_profilesテーブル応答:', {
                 dataCount: allUsers ? allUsers.length : 0,
                 hasError: !!error,
                 errorMessage: error ? error.message : null,
@@ -671,7 +671,7 @@
                 heading.textContent = 'データの取得に失敗しました';
                 
                 const paragraph = document.createElement('p');
-                paragraph.textContent = error.message || 'profilesテーブルが存在しない可能性があります';
+                paragraph.textContent = error.message || 'user_profilesテーブルが存在しない可能性があります';
                 
                 const detail = document.createElement('small');
                 detail.textContent = `エラーコード: ${error.code || 'unknown'}`;
@@ -683,13 +683,13 @@
                 container.appendChild(errorDiv);
                 
                 // テーブル存在チェック（デバッグ用）
-                console.log('[MatchingUnified] profilesテーブルの存在を確認中...');
+                console.log('[MatchingUnified] user_profilesテーブルの存在を確認中...');
                 const { data: test } = await window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('id')
                     .limit(1);
                 if (test) {
-                    console.log('[MatchingUnified] profilesテーブルは存在し、アクセス可能です');
+                    console.log('[MatchingUnified] user_profilesテーブルは存在し、アクセス可能です');
                 }
                 return;
             }
@@ -1039,7 +1039,7 @@
         try {
             // 現在のユーザーのプロフィール取得（自分のデータのみ）
             const { data: currentUserData } = await window.supabaseClient
-                .from('profiles')
+                .from('user_profiles')
                 .select(`
                     id,
                     skills,
@@ -1486,7 +1486,7 @@
             } else {
                 // フォールバック: 従来のモーダル表示
                 const { data: users, error } = await window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*');
                 
                 if (error) {
@@ -3046,7 +3046,7 @@
     async function getUserProfile(userId) {
         try {
             const { data, error } = await window.supabaseClient
-                .from('profiles')
+                .from('user_profiles')
                 .select('*')
                 .eq('id', userId)
                 .single();
@@ -3058,9 +3058,8 @@
     }
 
     // グローバルに関数を公開（他のスクリプトから呼び出せるように）
+        // グローバル公開は最小限に
         window.drawRadarChartForUser = drawRadarChartForUser;
-        window.displayDummyData = displayDummyData;
-        window.calculateAIScore = calculateAIScore;  // AIスコアリング公開
         
         // ページアンロード時にタイマーをクリーンアップ
         window.addEventListener('beforeunload', () => {

@@ -328,14 +328,11 @@
     <!-- Supabase統一初期化（最優先で読み込む） -->
     <script src="js/supabase-unified.js?v=1.1"></script>
     
-    <!-- Service Workerログフィルター -->
-    <script src="js/service-worker-filter.js"></script>
-    <!-- コンソール履歴管理 -->
-    <script src="js/console-history-logger.js"></script>
-    <!-- 重複実行警告の抑制 -->
-    <script src="js/suppress-duplicate-warnings.js"></script>
-    <!-- 関数実行トラッカー -->
-    <script src="js/function-execution-tracker.js"></script>
+    <!-- デバッグ用スクリプトは本番環境では無効化 -->
+    <!-- <script src="js/service-worker-filter.js"></script> -->
+    <!-- <script src="js/console-history-logger.js"></script> -->
+    <!-- <script src="js/suppress-duplicate-warnings.js"></script> -->
+    <!-- <script src="js/function-execution-tracker.js"></script> -->
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
     <!-- Supabase参照修正（不要になったため無効化） -->
@@ -368,18 +365,16 @@
     <script src="js/profile-detail-modal.js"></script>
     <!-- プロフィールモーダル優先制御 -->
     <script src="js/profile-modal-priority.js"></script>
-    <!-- フィルターリセット機能 -->
+    <!-- 追加機能（必要最小限） -->
     <script src="js/matching-filter-reset.js"></script>
-    <!-- リアルタイム更新機能 -->
     <script src="js/matching-realtime-updates.js"></script>
-    <!-- パフォーマンス最適化 -->
-    <script src="js/matching-performance-optimize.js"></script>
-    <!-- サルベージ機能統合 -->
-    <script src="js/matching-missing-features.js"></script>
+    <!-- パフォーマンス最適化は本番環境では無効化 -->
+    <!-- <script src="js/matching-performance-optimize.js"></script> -->
+    <!-- <script src="js/matching-missing-features.js"></script> -->
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
-    <!-- アバターサイズ強制適用 -->
-    <script src="js/avatar-size-enforcer.js"></script>
+    <!-- アバターサイズ強制適用は不要 -->
+    <!-- <script src="js/avatar-size-enforcer.js"></script> -->
 <!-- 以下のcritical系スクリプトは無効化（重複と競合の原因） -->
 <!-- <script src="js/critical-features-restoration.js"></script> -->
 <!-- <script src="js/additional-critical-features.js"></script> -->

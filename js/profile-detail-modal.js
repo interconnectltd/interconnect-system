@@ -33,7 +33,7 @@
                 const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (user) {
                     const { data } = await window.supabaseClient
-                        .from('profiles')
+                        .from('user_profiles')
                         .select('*')
                         .eq('id', user.id)
                         .single();
@@ -422,7 +422,7 @@
             try {
                 // プロファイルデータを取得
                 const { data: profile, error } = await window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*')
                     .eq('id', profileId)
                     .single();
