@@ -633,34 +633,18 @@
             
             // user_profilesテーブルから必要なカラムのみ取得（パフォーマンス改善）
             console.log('[MatchingUnified] user_profilesテーブルからデータ取得開始...');
+            // 一時的にワイルドカードで全カラムを取得（存在しないカラムエラーを回避）
             const { data: allUsers, error } = await window.supabaseClient
                 .from('user_profiles')
-                .select(`
-                    id,
-                    name,
-                    position,
-                    company,
-                    location,
-                    industry,
-                    skills,
-                    interests,
-                    business_challenges,
-                    picture_url,
-                    avatar_url,
-                    last_login,
-                    bio,
-                    email,
-                    phone,
-                    line_id,
-                    created_at
-                `)
+                .select('*')
                 .limit(200); // パフォーマンス対策: 最大200件に制限
             
             console.log('[MatchingUnified] user_profilesテーブル応答:', {
                 dataCount: allUsers ? allUsers.length : 0,
                 hasError: !!error,
                 errorMessage: error ? error.message : null,
-                firstUser: allUsers && allUsers.length > 0 ? allUsers[0] : null
+                firstUser: allUsers && allUsers.length > 0 ? allUsers[0] : null,
+                availableColumns: allUsers && allUsers.length > 0 ? Object.keys(allUsers[0]) : []
             });
             
             if (error) {
@@ -669,8 +653,14 @@
                     message: error.message,
                     details: error.details,
                     hint: error.hint,
-                    code: error.code
+                    code: error.code,
+                    fullError: JSON.stringify(error, null, 2)
                 });
+                
+                // エラーメッセージから存在しないカラムを特定
+                if (error.message && error.message.includes('does not exist')) {
+                    console.error('[MatchingUnified] ⚠️ カラムが存在しません:', error.message);
+                }
                 // XSS対策: DOM操作で安全に挿入
                 container.innerHTML = '';
                 const errorDiv = document.createElement('div');
