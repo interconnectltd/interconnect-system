@@ -3,24 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>コネクションテスト</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <h1>コネクションデータテスト</h1>
     <div id="result"></div>
+    <button onclick="window.location.href='login.html'">ログインページへ</button>
+    <button onclick="window.location.href='connections.html'">コネクションページへ</button>
+    
+    <!-- 統一されたSupabaseクライアントを使用 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-unified.js"></script>
+    <script src="js/error-prevention.js"></script>
+    <script src="js/global-functions.js"></script>
     
     <script>
-        // Supabase初期化
-        const supabaseUrl = 'https://hnyuviqanlzpmdmsllpy.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhueXV2aXFhbmx6cG1kbXNsbHB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI0NDcxMTAsImV4cCI6MjA0ODAyMzExMH0.7nIvgdvcWpOBaJQifDQ10VWJNojE72KCXmmJxEv_BbU';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
         async function testConnections() {
             const resultDiv = document.getElementById('result');
             
             try {
+                // Supabaseクライアントを待つ
+                await window.waitForSupabase();
+                
                 // 現在のユーザーを取得
-                const { data: { user } } = await supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     resultDiv.innerHTML = '<p>ログインしていません</p>';
                     return;
@@ -30,7 +36,7 @@
                 resultDiv.innerHTML += `<p>メール: ${user.email}</p>`;
                 
                 // connectionsテーブルの全データを取得
-                const { data: allConnections, error } = await supabase
+                const { data: allConnections, error } = await window.supabaseClient
                     .from('connections')
                     .select('*')
                     .or(`user_id.eq.${user.id},connected_user_id.eq.${user.id}`);
@@ -94,14 +100,14 @@
         
         async function createTestConnection() {
             try {
-                const { data: { user } } = await supabase.auth.getUser();
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
                 if (!user) {
                     alert('ログインしてください');
                     return;
                 }
                 
                 // 他のユーザーを取得
-                const { data: profiles } = await supabase
+                const { data: profiles } = await window.supabaseClient
                     .from('profiles')
                     .select('id, name')
                     .neq('id', user.id)
@@ -115,7 +121,7 @@
                 const targetUser = profiles[0];
                 
                 // テスト申請を作成
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClient
                     .from('connections')
                     .insert({
                         user_id: user.id,
@@ -138,8 +144,13 @@
             }
         }
         
-        // ページ読み込み時に実行
-        testConnections();
+        // ページ読み込み時に実行（DOM読み込み後）
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', testConnections);
+        } else {
+            // 少し遅延させて実行
+            setTimeout(testConnections, 500);
+        }
     </script>
 </body>
 </html>
