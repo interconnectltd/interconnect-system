@@ -65,29 +65,29 @@
         return true;
     };
 
-    // 安全なaddEventListener
-    const originalAddEventListener = EventTarget.prototype.addEventListener;
-    EventTarget.prototype.addEventListener = function(type, listener, options) {
-        if (!this) {
-            console.error('Cannot add event listener to null/undefined');
-            return;
-        }
-        
-        // リスナーをラップしてエラーをキャッチ
-        const safeListener = function(event) {
-            try {
-                if (typeof listener === 'function') {
-                    listener.call(this, event);
-                } else if (listener && typeof listener.handleEvent === 'function') {
-                    listener.handleEvent(event);
-                }
-            } catch (error) {
-                console.error(`Error in ${type} event listener:`, error);
-            }
-        };
-
-        originalAddEventListener.call(this, type, safeListener, options);
-    };
+    // 安全なaddEventListener - EventTarget.prototypeの上書きは危険なので無効化
+    // const originalAddEventListener = EventTarget.prototype.addEventListener;
+    // EventTarget.prototype.addEventListener = function(type, listener, options) {
+    //     if (!this) {
+    //         console.error('Cannot add event listener to null/undefined');
+    //         return;
+    //     }
+    //     
+    //     // リスナーをラップしてエラーをキャッチ
+    //     const safeListener = function(event) {
+    //         try {
+    //             if (typeof listener === 'function') {
+    //                 listener.call(this, event);
+    //             } else if (listener && typeof listener.handleEvent === 'function') {
+    //                 listener.handleEvent(event);
+    //             }
+    //         } catch (error) {
+    //             console.error(`Error in ${type} event listener:`, error);
+    //         }
+    //     };
+    //
+    //     originalAddEventListener.call(this, type, safeListener, options);
+    // };
 
     // LocalStorage/SessionStorageの安全なアクセス
     window.safeStorage = {

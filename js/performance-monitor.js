@@ -159,15 +159,16 @@
                 return originalClearInterval.apply(this, arguments);
             };
             
-            // addEventListener ラップ
-            const originalAddEventListener = EventTarget.prototype.addEventListener;
-            EventTarget.prototype.addEventListener = function(type, listener, options) {
-                if (!PerformanceMonitor.data.eventListeners.has(this)) {
-                    PerformanceMonitor.data.eventListeners.set(this, new Set());
-                }
-                PerformanceMonitor.data.eventListeners.get(this).add({ type, listener, options });
-                return originalAddEventListener.apply(this, arguments);
-            };
+            // addEventListener ラップは危険なので無効化
+            // EventTarget.prototypeの上書きは全体に影響するため削除
+            // const originalAddEventListener = EventTarget.prototype.addEventListener;
+            // EventTarget.prototype.addEventListener = function(type, listener, options) {
+            //     if (!PerformanceMonitor.data.eventListeners.has(this)) {
+            //         PerformanceMonitor.data.eventListeners.set(this, new Set());
+            //     }
+            //     PerformanceMonitor.data.eventListeners.get(this).add({ type, listener, options });
+            //     return originalAddEventListener.apply(this, arguments);
+            // };
         },
         
         // リークしたリソースの確認
