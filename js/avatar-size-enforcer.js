@@ -125,7 +125,7 @@
         });
         
         if (conflicts.length > 0) {
-            console.warn('[AvatarEnforcer] CSS競合検出:', conflicts);
+            // console.warn('[AvatarEnforcer] CSS競合検出:', conflicts);
         }
         
         return conflicts;
@@ -170,7 +170,7 @@
         // CSS競合をチェック
         const conflicts = detectCSSConflicts();
         if (conflicts.length > 0) {
-            console.warn(`[AvatarEnforcer] ${conflicts.length}個のCSS競合を検出`);
+            // console.warn(`[AvatarEnforcer] ${conflicts.length}個のCSS競合を検出`);
         }
         
         // 初回適用
