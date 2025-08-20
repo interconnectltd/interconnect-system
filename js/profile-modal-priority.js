@@ -8,48 +8,24 @@
     
     // DOMContentLoadedの後で実行
     function setupModalPriority() {
-        // matching-unified.jsのイベントを無効化する
+        // matching-unified.jsのイベントと共存させる（置き換えない）
         const container = document.getElementById('matching-container');
         if (container) {
-            // 既存のイベントリスナーを削除
-            const newContainer = container.cloneNode(true);
-            container.parentNode.replaceChild(newContainer, container);
-            
-            // 新しいイベントリスナーを追加（モーダル以外の処理のみ）
-            newContainer.addEventListener('click', function(e) {
-                // プロフィールボタンは処理しない（profile-detail-modal.jsに任せる）
+            // 既存のイベントリスナーは残したまま、優先度の高いリスナーを追加
+            container.addEventListener('click', function(e) {
+                // プロフィールボタンの場合、既存のイベントを停止
                 if (e.target.classList.contains('view-profile-btn') || 
                     e.target.closest('.view-profile-btn') ||
                     e.target.classList.contains('btn-profile') ||
                     e.target.closest('.btn-profile') ||
                     e.target.classList.contains('btn-view') ||
                     e.target.closest('.btn-view')) {
+                    // 他のリスナーの実行を防ぐ
+                    e.stopImmediatePropagation();
                     // profile-detail-modal.jsに処理を委譲
                     return;
                 }
-                
-                // コネクトボタンの処理
-                const connectBtn = e.target.closest('.connect-btn');
-                if (connectBtn) {
-                    e.preventDefault();
-                    const userId = connectBtn.dataset.userId;
-                    if (userId && window.sendConnectRequest) {
-                        window.sendConnectRequest(userId);
-                    }
-                    return;
-                }
-                
-                // ブックマークボタンの処理
-                const bookmarkBtn = e.target.closest('.bookmark-btn');
-                if (bookmarkBtn) {
-                    e.preventDefault();
-                    const userId = bookmarkBtn.dataset.userId;
-                    if (userId && window.toggleBookmark) {
-                        window.toggleBookmark(userId);
-                    }
-                    return;
-                }
-            });
+            }, true); // キャプチャフェーズで実行（優先度を上げる）
         }
         
         // ProfileDetailModalが確実に初期化されるまで待つ
