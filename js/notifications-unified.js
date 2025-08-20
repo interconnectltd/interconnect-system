@@ -23,6 +23,8 @@
     let currentFilter = 'all';
     let notificationSubscription = null;
     let notificationSound = null;  // 通知音用
+    let selectedNotifications = new Set(); // 一括選択用
+    let deleteInProgress = false; // 削除処理中フラグ
 
     // 初期化
     async function initialize() {

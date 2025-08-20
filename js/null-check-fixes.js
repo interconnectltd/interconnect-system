@@ -6,30 +6,33 @@
 (function() {
     'use strict';
 
-    // オリジナルのquerySelector/querySelectorAllをラップ
-    const originalQuerySelector = document.querySelector.bind(document);
-    const originalQuerySelectorAll = document.querySelectorAll.bind(document);
-
-    // 安全なquerySelector
-    document.querySelector = function(selector) {
+    // 危険なdocument.querySelectorのオーバーライドは削除
+    // 代わりに安全なヘルパー関数を提供
+    
+    // 安全な要素取得関数
+    window.safeQuerySelector = function(selector, context = document) {
         try {
-            const element = originalQuerySelector(selector);
+            const element = context.querySelector(selector);
             if (!element && window.DEBUG_MODE) {
                 console.warn(`Element not found: ${selector}`);
             }
             return element;
         } catch (e) {
-            console.error(`Invalid selector: ${selector}`, e);
+            if (window.DEBUG_MODE) {
+                console.error(`Invalid selector: ${selector}`, e);
+            }
             return null;
         }
     };
 
-    // 安全なquerySelectorAll
-    document.querySelectorAll = function(selector) {
+    // 安全な複数要素取得関数
+    window.safeQuerySelectorAll = function(selector, context = document) {
         try {
-            return originalQuerySelectorAll(selector);
+            return context.querySelectorAll(selector);
         } catch (e) {
-            console.error(`Invalid selector: ${selector}`, e);
+            if (window.DEBUG_MODE) {
+                console.error(`Invalid selector: ${selector}`, e);
+            }
             return [];
         }
     };

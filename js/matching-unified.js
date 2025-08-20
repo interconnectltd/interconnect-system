@@ -54,14 +54,47 @@
     let matchingUsers = [];
     let currentPage = 1;
     const itemsPerPage = 12;
-    let filters = {
+    // フィルター設定（LocalStorageから復元・永続化機能）
+    let filters = loadFiltersFromStorage() || {
         industry: '',
         location: '',
         interest: '',
         skills: [],
         interests: [],
-        sortBy: 'score'
+        sortBy: 'score',
+        search: ''
     };
+    
+    // フィルター設定をLocalStorageから読み込む
+    function loadFiltersFromStorage() {
+        try {
+            const saved = localStorage.getItem('matchingFilters');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                return Object.assign({
+                    industry: '',
+                    location: '',
+                    interest: '',
+                    skills: [],
+                    interests: [],
+                    sortBy: 'score',
+                    search: ''
+                }, parsed);
+            }
+            return null;
+        } catch (e) {
+            return null;
+        }
+    }
+    
+    // フィルター設定をLocalStorageに保存
+    function saveFiltersToStorage() {
+        try {
+            localStorage.setItem('matchingFilters', JSON.stringify(filters));
+        } catch (e) {
+            // 保存失敗は無視
+        }
+    }
     
     // タイマー管理用
     const activeTimers = new Set();
@@ -491,9 +524,22 @@
         if (sortSelect) {
             sortSelect.addEventListener('change', (e) => {
                 filters.sortBy = e.target.value;
+                saveFiltersToStorage(); // フィルター保存
                 displayMatchingUsers();
             });
         }
+        
+        // その他のフィルター変更時も保存
+        document.querySelectorAll('.matching-filters select').forEach(select => {
+            select.addEventListener('change', () => {
+                if (select.name === 'industry') filters.industry = select.value;
+                if (select.name === 'location') filters.location = select.value;
+                if (select.name === 'interest') filters.interest = select.value;
+                saveFiltersToStorage(); // フィルター保存
+                currentPage = 1;
+                displayMatchingUsers();
+            });
+        });
 
         // フィルター - 業界
         const industrySelect = document.querySelector('[name="industry"]');
@@ -1810,6 +1856,9 @@
         if (searchInput) {
             filters.search = searchInput.value.toLowerCase().trim();
         }
+        
+        // フィルター設定を保存
+        saveFiltersToStorage();
         
         // ページを1ページ目にリセット
         currentPage = 1;
