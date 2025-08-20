@@ -303,16 +303,16 @@
     // グローバルにアクセスできるショートカット
     window.ch = window.ConsoleHistory.utils;
 
-    // 初期メッセージ
-    originalConsole.log(
-        '🎯 コンソール履歴管理システムが有効になりました\n' +
-        '使い方:\n' +
-        '  ch.show() - すべての履歴を表示\n' +
-        '  ch.showErrors() - エラーのみ表示\n' +
-        '  ch.showFunctionStats() - 関数呼び出し統計\n' +
-        '  ch.findDuplicates() - 重複実行を検出\n' +
-        '  ch.export() - 履歴をエクスポート\n' +
-        '  ch.clear() - 履歴をクリア'
-    );
+    // 初期メッセージ（無効化）
+    // originalConsole.log(
+    //     '🎯 コンソール履歴管理システムが有効になりました\n' +
+    //     '使い方:\n' +
+    //     '  ch.show() - すべての履歴を表示\n' +
+    //     '  ch.showErrors() - エラーのみ表示\n' +
+    //     '  ch.showFunctionStats() - 関数呼び出し統計\n' +
+    //     '  ch.findDuplicates() - 重複実行を検出\n' +
+    //     '  ch.export() - 履歴をエクスポート\n' +
+    //     '  ch.clear() - 履歴をクリア'
+    // );
 
 })();

@@ -338,7 +338,7 @@
         // グローバル関数として公開
         window.sendConnectionNotification = sendConnectionNotification;
         
-        console.log('[MissingFeatures] サルベージ機能を適用しました');
+        // console.log('[MissingFeatures] サルベージ機能を適用しました');
     }
     
     // DOMContentLoadedで初期化

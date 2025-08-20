@@ -33,7 +33,7 @@
                 })
                 .subscribe();
                 
-            console.log('[MatchingRealtime] リアルタイム更新を開始しました');
+            // console.log('[MatchingRealtime] リアルタイム更新を開始しました');
             
         } catch (error) {
             console.error('[MatchingRealtime] セットアップエラー:', error);

@@ -33,7 +33,7 @@
         const checkModal = setInterval(() => {
             if (window.profileDetailModal) {
                 clearInterval(checkModal);
-                console.log('[ProfileModalPriority] ProfileDetailModalが初期化されました');
+                // console.log('[ProfileModalPriority] ProfileDetailModalが初期化されました');
                 
                 // グローバル関数として公開（互換性のため）
                 window.showProfileModal = async function(userId) {

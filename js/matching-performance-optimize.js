@@ -300,7 +300,7 @@
             window.performance.measure('matching-optimize', 'matching-optimize-start', 'matching-optimize-end');
             
             const measure = window.performance.getEntriesByName('matching-optimize')[0];
-            console.log(`[MatchingOptimize] 最適化完了: ${measure.duration.toFixed(2)}ms`);
+            // console.log(`[MatchingOptimize] 最適化完了: ${measure.duration.toFixed(2)}ms`);
         }
     }
     
