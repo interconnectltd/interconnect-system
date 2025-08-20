@@ -1461,9 +1461,11 @@
     let eventListenersSetup = false;
     
     function setupCardEventListeners() {
+        console.error('[MatchingUnified] setupCardEventListeners呼び出し');
+        
         // 既にイベントリスナーが設定されている場合はスキップ
         if (eventListenersSetup) {
-            // console.log('[MatchingUnified] イベントリスナーは既に設定済みです');
+            console.error('[MatchingUnified] イベントリスナーは既に設定済みです');
             return;
         }
         
@@ -1471,25 +1473,42 @@
         eventListenersSetup = true;
         
         // プロフィール表示ボタン - イベント委譲を使用（一度だけ設定）
+        console.error('[MatchingUnified] クリックイベントリスナーを登録');
         document.addEventListener('click', handleCardClick);
     }
     
     // カード内のクリックイベントを一元管理
     function handleCardClick(e) {
+        console.error('[MatchingUnified] handleCardClick呼び出し:', {
+            target: e.target,
+            targetClass: e.target.className,
+            targetTag: e.target.tagName
+        });
+        
         // プロフィール表示ボタン（btn-view, override-btn-secondary, view-profile-btnのすべてに対応）
         const profileBtn = e.target.closest('.view-profile-btn, .btn-view, .override-btn-secondary');
         if (profileBtn) {
+            console.error('[MatchingUnified] プロフィールボタンクリック検出:', {
+                profileBtn: profileBtn,
+                userId: profileBtn.dataset.userId,
+                profileId: profileBtn.dataset.profileId
+            });
+            
             e.preventDefault();
             e.stopPropagation();
             
             // 連続クリック防止
             if (profileBtn.dataset.processing === 'true') {
+                console.error('[MatchingUnified] 連続クリック防止');
                 return;
             }
             profileBtn.dataset.processing = 'true';
             
             const userId = profileBtn.dataset.userId || profileBtn.dataset.profileId;
+            console.error('[MatchingUnified] userId取得:', userId);
+            
             if (userId) {
+                console.error('[MatchingUnified] showUserProfile呼び出し前');
                 showUserProfile(userId);
                 // 1秒後にフラグをリセット
                 setTimeout(() => {
@@ -1536,6 +1555,7 @@
 
     // プロフィール詳細表示
     async function showUserProfile(userId) {
+        console.error('[MatchingUnified] showUserProfile呼び出し:', userId);
         try {
             // プロフィール閲覧履歴を記録
             await recordProfileView(userId);
