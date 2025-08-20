@@ -409,12 +409,81 @@
         }
     }
 
+    // 検索フィールドを追加する関数（削除されたファイルから復元）
+    function addSearchField() {
+        const filtersSection = document.querySelector('.matching-filters');
+        if (!filtersSection) return;
+        
+        // 既存の検索フィールドがあるかチェック
+        if (filtersSection.querySelector('.search-field-group')) {
+            return;
+        }
+        
+        // 検索フィールドを最初に追加
+        const searchFieldHTML = `
+            <div class="filter-group search-field-group" style="grid-column: span 2;">
+                <label>キーワード検索</label>
+                <div style="position: relative;">
+                    <input type="text" 
+                           id="matching-search-input"
+                           class="form-control" 
+                           placeholder="名前、会社名、スキル、地域などで検索..."
+                           style="
+                               width: 100%;
+                               padding: 10px 40px 10px 15px;
+                               border: 1px solid #ddd;
+                               border-radius: 8px;
+                               font-size: 14px;
+                           ">
+                    <i class="fas fa-search" style="
+                        position: absolute;
+                        right: 15px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: #999;
+                        pointer-events: none;
+                    "></i>
+                </div>
+            </div>
+        `;
+        
+        // 最初の要素として追加
+        filtersSection.insertAdjacentHTML('afterbegin', searchFieldHTML);
+    }
+    
     // イベントリスナーの設定
     function setupEventListeners() {
+        // 検索フィールドを追加（削除されたファイルから復元）
+        addSearchField();
+        
         // 検索ボタン
         const searchBtn = document.querySelector('.matching-filters .btn-primary');
         if (searchBtn) {
             searchBtn.addEventListener('click', handleSearch);
+        }
+        
+        // 検索フィールドのイベント
+        const searchInput = document.getElementById('matching-search-input');
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    filters.search = e.target.value.toLowerCase().trim();
+                    currentPage = 1;
+                    displayMatchingUsers();
+                }, 300); // 300ms のデバウンス
+            });
+            
+            // Enterキーでも検索
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    filters.search = e.target.value.toLowerCase().trim();
+                    currentPage = 1;
+                    displayMatchingUsers();
+                }
+            });
         }
 
         // ソート選択
@@ -1428,10 +1497,18 @@
         document.addEventListener('keydown', handleEsc);
     }
 
-    // コネクト申請送信
-    async function sendConnectRequest(recipientId) {
+    // コネクト申請送信（強化版）
+    async function sendConnectRequest(recipientId, button = null) {
         try {
             // console.log('[MatchingUnified] コネクト申請送信:', recipientId);
+            
+            // ボタンをローディング状態に
+            let originalText = '';
+            if (button) {
+                originalText = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 送信中...';
+            }
             
             // 既存のコネクトを確認（シンプルなクエリに変更）
             const { data: allConnections } = await window.supabaseClient
@@ -1606,9 +1683,28 @@
         }
     }
 
-    // フィルタリング
+    // フィルタリング（検索機能を含む拡張版）
     function filterUsers(users) {
         return users.filter(user => {
+            // キーワード検索フィルター（名前、会社名、スキル、地域などで検索）
+            if (filters.search && filters.search !== '') {
+                const searchTerm = filters.search;
+                const searchableFields = [
+                    user.name?.toLowerCase() || '',
+                    user.company?.toLowerCase() || '',
+                    user.title?.toLowerCase() || '',
+                    user.location?.toLowerCase() || '',
+                    user.industry?.toLowerCase() || '',
+                    user.bio?.toLowerCase() || '',
+                    ...(user.skills || []).map(s => s.toLowerCase()),
+                    ...(user.interests || []).map(i => i.toLowerCase())
+                ].join(' ');
+                
+                if (!searchableFields.includes(searchTerm)) {
+                    return false;
+                }
+            }
+            
             // 業界フィルター
             if (filters.industry && filters.industry !== '') {
                 // 業界の値をマッピング
@@ -1707,18 +1803,32 @@
         displayMatchingUsers();
     }
 
-    // 検索処理
+    // 検索処理（拡張版）
     function handleSearch() {
+        // 検索フィールドからキーワードを取得
+        const searchInput = document.getElementById('matching-search-input');
+        if (searchInput) {
+            filters.search = searchInput.value.toLowerCase().trim();
+        }
+        
         // ページを1ページ目にリセット
         currentPage = 1;
         displayMatchingUsers();
     }
 
-    // 結果カウント更新
+    // 結果カウント更新（拡張版）
     function updateResultsCount(count) {
         const countElement = document.querySelector('.results-count');
         if (countElement) {
-            countElement.textContent = `${count}件のマッチング候補`;
+            // 検索キーワードがある場合は検索結果として表示
+            const searchInput = document.getElementById('matching-search-input');
+            const searchTerm = searchInput?.value || '';
+            
+            if (searchTerm) {
+                countElement.innerHTML = `<i class="fas fa-search"></i> "${searchTerm}" の検索結果: ${count}件`;
+            } else {
+                countElement.textContent = `${count}件のマッチング候補`;
+            }
         }
     }
 
