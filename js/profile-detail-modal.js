@@ -357,18 +357,26 @@
         attachEventListeners() {
             // 詳細ボタンのクリックイベント
             document.addEventListener('click', async (e) => {
-                // プロフィールボタンのクリック処理を追加
+                // プロフィールボタンのクリック処理（複数のクラスに対応）
                 if (e.target.classList.contains('btn-profile') || 
-                    e.target.closest('.btn-profile')) {
+                    e.target.closest('.btn-profile') ||
+                    e.target.classList.contains('view-profile-btn') ||
+                    e.target.closest('.view-profile-btn')) {
                     
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    const button = e.target.classList.contains('btn-profile') ? e.target : e.target.closest('.btn-profile');
+                    const button = e.target.classList.contains('btn-profile') || e.target.classList.contains('view-profile-btn') 
+                        ? e.target 
+                        : (e.target.closest('.btn-profile') || e.target.closest('.view-profile-btn'));
+                    
                     const card = button.closest('.matching-card, .override-matching-card, [data-profile-id]');
                     
                     if (card) {
-                        const profileId = card.dataset.profileId || card.getAttribute('data-profile-id');
+                        const profileId = card.dataset.profileId || 
+                                        card.getAttribute('data-profile-id') || 
+                                        button.dataset.userId || 
+                                        button.dataset.profileId;
                         if (profileId) {
                             // console.log('[ProfileDetailModal] プロフィールボタンクリック - ID:', profileId);
                             await this.show(profileId);

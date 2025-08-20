@@ -1339,15 +1339,25 @@
     
     // カード内のクリックイベントを一元管理
     function handleCardClick(e) {
-        // プロフィール表示ボタン
-        const profileBtn = e.target.closest('.view-profile-btn');
-        if (profileBtn && !profileBtn.dataset.listenerAttached) {
+        // プロフィール表示ボタン（btn-view, override-btn-secondary, view-profile-btnのすべてに対応）
+        const profileBtn = e.target.closest('.view-profile-btn, .btn-view, .override-btn-secondary');
+        if (profileBtn) {
             e.preventDefault();
             e.stopPropagation();
-            profileBtn.dataset.listenerAttached = 'true';
-            const userId = profileBtn.dataset.userId;
+            
+            // 連続クリック防止
+            if (profileBtn.dataset.processing === 'true') {
+                return;
+            }
+            profileBtn.dataset.processing = 'true';
+            
+            const userId = profileBtn.dataset.userId || profileBtn.dataset.profileId;
             if (userId) {
                 showUserProfile(userId);
+                // 1秒後にフラグをリセット
+                setTimeout(() => {
+                    profileBtn.dataset.processing = 'false';
+                }, 1000);
             }
             return;
         }
@@ -1396,9 +1406,9 @@
             // ProfileDetailModalの読み込みを待機（最大1秒）
             const modalAvailable = await waitForProfileModal();
             
-            if (modalAvailable) {
+            if (modalAvailable && window.profileDetailModal) {
                 // ProfileDetailModalを使用（高機能版）
-                window.profileDetailModal.show(userId);
+                await window.profileDetailModal.show(userId);
             } else {
                 // フォールバック: 従来のモーダル表示
                 const { data: users, error } = await window.supabaseClient
