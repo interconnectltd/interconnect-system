@@ -357,6 +357,26 @@
         attachEventListeners() {
             // 詳細ボタンのクリックイベント
             document.addEventListener('click', async (e) => {
+                // プロフィールボタンのクリック処理を追加
+                if (e.target.classList.contains('btn-profile') || 
+                    e.target.closest('.btn-profile')) {
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const button = e.target.classList.contains('btn-profile') ? e.target : e.target.closest('.btn-profile');
+                    const card = button.closest('.matching-card, .override-matching-card, [data-profile-id]');
+                    
+                    if (card) {
+                        const profileId = card.dataset.profileId || card.getAttribute('data-profile-id');
+                        if (profileId) {
+                            // console.log('[ProfileDetailModal] プロフィールボタンクリック - ID:', profileId);
+                            await this.show(profileId);
+                        }
+                    }
+                }
+                
+                // 既存の詳細ボタンクリック処理
                 if (e.target.classList.contains('btn-view') || 
                     e.target.classList.contains('override-btn-secondary') ||
                     e.target.textContent === '詳細を見る') {

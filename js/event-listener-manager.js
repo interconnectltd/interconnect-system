@@ -203,30 +203,9 @@
         onReady: onDOMReady
     };
 
-    // 既存のaddEventListenerをラップ（オプション）
-    const originalAddEventListener = EventTarget.prototype.addEventListener;
-    const originalRemoveEventListener = EventTarget.prototype.removeEventListener;
-
-    // カスタムデータ属性でトラッキング
-    EventTarget.prototype.addEventListener = function(type, listener, options) {
-        // データ属性でマーク
-        if (this.nodeType === 1) { // Element node
-            const count = parseInt(this.dataset.listenerCount || '0');
-            this.dataset.listenerCount = count + 1;
-        }
-        return originalAddEventListener.call(this, type, listener, options);
-    };
-
-    EventTarget.prototype.removeEventListener = function(type, listener, options) {
-        // データ属性を更新
-        if (this.nodeType === 1) { // Element node
-            const count = parseInt(this.dataset.listenerCount || '0');
-            if (count > 0) {
-                this.dataset.listenerCount = count - 1;
-            }
-        }
-        return originalRemoveEventListener.call(this, type, listener, options);
-    };
+    // EventTarget.prototypeの上書きは危険なので削除
+    // グローバルな影響を避けるため、必要な要素に対して個別にイベントリスナーを管理する
+    // これによりシステム全体への予期しない影響を防ぐ
 
     // console.log('[EventManager] Event listener management system initialized');
 })();

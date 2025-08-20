@@ -22,6 +22,7 @@
     let notifications = [];
     let currentFilter = 'all';
     let notificationSubscription = null;
+    let notificationSound = null;  // 通知音用
 
     // 初期化
     async function initialize() {
@@ -48,6 +49,12 @@
 
         // リアルタイム更新の設定
         setupRealtimeSubscription();
+
+        // 通知音の準備（削除されたファイルから復元）
+        prepareNotificationSound();
+
+        // ブラウザ通知の権限をリクエスト（削除されたファイルから復元）
+        requestNotificationPermission();
 
         // 通知バッジの更新
         updateNotificationBadge();
@@ -405,7 +412,7 @@
             .subscribe();
     }
 
-    // リアルタイム更新処理
+    // リアルタイム更新処理（拡張版：削除されたファイルから復元）
     function handleRealtimeUpdate(payload) {
         // console.log('[NotificationsUnified] リアルタイム更新:', payload.eventType);
 
@@ -414,6 +421,10 @@
                 notifications.unshift(payload.new);
                 displayNotifications();
                 showNotificationToast(payload.new);
+                // 通知音を再生
+                playNotificationSound();
+                // ブラウザ通知を表示
+                showBrowserNotification(payload.new);
                 break;
             case 'UPDATE':
                 const index = notifications.findIndex(n => n.id === payload.new.id);
@@ -529,6 +540,71 @@
         document.addEventListener('DOMContentLoaded', initialize);
     } else {
         initialize();
+    }
+
+    // 通知音を準備（削除されたファイルから復元）
+    function prepareNotificationSound() {
+        try {
+            notificationSound = new Audio('data:audio/wav;base64,UklGRuIBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YXEBAAAAAAEAAgADAAQABQAGAAcACAAPAA4ADQAMAAsACgAJAAMABAAFAAYABwAIAAkACgALAAwADQAOAA8ADwAOAA0ADAALAAoACQAIAAcABgAFAAQAAwACAA==');
+            notificationSound.volume = 0.3;
+        } catch (error) {
+            // console.log('[NotificationsUnified] 通知音の準備に失敗');
+        }
+    }
+
+    // 通知音を再生（削除されたファイルから復元）
+    function playNotificationSound() {
+        if (notificationSound && !document.hidden) {
+            try {
+                notificationSound.play().catch(() => {
+                    // 自動再生がブロックされた場合は無視
+                });
+            } catch (error) {
+                // エラーを無視
+            }
+        }
+    }
+
+    // ブラウザ通知の権限をリクエスト（削除されたファイルから復元）
+    async function requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            try {
+                await Notification.requestPermission();
+            } catch (error) {
+                // console.log('[NotificationsUnified] 通知権限のリクエストに失敗');
+            }
+        }
+    }
+
+    // ブラウザ通知を表示（削除されたファイルから復元）
+    function showBrowserNotification(notification) {
+        if ('Notification' in window && 
+            Notification.permission === 'granted' && 
+            document.hidden) {
+            
+            try {
+                const browserNotification = new Notification(notification.title || '新しい通知', {
+                    body: notification.message || '',
+                    icon: '/assets/icon-192.png',
+                    badge: '/assets/icon-72.png',
+                    tag: notification.id,
+                    requireInteraction: false,
+                    silent: false
+                });
+
+                browserNotification.onclick = () => {
+                    window.focus();
+                    handleNotificationClick(notification.id);
+                    browserNotification.close();
+                };
+
+                // 5秒後に自動的に閉じる
+                setTimeout(() => browserNotification.close(), 5000);
+                
+            } catch (error) {
+                // console.log('[NotificationsUnified] ブラウザ通知の表示に失敗');
+            }
+        }
     }
 
     // クリーンアップ

@@ -2389,7 +2389,7 @@
     window.matchingScoreFix.calculateSkillQuality = calculateSkillQuality;
     window.matchingScoreFix.calculateLearningOpportunity = calculateLearningOpportunity;
 
-    // レーダーチャートを描画
+    // レーダーチャートを描画（拡張版：削除されたファイルから復元）
     function drawRadarChartForUser(user) {
         const userId = user.id;
         // Canvas用のIDを安全にエスケープ（同じロジックを使用）
@@ -2588,6 +2588,16 @@
         
         // 描画状態を復元
         ctx.restore();
+        
+        // アクセシビリティ属性を追加（削除されたファイルから復元）
+        const labels = ['スキル', '経験', '業界', '地域', '活動', '興味'];
+        const description = values.map((value, index) => 
+            `${labels[index]}: ${Math.round(value)}%`
+        ).join(', ');
+        
+        canvas.setAttribute('role', 'img');
+        canvas.setAttribute('aria-label', `レーダーチャート: ${description}`);
+        canvas.setAttribute('tabindex', '0');
         
         // 描画完了フラグとユーザーIDを設定（修正2）
         canvas.dataset.rendered = 'true';
