@@ -385,7 +385,7 @@
     // ===================================
     class DashboardFinalFixes {
         static fixEventsDateField() {
-            // dashboard-realtimeのloadUpcomingEventsを修正
+            // dashboard-realtimeのloadUpcomingEventsを修正（拡張版）
             if (window.dashboardRealtimeCalculator) {
                 const originalLoadUpcomingEvents = window.dashboardRealtimeCalculator.loadUpcomingEvents;
                 

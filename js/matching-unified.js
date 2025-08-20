@@ -2717,9 +2717,99 @@
         }, 500); // 他のスクリプトの初期化を待つ
     }
     
+    // AIスコアリング機能（削除されたファイルから復元）
+    async function calculateAIScore(userId, targetUserId) {
+        try {
+            // ユーザーデータを取得
+            const [userProfile, targetProfile] = await Promise.all([
+                getUserProfile(userId),
+                getUserProfile(targetUserId)
+            ]);
+
+            if (!userProfile || !targetProfile) {
+                return { score: 50, breakdown: {} };
+            }
+
+            // 話題の類似性を計算（Jaccard係数）
+            const topicScore = calculateTopicSimilarity(userProfile, targetProfile);
+            
+            // スキルマッチング
+            const skillScore = calculateSkillMatch(userProfile, targetProfile);
+            
+            // 業界・地域の一致度
+            const industryScore = userProfile.industry === targetProfile.industry ? 80 : 30;
+            const locationScore = userProfile.location === targetProfile.location ? 80 : 30;
+            
+            // 総合スコア計算（重み付け）
+            const finalScore = (
+                topicScore * 0.3 +
+                skillScore * 0.3 +
+                industryScore * 0.2 +
+                locationScore * 0.2
+            );
+
+            return {
+                score: Math.round(finalScore),
+                breakdown: {
+                    topics: topicScore,
+                    skills: skillScore,
+                    industry: industryScore,
+                    location: locationScore
+                }
+            };
+        } catch (error) {
+            console.error('[AIScoring] エラー:', error);
+            return { score: 50, breakdown: {} };
+        }
+    }
+
+    // 話題の類似性計算
+    function calculateTopicSimilarity(user1, user2) {
+        const interests1 = new Set(user1.interests || []);
+        const interests2 = new Set(user2.interests || []);
+        
+        if (interests1.size === 0 || interests2.size === 0) return 50;
+        
+        const intersection = [...interests1].filter(x => interests2.has(x));
+        const union = new Set([...interests1, ...interests2]);
+        
+        // Jaccard係数
+        return Math.round((intersection.length / union.size) * 100);
+    }
+
+    // スキルマッチング計算
+    function calculateSkillMatch(user1, user2) {
+        const skills1 = new Set(user1.skills || []);
+        const skills2 = new Set(user2.skills || []);
+        
+        if (skills1.size === 0 || skills2.size === 0) return 50;
+        
+        const commonSkills = [...skills1].filter(x => skills2.has(x));
+        const complementaryScore = (skills1.size + skills2.size - commonSkills.length) / 
+                                  (skills1.size + skills2.size);
+        
+        return Math.round(complementaryScore * 100);
+    }
+
+    // ユーザープロファイル取得
+    async function getUserProfile(userId) {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
+            
+            return error ? null : data;
+        } catch {
+            return null;
+        }
+    }
+
     // グローバルに関数を公開（他のスクリプトから呼び出せるように）
         window.drawRadarChartForUser = drawRadarChartForUser;
         window.displayDummyData = displayDummyData;
+        window.calculateAIScore = calculateAIScore;  // AIスコアリング公開
         
         // ページアンロード時にタイマーをクリーンアップ
         window.addEventListener('beforeunload', () => {

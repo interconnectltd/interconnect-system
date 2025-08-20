@@ -8,8 +8,9 @@
 
     // console.log('[DashboardEventFix] イベントクエリ修正スクリプト読み込み');
 
-    // 元のfetchEventsメソッドを上書き
-    if (window.DashboardEvents) {
+    // 元のfetchEventsメソッドを安全に拡張
+    if (window.DashboardEvents && window.DashboardEvents.prototype) {
+        const originalFetchEvents = window.DashboardEvents.prototype.fetchEvents;
         window.DashboardEvents.prototype.fetchEvents = async function() {
             try {
                 if (!window.supabase && !window.supabaseClient) {
@@ -80,8 +81,8 @@
         };
     }
 
-    // DashboardCalculatorの修正
-    if (window.DashboardCalculator) {
+    // DashboardCalculatorの修正（安全に拡張）
+    if (window.DashboardCalculator && window.DashboardCalculator.prototype) {
         const originalCalculate = window.DashboardCalculator.prototype.calculateStats;
         
         window.DashboardCalculator.prototype.calculateStats = async function() {

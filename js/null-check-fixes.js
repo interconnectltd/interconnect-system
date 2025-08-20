@@ -34,18 +34,8 @@
         }
     };
 
-    // Element.prototypeにも適用
-    if (Element.prototype.querySelector) {
-        const originalElementQuerySelector = Element.prototype.querySelector;
-        Element.prototype.querySelector = function(selector) {
-            try {
-                return originalElementQuerySelector.call(this, selector);
-            } catch (e) {
-                console.error(`Invalid selector: ${selector}`, e);
-                return null;
-            }
-        };
-    }
+    // Element.prototypeの変更は危険なので削除
+    // 代わりに安全なラッパー関数を提供
 
     // 共通のnullチェック関数
     window.checkElement = function(element, elementName = 'Element') {
