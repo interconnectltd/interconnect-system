@@ -39,19 +39,24 @@
         },
         
         overrideEventListeners() {
-            const original = EventTarget.prototype.addEventListener;
-            EventTarget.prototype.addEventListener = function(type, listener, options) {
-                const listenerStr = listener.toString();
-                
-                // ローディング・アニメーション関連のリスナーをブロック
-                if ((type === 'DOMContentLoaded' || type === 'load') && 
-                    /loading|animation|typewriter|scroll.*fade/i.test(listenerStr)) {
-                    // console.log(`[PerfectFinal] ブロック: ${type}イベント`);
-                    return;
+            // EventTarget.prototypeの上書きは危険なので削除
+            // 代わりに特定の要素に対してのみ制御する
+            const blockList = [
+                'observeLoadingScreen', 'initLoadingScreen', 'createLoadingScreen',
+                'hideLoadingScreen', 'checkLoadingComplete', 'initHeroAnimation',
+                'typewriterEffect', 'animateTitle', 'startPageAnimations',
+                'initScrollAnimations', 'digitalTextEffect', 'LoadingManager',
+                'UnifiedLoader', 'AllConflictsFix'
+            ];
+            
+            // 既存の競合関数を無効化するだけに留める
+            blockList.forEach(fn => {
+                if (window[fn] && typeof window[fn] === 'function') {
+                    const originalName = `_original_${fn}`;
+                    window[originalName] = window[fn];
+                    window[fn] = () => {};
                 }
-                
-                return original.call(this, type, listener, options);
-            };
+            });
         }
     };
     
@@ -93,7 +98,7 @@
         },
         
         setupCompletion(screen) {
-            const minTime = 1500; // 2秒から1.5秒に短縮
+            const minTime = 800; // 1.5秒から0.8秒に短縮（動画読み込みを待たない）
             const startTime = Date.now();
             
             // thisを保存
@@ -307,6 +312,8 @@
                             this.animateCounter(el, el.textContent);
                         });
                         counterObserver.unobserve(entry.target);
+                        // メモリリーク防止: 全要素の監視解除後にObserverを破棄
+                        counterObserver.disconnect();
                     }
                 });
             }, { threshold: 0.3 });
@@ -352,13 +359,21 @@
         }
     });
     
-    // DOMContentLoadedで初期化
+    // main.jsのDOMContentLoadedと競合しないように
+    // main.jsの初期化後に実行する
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            PerfectLoader.init();
+        // main.jsの初期化を待つ
+        window.addEventListener('load', () => {
+            // main.jsの初期化が完了してから実行
+            setTimeout(() => {
+                PerfectLoader.init();
+            }, 100);
         });
     } else {
-        PerfectLoader.init();
+        // すでに読み込み完了している場合
+        setTimeout(() => {
+            PerfectLoader.init();
+        }, 100);
     }
     
     // グローバル公開（デバッグ用）

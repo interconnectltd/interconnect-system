@@ -5,7 +5,7 @@
 
 /* ローディング画面のみ最高優先度 */
 #instantLoadingScreen {
-  z-index: 99999 !important;
+  z-index: 9999 !important; /* 99999から9999に変更 */
 }
 
 /* 最優先: サイドバー関連 (z-index: 2000番台に変更) */

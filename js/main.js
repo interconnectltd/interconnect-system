@@ -334,6 +334,13 @@
         }, { threshold: 0.25 });
 
         videoObserver.observe(heroVideo);
+        
+        // メモリリーク防止: ページ遷移時にObserverを破棄
+        window.addEventListener('beforeunload', function() {
+            if (videoObserver) {
+                videoObserver.disconnect();
+            }
+        });
 
         // Check network status - skip for Netlify test environment
         const isNetlify = window.location.hostname.includes('netlify') || window.location.hostname.includes('netlify.app');
