@@ -385,13 +385,13 @@
                     
                     <!-- Calendar Container -->
                     <div id="booking-calendar-container">
-                        <!-- Google Calendar統合の場合 -->
+                        <!-- 予約フォーム -->
                         <div class="calendar-placeholder">
-                            <i class="fas fa-calendar-alt"></i>
-                            <p>予約システムを読み込んでいます...</p>
+                            <i class="fas fa-envelope"></i>
+                            <p>メールで簡単に予約できます</p>
                             <button class="temp-booking-btn" id="open-booking-btn">
-                                <i class="fas fa-calendar-check"></i>
-                                <span>予約ページを開く</span>
+                                <i class="fas fa-envelope"></i>
+                                <span>メールで予約する</span>
                             </button>
                         </div>
                     </div>
@@ -450,15 +450,15 @@
             const btn = document.getElementById('open-booking-btn');
             if (btn) {
                 btn.addEventListener('click', function() {
-                    // TimeRexの予約ページに遷移
-                    window.open('https://timerex.net/s/interconnect/booking', '_blank');
+                    // メールで予約を受け付ける（TimeRexが利用できないため）
+                    window.location.href = 'mailto:support@interconnects.info?subject=無料相談のご予約&body=お名前：%0D%0A会社名：%0D%0A希望日時（第1希望）：%0D%0A希望日時（第2希望）：%0D%0A相談内容：%0D%0A';
                 });
             }
             
             // プレースホルダーのテキストを更新
             const placeholder = document.querySelector('.calendar-placeholder p');
             if (placeholder) {
-                placeholder.textContent = '予約カレンダーを開くには下のボタンをクリックしてください';
+                placeholder.textContent = 'お気軽にメールでご予約ください';
             }
             
             // モバイルメニューの動作を設定
