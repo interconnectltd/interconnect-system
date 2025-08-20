@@ -33,7 +33,7 @@
     // オリジナルのconsoleメソッドを保存（既に保存されていれば再利用）
     if (!window.__originalConsole) {
         window.__originalConsole = {
-            log: // console.log,
+            log: console.log,
             error: console.error,
             warn: console.warn,
             info: console.info,

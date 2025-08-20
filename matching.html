@@ -298,6 +298,9 @@
             <!-- Matching Container for Dynamic Content -->
             <div id="matching-container">
                 <!-- Dynamic content will be loaded here -->
+                <div class="matching-grid">
+                    <!-- マッチングカードが動的に挿入されます -->
+                </div>
             </div>
             
             <!-- 静的コンテンツは削除済み（matching-unified.jsで動的に生成） -->
@@ -350,14 +353,11 @@
     
     <!-- マッチングシステム統合JavaScript（47ファイルを1つに統合） -->
     <script src="js/matching-unified.js?v=5.0"></script>
-    <!-- マッチング初期化修正 -->
-    <script src="js/matching-init-fix.js"></script>
-    <!-- マッチング完全修正版（削除されたコードを復活） -->
-    <script src="js/matching-complete-fix.js"></script>
-    <!-- matchingsテーブル活用アダプター -->
-    <script src="js/matching-table-adapter.js"></script>
-    <!-- データベーステーブル解決ユーティリティ -->
-    <script src="js/database-table-resolver.js"></script>
+    <!-- 以下は無効化（matching-unified.jsに統合済み） -->
+    <!-- <script src="js/matching-init-fix.js"></script> -->
+    <!-- <script src="js/matching-complete-fix.js"></script> -->
+    <!-- <script src="js/matching-table-adapter.js"></script> -->
+    <!-- <script src="js/database-table-resolver.js"></script> -->
     
     <!-- グローバル閲覧履歴 -->
     <script src="js/global-viewing-history.js"></script>

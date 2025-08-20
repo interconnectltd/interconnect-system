@@ -14,6 +14,11 @@
         }
 
         async init() {
+            // Supabaseの準備を待つ
+            if (!window.supabaseClient) {
+                await window.waitForSupabase();
+            }
+            
             // URLパラメータからユーザーIDを取得
             const urlParams = new URLSearchParams(window.location.search);
             this.targetUserId = urlParams.get('id');
@@ -44,7 +49,7 @@
         async loadOtherUserProfile() {
             try {
                 // プロフィールデータを取得
-                const { data: profile, error } = await window.supabase
+                const { data: profile, error } = await window.supabaseClient
                     .from('profiles')
                     .select('*')
                     .eq('id', this.targetUserId)
