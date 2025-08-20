@@ -216,21 +216,7 @@
             }
         }
         
-        /* 既存のnavbarとの調整 */
-        .navbar {
-            background: white !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
-        }
+        /* navbarの調整 - navbar-fresh.cssのスタイルを上書きしない */
         
         main {
             padding-top: 80px;
@@ -311,34 +297,28 @@
     </style>
 </head>
 <body>
-    <!-- Navigation (indexと同じヘッダー) -->
+    <!-- Navigation -->
     <nav class="navbar" role="navigation" aria-label="メインナビゲーション">
-        <div class="nav-container">
-            <a href="/" class="nav-logo" aria-label="INTERCONNECTホーム">
-                <span class="logo-text">INTERCONNECT</span>
-            </a>
+        <div class="container">
+            <div class="navbar-brand">
+                <h1>INTERCONNECT</h1>
+                <span class="tagline">ビジネスをつなぐ</span>
+            </div>
             
-            <button class="mobile-menu-toggle" aria-label="メニューを開く" aria-expanded="false">
-                <span class="hamburger"></span>
-                <span class="hamburger"></span>
-                <span class="hamburger"></span>
+            <button class="navbar-toggler" aria-label="メニューを開く" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
             
-            <div class="nav-menu" role="menu">
-                <a href="#features" class="nav-link" role="menuitem">特徴</a>
-                <a href="#services" class="nav-link" role="menuitem">サービス</a>
-                <a href="#success-stories" class="nav-link" role="menuitem">事例</a>
-                <a href="#pricing" class="nav-link" role="menuitem">料金</a>
-                <a href="#contact" class="nav-link" role="menuitem">お問い合わせ</a>
-                
-                <div class="nav-buttons">
-                    <a href="/login.html" class="btn btn-secondary">ログイン</a>
-                    <a href="/register.html" class="btn btn-primary">
-                        <span>無料で始める</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+            <ul class="navbar-nav" role="menu">
+                <li><a href="/index.html" class="nav-link" role="menuitem">ホーム</a></li>
+                <li><a href="/index.html#features" class="nav-link" role="menuitem">特徴</a></li>
+                <li><a href="/index.html#services" class="nav-link" role="menuitem">サービス</a></li>
+                <li><a href="/index.html#contact" class="nav-link" role="menuitem">お問い合わせ</a></li>
+                <li><a href="/login.html" class="nav-link btn-login">ログイン</a></li>
+                <li><a href="/register.html" class="nav-link btn-register">無料で始める</a></li>
+            </ul>
         </div>
     </nav>
 
@@ -462,11 +442,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/navbar.js"></script>
-    <script src="js/smooth-scroll.js"></script>
-    
-    <!-- Google Calendar Booking Integration -->
-    <script src="js/google-calendar-booking.js?v=1.0"></script>
+    <script src="js/responsive-menu.js"></script>
     
     <script>
         // 予約ボタンの動作
