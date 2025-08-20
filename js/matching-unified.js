@@ -771,10 +771,25 @@
             console.log('[MatchingUnified] 初回displayMatchingUsers呼び出し前:', {
                 matchingUsersCount: matchingUsers.length,
                 currentPage: currentPage,
-                container: document.getElementById('matching-container') ? 'exists' : 'not found'
+                container: document.getElementById('matching-container') ? 'exists' : 'not found',
+                firstThreeUsers: matchingUsers.slice(0, 3).map(u => ({
+                    id: u.id,
+                    name: u.name,
+                    score: u.matchScore || u.matchingScore
+                }))
             });
-            displayMatchingUsers();
-            console.log('[MatchingUnified] 初回displayMatchingUsers呼び出し後');
+            
+            // データがある場合のみ表示
+            if (matchingUsers && matchingUsers.length > 0) {
+                displayMatchingUsers();
+                console.log('[MatchingUnified] 初回displayMatchingUsers呼び出し後');
+            } else {
+                console.error('[MatchingUnified] matchingUsersが空です！');
+                const container = document.getElementById('matching-container');
+                if (container) {
+                    container.innerHTML = '<div class="empty-state">マッチング候補が見つかりません</div>';
+                }
+            }
             
             // カード内のイベントリスナーを設定
             setupCardEventListeners();
@@ -1221,8 +1236,23 @@
 
         // マッチングカードの生成
         console.log('[MatchingUnified] カード生成開始:', paginatedUsers.length, '枚');
-        const cardsHtml = paginatedUsers.map(user => createMatchingCard(user)).join('');
+        const cardsHtml = paginatedUsers.map(user => {
+            const card = createMatchingCard(user);
+            console.log('[MatchingUnified] カード生成:', {
+                userId: user.id,
+                userName: user.name,
+                cardLength: card.length
+            });
+            return card;
+        }).join('');
         console.log('[MatchingUnified] カード生成完了, HTML長さ:', cardsHtml.length);
+        
+        // カードが空でないことを確認
+        if (!cardsHtml || cardsHtml.trim() === '') {
+            console.error('[MatchingUnified] カードHTMLが空です！');
+            container.innerHTML = '<div class="error">カードの生成に失敗しました</div>';
+            return;
+        }
         
         container.innerHTML = `
             <div class="matching-grid">
@@ -1230,6 +1260,10 @@
             </div>
         `;
         console.log('[MatchingUnified] DOMに挿入完了');
+        
+        // 実際に挿入されたことを確認
+        const insertedCards = container.querySelectorAll('.matching-card');
+        console.log('[MatchingUnified] 実際に挿入されたカード数:', insertedCards.length);
 
         // ページネーションUI更新
         updatePagination(filteredUsers.length);
@@ -1280,8 +1314,20 @@
 
     // マッチングカードの作成
     function createMatchingCard(user) {
-        // スコアが未設定の場合は、ユーザーIDベースの疑似ランダム値を生成（一貫性を保つ）
-        const matchScore = user.matchScore || generateConsistentScore(user.id);
+        try {
+            console.log('[MatchingUnified] createMatchingCard開始:', {
+                userId: user?.id,
+                userName: user?.name,
+                hasUser: !!user
+            });
+            
+            if (!user) {
+                console.error('[MatchingUnified] ユーザーデータがnullです');
+                return '';
+            }
+            
+            // スコアが未設定の場合は、ユーザーIDベースの疑似ランダム値を生成（一貫性を保つ）
+            const matchScore = user.matchScore || generateConsistentScore(user.id);
         // スキルデータの処理（配列または文字列）
         let skillsArray = [];
         if (Array.isArray(user.skills)) {
@@ -1391,6 +1437,10 @@
                 </button>
             </div>
         `;
+        } catch (error) {
+            console.error('[MatchingUnified] カード生成エラー:', error, user);
+            return '';
+        }
     }
 
     // カード内のイベントリスナー設定
