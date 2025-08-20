@@ -382,10 +382,9 @@ window.InterConnect.Profile = {
             const { error } = await window.supabaseClient
                 .from('connections')
                 .insert({
-                    requester_id: this.currentUserId,
-                    receiver_id: this.targetUserId,
+                    user_id: this.currentUserId,
+                    connected_user_id: this.targetUserId,
                     status: 'pending',
-                    message: 'コネクトさせていただければ幸いです。',
                     created_at: new Date().toISOString()
                 });
             

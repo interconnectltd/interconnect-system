@@ -366,7 +366,7 @@
                         <div class="connection-info">
                             <div class="connection-name">${this.escapeHtml(user.name || '名前未設定')}</div>
                             <div class="connection-company">${this.escapeHtml(user.company || '')} ${this.escapeHtml(position)}</div>
-                            ${conn.message ? `<div class="connection-message">${this.escapeHtml(conn.message)}</div>` : ''}
+                            <!-- messageカラムは存在しないため削除 -->
                             <div class="connection-time">${this.formatDate(conn.created_at)}</div>
                         </div>
                         <div class="connection-actions">
@@ -417,7 +417,7 @@
                         <div class="connection-info">
                             <div class="connection-name">${this.escapeHtml(user.name || '名前未設定')}</div>
                             <div class="connection-company">${this.escapeHtml(user.company || '')} ${this.escapeHtml(position)}</div>
-                            ${conn.message ? `<div class="connection-message">送信メッセージ: ${this.escapeHtml(conn.message)}</div>` : ''}
+                            <!-- messageカラムは存在しないため削除 -->
                             <div class="connection-time">申請日: ${this.formatDate(conn.created_at)}</div>
                         </div>
                         <div class="connection-actions">

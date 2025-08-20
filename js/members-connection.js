@@ -153,7 +153,6 @@
                         user_id: this.currentUserId,
                         connected_user_id: memberId,
                         status: 'pending',
-                        message: 'コネクトさせていただければ幸いです。',
                         created_at: new Date().toISOString()
                     })
                     .select()
