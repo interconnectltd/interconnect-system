@@ -171,7 +171,7 @@
 
                 // ユーザープロフィールを取得
                 const { data: profile } = await window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('full_name, avatar_url')
                     .eq('id', user.id)
                     .single();

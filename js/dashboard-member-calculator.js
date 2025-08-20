@@ -81,7 +81,7 @@
 
             try {
                 const { count, error } = await window.supabase
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*', { count: 'exact', head: true });
 
                 if (error) {
@@ -130,7 +130,7 @@
                 // console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバーを取得: ${startDate} ~ ${endDate}`);
 
                 const { count, error } = await window.supabase
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', startDate)
                     .lte('created_at', endDate);

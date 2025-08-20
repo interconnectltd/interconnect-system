@@ -50,7 +50,7 @@
             try {
                 // プロフィールデータを取得
                 const { data: profile, error } = await window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*')
                     .eq('id', this.targetUserId)
                     .single();

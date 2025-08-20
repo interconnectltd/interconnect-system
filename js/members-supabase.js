@@ -66,7 +66,7 @@
                 
                 // ベースクエリ（user_profilesテーブルを使用 - active_usersはビュー）
                 let query = window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*', { count: 'exact' })
                     .eq('is_active', true)
                     .neq('id', this.currentUserId); // 自分以外のメンバー

@@ -193,7 +193,7 @@
                 for (const userId of userIds) {
                     try {
                         const { data: profile, error: profileError } = await window.supabaseClient
-                            .from('profiles')
+                            .from('user_profiles')
                             .select('id, name, email, company, title, avatar_url')
                             .eq('id', userId)
                             .single();

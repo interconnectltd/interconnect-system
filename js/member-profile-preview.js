@@ -180,7 +180,7 @@
                 }
                 
                 const { data: userData, error } = await client
-                    .from('profiles')
+                    .from('user_profiles')
                     .select(`
                         id,
                         name,

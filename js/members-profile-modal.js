@@ -226,7 +226,7 @@ class MembersProfileModal {
                 
                 // user_profilesテーブルからデータを取得（正しいテーブル）
                 const { data: userData, error } = await client
-                    .from('profiles')
+                    .from('user_profiles')
                     .select(`
                         *,
                         user_experiences (

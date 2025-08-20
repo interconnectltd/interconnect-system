@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (user) {
             // プロファイル情報を取得
             const { data: profile } = await window.supabaseClient
-                .from('profiles')
+                .from('user_profiles')
                 .select('*')
                 .eq('id', user.id)
                 .single();

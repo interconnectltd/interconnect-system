@@ -32,7 +32,7 @@ class AdminReferralManager {
 
         // 管理者権限チェック
         const { data: profile } = await supabase
-            .from('profiles')
+            .from('user_profiles')
             .select('is_admin')
             .eq('id', user.id)
             .single();

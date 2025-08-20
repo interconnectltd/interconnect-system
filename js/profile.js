@@ -137,7 +137,7 @@ window.InterConnect.Profile = {
             
             // user_profilesテーブルから他のユーザー情報を取得（公開情報のみ）
             const { data, error } = await client
-                .from('profiles')
+                .from('user_profiles')
                 .select(`
                     id,
                     name,
@@ -264,7 +264,7 @@ window.InterConnect.Profile = {
             // Supabaseから自分のプロフィールデータも取得
             if (window.supabaseClient && this.currentUserId) {
                 const { data, error } = await window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*')
                     .eq('id', this.currentUserId)
                     .single();
@@ -648,7 +648,7 @@ window.InterConnect.Profile = {
                 };
                 
                 const { error } = await window.supabaseClient
-                    .from('profiles')
+                    .from('user_profiles')
                     .update(updateData)
                     .eq('id', this.currentUserId);
                     

@@ -97,7 +97,7 @@
 
                 // メンバー数の取得
                 const { count: memberCount } = await client
-                    .from('profiles')
+                    .from('user_profiles')
                     .select('*', { count: 'exact', head: true });
                 
                 this.stats.totalMembers = memberCount || 1234;

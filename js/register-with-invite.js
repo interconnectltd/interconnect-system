@@ -37,7 +37,7 @@
         try {
             // まず既存ユーザーをチェック
             const { data: existingUser, error: checkError } = await supabase
-                .from('profiles')
+                .from('user_profiles')
                 .select('email')
                 .eq('email', formData.email)
                 .single();
@@ -75,7 +75,7 @@
 
             // プロフィール作成（user_profilesテーブルに保存）
             const { error: profileError } = await supabase
-                .from('profiles')
+                .from('user_profiles')
                 .insert({
                     id: authData.user.id,
                     name: formData.name,
