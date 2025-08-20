@@ -12,11 +12,24 @@
 (function() {
     'use strict';
 
-    // console.log('[MatchingUnified] スクリプト実行開始', new Date().toISOString());
+    // グローバルフラグでスクリプト実行を確認
+    window.matchingUnifiedLoaded = true;
+    console.error('[MatchingUnified] スクリプト実行開始', new Date().toISOString());
+    
+    // デバッグ表示（一時的）
+    if (window.location.pathname.includes('matching.html')) {
+        document.addEventListener('DOMContentLoaded', function() {
+            const debugDiv = document.createElement('div');
+            debugDiv.style.cssText = 'position:fixed;top:10px;right:10px;background:red;color:white;padding:10px;z-index:99999;border-radius:5px;';
+            debugDiv.textContent = 'matching-unified.js 実行中';
+            document.body.appendChild(debugDiv);
+            setTimeout(() => debugDiv.remove(), 5000);
+        });
+    }
     
     // Supabaseの準備ができていない場合は待機
     if (!window.waitForSupabase || !window.supabaseClient) {
-        console.log('[MatchingUnified] Supabaseの初期化を待機中...', {
+        console.error('[MatchingUnified] Supabaseの初期化を待機中...', {
             waitForSupabase: typeof window.waitForSupabase,
             supabaseClient: typeof window.supabaseClient
         });
@@ -25,7 +38,7 @@
             retryCount.count++;
             if (window.waitForSupabase && window.supabaseClient) {
                 clearInterval(retryInterval);
-                console.log('[MatchingUnified] Supabaseが準備できました。初期化を開始します。', {
+                console.error('[MatchingUnified] Supabaseが準備できました。初期化を開始します。', {
                     retryCount: retryCount.count
                 });
                 initializeMatchingSystem();
@@ -41,7 +54,7 @@
     initializeMatchingSystem();
     
     function initializeMatchingSystem() {
-        console.log('[MatchingUnified] マッチングシステム初期化開始', {
+        console.error('[MatchingUnified] マッチングシステム初期化開始', {
             timestamp: new Date().toISOString(),
             windowObjects: {
                 supabaseClient: !!window.supabaseClient,
@@ -1235,17 +1248,17 @@
         });
 
         // マッチングカードの生成
-        console.log('[MatchingUnified] カード生成開始:', paginatedUsers.length, '枚');
+        console.error('[MatchingUnified] カード生成開始:', paginatedUsers.length, '枚');
         const cardsHtml = paginatedUsers.map(user => {
             const card = createMatchingCard(user);
-            console.log('[MatchingUnified] カード生成:', {
+            console.error('[MatchingUnified] カード生成:', {
                 userId: user.id,
                 userName: user.name,
                 cardLength: card.length
             });
             return card;
         }).join('');
-        console.log('[MatchingUnified] カード生成完了, HTML長さ:', cardsHtml.length);
+        console.error('[MatchingUnified] カード生成完了, HTML長さ:', cardsHtml.length);
         
         // カードが空でないことを確認
         if (!cardsHtml || cardsHtml.trim() === '') {
@@ -1259,11 +1272,22 @@
                 ${cardsHtml}
             </div>
         `;
-        console.log('[MatchingUnified] DOMに挿入完了');
+        console.error('[MatchingUnified] DOMに挿入完了');
         
         // 実際に挿入されたことを確認
         const insertedCards = container.querySelectorAll('.matching-card');
-        console.log('[MatchingUnified] 実際に挿入されたカード数:', insertedCards.length);
+        console.error('[MatchingUnified] 実際に挿入されたカード数:', insertedCards.length);
+        
+        // DOM要素の確認（デバッグ用）
+        if (insertedCards.length === 0 && paginatedUsers.length > 0) {
+            console.error('[MatchingUnified] ⚠️ カードが挿入されていません！');
+            console.error('[MatchingUnified] グリッドコンテナの状態:', {
+                exists: !!gridContainer,
+                innerHTML長さ: gridContainer.innerHTML.length,
+                childNodes数: gridContainer.childNodes.length,
+                children数: gridContainer.children.length
+            });
+        }
 
         // ページネーションUI更新
         updatePagination(filteredUsers.length);

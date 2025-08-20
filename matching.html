@@ -349,7 +349,45 @@
     <!-- <script src="js/dashboard.js"></script> -->
     
     <!-- マッチングシステム統合JavaScript（47ファイルを1つに統合） -->
-    <script src="js/matching-unified.js?v=5.0"></script>
+    <script src="js/matching-unified.js?v=6.0"></script>
+    
+    <!-- デバッグ用スクリプト（一時的） -->
+    <script>
+        // matching-unified.jsが実行されているか確認
+        window.addEventListener('load', function() {
+            if (window.matchingUnifiedLoaded) {
+                console.error('✅ matching-unified.js は正常に読み込まれました');
+            } else {
+                console.error('❌ matching-unified.js が読み込まれていません！');
+            }
+            
+            // matching-gridの状態を確認
+            const matchingGrid = document.querySelector('.matching-grid');
+            if (matchingGrid) {
+                console.error('マッチンググリッドの状態:', {
+                    存在: true,
+                    子要素数: matchingGrid.children.length,
+                    HTML内容の長さ: matchingGrid.innerHTML.length
+                });
+                
+                // DOM変更を監視
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        console.error('🔄 マッチンググリッドが変更されました:', {
+                            追加ノード数: mutation.addedNodes.length,
+                            削除ノード数: mutation.removedNodes.length,
+                            現在の子要素数: matchingGrid.children.length
+                        });
+                    });
+                });
+                
+                observer.observe(matchingGrid, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        });
+    </script>
     <!-- 以下は無効化（matching-unified.jsに統合済み） -->
     <!-- <script src="js/matching-init-fix.js"></script> -->
     <!-- <script src="js/matching-complete-fix.js"></script> -->
