@@ -2859,17 +2859,17 @@
         
         // デバッグ用：各ユーザーのスコアを確認
         // console.log(`[RadarChart] ${user.name || 'Unknown'}のスコア:`, {
-            name: user.name,
-            title: user.title,
-            position: user.position,
-            skills: user.skills?.length || 0,
-            スキル: values[0],
-            経験: values[1],
-            業界: values[2],
-            地域: values[3],
-            活動: values[4],
-            興味: values[5]
-        });
+        //     name: user.name,
+        //     title: user.title,
+        //     position: user.position,
+        //     skills: user.skills?.length || 0,
+        //     スキル: values[0],
+        //     経験: values[1],
+        //     業界: values[2],
+        //     地域: values[3],
+        //     活動: values[4],
+        //     興味: values[5]
+        // });
         
         // データポリゴンを描画
         ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
@@ -2907,7 +2907,7 @@
         ctx.restore();
         
         // アクセシビリティ属性を追加（削除されたファイルから復元）
-        const labels = ['スキル', '経験', '業界', '地域', '活動', '興味'];
+        // labelsは既に上で宣言済み
         const description = values.map((value, index) => 
             `${labels[index]}: ${Math.round(value)}%`
         ).join(', ');
