@@ -638,7 +638,6 @@
                 .select(`
                     id,
                     name,
-                    title,
                     position,
                     company,
                     location,
@@ -1431,7 +1430,7 @@
                     </div>`
                 }
                 <h3>${escapeHtml(user.name || '名前未設定')}</h3>
-                <p class="matching-title">${escapeHtml(user.position || user.title || '役職未設定')}</p>
+                <p class="matching-title">${escapeHtml(user.position || '役職未設定')}</p>
                 <p class="matching-company">${escapeHtml(user.company || '会社名未設定')}</p>
                 
                 <!-- 補完性スコア表示（新規追加） -->
@@ -1896,7 +1895,7 @@
                 const searchableFields = [
                     user.name?.toLowerCase() || '',
                     user.company?.toLowerCase() || '',
-                    user.title?.toLowerCase() || '',
+                    user.position?.toLowerCase() || '',
                     user.location?.toLowerCase() || '',
                     user.industry?.toLowerCase() || '',
                     user.bio?.toLowerCase() || '',
@@ -2348,8 +2347,8 @@
         let score = 15; // 基準スコア（より差別化のため低めに設定）
         
         // 役職・肩書きによる加点（title フィールドを使用）
-        if (user.title || user.position) {
-            const titleText = user.title || user.position || '';
+        if (user.position) {
+            const titleText = user.position || '';
             // 役職レベルをより細かく評価（ユーザーごとの差別化）
             const titleLower = titleText.toLowerCase();
             
@@ -2433,7 +2432,7 @@
         }
         
         // 複合評価（役職と会社の両方がある）
-        if ((user.title || user.position) && user.company) {
+        if (user.position && user.company) {
             score += 5; // 信頼性ボーナス
         }
         
@@ -2540,8 +2539,8 @@
         }
         
         // 業界経験の深さを評価（役職との相関）
-        if (user.industry && (user.title || user.position)) {
-            const titleText = (user.title || user.position || '').toLowerCase();
+        if (user.industry && user.position) {
+            const titleText = (user.position || '').toLowerCase();
             if (titleText.includes('ceo') || titleText.includes('cto') || titleText.includes('cfo') || 
                 titleText.includes('代表') || titleText.includes('社長') || titleText.includes('執行役員')) {
                 score += 25; // 業界のトップリーダー
@@ -2860,7 +2859,7 @@
         // デバッグ用：各ユーザーのスコアを確認
         // console.log(`[RadarChart] ${user.name || 'Unknown'}のスコア:`, {
         //     name: user.name,
-        //     title: user.title,
+        //     position: user.position,
         //     position: user.position,
         //     skills: user.skills?.length || 0,
         //     スキル: values[0],
