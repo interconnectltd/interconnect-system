@@ -54,13 +54,13 @@
             
             // サイズが異なる場合は修正
             if (currentWidth !== size.width || currentHeight !== size.height) {
-                console.warn(`[AvatarEnforcer] サイズ不一致検出:`, {
-                    element: avatar,
-                    context: context,
-                    current: `${currentWidth}x${currentHeight}`,
-                    expected: `${size.width}x${size.height}`,
-                    parent: avatar.parentElement?.className
-                });
+                // console.warn(`[AvatarEnforcer] サイズ不一致検出:`, {
+                //     element: avatar,
+                //     context: context,
+                //     current: `${currentWidth}x${currentHeight}`,
+                //     expected: `${size.width}x${size.height}`,
+                //     parent: avatar.parentElement?.className
+                // });
                 
                 // インラインスタイルで強制（最高優先度）
                 avatar.style.width = `${size.width}px`;

@@ -58,7 +58,7 @@
                 const now = new Date().toISOString();
                 
                 // activitiesテーブルから未来のイベントを取得
-                const { data: activities, error } = await window.supabase
+                const { data: activities, error } = await window.supabaseClient
                     .from('activities')
                     .select('*')
                     .eq('type', 'event_upcoming')
