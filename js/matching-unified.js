@@ -12,17 +12,22 @@
 (function() {
     'use strict';
 
-    // console.log('[MatchingUnified] スクリプト実行開始');
+    console.log('[MatchingUnified] スクリプト実行開始', new Date().toISOString());
     
     // Supabaseの準備ができていない場合は待機
     if (!window.waitForSupabase || !window.supabaseClient) {
-        // console.log('[MatchingUnified] Supabaseの初期化を待機中...');
+        console.log('[MatchingUnified] Supabaseの初期化を待機中...', {
+            waitForSupabase: typeof window.waitForSupabase,
+            supabaseClient: typeof window.supabaseClient
+        });
         const retryCount = { count: 0, maxRetries: 50 };
         const retryInterval = setInterval(() => {
             retryCount.count++;
             if (window.waitForSupabase && window.supabaseClient) {
                 clearInterval(retryInterval);
-                // console.log('[MatchingUnified] Supabaseが準備できました。初期化を開始します。');
+                console.log('[MatchingUnified] Supabaseが準備できました。初期化を開始します。', {
+                    retryCount: retryCount.count
+                });
                 initializeMatchingSystem();
             } else if (retryCount.count >= retryCount.maxRetries) {
                 clearInterval(retryInterval);
@@ -36,11 +41,17 @@
     initializeMatchingSystem();
     
     function initializeMatchingSystem() {
-        // console.log('[MatchingUnified] マッチングシステム初期化開始');
+        console.log('[MatchingUnified] マッチングシステム初期化開始', {
+            timestamp: new Date().toISOString(),
+            windowObjects: {
+                supabaseClient: !!window.supabaseClient,
+                waitForSupabase: !!window.waitForSupabase
+            }
+        });
         
         try {
         
-        // console.log('[MatchingUnified] マッチングシステム初期化');
+        console.log('[MatchingUnified] マッチングシステム初期化処理中');
         
         // 他のレーダーチャート関数との競合を防ぐ
         if (window.drawRadarChart || window.drawRadarChartForUser) {
@@ -605,8 +616,10 @@
             }
             
             currentUserId = user.id;
+            console.log('[MatchingUnified] 現在のユーザーID:', currentUserId);
             
             // user_profilesテーブルから必要なカラムのみ取得（パフォーマンス改善）
+            console.log('[MatchingUnified] profilesテーブルからデータ取得開始...');
             const { data: allUsers, error } = await window.supabaseClient
                 .from('profiles')
                 .select(`
@@ -630,6 +643,13 @@
                     created_at
                 `)
                 .limit(200); // パフォーマンス対策: 最大200件に制限
+            
+            console.log('[MatchingUnified] profilesテーブル応答:', {
+                dataCount: allUsers ? allUsers.length : 0,
+                hasError: !!error,
+                errorMessage: error ? error.message : null,
+                firstUser: allUsers && allUsers.length > 0 ? allUsers[0] : null
+            });
             
             if (error) {
                 console.error('[MatchingUnified] プロファイル取得エラー:', error);
@@ -676,8 +696,22 @@
             
             // 自分以外のユーザーをフィルタリング（user_profilesではidカラムを使用）
             const users = allUsers ? allUsers.filter(user => user.id !== currentUserId) : [];
+            console.log('[MatchingUnified] フィルタリング後のユーザー数:', users.length, {
+                originalCount: allUsers ? allUsers.length : 0,
+                filteredCount: users.length,
+                currentUserId: currentUserId
+            });
             
-            // console.log('[MatchingUnified] 取得したユーザー数:', users.length);
+            console.log('[MatchingUnified] 取得したユーザー詳細:', {
+                totalUsers: users.length,
+                sample: users.slice(0, 3).map(u => ({
+                    id: u.id,
+                    name: u.name,
+                    company: u.company,
+                    hasSkills: !!u.skills,
+                    hasInterests: !!u.interests
+                }))
+            });
             
             if (!users || users.length === 0) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><h3>マッチング候補が見つかりません</h3><p>条件を変更して再度お試しください</p></div>';
@@ -717,7 +751,16 @@
             }
             
             // マッチングスコアを計算
+            console.log('[MatchingUnified] マッチングスコア計算開始...');
             matchingUsers = await calculateMatchingScores(users);
+            console.log('[MatchingUnified] マッチングスコア計算完了:', {
+                count: matchingUsers.length,
+                topScores: matchingUsers.slice(0, 3).map(u => ({
+                    name: u.name,
+                    score: u.matchingScore,
+                    reasons: u.matchingReasons
+                }))
+            });
             
             // connectionMapを各ユーザーに追加
             matchingUsers.forEach(user => {
@@ -725,7 +768,13 @@
             });
             
             // 表示
+            console.log('[MatchingUnified] 初回displayMatchingUsers呼び出し前:', {
+                matchingUsersCount: matchingUsers.length,
+                currentPage: currentPage,
+                container: document.getElementById('matching-container') ? 'exists' : 'not found'
+            });
             displayMatchingUsers();
+            console.log('[MatchingUnified] 初回displayMatchingUsers呼び出し後');
             
             // カード内のイベントリスナーを設定
             setupCardEventListeners();
@@ -1110,16 +1159,28 @@
 
     // マッチングユーザーの表示
     function displayMatchingUsers() {
-        // console.log('[MatchingUnified] displayMatchingUsers開始, ユーザー数:', matchingUsers.length);
+        console.log('[MatchingUnified] displayMatchingUsers開始', {
+            totalUsers: matchingUsers.length,
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage
+        });
         const container = document.getElementById('matching-container');
         if (!container) {
-            console.error('[MatchingUnified] matching-containerが見つかりません');
+            console.error('[MatchingUnified] matching-containerが見つかりません', {
+                documentBody: document.body ? 'exists' : 'not found',
+                allIds: Array.from(document.querySelectorAll('[id]')).map(el => el.id)
+            });
             return;
         }
+        console.log('[MatchingUnified] matching-container見つかりました');
 
         // フィルタリング
         let filteredUsers = filterUsers(matchingUsers);
-        // console.log('[MatchingUnified] フィルター前:', matchingUsers.length, 'フィルター後:', filteredUsers.length);
+        console.log('[MatchingUnified] フィルタリング結果:', {
+            フィルター前: matchingUsers.length,
+            フィルター後: filteredUsers.length,
+            filters: filters
+        });
 
         // ソート
         filteredUsers = sortUsers(filteredUsers);
@@ -1149,13 +1210,26 @@
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+        console.log('[MatchingUnified] ページネーション結果:', {
+            currentPage: currentPage,
+            totalPages: totalPages,
+            startIndex: startIndex,
+            endIndex: endIndex,
+            表示ユーザー数: paginatedUsers.length,
+            全体ユーザー数: filteredUsers.length
+        });
 
         // マッチングカードの生成
+        console.log('[MatchingUnified] カード生成開始:', paginatedUsers.length, '枚');
+        const cardsHtml = paginatedUsers.map(user => createMatchingCard(user)).join('');
+        console.log('[MatchingUnified] カード生成完了, HTML長さ:', cardsHtml.length);
+        
         container.innerHTML = `
             <div class="matching-grid">
-                ${paginatedUsers.map(user => createMatchingCard(user)).join('')}
+                ${cardsHtml}
             </div>
         `;
+        console.log('[MatchingUnified] DOMに挿入完了');
 
         // ページネーションUI更新
         updatePagination(filteredUsers.length);
@@ -2870,7 +2944,15 @@
     }
 
     // 初期化実行（Supabase初期化を待つ）
+    console.log('[MatchingUnified] 初期化判定開始:', {
+        readyState: document.readyState,
+        timestamp: new Date().toISOString(),
+        hasSupabaseClient: !!window.supabaseClient,
+        hasWaitForSupabase: !!window.waitForSupabase
+    });
+    
     if (document.readyState === 'loading') {
+        console.log('[MatchingUnified] DOMContentLoadedイベントを待機');
         document.addEventListener('DOMContentLoaded', () => {
             // Supabase初期化完了を待つ
             console.log('[MatchingUnified] DOM読み込み完了、初期化を実行');
