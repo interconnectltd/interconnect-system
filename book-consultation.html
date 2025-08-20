@@ -469,18 +469,30 @@
     <script src="js/google-calendar-booking.js?v=1.0"></script>
     
     <script>
-        // カレンダーのプレースホルダーを表示
-        window.addEventListener('DOMContentLoaded', function() {
-            // 読み込み完了後すぐに表示を変更
-            const placeholder = document.querySelector('.calendar-placeholder p');
-            if (placeholder) {
-                placeholder.textContent = 'カレンダーを表示するには、下のボタンをクリックしてください';
-            }
-            
-            // ボタンの表示を確認
+        // 予約ボタンの動作
+        document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('open-booking-btn');
             if (btn) {
-                btn.style.display = 'inline-flex'; // 明示的に表示
+                btn.addEventListener('click', function() {
+                    // TimeRexの予約ページに遷移
+                    window.open('https://timerex.net/s/interconnect/booking', '_blank');
+                });
+            }
+            
+            // プレースホルダーのテキストを更新
+            const placeholder = document.querySelector('.calendar-placeholder p');
+            if (placeholder) {
+                placeholder.textContent = '予約カレンダーを開くには下のボタンをクリックしてください';
+            }
+            
+            // モバイルメニューの動作を設定
+            const toggler = document.querySelector('.navbar-toggler');
+            const nav = document.querySelector('.navbar-nav');
+            if (toggler && nav) {
+                toggler.addEventListener('click', function() {
+                    nav.classList.toggle('active');
+                    toggler.classList.toggle('active');
+                });
             }
         });
     </script>

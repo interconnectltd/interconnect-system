@@ -1,29 +1,33 @@
 // Responsive Menu JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Get elements
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const mobileNav = document.querySelector('.mobile-nav');
+    // Get elements - 複数のセレクタに対応
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle, .navbar-toggler');
+    const mobileNav = document.querySelector('.mobile-nav, .navbar-nav');
     const mobileBackdrop = document.querySelector('.mobile-backdrop');
     const mobileNavClose = document.querySelector('.mobile-nav-close');
     const body = document.body;
     
-    // Check if elements exist
-    if (!mobileNav || !mobileBackdrop) {
+    // Check if elements exist - mobileBackdropは必須ではない
+    if (!mobileNav) {
         return;
     }
 
     // Function to open mobile menu
     function openMobileMenu() {
         mobileNav.classList.add('active');
-        mobileBackdrop.classList.add('active');
+        if (mobileBackdrop) {
+            mobileBackdrop.classList.add('active');
+        }
         body.classList.add('menu-open');
     }
 
     // Function to close mobile menu
     function closeMobileMenu() {
         mobileNav.classList.remove('active');
-        mobileBackdrop.classList.remove('active');
+        if (mobileBackdrop) {
+            mobileBackdrop.classList.remove('active');
+        }
         body.classList.remove('menu-open');
     }
 

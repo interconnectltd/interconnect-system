@@ -15,7 +15,7 @@ nav.navbar {
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-    z-index: 1000 !important;
+    z-index: 100 !important; /* z-indexを適切な値に変更 */
 }
 
 nav.navbar .container {
