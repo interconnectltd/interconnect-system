@@ -74,7 +74,7 @@
                                     <p>受信者ID: ${conn.connected_user_id}</p>
                                     <p>ステータス: ${conn.status}</p>
                                     <p>作成日: ${conn.created_at}</p>
-                                    <p>メッセージ: ${conn.message || 'なし'}</p>
+                                    ${conn.message ? `<p>メッセージ: ${conn.message}</p>` : ''}
                                 </div>
                             `;
                         });
@@ -120,15 +120,18 @@
                 
                 const targetUser = profiles[0];
                 
-                // テスト申請を作成
+                // テスト申請を作成（messageカラムが存在しない場合も考慮）
+                const insertData = {
+                    user_id: user.id,
+                    connected_user_id: targetUser.id,
+                    status: 'pending'
+                };
+                
+                // messageカラムが存在する場合のみ追加
+                // まずはmessageなしで試す
                 const { data, error } = await window.supabaseClient
                     .from('connections')
-                    .insert({
-                        user_id: user.id,
-                        connected_user_id: targetUser.id,
-                        status: 'pending',
-                        message: 'テスト申請です'
-                    })
+                    .insert(insertData)
                     .select();
                 
                 if (error) {
