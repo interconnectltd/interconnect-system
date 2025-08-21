@@ -1070,12 +1070,29 @@
             
             const currentUser = currentUserData;
 
+            console.error('[MatchingUnified] 現在のユーザーデータ:', {
+                id: currentUser?.id,
+                skills: currentUser?.skills,
+                interests: currentUser?.interests,
+                business_challenges: currentUser?.business_challenges,
+                industry: currentUser?.industry,
+                location: currentUser?.location
+            });
+
             if (!currentUser) return users;
 
             // 各ユーザーのスコアを計算
             return users.map(user => {
                 // 新しい補完性ベースのスコア計算
                 const complementarity = calculateSkillChallengeMatch(currentUser, user);
+                
+                console.error('[MatchingUnified] マッチング計算対象ユーザー:', {
+                    targetUserId: user.id,
+                    targetName: user.name,
+                    targetSkills: user.skills,
+                    targetChallenges: user.business_challenges,
+                    complementarityScore: complementarity.totalScore
+                });
                 
                 let score = 0;
                 const reasons = [];
@@ -1152,6 +1169,16 @@
                 user.matchScore = Math.min(Math.round(score), 100);
                 user.matchReasons = reasons;
                 user.complementarityScore = complementarity; // 補完性スコアを保存
+
+                console.error('[MatchingUnified] 最終マッチングスコア:', {
+                    userId: user.id,
+                    userName: user.name,
+                    補完性スコア: complementarity.totalScore,
+                    スキル一致スコア: commonSkills ? commonSkills.length : 0,
+                    興味一致スコア: commonInterests ? commonInterests.length : 0,
+                    最終スコア: user.matchScore,
+                    理由: reasons
+                });
 
                 return user;
             });
