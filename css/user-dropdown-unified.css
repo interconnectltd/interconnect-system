@@ -63,13 +63,11 @@
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
-    z-index: 1950;  /* z-index-priority.cssと一致 */
+    z-index: 1000;
     overflow: hidden;
 }
 
-/* activeクラスまたはhoverで表示 */
-.user-dropdown.active,
-.user-profile:hover .user-dropdown {
+.user-dropdown.active {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -166,15 +164,13 @@
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
-    z-index: 1940;  /* z-index-priority.cssと一致 */
+    z-index: 1000;
     max-height: 480px;
     display: flex;
     flex-direction: column;
 }
 
-/* activeクラスまたはhoverで表示 */
-.notification-dropdown.active,
-.notification-wrapper:hover .notification-dropdown {
+.notification-dropdown.active {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
