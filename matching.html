@@ -45,6 +45,7 @@
         <div class="mobile-header-actions">
             <a href="notifications.html" class="notification-btn">
                 <i class="fas fa-bell"></i>
+                                <span class="notification-badge" style="display:none;">0</span>
             </a>
         </div>
     </header>
@@ -215,8 +216,9 @@
                 <div class="header-right">
                     <div class="user-menu">
                         <div class="notification-wrapper">
-                            <button class="notification-btn">
+                            <button class="notification-btn" aria-label="通知">
                                 <i class="fas fa-bell"></i>
+                                <span class="notification-badge" style="display:none;">0</span>
                             </button>
                             <div class="notification-dropdown">
                                 <div class="notification-header">
@@ -236,9 +238,9 @@
                             <span class="user-name">ゲスト</span>
                             <i class="fas fa-chevron-down"></i>
                             <div class="user-dropdown">
-                                <a href="/profile"><i class="fas fa-user"></i> プロフィール</a>
-                                <a href="/settings"><i class="fas fa-cog"></i> 設定</a>
-                                <a href="#" id="logoutBtnHeader"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+                                <a href="profile.html"><i class="fas fa-user"></i> プロフィール</a>
+                                <a href="settings.html"><i class="fas fa-cog"></i> 設定</a>
+                                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
                             </div>
                         </div>
                     </div>
