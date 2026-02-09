@@ -59,5 +59,9 @@ const INTERCONNECT = {
     }
 };
 
-// Export for use in other scripts
-window.INTERCONNECT = INTERCONNECT;
+// Export: interconnect-core.js が権威ある定義。ここでは拡張のみ
+if (window.INTERCONNECT) {
+    Object.assign(window.INTERCONNECT, INTERCONNECT);
+} else {
+    window.INTERCONNECT = INTERCONNECT;
+}

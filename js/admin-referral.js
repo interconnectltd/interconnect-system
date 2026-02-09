@@ -951,10 +951,16 @@ class AdminReferralManager {
     }
 }
 
-// 初期化
-const adminReferral = new AdminReferralManager();
+// 初期化（Supabase準備完了後）
+function initAdminReferral() {
+    const adminReferral = new AdminReferralManager();
+    window.adminReferral = adminReferral;
+    window.exportReferralData = () => adminReferral.exportReferralData();
+    window.updateAnalytics = () => adminReferral.updateAnalytics();
+}
 
-// グローバル関数
-window.adminReferral = adminReferral;
-window.exportReferralData = () => adminReferral.exportReferralData();
-window.updateAnalytics = () => adminReferral.updateAnalytics();
+if (window.supabaseClient) {
+    initAdminReferral();
+} else {
+    window.addEventListener('supabaseReady', initAdminReferral);
+}

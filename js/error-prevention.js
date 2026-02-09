@@ -122,18 +122,18 @@
         intervals.clear();
     });
 
-    // 安全なHTML挿入（XSS対策）
-    window.safeSetHTML = function(element, html) {
-        if (!element) return;
-        
-        // 危険なタグやイベントハンドラーを除去
-        const cleanHTML = html
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-            .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-            .replace(/javascript:/gi, '');
-        
-        element.innerHTML = cleanHTML;
-    };
+    // safeSetHTML は safe-dom-utils.js で定義 (DOMParser版、より安全)
+    // ここでは未定義の場合のフォールバックのみ提供
+    if (typeof window.safeSetHTML !== 'function') {
+        window.safeSetHTML = function(element, html) {
+            if (!element) return;
+            const cleanHTML = html
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+                .replace(/javascript:/gi, '');
+            element.innerHTML = cleanHTML;
+        };
+    }
 
     // 安全な属性設定
     window.safeSetAttribute = function(element, attribute, value) {

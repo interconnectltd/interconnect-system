@@ -194,12 +194,12 @@
         types: NOTIFICATION_TYPES
     };
 
-    // 既存のグローバル関数を上書き（互換性保持）
-    window.showToast = showToast;
-    window.showSuccess = showSuccess;
-    window.showError = showError;
-    window.showWarning = showWarning;
-    window.showInfo = showInfo;
+    // 既存のグローバル関数がなければ設定（toast-unified.js が権威ある定義）
+    if (typeof window.showToast !== 'function') window.showToast = showToast;
+    if (typeof window.showSuccess !== 'function') window.showSuccess = showSuccess;
+    if (typeof window.showError !== 'function') window.showError = showError;
+    if (typeof window.showWarning !== 'function') window.showWarning = showWarning;
+    if (typeof window.showInfo !== 'function') window.showInfo = showInfo;
     window.showNotification = showNotification;
 
     // console.log('[NotificationSystem] 統一通知システム初期化完了');

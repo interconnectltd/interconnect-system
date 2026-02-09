@@ -1,7 +1,7 @@
 # INTERCONNECT システムアーキテクチャ
 
 > エグゼクティブ向けビジネスマッチングプラットフォームの詳細設計ドキュメント
-> 最終更新: 2026-02-09 | HTMLコメント除外 + ?v=パラメータ正規化 + Python自動検証に基づく第4版
+> 最終更新: 2026-02-09 | 第5版 (最適化後) — ゴースト0・孤児0・壊れたページ修正済み
 
 ---
 
@@ -87,16 +87,14 @@ INTERCONNECTは、起業家・経営者を対象としたビジネスマッチ�
 
 | ライブラリ | 用途 | 使用場所 |
 |-----------|------|---------|
-| `@supabase/supabase-js@2` (CDN直接) | DB/Auth クライアント | admin-referral, index, invite, register (HTML script tag) |
-| `@supabase/supabase-js@2` (動的ロード) | DB/Auth クライアント | supabase-unified.js, dashboard-charts.js (createElement) |
-| `chart.js@4.4.0` (CDN直接) | チャート描画 | dashboard (HTML script tag) |
-| `chart.js` (動的ロード) | チャート描画 | dashboard-charts.js (createElement) |
+| `@supabase/supabase-js@2` (CDN直接) | DB/Auth クライアント | index, invite, register (HTML script tag) |
+| `@supabase/supabase-js@2` (動的ロード) | DB/Auth クライアント | supabase-unified.js (createElement) — 19ページで使用 |
+| `chart.js` (CDN直接) | チャート描画 | admin-referral (HTML script tag) |
+| `chart.js` (動的ロード) | チャート描画 | dashboard-charts.js (typeof判定後にcreateElement) |
 | `particles.js@2.0.0` (動的ロード) | 背景アニメーション | auth-background-safe.js (createElement) |
 | `fullcalendar@5.11.3` | カレンダー表示 | events (JS + CSS + ja locale) |
 | Font Awesome 6.0/6.4 | アイコン | 全27ページ |
-| Google Fonts | Inter + Noto Sans JP | 26ページ (invite.html除外) |
-
-**注意:** dashboard.htmlではChart.jsがCDN script tagとdashboard-charts.jsの動的ロードで二重読み込みされている。
+| Google Fonts | Inter + Noto Sans JP | 全27ページ |
 
 ---
 
@@ -106,7 +104,7 @@ INTERCONNECTは、起業家・経営者を対象としたビジネスマッチ�
 ┌──────────────────────────────────────────────────────────────┐
 │                   ブラウザ (クライアント)                        │
 │                                                              │
-│  HTML (27ページ)  ←→  JS (88参照*)  ←→  CSS (67参照*)         │
+│  HTML (27ページ)  ←→  JS (88)  ←→  CSS (64)                  │
 │        │                  │                                  │
 │        │       ┌──────────┴──────────┐                       │
 │        │       │ INTERCONNECT Core   │                       │
@@ -181,31 +179,26 @@ interconnect-system/
 │           ├── security.js           # CSRF, Rate Limit, XSS防止
 │           └── error-handler.js      # エラーハンドリング
 │
-├── js/                               # クライアントJS (135ファイル)
-│   ├── [88ファイル: HTML参照あり]
-│   ├── [47ファイル: HTML未参照 (孤児)]
-│   └── disabled-scripts/             # 無効化済み (54 JS + _old_supabase/)
+├── js/                               # アクティブJS (88ファイル — 全件参照あり)
+│   └── disabled-scripts/             # 無効化済み (101 JS + _old_supabase/)
 │
-├── css/                              # スタイルシート (83ファイル)
-│   ├── [67ファイル: HTML参照あり]
-│   ├── [16ファイル: HTML未参照 (孤児)]
-│   ├── disabled-css/                 # 無効化済み (2 CSS + backup-referral-css/22 CSS)
+├── css/                              # アクティブCSS (64ファイル — 全件参照あり)
+│   ├── disabled-css/                 # 無効化済み (21 CSS + backup-referral-css/)
 │   └── _old_referral_css/            # 旧紹介CSS (7ファイル)
 │
 ├── sql/                              # SQLマイグレーション (84ファイル)
 ├── sql-archive/                      # アーカイブ済みSQL (31ファイル)
 │
+├── docs/                             # Markdownドキュメント群
+├── scripts/                          # シェルスクリプト群
+├── _archive/                         # テストHTML、旧includes等
+│
 ├── config/
 │   └── admin-config.json             # 管理画面設定
-├── includes/                         # ★デッドディレクトリ (どのHTMLからも参照なし)
-│   ├── header-right-unified.html
-│   └── security-meta.html
 ├── assets/                           # 静的アセット (動画等)
 │
 ├── [27 本番HTMLページ]
-├── [10 テスト/デバッグ/バックアップHTML]
-├── [63 Markdownファイル] ← ルートに散在する文書類
-├── [22 シェルスクリプト] ← セットアップ/ユーティリティ
+├── architecture.md                   # このドキュメント
 ├── netlify.toml                      # Netlify設定
 ├── _headers                          # キャッシュ制御ヘッダー
 ├── package.json
@@ -974,125 +967,79 @@ Netlify CDN → https://interconnect-auto-test.netlify.app
 
 ## 16. コードベース健全性レポート
 
-### 数値サマリー
+### 現状 (最適化後)
 
-| 指標 | 数値 |
-|------|------|
-| 本番HTMLページ | 27 |
-| テスト/バックアップHTML | 10 |
-| JS on disk (js/) | 135 |
-| JS 参照あり (HTML→ディスク一致) | 88 |
-| JS ゴースト (HTML参照→ディスクなし) | 9 |
-| JS 孤児 (ディスクあり→HTML未参照) | 47 |
-| CSS on disk (css/) | 83 |
-| CSS 参照あり (HTML→ディスク一致) | 67 |
-| CSS ゴースト (HTML参照→ディスクなし) | 1 |
-| CSS 孤児 (ディスクあり→HTML未参照) | 16 |
-| disabled-scripts/ | 54 JS + _old_supabase/ |
-| disabled-css/ | 2 CSS + backup-referral-css/ (22 CSS) |
-| _old_referral_css/ | 7 CSS |
-| sql/ | 84ファイル |
-| sql-archive/ | 31ファイル |
-| ルートMarkdown | 63ファイル |
-| ルートシェルスクリプト | 22ファイル |
+| 指標 | 最適化前 | 最適化後 |
+|------|---------|---------|
+| 本番HTMLページ | 27 | 27 |
+| JS on disk (js/) | 135 | 88 |
+| JS ゴースト | 9 | **0** |
+| JS 孤児 | 47 | **0** |
+| CSS on disk (css/) | 83 | 64 |
+| CSS ゴースト | 1 | **0** |
+| CSS 孤児 | 16+3 | **0** |
+| テスト/バックアップHTML | 10 (root) | 0 (→ _archive/) |
+| ルートMarkdown | 63 (root) | 0 (→ docs/) |
+| ルートシェルスクリプト | 22 (root) | 0 (→ scripts/) |
+| includes/ | 2 (root) | 0 (→ _archive/) |
 
-**整合性検証:**
-- `88 (参照+ディスク) + 47 (孤児) = 135 (JS on disk)` ✓
-- `88 (参照+ディスク) + 9 (ゴースト) = 97 (ユニーク参照)` ✓
-- `67 (参照+ディスク) + 16 (孤児) = 83 (CSS on disk)` ✓
-- `67 (参照+ディスク) + 1 (ゴースト) = 68 (ユニーク参照)` ✓
+**整合性検証 (最適化後):**
+- `88 (JS参照) = 88 (JS on disk)` — ゴースト0、孤児0 ✓
+- `64 (CSS参照) = 64 (CSS on disk)` — ゴースト0、孤児0 ✓
 
-### ゴーストリファレンス (HTMLが参照するが、ディスク上に存在しないファイル)
+### 実施した最適化
 
-**JS: 9件**
-```
-admin-common.js         ← admin-referral.html
-admin.js                ← admin.html
-debug-logger.js         ← admin.html, billing.html
-events-debug.js         ← events.html
-final-essential-fixes.js ← notifications.html, referral.html
-line-callback-debug.js  ← line-callback.html
-notifications.js        ← admin.html, billing.html, referral.html
-referral-debug-network.js ← referral.html
-supabase-client.js      ← activities.html, admin-referral.html
-```
+**Phase 1: ゴーストリファレンス除去 (14件)**
+8つのHTMLファイルから存在しないファイルへの script/link タグを除去。
+対象: admin-referral, admin, activities, billing, events, line-callback, notifications, referral
 
-**CSS: 1件**
-```
-admin-referral.css      ← admin-referral.html
-```
+**Phase 2: 孤児ファイル整理 (47 JS + 19 CSS)**
+HTMLから参照されていないファイルを `js/disabled-scripts/` と `css/disabled-css/` に移動。
 
-### 孤児ファイル (ディスク上に存在するが、どのHTMLからも参照されていない)
+**Phase 3: テスト/バックアップHTML移動 (10ファイル)**
+test-*.html, *-backup.html 等を `_archive/test-html/` に移動。
 
-**JS: 47件**
-```
-admin-security.js, admin-site-settings.js, admin-utils.js,
-animation-manager.js, auth-clean.js, auth-enhanced.js,
-background-animation.js, calendar.js, calendly-booking.js,
-cleanup-manager.js, dashboard-activity-enhancer.js, dashboard-data.js,
-dashboard-dynamic-calculator.js, dashboard-event-details.js,
-dashboard-event-display-enhancer.js, dashboard-event-participation.js,
-dashboard-initial-loading.js, dashboard-load-order-optimizer.js,
-dashboard-member-counter.js, dashboard-message-calculator.js,
-dashboard-realtime-calculator.js, dashboard-stat-renderer.js,
-dashboard-stats-integrator.js, dashboard-ui.js, dashboard-updater.js,
-digital-text-effect.js, event-registration.js, force-display-link.js,
-global-error-handler.js, google-calendar-booking.js,
-infographic-presentation.js, matching-performance-optimize.js,
-matching.js, monodukuri-presentation.js, performance-monitor.js,
-presentation.js, production-ready-check.js, referral-rls-workaround.js,
-referral-tracking.js, scroll-fade.js, settings.js,
-supabase-schema-detector.js, super-admin.js, system-health-check.js,
-timerex-booking.js, tldv-api-integration.js, user-menu-enhanced.js
-```
+**Phase 4: ディレクトリ整理**
+- `includes/` → `_archive/includes/`
+- ルートの .md ファイル → `docs/` (architecture.md除く)
+- ルートの .sh ファイル → `scripts/`
 
-**注意:** 孤児JSのうち以下はDBテーブル参照・RPC呼び出し・Realtimeチャネルを持つ:
-- `dashboard-updater.js` (Realtimeチャネル3件)
-- `dashboard-member-counter.js`, `dashboard-message-calculator.js`, `dashboard-realtime-calculator.js` (DBテーブル参照あり)
-- `referral-tracking.js` (RPC: add_referral_points)
-- `referral-rls-workaround.js` (RPC: get_user_invite_links)
-- `tldv-api-integration.js` (RPC: process_referral_reward, DBテーブル参照あり)
-- `cashout-modal.js` (RPC: deduct_user_points)
+**Phase 5: 重複定義の統合 (3件)**
+- `common.js`: INTERCONNECT上書き → Object.assign による拡張に変更
+- `error-prevention.js`: safeSetHTML → safe-dom-utils.js が権威ある定義、フォールバックのみに
+- `notification-system-unified.js`: showToast等 → 条件付き定義に変更 (toast-unified.js優先)
 
-**CSS: 16件**
-```
-animations-performance.css, auth-modern.css, calendar.css,
-cashout-modal.css, cleanup-redundant.css, grayish-blue-cards.css,
-infographic-presentation.css, loading-screen.css,
-monodukuri-presentation.css, notifications-enhanced.css,
-presentation.css, register-sns-removal.css, registration-enhanced.css,
-scroll-animations.css, subtle-blue-cards.css, user-menu-fix.css
-```
+**Phase 6: CDN/設定修正**
+- dashboard.html: Chart.js CDN二重ロード解消 (dashboard-charts.jsの動的ロードに統一)
+- invite.html: Supabaseプロジェクトを本番 (whyoqhhzwtlxprhizmor) に統一
+- invite.html: Google Fonts追加 (全27ページ統一)
 
-### 不要ディレクトリ/ファイル群
+**Phase 7: 壊れたページ修正**
+- activities.html: supabase-unified.js + コアユーティリティ追加
+- admin.html: supabase-unified.js + global-functions.js 追加
+- admin-referral.html: CDN SDK → supabase-unified.js に統一、adminLogout → logout、init待機修正
+- billing.html: supabase-unified.js 追加
+- global-functions.js: stepChanged孤立イベント発火を除去
 
-| 対象 | ファイル数 | 内容 |
-|------|-----------|------|
-| `js/disabled-scripts/` | 54 + _old_supabase/ | 無効化済みJS |
-| `css/disabled-css/` | 2 + backup-referral-css/ (22) | 無効化済みCSS |
-| `css/_old_referral_css/` | 7 | 旧紹介CSS |
-| `sql-archive/` | 31 | アーカイブ済みSQL |
-| テスト/バックアップHTML | 10 | テスト・デバッグ・旧版ページ |
-| `includes/` | 2 | ★どのHTMLからも参照されていないデッドファイル |
-| ルートMarkdown | 63 | ドキュメント群 (整理対象) |
-| ルートシェルスクリプト | 22 | セットアップ/ユーティリティ (整理対象) |
+### アーカイブ構成
 
-### 壊れたページ
+| ディレクトリ | 内容 |
+|-------------|------|
+| `js/disabled-scripts/` | 無効化済みJS (101ファイル + _old_supabase/) |
+| `css/disabled-css/` | 無効化済みCSS (21ファイル + backup-referral-css/) |
+| `css/_old_referral_css/` | 旧紹介CSS (7ファイル) |
+| `_archive/test-html/` | テスト/バックアップHTML (10ファイル) |
+| `_archive/includes/` | 旧インクルードファイル |
+| `docs/` | Markdownドキュメント群 |
+| `scripts/` | シェルスクリプト群 |
+| `sql/` | SQLファイル (84) |
+| `sql-archive/` | アーカイブ済みSQL (31) |
 
-| ページ | 問題 |
-|--------|------|
-| activities.html | supabase-client.js がゴースト → DB接続不可 |
-| admin-referral.html | supabase-client.js, admin-common.js がゴースト → 一部機能不全 |
-| admin.html | admin.js (メインロジック) がゴーストのため、ページ固有機能が動作しない |
+### 残存する既知の課題
 
-### 設計上の問題
-
-| 問題 | 影響 |
-|------|------|
-| invite.html が別Supabaseプロジェクト | メインとデータが分離している可能性 |
-| Chart.js 二重ロード (dashboard) | パフォーマンス劣化、グローバル汚染リスク |
-| INTERCONNECT 6重定義 | ロード順依存でコンフィグが予測不能 |
-| showToast 13重定義 | 表示動作がページごとに異なる可能性 |
-| stepChanged リスナー不在 | イベント発火が無駄になっている |
-| Google Fonts未読み込み (invite) | 他ページと異なるフォント表示 |
-| 全保護ページ共通JS = 0 | モジュール構成が統一されていない |
+| 課題 | 影響度 | 備考 |
+|------|--------|------|
+| super-admin.html がデモ状態 | 低 | Supabase接続なし、UI モックアップのみ |
+| admin-site-settings.html がデモ状態 | 低 | Supabase接続なし、UI モックアップのみ |
+| invite.html がインラインSupabase初期化 | 低 | 動作上問題なし、将来的にsupabase-unified.js移行推奨 |
+| disabled-scripts/内にDB参照ありの孤児JS | 情報 | 将来の機能復活時に参照可能 |

@@ -139,10 +139,6 @@
                 // スクロールを上部に
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
-                // ステップ変更イベントを発火
-                window.dispatchEvent(new CustomEvent('stepChanged', { 
-                    detail: { currentStep: currentStepNum + 1, totalSteps: 5 } 
-                }));
                 // console.log('[nextStep] Step change completed');
             } else {
                 // console.log('[nextStep] Cannot move to next step - nextStepElement:', !!nextStepElement, 'currentStepNum:', currentStepNum);
@@ -173,10 +169,6 @@
                 
                 currentStep = currentStepNum - 1;
                 
-                // ステップ変更イベントを発火
-                window.dispatchEvent(new CustomEvent('stepChanged', { 
-                    detail: { currentStep: currentStepNum - 1, totalSteps: 5 } 
-                }));
             }
         };
     }

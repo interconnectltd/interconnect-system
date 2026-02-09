@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="css/admin-referral.css">
+
 </head>
 <body>
     <div class="admin-dashboard">
@@ -69,7 +69,7 @@
             </nav>
             
             <div class="sidebar-footer">
-                <a href="#" class="sidebar-link" onclick="adminLogout(); return false;">
+                <a href="#" class="sidebar-link" onclick="logout(); return false;">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>ログアウト</span>
                 </a>
@@ -345,10 +345,11 @@
     </div>
     
     <!-- スクリプト -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/error-prevention.js"></script>
+    <script src="js/global-functions.js"></script>
+    <!-- Supabase統一初期化（CDN動的ロード + クライアント作成） -->
+    <script src="js/supabase-unified.js?v=1.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/admin-common.js"></script>
     <script src="js/admin-referral.js"></script>
     <script src="js/manual-meeting-confirmation.js"></script>
 </body>
