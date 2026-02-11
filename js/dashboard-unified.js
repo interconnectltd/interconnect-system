@@ -397,12 +397,12 @@
                         const now = new Date();
                         const dateStr = now.toISOString().split('T')[0];
 
-                        // start_dateを使用（スキーマ検出結果より）
+                        // event_dateを使用（正規スキーマ）
                         const { data: events, error } = await window.supabase
                             .from('events')
                             .select('*')
-                            .gte('start_date', dateStr)
-                            .order('start_date', { ascending: true })
+                            .gte('event_date', dateStr)
+                            .order('event_date', { ascending: true })
                             .limit(5);
 
                         if (error) {
@@ -1432,13 +1432,10 @@
                 // まずmatchingsテーブルを試す
                 let { count, error } = await window.supabase
                     .from('matchings')
-                    .select('*', { count: 'exact', head: true })
-                    .or('status.eq.success,status.eq.completed,status.is.null');
+                    .select('*', { count: 'exact', head: true });
 
                 if (error) {
-                    // console.log('[MatchingCalculator] matchingsテーブルが存在しません。user_activitiesから取得...');
-
-                    // user_activitiesから取得
+                    // matchingsビューが存在しない場合、user_activitiesから取得
                     const result = await window.supabase
                         .from('user_activities')
                         .select('*', { count: 'exact', head: true })
@@ -1487,13 +1484,12 @@
 
                 // console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチングを取得: ${startDate} ~ ${endDate}`);
 
-                // まずmatchingsテーブルを試す
+                // まずmatchingsビューを試す（statusカラムなし）
                 let { count, error } = await window.supabase
                     .from('matchings')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', startDate)
-                    .lte('created_at', endDate)
-                    .or('status.eq.success,status.eq.completed,status.is.null');
+                    .lte('created_at', endDate);
 
                 if (error) {
                     // user_activitiesから取得
@@ -2794,7 +2790,7 @@
                     const { data, error } = await window.supabase
                         .from('member_growth_stats')
                         .select('*')
-                        .order('date', { ascending: true });
+                        .order('month', { ascending: true });
 
                     if (!error && data && data.length > 0) {
                         return this.processMemberGrowthData(data, period);
@@ -2827,10 +2823,10 @@
                     break;
             }
 
-            const filteredData = rawData.filter(item => new Date(item.date) >= startDate);
+            const filteredData = rawData.filter(item => new Date(item.month) >= startDate);
 
             return {
-                labels: filteredData.map(item => new Date(item.date).toLocaleDateString('ja-JP', {
+                labels: filteredData.map(item => new Date(item.month).toLocaleDateString('ja-JP', {
                     month: 'numeric',
                     day: 'numeric'
                 })),
@@ -2918,12 +2914,12 @@
                     const { data, error } = await window.supabase
                         .from('industry_distribution')
                         .select('*')
-                        .order('member_count', { ascending: false });
+                        .order('count', { ascending: false });
 
                     if (!error && data && data.length > 0) {
                         return {
                             labels: data.map(item => item.industry),
-                            values: data.map(item => item.member_count)
+                            values: data.map(item => item.count)
                         };
                     }
                 }

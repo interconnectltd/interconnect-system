@@ -173,35 +173,8 @@ function showReferralInfo(code) {
     }
 }
 
-// 登録処理を拡張
-const originalRegister = window.register;
-if (originalRegister) {
-    window.register = async function(...args) {
-        // console.log('[Register] 登録処理開始（紹介コード付き）');
-
-        // 紹介コードを取得
-        const referralCode = document.getElementById('referral-code-input')?.value;
-
-        if (referralCode) {
-            // console.log('[Register] 紹介コード:', referralCode);
-
-            // 登録データに紹介コードを追加
-            if (args[0] && typeof args[0] === 'object') {
-                args[0].referral_code = referralCode;
-            }
-        }
-
-        // 元の登録処理を実行
-        const result = await originalRegister.apply(this, args);
-
-        // 登録成功時に紹介関係を記録
-        if (result && result.success && referralCode) {
-            await recordReferralRegistration(referralCode, result.userId);
-        }
-
-        return result;
-    };
-}
+// 旧 window.register ラッパーは削除（auth.js の simulateRegistration と競合していたため）
+// 紹介コード処理は registration-unified.js 内の実 submit ハンドラで行われる
 
 // 紹介登録を記録
 async function recordReferralRegistration(code, userId) {
@@ -2091,161 +2064,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ローカルのvalidateCurrentStep関数は削除（グローバルで定義済み）
 
-    // フォーム送信処理
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        if (!window.InterConnect.Registration.validateCurrentStep(currentStep)) return;
-
-        // 利用規約の同意確認
-        const agreeCheckbox = document.querySelector('input[name="agree"]');
-        if (!agreeCheckbox || !agreeCheckbox.checked) {
-            window.InterConnect.Registration.showToast('利用規約に同意してください', 'error');
-            return;
-        }
-
-        // フォームデータの収集
-        const formData = collectFormData();
-
-        // 招待コード情報を追加
-        if (inviteCode) {
-            formData.inviteCode = inviteCode;
-            formData.inviterId = inviterId || null;
-        }
-
-        // 送信ボタンをローディング状態に
-        const submitButton = form.querySelector('button[type="submit"]');
-        submitButton.classList.add('loading');
-        submitButton.textContent = '登録処理中...';
-
-        try {
-            // 実際のAPIコールをシミュレート
-            await simulateRegistration(formData);
-
-            // 招待コードがある場合、招待記録を作成
-            if (inviteCode && window.supabaseClient) {
-                try {
-                    // 招待リンクの使用回数を更新
-                    const { data: inviteLink, error: linkError } = await window.supabaseClient
-                        .from('invite_links')
-                        .select('id, used_count')
-                        .eq('link_code', inviteCode)
-                        .single();
-
-                    if (!linkError && inviteLink) {
-                        // 使用回数をインクリメント
-                        await window.supabaseClient
-                            .from('invite_links')
-                            .update({ used_count: (inviteLink.used_count || 0) + 1 })
-                            .eq('id', inviteLink.id);
-
-                        // console.log('招待リンクの使用回数を更新しました');
-                    }
-
-                    // セッションストレージをクリア
-                    sessionStorage.removeItem('inviteCode');
-                    sessionStorage.removeItem('inviterId');
-                } catch (error) {
-                    console.error('招待記録の作成エラー:', error);
-                    // エラーが発生しても登録処理は継続
-                }
-            }
-
-            // 成功時の処理
-            window.InterConnect.Registration.showToast('登録が完了しました！', 'success');
-
-            // プロフィールデータを保存（ローカルストレージ）
-            saveProfileData(formData);
-
-            // ダッシュボードへリダイレクト
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 2000);
-
-        } catch (error) {
-            console.error('登録エラー:', error);
-            window.InterConnect.Registration.showToast('登録に失敗しました: ' + (error.message || '不明なエラー'), 'error');
-            submitButton.classList.remove('loading');
-            submitButton.textContent = '登録する';
-        }
-    });
-
-    // フォームデータの収集
-    function collectFormData() {
-        // nullチェックを追加
-        const getElementValue = (id) => {
-            const elem = document.getElementById(id);
-            return elem ? elem.value : '';
-        };
-
-        const formData = {
-            // 基本情報
-            name: getElementValue('name'),
-            company: getElementValue('company'),
-            email: getElementValue('email'),
-            position: getElementValue('position'),
-
-            // 事業課題
-            challenges: Array.from(document.querySelectorAll('input[name="challenges"]:checked'))
-                .map(cb => cb.value),
-            budget: getElementValue('budget'),
-
-            // 事業課題の詳細
-            'revenue-details': getElementValue('revenue-details'),
-            'hr-details': getElementValue('hr-details'),
-            'dx-details': getElementValue('dx-details'),
-            'strategy-details': getElementValue('strategy-details'),
-
-            // 連絡先
-            phone: getElementValue('phone'),
-            lineId: getElementValue('line-id'),
-
-            // その他
-            newsletter: document.querySelector('input[name="newsletter"]')?.checked || false,
-
-            // スキル
-            skills: Array.from(document.querySelectorAll('input[name="skills"]:checked'))
-                .map(cb => cb.value),
-
-            // 興味・関心
-            interests: Array.from(document.querySelectorAll('input[name="interests"]:checked'))
-                .map(cb => cb.value),
-
-            // プロフィール用追加データ
-            joinDate: new Date().toISOString(),
-            profileImage: 'assets/user-placeholder.svg',
-            bio: ''
-        };
-
-        return formData;
-    }
-
-    // プロフィールデータの保存
-    function saveProfileData(data) {
-        // 実際の実装では、APIを通じてサーバーに保存
-        if (window.safeLocalStorage) {
-            window.safeLocalStorage.setJSON('userProfile', data);
-            window.safeLocalStorage.setItem('isLoggedIn', 'true');
-        } else {
-            // フォールバック
-            try {
-                localStorage.setItem('userProfile', JSON.stringify(data));
-                localStorage.setItem('isLoggedIn', 'true');
-            } catch (e) {
-                console.error('Failed to save profile data:', e);
-            }
-        }
-    }
-
-    // 登録処理のシミュレーション
-    function simulateRegistration(data) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // console.log('Registration data:', data);
-                resolve();
-            }, 2000);
-        });
-    }
+    // 旧: simulateRegistration + 偽submitハンドラ + 1つ目のcollectFormData + saveProfileData 削除済み
+    // 実際のSupabase登録は下方の handleRealRegistration で行う
 
     // ヘルパー関数は既にグローバルスコープで定義済み
 
@@ -2377,10 +2197,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     bio: formData['skills-pr'] || '',
                     skills: formData.skills,
                     interests: formData.interests,
-                    revenue_details: formData['revenue-details'],
-                    hr_details: formData['hr-details'],
-                    dx_details: formData['dx-details'],
-                    strategy_details: formData['strategy-details'],
+                    business_challenges: {
+                        challenges: formData.challenges || [],
+                        revenue_details: formData['revenue-details'] || '',
+                        hr_details: formData['hr-details'] || '',
+                        dx_details: formData['dx-details'] || '',
+                        strategy_details: formData['strategy-details'] || ''
+                    },
                     industry: formData.industry || '',
                     is_active: true,
                     is_online: true,
@@ -2428,7 +2251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         inviter_id: inviterId,
                         invitee_id: authData.user.id,
                         status: 'registered',
-                        invite_code: inviteCode,
+                        invitation_code: inviteCode,
                         registered_at: new Date().toISOString()
                     });
 
@@ -2460,7 +2283,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // 成功メッセージ
-            showToast('登録が完了しました！', 'success');
+            (window.showToast || function(m){alert(m)})('登録が完了しました！', 'success');
 
             // ユーザー情報を保存
             localStorage.setItem('user', JSON.stringify({
@@ -2478,7 +2301,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             // console.error('登録エラー:', error);
-            showToast(error.message || '登録に失敗しました', 'error');
+            (window.showToast || function(m){alert(m)})(error.message || '登録に失敗しました', 'error');
 
             submitButton.disabled = false;
             submitButton.classList.remove('loading');

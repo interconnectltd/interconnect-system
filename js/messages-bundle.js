@@ -59,7 +59,7 @@
                 // 最近のマッチングまたはイベント参加者を取得
                 const { data: recentConnections, error } = await window.supabase
                     .from('user_activities')
-                    .select('*, profiles!related_id(*)')
+                    .select('*')
                     .eq('user_id', user.id)
                     .in('activity_type', ['matching_success', 'event_participation'])
                     .order('created_at', { ascending: false })
@@ -67,16 +67,35 @@
 
                 if (error) throw error;
 
-                this.connections = recentConnections.map(activity => ({
-                    id: activity.related_id,
-                    name: activity.profiles?.full_name || 'ユーザー',
-                    company: activity.profiles?.company || '',
-                    email: activity.profiles?.email || '',
-                    line_id: activity.profiles?.line_id || '',
-                    line_qr: activity.profiles?.line_qr_url || '',
-                    phone: activity.profiles?.phone || '',
-                    avatar: activity.profiles?.avatar_url || 'assets/user-placeholder.svg'
-                }));
+                // related_idからプロフィール情報を別クエリで取得（FKなし）
+                const relatedIds = recentConnections
+                    .map(a => a.related_id)
+                    .filter(Boolean);
+
+                let profilesMap = {};
+                if (relatedIds.length > 0) {
+                    const { data: profiles } = await window.supabase
+                        .from('user_profiles')
+                        .select('id, full_name, company, email, line_id, line_qr_url, phone, avatar_url')
+                        .in('id', relatedIds);
+                    if (profiles) {
+                        profiles.forEach(p => { profilesMap[p.id] = p; });
+                    }
+                }
+
+                this.connections = recentConnections.map(activity => {
+                    const profile = profilesMap[activity.related_id] || {};
+                    return {
+                        id: activity.related_id,
+                        name: profile.full_name || 'ユーザー',
+                        company: profile.company || '',
+                        email: profile.email || '',
+                        line_id: profile.line_id || '',
+                        line_qr: profile.line_qr_url || '',
+                        phone: profile.phone || '',
+                        avatar: profile.avatar_url || 'assets/user-placeholder.svg'
+                    };
+                });
 
             } catch (error) {
                 console.error('[MessagesExternalContacts] Supabaseエラー:', error);

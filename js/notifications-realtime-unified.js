@@ -210,7 +210,7 @@
         const notification = {
             type: 'message',
             title: `${sender?.name || '不明なユーザー'}さんから新しいメッセージ`,
-            message: message.content.substring(0, 50) + (message.content.length > 50 ? '...' : ''),
+            message: ((message.content || '')).substring(0, 50) + ((message.content || '').length > 50 ? '...' : ''),
             link: '/messages.html'
         };
 
@@ -221,7 +221,7 @@
     async function handleMatchingUpdate(payload) {
         // console.log('[RealtimeNotificationsUnified] マッチング更新:', payload);
 
-        if (payload.eventType === 'INSERT' && payload.new.status === 'matched') {
+        if (payload.eventType === 'INSERT') {
             // 相手のユーザー情報を取得
             const otherUserId = payload.new.user1_id === currentUserId 
                 ? payload.new.user2_id 
@@ -283,7 +283,7 @@
             const { data: referredUser } = await window.supabaseClient
                 .from('user_profiles')
                 .select('name')
-                .eq('id', payload.new.referred_user_id)
+                .eq('id', payload.new.accepted_by)
                 .single();
 
             // 通知を作成

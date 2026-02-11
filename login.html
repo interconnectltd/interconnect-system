@@ -64,10 +64,10 @@
                 LINEでログイン
             </button>
             
-            <a href="dashboard.html" class="auth-button guest-button">
+            <button type="button" class="auth-button guest-button" id="guestLoginBtn" onclick="if(window.GuestModeManager){window.GuestModeManager.enableGuestMode();window.location.href='dashboard.html';}else{window.location.href='dashboard.html';}">
                 <i class="fas fa-user-secret"></i>
                 ゲストとしてログイン
-            </a>
+            </button>
             
             <div class="auth-footer">
                 <p>アカウントをお持ちでない方は</p>
@@ -86,12 +86,7 @@
     <script src="js/global-functions.js?v=20250122"></script>
     <!-- ゲストモード管理 -->
     <script src="js/guest-mode-manager.js"></script>
+    <script src="js/supabase-unified.js?v=1.2"></script>
     <script src="js/login-bundle.js"></script>
-    <!-- <script src="js/line-login-debug-full.js?v=20250122"></script> -->
-    <!-- 以下は競合するため完全に無効化 -->
-    <!-- <script src="js/line-login-fix.js"></script> -->
-    <!-- <script src="js/line-login-immediate.js"></script> -->
-    <!-- <script src="js/line-debug.js"></script> -->
-    <script src="js/supabase-unified.js?v=1.1"></script>
 </body>
 </html>

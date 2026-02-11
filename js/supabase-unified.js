@@ -91,6 +91,9 @@
             // 認証機能を初期化
             initializeAuth();
 
+            // 認証状態変更リスナーをセットアップ
+            setupAuthStateListener();
+
         } catch (error) {
             console.error('[SupabaseUnified] 初期化エラー:', error);
         }
@@ -302,22 +305,29 @@
         }
     }
 
-    // エラー表示
+    // エラー表示（XSS修正: innerHTML → textContent + DOM構築）
     function showError(message) {
         const existingError = document.querySelector('.auth-error');
         if (existingError) {
             existingError.remove();
         }
-        
+
         const errorDiv = document.createElement('div');
         errorDiv.className = 'auth-error';
-        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> <span>${message}</span>`;
-        
+
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-exclamation-circle';
+        const span = document.createElement('span');
+        span.textContent = message;
+        errorDiv.appendChild(icon);
+        errorDiv.appendChild(document.createTextNode(' '));
+        errorDiv.appendChild(span);
+
         const form = document.getElementById('loginForm');
         if (form && form.parentNode) {
             form.parentNode.insertBefore(errorDiv, form);
         }
-        
+
         // 5秒後に自動で削除
         setTimeout(() => errorDiv.remove(), 5000);
     }
@@ -330,6 +340,28 @@
             result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return result;
+    }
+
+    // 認証状態変更リスナー（セッション期限切れ時の自動リダイレクト、タブ間同期）
+    function setupAuthStateListener() {
+        if (!window.supabaseClient) return;
+
+        window.supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+                // 公開ページでは何もしない
+                const currentPath = window.location.pathname;
+                const publicPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'line-callback.html', 'invite.html'];
+                const isPublicPage = publicPages.some(page => {
+                    if (page === '/' || page === '') return currentPath === '/' || currentPath === '/index.html' || currentPath === '';
+                    return currentPath.includes(page);
+                });
+
+                if (!isPublicPage) {
+                    sessionStorage.setItem('redirectAfterLogin', window.location.href);
+                    window.location.href = 'login.html';
+                }
+            }
+        });
     }
 
     // グローバル関数として公開

@@ -2195,13 +2195,9 @@
                 .insert({
                     user_id: userId,
                     type: type,
-                    category: 'matching',
                     title: title,
-                    content: content,
-                    icon: 'fas fa-user-plus',
-                    priority: 'normal',
-                    related_id: relatedId,
-                    related_type: relatedType,
+                    message: content,
+                    data: { category: 'matching', icon: 'fas fa-user-plus', related_id: relatedId, related_type: relatedType },
                     is_read: false
                 });
 

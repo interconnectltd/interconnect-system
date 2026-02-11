@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     avatar_url TEXT,
     picture_url TEXT,
     cover_url TEXT,
+    line_qr_url TEXT,
     is_active BOOLEAN DEFAULT true,
     is_online BOOLEAN DEFAULT false,
     is_admin BOOLEAN DEFAULT false,
@@ -82,6 +83,9 @@ CREATE TRIGGER update_user_profiles_updated_at
 
 -- 後方互換: 'profiles' ビューを作成（旧コードが参照する場合用）
 CREATE OR REPLACE VIEW profiles AS SELECT * FROM user_profiles;
+
+-- 後方互換: 'events' ビューを作成（JSコードが .from('events') を使用）
+CREATE OR REPLACE VIEW events AS SELECT * FROM event_items;
 
 -- ========================
 -- 2. connections
@@ -167,8 +171,14 @@ CREATE TABLE IF NOT EXISTS event_items (
     title TEXT NOT NULL,
     description TEXT,
     event_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    start_time TIME,
+    end_time TIME,
+    event_type VARCHAR(20) CHECK (event_type IN ('online', 'offline', 'hybrid')),
+    online_url TEXT,
     location TEXT,
     capacity INTEGER,
+    max_participants INTEGER,
+    price INTEGER DEFAULT 0,
     image_url TEXT,
     organizer_id UUID REFERENCES auth.users(id),
     is_public BOOLEAN DEFAULT true,
@@ -853,6 +863,18 @@ WHERE is_active = true
 GROUP BY industry
 ORDER BY count DESC;
 
+-- イベント統計ビュー（dashboard-unified.js チャート用）
+CREATE OR REPLACE VIEW event_stats AS
+SELECT
+    DATE_TRUNC('week', event_date) AS week,
+    event_type,
+    COUNT(*) AS event_count,
+    COALESCE(SUM(max_participants), 0) AS total_capacity
+FROM event_items
+WHERE is_cancelled = false
+GROUP BY DATE_TRUNC('week', event_date), event_type
+ORDER BY week DESC;
+
 CREATE OR REPLACE VIEW referral_statistics AS
 SELECT
     il.link_code,
@@ -1055,6 +1077,131 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ========================
+-- 19b. 追加RPC関数（管理画面用）
+-- ========================
+
+-- トップ紹介者を取得（admin-referral-bundle.js用）
+CREATE OR REPLACE FUNCTION get_top_referrers(limit_count INTEGER DEFAULT 10)
+RETURNS TABLE(
+    user_id UUID,
+    user_name TEXT,
+    user_email TEXT,
+    user_company TEXT,
+    total_referrals BIGINT,
+    successful_referrals BIGINT,
+    total_points_earned INTEGER
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        up.id AS user_id,
+        up.name AS user_name,
+        up.email AS user_email,
+        up.company AS user_company,
+        COUNT(i.id) AS total_referrals,
+        COUNT(CASE WHEN i.status IN ('registered', 'completed') THEN 1 END) AS successful_referrals,
+        COALESCE(upt.total_earned, 0) AS total_points_earned
+    FROM user_profiles up
+    INNER JOIN invitations i ON i.inviter_id = up.id
+    LEFT JOIN user_points upt ON upt.user_id = up.id
+    GROUP BY up.id, up.name, up.email, up.company, upt.total_earned
+    ORDER BY total_referrals DESC
+    LIMIT limit_count;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 紹介分析データ取得（admin-referral-bundle.js用）
+CREATE OR REPLACE FUNCTION get_referral_analytics(start_date DATE, end_date DATE)
+RETURNS JSON AS $$
+DECLARE
+    result JSON;
+BEGIN
+    SELECT json_build_object(
+        'daily_referrals', (
+            SELECT json_agg(row_to_json(dr))
+            FROM (
+                SELECT DATE(created_at) AS date, COUNT(*) AS count
+                FROM invitations
+                WHERE DATE(created_at) BETWEEN start_date AND end_date
+                GROUP BY DATE(created_at)
+                ORDER BY date
+            ) dr
+        ),
+        'total_referrals', (
+            SELECT COUNT(*) FROM invitations
+            WHERE DATE(created_at) BETWEEN start_date AND end_date
+        ),
+        'successful_referrals', (
+            SELECT COUNT(*) FROM invitations
+            WHERE DATE(created_at) BETWEEN start_date AND end_date
+            AND status IN ('registered', 'completed')
+        ),
+        'total_points_awarded', (
+            SELECT COALESCE(SUM(points), 0) FROM point_transactions
+            WHERE DATE(created_at) BETWEEN start_date AND end_date
+        )
+    ) INTO result;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 管理者ポイント付与（admin-referral-bundle.js用）
+CREATE OR REPLACE FUNCTION add_user_points(p_user_id UUID, p_amount INTEGER)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO user_points (user_id, total_earned, balance, available_points)
+    VALUES (p_user_id, p_amount, p_amount, p_amount)
+    ON CONFLICT (user_id) DO UPDATE SET
+        total_earned = user_points.total_earned + p_amount,
+        balance = user_points.balance + p_amount,
+        available_points = user_points.available_points + p_amount,
+        updated_at = NOW();
+
+    INSERT INTO point_transactions (user_id, points, reason)
+    VALUES (p_user_id, p_amount, '管理者によるポイント付与');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 紹介報酬処理（admin-referral-bundle.js用）
+CREATE OR REPLACE FUNCTION process_referral_reward(p_invitation_id UUID)
+RETURNS JSON AS $$
+DECLARE
+    v_invitation RECORD;
+    v_reward_points INTEGER := 1000;
+BEGIN
+    SELECT * INTO v_invitation FROM invitations WHERE id = p_invitation_id;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION '招待が見つかりません';
+    END IF;
+
+    -- 招待ステータスを更新
+    UPDATE invitations
+    SET status = 'completed',
+        reward_status = 'earned',
+        reward_earned_at = NOW(),
+        meeting_completed_at = NOW(),
+        points_earned = v_reward_points
+    WHERE id = p_invitation_id;
+
+    -- 紹介者にポイントを付与
+    INSERT INTO user_points (user_id, total_earned, balance, available_points, referral_points_earned)
+    VALUES (v_invitation.inviter_id, v_reward_points, v_reward_points, v_reward_points, v_reward_points)
+    ON CONFLICT (user_id) DO UPDATE SET
+        total_earned = user_points.total_earned + v_reward_points,
+        balance = user_points.balance + v_reward_points,
+        available_points = user_points.available_points + v_reward_points,
+        referral_points_earned = user_points.referral_points_earned + v_reward_points,
+        updated_at = NOW();
+
+    -- トランザクション記録
+    INSERT INTO point_transactions (user_id, points, reason)
+    VALUES (v_invitation.inviter_id, v_reward_points, '紹介報酬（面談完了）');
+
+    RETURN json_build_object('success', true, 'points_awarded', v_reward_points);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ========================
 -- 20. 新規ユーザー作成トリガー
 -- ========================
 
@@ -1137,3 +1284,9 @@ GRANT SELECT ON industry_distribution TO authenticated;
 GRANT SELECT ON referral_statistics TO authenticated;
 GRANT SELECT ON matchings TO authenticated;
 GRANT SELECT ON profiles TO authenticated;
+GRANT SELECT ON events TO authenticated;
+GRANT SELECT ON event_stats TO authenticated;
+GRANT EXECUTE ON FUNCTION get_top_referrers(INTEGER) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_referral_analytics(DATE, DATE) TO authenticated;
+GRANT EXECUTE ON FUNCTION add_user_points(UUID, INTEGER) TO authenticated;
+GRANT EXECUTE ON FUNCTION process_referral_reward(UUID) TO authenticated;

@@ -1299,9 +1299,8 @@
                         type: type,
                         title: type === 'connection_request' ? 'コネクト申請' : 'コネクト承認',
                         message: messages[type],
-                        related_id: this.currentUserId,
-                        is_read: false,
-                        created_at: new Date().toISOString()
+                        data: { related_id: this.currentUserId },
+                        is_read: false
                     });
 
             } catch (error) {

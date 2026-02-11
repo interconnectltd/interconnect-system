@@ -313,7 +313,7 @@ class CashoutModal {
             if (error) throw error;
             
             // ポイント残高を更新
-            const { error: pointError } = await supabase
+            const { error: pointError } = await window.supabaseClient
                 .rpc('deduct_user_points', {
                     p_user_id: user.id,
                     p_amount: amount
@@ -488,7 +488,7 @@ window.cashoutModal = new CashoutModal();
 
             if (data) {
                 referralStats.availablePoints = data.available_points || 0;
-                referralStats.totalEarned = data.total_points || 0;
+                referralStats.totalEarned = data.total_earned || 0;
 
                 // UI更新
                 updateElement('available-points', referralStats.availablePoints.toLocaleString());

@@ -569,7 +569,7 @@
                         type: 'connection_accepted',
                         title: 'コネクト承認',
                         message: `あなたのコネクト申請が承認されました`,
-                        related_id: this.currentUserId,
+                        data: { related_id: this.currentUserId },
                         is_read: false
                     });
 
@@ -717,7 +717,7 @@
                         type: 'connection_reaccepted',
                         title: 'コネクト再承認',
                         message: `${userName}さんがあなたのコネクト申請を再承認しました`,
-                        related_id: this.currentUserId,
+                        data: { related_id: this.currentUserId },
                         is_read: false
                     });
 

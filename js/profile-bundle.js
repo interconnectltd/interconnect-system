@@ -588,107 +588,174 @@ window.InterConnect.Profile = {
     
     // 編集モーダルを開く
     openEditModal: function() {
-        const modal = document.getElementById('editProfileModal');
+        const modal = document.getElementById('profileEditModal') || document.getElementById('editProfileModal');
         if (!modal) return;
-        
+
         // 現在のデータをフォームに反映
         const data = window.InterConnect.Profile.profileData || {};
-        
-        // 各フィールドに値を設定
-        const nameInput = document.getElementById('profileName');
-        if (nameInput) nameInput.value = data.name || '';
-        
-        const companyInput = document.getElementById('profileCompany');
-        if (companyInput) companyInput.value = data.company || '';
-        
-        const positionInput = document.getElementById('profilePosition');
-        if (positionInput) positionInput.value = data.position || '';
-        
-        const bioInput = document.getElementById('profileBio');
-        if (bioInput) bioInput.value = data.bio || '';
-        
+
+        // HTML の id は edit-name, edit-company 等（profileEditModal内）
+        const fields = {
+            'edit-name': data.name || '',
+            'edit-company': data.company || '',
+            'edit-position': data.position || '',
+            'edit-bio': data.bio || '',
+            'edit-email': data.email || '',
+            'edit-phone': data.phone || '',
+            'edit-lineId': data.line_id || ''
+        };
+        Object.entries(fields).forEach(([id, val]) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val;
+        });
+
         // モーダルを表示
         modal.style.display = 'flex';
-        setTimeout(() => {
-            modal.classList.add('active');
-        }, 10);
+        setTimeout(() => { modal.classList.add('active'); }, 10);
     },
-    
+
     // 編集モーダルを閉じる
     closeEditModal: function() {
-        const modal = document.getElementById('editProfileModal');
+        const modal = document.getElementById('profileEditModal') || document.getElementById('editProfileModal');
         if (!modal) return;
-        
         modal.classList.remove('active');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300);
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
     },
-    
+
+    // 事業課題モーダルを閉じる
+    closeChallengesModal: function() {
+        const modal = document.getElementById('challengesEditModal');
+        if (!modal) return;
+        modal.classList.remove('active');
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    },
+
     // プロフィールを保存
     saveProfile: async function() {
-        // console.log('saveProfile called');
-        
-        // フォームからデータを取得
-        const nameInput = document.getElementById('profileName');
-        const companyInput = document.getElementById('profileCompany');
-        const positionInput = document.getElementById('profilePosition');
-        const bioInput = document.getElementById('profileBio');
-        
+        // HTML フォームの id に合わせて取得
+        const nameInput = document.getElementById('edit-name');
+        const companyInput = document.getElementById('edit-company');
+        const positionInput = document.getElementById('edit-position');
+        const bioInput = document.getElementById('edit-bio');
+        const emailInput = document.getElementById('edit-email');
+        const phoneInput = document.getElementById('edit-phone');
+        const lineIdInput = document.getElementById('edit-lineId');
+
         if (!window.InterConnect.Profile.profileData) {
             window.InterConnect.Profile.profileData = {};
         }
-        
+
         // データを更新
         if (nameInput) window.InterConnect.Profile.profileData.name = nameInput.value;
         if (companyInput) window.InterConnect.Profile.profileData.company = companyInput.value;
         if (positionInput) window.InterConnect.Profile.profileData.position = positionInput.value;
         if (bioInput) window.InterConnect.Profile.profileData.bio = bioInput.value;
-        
+        if (emailInput) window.InterConnect.Profile.profileData.email = emailInput.value;
+        if (phoneInput) window.InterConnect.Profile.profileData.phone = phoneInput.value;
+        if (lineIdInput) window.InterConnect.Profile.profileData.line_id = lineIdInput.value;
+
         // Supabaseに保存
         if (window.supabaseClient && this.currentUserId) {
             try {
                 const updateData = {
                     name: window.InterConnect.Profile.profileData.name,
-                    full_name: window.InterConnect.Profile.profileData.name, // full_nameも更新
+                    full_name: window.InterConnect.Profile.profileData.name,
                     company: window.InterConnect.Profile.profileData.company,
                     position: window.InterConnect.Profile.profileData.position,
                     bio: window.InterConnect.Profile.profileData.bio,
+                    email: window.InterConnect.Profile.profileData.email,
+                    phone: window.InterConnect.Profile.profileData.phone,
+                    line_id: window.InterConnect.Profile.profileData.line_id,
                     updated_at: new Date().toISOString()
                 };
-                
+
                 const { error } = await window.supabaseClient
                     .from('user_profiles')
                     .update(updateData)
                     .eq('id', this.currentUserId);
-                    
+
                 if (error) {
                     console.error('[Profile] Supabase更新エラー:', error);
-                    // エラーでもlocalStorageには保存する
-                } else {
-                    // console.log('[Profile] Supabaseに正常に保存されました');
                 }
             } catch (error) {
                 console.error('[Profile] 保存処理エラー:', error);
             }
         }
-        
+
         // localStorageにも保存（バックアップ）
         if (window.safeLocalStorage) {
             window.safeLocalStorage.setJSON('userProfile', window.InterConnect.Profile.profileData);
-            // console.log('Profile saved to localStorage');
         }
-        
+
         // UIを更新
         window.InterConnect.Profile.updateProfileInfo();
-        
+
         // モーダルを閉じる
         window.InterConnect.Profile.closeEditModal();
-        
+
         // 成功メッセージ
-        // alert('プロフィールを更新しました');
-        if (window.showSuccess) {
-            showSuccess('プロフィールを更新しました');
+        if (window.showToast) {
+            window.showToast('プロフィールを更新しました', 'success');
+        }
+    },
+
+    // 事業課題を保存
+    saveChallenges: async function() {
+        const budgetInput = document.getElementById('edit-budget');
+
+        if (!window.InterConnect.Profile.profileData) {
+            window.InterConnect.Profile.profileData = {};
+        }
+
+        // チェックボックスから課題を収集
+        const challenges = Array.from(
+            document.querySelectorAll('#challengesEditForm input[name="challenges"]:checked')
+        ).map(cb => cb.value);
+
+        const businessChallenges = {
+            challenges: challenges,
+            revenue_details: document.getElementById('edit-revenue-details')?.value || '',
+            hr_details: document.getElementById('edit-hr-details')?.value || '',
+            dx_details: document.getElementById('edit-dx-details')?.value || '',
+            strategy_details: document.getElementById('edit-strategy-details')?.value || ''
+        };
+
+        window.InterConnect.Profile.profileData.business_challenges = businessChallenges;
+        if (budgetInput) window.InterConnect.Profile.profileData.budget_range = budgetInput.value;
+
+        // Supabaseに保存
+        if (window.supabaseClient && this.currentUserId) {
+            try {
+                const { error } = await window.supabaseClient
+                    .from('user_profiles')
+                    .update({
+                        business_challenges: businessChallenges,
+                        budget_range: window.InterConnect.Profile.profileData.budget_range,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', this.currentUserId);
+
+                if (error) {
+                    console.error('[Profile] 事業課題保存エラー:', error);
+                }
+            } catch (error) {
+                console.error('[Profile] 事業課題保存処理エラー:', error);
+            }
+        }
+
+        // localStorageにも保存
+        if (window.safeLocalStorage) {
+            window.safeLocalStorage.setJSON('userProfile', window.InterConnect.Profile.profileData);
+        }
+
+        // UIを更新
+        window.InterConnect.Profile.updateProfileInfo();
+
+        // モーダルを閉じる
+        window.InterConnect.Profile.closeChallengesModal();
+
+        if (window.showToast) {
+            window.showToast('事業課題を更新しました', 'success');
         }
     },
     

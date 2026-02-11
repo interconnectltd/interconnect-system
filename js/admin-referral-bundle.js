@@ -263,8 +263,7 @@ class AdminReferralManager {
                 .select(`
                     *,
                     inviter:profiles!invitations_inviter_id_fkey(name, email, company),
-                    invitee:profiles!invitations_invitee_id_fkey(name, email, company),
-                    reward_status:reward_processing_status(status, reward_amount)
+                    invitee:profiles!invitations_invitee_id_fkey(name, email, company)
                 `)
                 .order('created_at', { ascending: false });
 
@@ -345,8 +344,8 @@ class AdminReferralManager {
                     </div>
                 </td>
                 <td>¥${cashout.amount.toLocaleString()}</td>
-                <td class="text-danger">-¥${cashout.tax_amount.toLocaleString()}</td>
-                <td class="text-success">¥${cashout.net_amount.toLocaleString()}</td>
+                <td class="text-danger">-¥${(cashout.tax_amount || 0).toLocaleString()}</td>
+                <td class="text-success">¥${(cashout.net_amount || 0).toLocaleString()}</td>
                 <td>
                     <span class="status-badge ${cashout.status}">
                         ${this.getCashoutStatusText(cashout.status)}
@@ -761,8 +760,7 @@ class AdminReferralManager {
             .select(`
                 *,
                 inviter:profiles!invitations_inviter_id_fkey(*),
-                invitee:profiles!invitations_invitee_id_fkey(*),
-                invite_link:invite_links!invitations_invite_code_fkey(*)
+                invitee:profiles!invitations_invitee_id_fkey(*)
             `)
             .eq('id', referralId)
             .single();
@@ -790,7 +788,7 @@ class AdminReferralManager {
                     <p><strong>招待コード:</strong> ${referral.invite_code}</p>
                     <p><strong>作成日:</strong> ${this.formatDate(referral.created_at)}</p>
                     <p><strong>登録日:</strong> ${referral.registered_at ? this.formatDate(referral.registered_at) : '-'}</p>
-                    <p><strong>完了日:</strong> ${referral.completed_at ? this.formatDate(referral.completed_at) : '-'}</p>
+                    <p><strong>完了日:</strong> ${referral.meeting_completed_at ? this.formatDate(referral.meeting_completed_at) : '-'}</p>
                 </div>
             </div>
         `;
@@ -964,7 +962,7 @@ class AdminReferralManager {
             row.invitee?.company || '',
             this.getStatusText(row.status),
             row.registered_at ? this.formatDate(row.registered_at) : '',
-            row.completed_at ? this.formatDate(row.completed_at) : ''
+            row.meeting_completed_at ? this.formatDate(row.meeting_completed_at) : ''
         ]);
 
         return [headers, ...rows]
@@ -1177,7 +1175,7 @@ class ManualMeetingConfirmation {
                 .from('tldv_meeting_records')
                 .insert({
                     meeting_id: `manual_${Date.now()}`,
-                    invitee_email: invitation.invitee.email,
+                    invitee_email: invitation.invitee?.email || invitation.invitee_email,
                     meeting_date: confirmationData.meeting_datetime,
                     duration_minutes: confirmationData.duration_minutes,
                     is_valid: true
