@@ -1,0 +1,618 @@
+/* ============================================================ */
+/* Messages Page Bundle                                        */
+/* Consolidated from: messages.css, info-card-contrast-fix.css */
+/* ============================================================ */
+
+/* ============================================================ */
+/* Source: messages.css                                        */
+/* ============================================================ */
+
+/* ===========================
+   Messages Page Styles - Optimized
+   =========================== */
+
+.messages-info {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Info Card - 高コントラスト対応 */
+.info-card {
+    background: var(--primary-light);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+    position: relative;
+    overflow: hidden;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-color);
+}
+
+.info-card i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: var(--space-lg);
+    display: block;
+}
+
+.info-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.info-card p {
+    color: var(--text-primary);
+    line-height: 1.8;
+    margin-bottom: var(--space-md);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.info-card p:last-child {
+    margin-bottom: 0;
+}
+
+/* Contact Methods - 最適化版 */
+.contact-methods {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+    transition: box-shadow 0.3s ease;
+}
+
+.contact-methods:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.contact-methods h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+    position: relative;
+    padding-left: var(--space-lg);
+}
+
+.contact-methods h3::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+}
+
+.method-card {
+    text-align: center;
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.method-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--primary-light);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.method-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.method-card:hover::before {
+    opacity: 1;
+}
+
+.method-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.method-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--space-lg);
+    background: white;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.method-card:hover .method-icon {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-md);
+}
+
+.method-card h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.method-card p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+/* Recent Connections - 最適化版 */
+.recent-connections {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-xl);
+    transition: box-shadow 0.3s ease;
+}
+
+.recent-connections:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.recent-connections h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+    position: relative;
+    padding-left: var(--space-lg);
+}
+
+.recent-connections h3::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.connections-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    min-height: 200px;
+}
+
+.connection-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.connection-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--primary-color);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.connection-item:hover {
+    background: var(--primary-light);
+    transform: translateX(4px);
+}
+
+.connection-item:hover::before {
+    transform: translateX(0);
+}
+
+.connection-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.connection-item:hover .connection-avatar {
+    border-color: var(--primary-color);
+}
+
+.connection-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.connection-info h4 {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.connection-info p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.connection-actions {
+    flex-shrink: 0;
+}
+
+.connection-actions .btn {
+    white-space: nowrap;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .info-card {
+        padding: var(--space-lg);
+    }
+    
+    .info-card i {
+        font-size: 2.5rem;
+    }
+    
+    .info-card h2 {
+        font-size: 1.25rem;
+    }
+    
+    .method-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    
+    .method-card {
+        padding: var(--space-md);
+    }
+    
+    .method-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .contact-methods,
+    .recent-connections {
+        padding: var(--space-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .info-card {
+        padding: var(--space-md);
+    }
+    
+    .info-card i {
+        font-size: 2rem;
+        margin-bottom: var(--space-md);
+    }
+    
+    .info-card h2 {
+        font-size: 1.125rem;
+        margin-bottom: var(--space-md);
+    }
+    
+    .info-card p {
+        font-size: 0.875rem;
+    }
+    
+    .contact-methods,
+    .recent-connections {
+        padding: var(--space-md);
+    }
+    
+    .connection-item {
+        flex-direction: column;
+        text-align: center;
+        padding: var(--space-lg);
+    }
+    
+    .connection-info {
+        margin-bottom: var(--space-sm);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+    }
+}
+/* ============================================================ */
+/* Source: info-card-contrast-fix.css                          */
+/* ============================================================ */
+
+/* ===========================
+   Info Card Contrast Fix
+   情報カードの色コントラストを最適化
+   =========================== */
+
+/* 情報カードのデザインを完全に刷新 */
+.info-card {
+    /* グラデーション背景で視覚的に魅力的に */
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+    border: 2px solid #0066ff;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 102, 255, 0.1);
+}
+
+/* 背景の装飾パターン */
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    transform: rotate(45deg);
+    pointer-events: none;
+}
+
+/* アイコンスタイル */
+.info-card i {
+    font-size: 3rem;
+    color: #0066ff;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+    /* アイコンに背景を追加 */
+    background: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.15);
+}
+
+/* 見出しスタイル */
+.info-card h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 段落スタイル */
+.info-card p {
+    color: #333333;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.info-card p:last-child {
+    margin-bottom: 0;
+}
+
+/* 強調表示 */
+.info-card strong {
+    color: #0066ff;
+    font-weight: 600;
+}
+
+/* リンクスタイル */
+.info-card a {
+    color: #0066ff;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.info-card a:hover {
+    color: #0052cc;
+    text-decoration: none;
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .info-card {
+        background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+        border-color: #3a7bd5;
+        box-shadow: 0 4px 20px rgba(58, 123, 213, 0.2);
+    }
+    
+    .info-card::before {
+        background: radial-gradient(circle, rgba(58, 123, 213, 0.05) 1px, transparent 1px);
+    }
+    
+    .info-card i {
+        color: #3a7bd5;
+        background: #0f1823;
+        box-shadow: 0 4px 12px rgba(58, 123, 213, 0.3);
+    }
+    
+    .info-card h2 {
+        color: #ffffff;
+    }
+    
+    .info-card p {
+        color: #e0e0e0;
+    }
+    
+    .info-card strong {
+        color: #5a9fd8;
+    }
+    
+    .info-card a {
+        color: #5a9fd8;
+    }
+    
+    .info-card a:hover {
+        color: #7ab8e5;
+    }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .info-card {
+        padding: 24px;
+        border-radius: 12px;
+    }
+    
+    .info-card i {
+        font-size: 2.5rem;
+        width: 70px;
+        height: 70px;
+    }
+    
+    .info-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .info-card p {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .info-card {
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .info-card i {
+        font-size: 2rem;
+        width: 60px;
+        height: 60px;
+        margin-bottom: 16px;
+    }
+    
+    .info-card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+    }
+    
+    .info-card p {
+        font-size: 0.875rem;
+        line-height: 1.7;
+    }
+}
+
+/* アクセシビリティ - ハイコントラストモード */
+@media (prefers-contrast: high) {
+    .info-card {
+        background: white;
+        border: 3px solid #000000;
+    }
+    
+    .info-card i {
+        color: #000000;
+        background: white;
+        border: 2px solid #000000;
+    }
+    
+    .info-card h2 {
+        color: #000000;
+    }
+    
+    .info-card p {
+        color: #000000;
+    }
+}
+
+/* アニメーション */
+@media (prefers-reduced-motion: no-preference) {
+    .info-card {
+        animation: fadeInScale 0.6s ease-out;
+    }
+    
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+}

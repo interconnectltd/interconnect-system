@@ -27,28 +27,14 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/navbar-fresh.css">
-    <link rel="stylesheet" href="css/homepage-modern.css">
+    <!-- Homepage page bundle (homepage-modern + contact-balanced + news-category-mobile-fix + video-loading-optimize + video-poster-fallback) -->
+    <link rel="stylesheet" href="css/homepage-page.css">
     <link rel="stylesheet" href="css/homepage-complete.css">
-    <link rel="stylesheet" href="css/contact-balanced.css">
-    <!-- <link rel="stylesheet" href="css/scroll-animations.css"> -->
-    <!-- loading-screen.css は homepage-perfect-final.js に統合済み -->
-    <!-- <link rel="stylesheet" href="css/loading-screen.css"> -->
-    <link rel="stylesheet" href="css/news-category-mobile-fix.css">
-    <!-- 動画プリロード修正 -->
-    <link rel="stylesheet" href="css/homepage-video-preload-fix.css">
-    <!-- 動画読み込み最適化 -->
-    <link rel="stylesheet" href="css/video-loading-optimize.css">
-    <!-- 動画ポスターフォールバック -->
-    <link rel="stylesheet" href="css/video-poster-fallback.css">
-    <!-- ヒーローセクション -->
-    <link rel="stylesheet" href="css/hero.css">
     <!-- タイプライター初期状態（文字を隠すので無効化） -->
     <!-- <link rel="stylesheet" href="css/typewriter-init.css"> -->
     <!-- 斜め線の強制削除（::beforeと::afterを削除してしまうので無効化） -->
     <!-- <link rel="stylesheet" href="css/hero-slant-fix.css"> -->
-    <!-- z-index優先順位管理 -->
-    <link rel="stylesheet" href="css/z-index-priority.css">
-    
+
     <!-- Hero関連スクリプトはhomepage-perfect-final.jsに統合済み -->
     <!-- <script src="js/hero-simple.js"></script> -->
     <!-- <script src="js/hero-slant-remover.js"></script> -->
@@ -745,20 +731,16 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/referral-landing.js"></script>
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
+    <script src="js/core-utils.js"></script>
     <!-- ローディング動画修正（homepage-perfect-final.jsと重複するため無効化） -->
     <!-- <script src="js/homepage-loading-final-fix.js"></script> -->
     <!-- <script src="js/homepage-loading-video-fix.js"></script> -->
     <!-- 動画プリロード最適化（video-performance-optimizer.jsと重複するため無効化） -->
     <!-- <script src="js/video-preload-optimize.js"></script> -->
-    <!-- 完璧な最終版（すべての競合解決とスクロール効果統合） -->
-    <script src="js/homepage-perfect-final.js"></script>
+    <!-- homepage-perfect-final.js + referral-landing.js 統合バンドル -->
+    <script src="js/homepage-bundle.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/supabase-unified.js?v=1.0"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
     <!-- 動画パフォーマンス最適化 -->
     <!-- 動画最適化はmain.jsとhomepage-perfect-final.jsに統合済み -->
     <!-- <script src="js/video-performance-optimizer.js"></script> -->

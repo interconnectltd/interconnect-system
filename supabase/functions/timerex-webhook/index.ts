@@ -18,18 +18,25 @@ serve(async (req) => {
     const signature = req.headers.get('X-TimeRex-Signature')
     const body = await req.text()
     
-    if (signature) {
-      const expectedSignature = createHmac('sha256', Deno.env.get('TIMEREX_WEBHOOK_SECRET') || '')
-        .update(body)
-        .digest('hex')
-      
-      if (signature !== `sha256=${expectedSignature}`) {
-        console.error('Invalid webhook signature')
-        return new Response('Unauthorized', { 
-          status: 401,
-          headers: corsHeaders 
-        })
-      }
+    const webhookSecret = Deno.env.get('TIMEREX_WEBHOOK_SECRET')
+    if (!webhookSecret || !signature) {
+      console.error('Missing webhook secret or signature')
+      return new Response('Unauthorized', {
+        status: 401,
+        headers: corsHeaders
+      })
+    }
+
+    const expectedSignature = createHmac('sha256', webhookSecret)
+      .update(body)
+      .digest('hex')
+
+    if (signature !== `sha256=${expectedSignature}`) {
+      console.error('Invalid webhook signature')
+      return new Response('Unauthorized', {
+        status: 401,
+        headers: corsHeaders
+      })
     }
     
     const event = JSON.parse(body)

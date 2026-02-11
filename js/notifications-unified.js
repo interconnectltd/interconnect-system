@@ -34,7 +34,7 @@
         await window.waitForSupabase();
 
         // 現在のユーザーを取得
-        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        const user = await window.safeGetUser();
         if (!user) {
             console.error('[NotificationsUnified] ユーザーが認証されていません');
             return;
@@ -610,7 +610,7 @@
     }
 
     // クリーンアップ
-    window.addEventListener('unload', () => {
+    window.addEventListener('beforeunload', () => {
         if (notificationSubscription) {
             notificationSubscription.unsubscribe();
         }

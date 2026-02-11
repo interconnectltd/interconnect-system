@@ -20,17 +20,9 @@
     <!-- ログアウトボタンUI修正 -->
     <link rel="stylesheet" href="css/logout-button-fix.css">
     <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
-    <!-- ユーザードロップダウン最前面修正 -->
-    <!-- z-index優先順位管理 -->
-    <link rel="stylesheet" href="css/z-index-priority.css">
-    <!-- アバターサイズ統一 -->
-    <link rel="stylesheet" href="css/avatar-size-unified.css">
-    <!-- サイドバーレスポンシブ統一修正 -->
-    <link rel="stylesheet" href="css/sidebar-responsive-fix.css">
-    <!-- ヘッダー余白修正 -->
-    <link rel="stylesheet" href="css/header-padding-fix.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
+    <!-- ユーザーメニューCSS（統合済み） -->
+    <link rel="stylesheet" href="css/user-menu.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -415,10 +407,7 @@
     </div>
     
     <!-- Scripts -->
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
@@ -428,7 +417,7 @@
     <script src="js/notifications-realtime-unified.js?v=1.0"></script>
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
-    <script src="js/supabase-unified.js?v=1.0"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
     <!-- アバターサイズ強制適用 -->
@@ -522,6 +511,5 @@
         }
     }
     </script>
-<script src="js/final-essential-fixes.js"></script>
 </body>
 </html>

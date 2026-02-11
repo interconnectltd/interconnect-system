@@ -19,9 +19,9 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
-    <!-- ユーザードロップダウン最前面修正 -->
+    <link rel="stylesheet" href="css/responsive-layout.css">
+    <!-- ユーザーメニューCSS（統合済み） -->
+    <link rel="stylesheet" href="css/user-menu.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -334,14 +334,39 @@
     </div>
     
     <!-- Scripts -->
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
-    <script src="js/debug-logger.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/notifications.js"></script>
+    <script>
+        // 管理者認証ガード
+        (async function adminAuthGuard() {
+            try {
+                await (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve());
+                const client = window.supabaseClient;
+                if (!client) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const { data: { user } } = await client.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                // 管理者権限チェック（user_profilesテーブル）
+                const { data: profile } = await client
+                    .from('user_profiles')
+                    .select('is_admin')
+                    .eq('id', user.id)
+                    .single();
+                if (!profile || !profile.is_admin) {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+            }
+        })();
+    </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ const corsHeaders = {
 }
 
 const TIMEREX_API_URL = 'https://api.timerex.jp/v1'
-const TIMEREX_API_KEY = '7nxFkWUcjmbEXpXAoeP5TujgbH7Zrk7p8nbAmMYcAfoCdM6RgnI2qK6lSEpZaGAp'
+const TIMEREX_API_KEY = Deno.env.get('TIMEREX_API_KEY') ?? ''
 
 serve(async (req) => {
   // CORSの処理

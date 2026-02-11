@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="css/admin-referral.css">
 </head>
 <body>
     <div class="admin-dashboard">
@@ -346,10 +345,23 @@
     
     <!-- スクリプト -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
+    <script>
+        // 管理者認証ガード
+        (async function adminAuthGuard() {
+            try {
+                await (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve());
+                const client = window.supabaseClient;
+                if (!client) { window.location.href = 'login.html'; return; }
+                const { data: { user } } = await client.auth.getUser();
+                if (!user) { window.location.href = 'login.html'; return; }
+                const { data: profile } = await client
+                    .from('user_profiles').select('is_admin').eq('id', user.id).single();
+                if (!profile || !profile.is_admin) { window.location.href = 'dashboard.html'; }
+            } catch (e) { window.location.href = 'login.html'; }
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/admin-common.js"></script>
-    <script src="js/admin-referral.js"></script>
-    <script src="js/manual-meeting-confirmation.js"></script>
+    <script src="js/admin-referral-bundle.js"></script>
 </body>
 </html>

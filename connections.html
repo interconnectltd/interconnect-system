@@ -17,28 +17,13 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/dashboard-states.css">
     <!-- ログアウトボタンUI修正 -->
     <link rel="stylesheet" href="css/logout-button-fix.css">
     <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/realtime-notifications.css">
     <link rel="stylesheet" href="css/connections.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
-    <!-- ヘッダーユーザーメニューのリデザイン -->
-    <link rel="stylesheet" href="css/header-user-menu-redesign.css">
-    <!-- CSS競合修正 -->
-    <link rel="stylesheet" href="css/css-conflict-fix.css">
-    <link rel="stylesheet" href="css/responsive-complete.css">
-    <!-- responsive-menu.cssを先に読み込む -->
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <!-- サイドバーレスポンシブ統一修正（最後に読み込んで優先度を上げる） -->
-    <link rel="stylesheet" href="css/sidebar-responsive-fix.css">
-    <!-- z-index優先順位管理 -->
-    <link rel="stylesheet" href="css/z-index-priority.css">
-    <!-- アバターサイズ統一 -->
-    <link rel="stylesheet" href="css/avatar-size-unified.css">
-    <!-- ヘッダー余白修正 -->
-    <link rel="stylesheet" href="css/header-padding-fix.css">
+    <!-- ユーザーメニューCSS（統合済み） -->
+    <link rel="stylesheet" href="css/user-menu.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
     <!-- プロフィールモーダルスタイル -->
     <link rel="stylesheet" href="css/members-profile-modal.css">
 </head>
@@ -299,22 +284,18 @@
     </div>
     
     <!-- Scripts -->
-    <script src="js/supabase-unified.js"></script>
-    <script src="js/error-prevention.js"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
-    <!-- responsive-menu-simple.jsを削除してsidebar-toggle.jsのみ使用 -->
-    <script src="js/sidebar-toggle.js"></script>
-    <script src="js/connections-manager-simple.js?v=2024121707"></script>
-    <!-- サルベージ機能統合 -->
-    <script src="js/matching-missing-features.js"></script>
+    <!-- sidebar-toggle.js, connections-manager-simple.js, matching-missing-features.js を統合 -->
+    <script src="js/connections-bundle.js"></script>
     <!-- 以下は無効化（不要） -->
     <!-- <script src="js/database-table-resolver.js"></script> -->
     <!-- <script src="js/matching-table-adapter.js"></script> -->
     <!-- <script src="js/matching-init-fix.js"></script> -->
     <!-- <script src="js/matching-complete-fix.js"></script> -->
-    <!-- プロフィールモーダル機能 -->
-    <script src="js/profile-detail-modal.js"></script>
-    <script src="js/members-profile-modal.js"></script>
+    <!-- プロフィールモーダル機能（統合版） -->
+    <script src="js/profile-modal-unified.js"></script>
     <script src="js/user-dropdown-handler.js"></script>
 <!-- 以下のcritical系スクリプトは無効化（重複と競合の原因） -->
 <!-- <script src="js/critical-features-restoration.js"></script> -->

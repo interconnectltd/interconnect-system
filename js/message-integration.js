@@ -113,7 +113,7 @@
                     return { success: false };
                 }
 
-                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                const user = await window.safeGetUser();
                 if (!user) {
                     console.error('[MessageIntegration] User not authenticated');
                     return { success: false };
@@ -166,7 +166,7 @@
                 }
 
                 // 現在のユーザー情報を取得
-                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                const user = await window.safeGetUser();
                 if (!user) return;
 
                 // ユーザープロフィールを取得
@@ -235,7 +235,7 @@
             try {
                 if (!window.notificationSender) return;
 
-                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                const user = await window.safeGetUser();
                 if (!user) return;
 
                 // システム通知として記録

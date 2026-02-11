@@ -20,20 +20,11 @@
     <!-- ログアウトボタンUI修正 -->
     <link rel="stylesheet" href="css/logout-button-fix.css">
     <link rel="stylesheet" href="css/notifications.css">
-    <!-- ヘッダーユーザーメニューデザイン -->
-    <link rel="stylesheet" href="css/header-user-menu-redesign.css">
-    <!-- ユーザードロップダウン統一CSS -->
-    <link rel="stylesheet" href="css/user-dropdown-unified.css">
-    <!-- マッチングシステム統一CSS -->
-    <link rel="stylesheet" href="css/matching-unified.css?v=3.0">
-    <!-- ローディング演出CSS -->
-    <link rel="stylesheet" href="css/matching-loading.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
-    <!-- サイドバーレスポンシブ統一修正 -->
-    <link rel="stylesheet" href="css/sidebar-responsive-fix.css">
-    <!-- ヘッダー余白修正 -->
-    <link rel="stylesheet" href="css/header-padding-fix.css">
+    <!-- ユーザーメニューCSS（統合済み） -->
+    <link rel="stylesheet" href="css/user-menu.css">
+    <!-- マッチングCSS（統合済み） -->
+    <link rel="stylesheet" href="css/matching.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -68,11 +59,9 @@
                     </a>
                 </li>
                 <li>
-                    <li>
-                    <li>
-                        <a href="connections.html" class="sidebar-link">
-                            <i class="fas fa-link"></i>
-                            <span>コネクション</span>
+                    <a href="connections.html" class="mobile-nav-link">
+                        <i class="fas fa-link"></i>
+                        <span>コネクション</span>
                     </a>
                 </li>
                 <li>
@@ -335,27 +324,20 @@
     <script src="js/supabase-unified.js?v=1.1"></script>
     
     <!-- デバッグ用スクリプトは本番環境では無効化 -->
-    <!-- <script src="js/service-worker-filter.js"></script> -->
-    <!-- <script src="js/console-history-logger.js"></script> -->
-    <!-- <script src="js/suppress-duplicate-warnings.js"></script> -->
-    <!-- <script src="js/function-execution-tracker.js"></script> -->
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
     <!-- Supabase参照修正（不要になったため無効化） -->
     <!-- <script src="js/supabase-wait-fix.js"></script> -->
     <!-- Core utilities (必須) -->
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <!-- dashboard.jsはマッチングページには不要 -->
     <!-- <script src="js/dashboard.js"></script> -->
     
-    <!-- マッチングシステム統合JavaScript（47ファイルを1つに統合） -->
-    <script src="js/matching-unified.js?v=11.0"></script>
+    <!-- マッチングシステム統合JavaScript -->
+    <script src="js/matching-bundle.js"></script>
     
     <!-- デバッグ用スクリプト（一時的） -->
     <script>
@@ -405,15 +387,10 @@
     
     <!-- 全てのマッチング機能はmatching-unified.jsに統合済み -->
     
-    <!-- プロファイル詳細モーダル（必須） -->
-    <script src="js/profile-detail-modal.js"></script>
-    <!-- プロフィールモーダル優先制御 -->
-    <script src="js/profile-modal-priority.js"></script>
-    <!-- 追加機能（必要最小限） -->
-    <script src="js/matching-filter-reset.js"></script>
-    <script src="js/matching-realtime-updates.js"></script>
+    <!-- プロファイル詳細モーダル（統合版） -->
+    <script src="js/profile-modal-unified.js"></script>
+    <!-- profile-modal-priority.js, matching-filter-reset.js, matching-realtime-updates.js は matching-bundle.js に統合済み -->
     <!-- パフォーマンス最適化は本番環境では無効化 -->
-    <!-- <script src="js/matching-performance-optimize.js"></script> -->
     <!-- <script src="js/matching-missing-features.js"></script> -->
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>

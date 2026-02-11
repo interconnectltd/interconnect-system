@@ -232,12 +232,12 @@
             // Supabaseから通知を取得
             const client = window.supabaseClient || window.supabase;
             if (client) {
-                const { data: { user } } = await client.auth.getUser();
+                const user = await window.safeGetUser();
                 if (!user) {
                     // console.log('[UserDropdown] ユーザーが認証されていません');
                     return;
                 }
-                
+
                 const { data: notifications, error } = await client
                     .from('notifications')
                     .select('*')
@@ -282,7 +282,7 @@
         try {
             const client = window.supabaseClient || window.supabase;
             if (client) {
-                const { data: { user } } = await client.auth.getUser();
+                const user = await window.safeGetUser();
                 if (!user) return;
                 
                 const { error } = await client

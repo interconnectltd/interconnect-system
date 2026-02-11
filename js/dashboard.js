@@ -249,7 +249,7 @@
                 return;
             }
             
-            const { data: { user } } = await supabaseInstance.auth.getUser();
+            const user = await window.safeGetUser();
             if (!user) return;
 
             // ユーザーのポイント残高を取得

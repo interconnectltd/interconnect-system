@@ -19,22 +19,12 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <!-- ログアウトボタンUI修正 -->
     <link rel="stylesheet" href="css/logout-button-fix.css">
-    <link rel="stylesheet" href="css/dashboard-states.css">
     <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/realtime-notifications.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <!-- 紹介ページ統一CSS（全ての紹介ページスタイルを統合） -->
-    <link rel="stylesheet" href="css/referral-unified.css?v=1.0">
-    <!-- 最終競合解消とサイズ正常化 -->
-    <link rel="stylesheet" href="css/referral-final-fix.css">
-    <!-- 紹介リンクカードのリデザイン -->
-    <link rel="stylesheet" href="css/referral-link-card-redesign.css">
-    <!-- ヘッダーユーザーメニューのリデザイン -->
-    <link rel="stylesheet" href="css/header-user-menu-redesign.css">
-    <!-- ヘッダー余白修正 -->
-    <link rel="stylesheet" href="css/header-padding-fix.css">
-    <!-- シェアモーダル改善CSS -->
-    <link rel="stylesheet" href="css/share-modal-enhanced.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
+    <!-- Referral page bundle (referral + share-modal-enhanced) -->
+    <link rel="stylesheet" href="css/referral-page.css">
+    <!-- ユーザーメニューCSS（統合済み） -->
+    <link rel="stylesheet" href="css/user-menu.css">
 </head>
 <body class="referral-page">
     <!-- Mobile Header (ダッシュボードと同じ) -->
@@ -473,28 +463,19 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     <!-- Scripts -->
     <!-- Service Workerログフィルター（最初に読み込む） -->
-    <script src="js/service-worker-filter.js"></script>
     <!-- 紹介ページデバッグ -->
-    <script src="js/referral-debug-network.js"></script>
     <!-- コンソール履歴管理 -->
-    <script src="js/console-history-logger.js"></script>
     <!-- 重複実行警告の抑制 -->
-    <script src="js/suppress-duplicate-warnings.js"></script>
     <!-- 関数実行トラッカー -->
-    <script src="js/function-execution-tracker.js"></script>
     <!-- Supabase統一初期化（最初に読み込む） -->
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
-    <script src="js/supabase-unified.js?v=1.0"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
     <!-- Supabase参照修正（不要になったため無効化） -->
     <!-- <script src="js/supabase-wait-fix.js"></script> -->
-    <script src="js/common.js"></script>
-    <script src="js/notifications.js"></script>
-    <script src="js/user-menu.js"></script>
     <script src="js/notifications-realtime-unified.js"></script>
-    <script src="js/cashout-modal.js"></script>
-    <!-- 紹介システム統一JavaScript（12ファイルを1つに統合） -->
-    <script src="js/referral-unified.js?v=1.0"></script>
+    <!-- cashout-modal.js, referral-unified.js を統合 -->
+    <script src="js/referral-bundle.js"></script>
     <script>
         // タブ切り替え
         document.querySelectorAll('.tab-button').forEach(button => {
@@ -539,10 +520,8 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
     <!-- booking_intentsテーブル使用停止 -->
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
-    <!-- シェアモーダルハンドラー -->
-    <script src="js/share-modal-handler.js"></script>
+    <!-- share-modal-handler.js は referral-bundle.js に統合済み -->
     <!-- アバターサイズ強制適用 -->
     <script src="js/avatar-size-enforcer.js"></script>
-<script src="js/final-essential-fixes.js"></script>
 </body>
 </html>

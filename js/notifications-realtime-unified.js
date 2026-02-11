@@ -25,7 +25,7 @@
         await window.waitForSupabase();
 
         // 現在のユーザーを取得
-        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        const user = await window.safeGetUser();
         if (!user) {
             console.error('[RealtimeNotificationsUnified] ユーザーが認証されていません');
             return;
@@ -124,7 +124,7 @@
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'matches',
+                table: 'match_connections',
                 filter: `user1_id=eq.${currentUserId}`
             }, (payload) => {
                 handleMatchingUpdate(payload);
@@ -132,7 +132,7 @@
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'matches',
+                table: 'match_connections',
                 filter: `user2_id=eq.${currentUserId}`
             }, (payload) => {
                 handleMatchingUpdate(payload);
@@ -166,8 +166,8 @@
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'referrals',
-                filter: `referrer_id=eq.${currentUserId}`
+                table: 'invitations',
+                filter: `inviter_id=eq.${currentUserId}`
             }, (payload) => {
                 handleReferralUpdate(payload);
             })
@@ -458,10 +458,10 @@
         initialize();
     }
 
-    // クリーンアップ
-    window.addEventListener('unload', () => {
+    // クリーンアップ（beforeunloadの方がブラウザ互換性が高い）
+    window.addEventListener('beforeunload', () => {
         Object.values(realtimeSubscriptions).forEach(subscription => {
-            if (subscription) {
+            if (subscription && subscription.unsubscribe) {
                 subscription.unsubscribe();
             }
         });

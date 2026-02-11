@@ -1,0 +1,546 @@
+// ============================================================
+// Section: sanitizer.js
+// ============================================================
+/**
+ * HTML Sanitizer - XSS攻撃を防ぐためのサニタイズ関数
+ */
+
+(function() {
+    'use strict';
+
+    // HTMLをエスケープする関数
+    function escapeHtml(unsafe) {
+        if (typeof unsafe !== 'string') return '';
+
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // 安全なHTMLタグのホワイトリスト
+    const ALLOWED_TAGS = ['b', 'i', 'em', 'strong', 'span', 'br', 'p', 'div', 'a'];
+    const ALLOWED_ATTRS = {
+        'a': ['href', 'title', 'target', 'rel'],
+        'span': ['class'],
+        'div': ['class'],
+        'p': ['class']
+    };
+
+    // シンプルなHTMLサニタイザー
+    function sanitizeHtml(html) {
+        if (typeof html !== 'string') return '';
+
+        // 基本的なエスケープ
+        let cleaned = html;
+
+        // スクリプトタグを完全に削除
+        cleaned = cleaned.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        cleaned = cleaned.replace(/on\w+\s*=\s*["'][^"']*["']/gi, ''); // イベントハンドラを削除
+        cleaned = cleaned.replace(/javascript:/gi, ''); // javascript: URLを削除
+
+        return cleaned;
+    }
+
+    // DOMベースのサニタイザー（より安全）
+    function sanitizeNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            return document.createTextNode(node.textContent);
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) {
+            return null;
+        }
+
+        const tagName = node.tagName.toLowerCase();
+
+        if (!ALLOWED_TAGS.includes(tagName)) {
+            return null;
+        }
+
+        const newNode = document.createElement(tagName);
+
+        // 許可された属性のみコピー
+        if (ALLOWED_ATTRS[tagName]) {
+            ALLOWED_ATTRS[tagName].forEach(attr => {
+                if (node.hasAttribute(attr)) {
+                    let value = node.getAttribute(attr);
+
+                    // href属性の場合、安全なURLのみ許可
+                    if (attr === 'href') {
+                        if (value.startsWith('http://') ||
+                            value.startsWith('https://') ||
+                            value.startsWith('#') ||
+                            value.startsWith('/')) {
+                            newNode.setAttribute(attr, value);
+                        }
+                    } else {
+                        newNode.setAttribute(attr, value);
+                    }
+                }
+            });
+        }
+
+        // 子ノードを再帰的にサニタイズ
+        for (let child of node.childNodes) {
+            const sanitizedChild = sanitizeNode(child);
+            if (sanitizedChild) {
+                newNode.appendChild(sanitizedChild);
+            }
+        }
+
+        return newNode;
+    }
+
+    // 安全なinnerHTML設定関数
+    function setInnerHTML(element, html) {
+        if (!element) return;
+
+        // 一時的なコンテナでパース
+        const temp = document.createElement('div');
+        temp.innerHTML = sanitizeHtml(html);
+
+        // サニタイズされたノードを作成
+        element.innerHTML = '';
+        for (let child of temp.childNodes) {
+            const sanitized = sanitizeNode(child);
+            if (sanitized) {
+                element.appendChild(sanitized);
+            }
+        }
+    }
+
+    // グローバルに公開
+    window.INTERCONNECT = window.INTERCONNECT || {};
+    window.INTERCONNECT.sanitizer = {
+        escapeHtml: escapeHtml,
+        sanitizeHtml: sanitizeHtml,
+        setInnerHTML: setInnerHTML
+    };
+
+})();
+
+// ============================================================
+// Section: settings-unified.js
+// ============================================================
+/**
+ * Settings Page Unified
+ * 統合元: settings-navigation.js + settings-improved.js
+ * ナビゲーション、フォーム、トグル、データ管理を一括提供
+ */
+
+(function() {
+    'use strict';
+
+    // イベントリスナーを管理するためのマップ
+    const eventListeners = new Map();
+    const timeouts = new Set();
+    const intervals = new Set();
+
+    // ページ離脱時のクリーンアップ
+    window.addEventListener('beforeunload', cleanup);
+
+    function safeSetTimeout(callback, delay) {
+        const timeoutId = setTimeout(() => {
+            timeouts.delete(timeoutId);
+            callback();
+        }, delay);
+        timeouts.add(timeoutId);
+        return timeoutId;
+    }
+
+    function safeSetInterval(callback, delay) {
+        const intervalId = setInterval(callback, delay);
+        intervals.add(intervalId);
+        return intervalId;
+    }
+
+    function cleanup() {
+        timeouts.forEach(id => clearTimeout(id));
+        timeouts.clear();
+        intervals.forEach(id => clearInterval(id));
+        intervals.clear();
+        eventListeners.forEach((listeners, element) => {
+            listeners.forEach(({ type, handler }) => {
+                element.removeEventListener(type, handler);
+            });
+        });
+        eventListeners.clear();
+    }
+
+    function addSafeEventListener(element, type, handler) {
+        if (!element) return;
+        element.addEventListener(type, handler);
+        if (!eventListeners.has(element)) {
+            eventListeners.set(element, []);
+        }
+        eventListeners.get(element).push({ type, handler });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeNavigation();
+        initializeForms();
+        initializeToggles();
+        initializeDataManagement();
+        initializeAppIntegrations();
+        initializePasswordStrength();
+        initializeDangerZone();
+    });
+
+    // Navigation between settings sections
+    function initializeNavigation() {
+        // settings-improved.js style: .settings-nav-link with data-section
+        const navLinks = document.querySelectorAll('.settings-nav-link');
+        const sections = document.querySelectorAll('.settings-section');
+
+        if (navLinks.length > 0) {
+            navLinks.forEach(link => {
+                addSafeEventListener(link, 'click', function(e) {
+                    e.preventDefault();
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    const targetId = this.getAttribute('data-section');
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+
+            if (sections.length > 0) {
+                navLinks[0].classList.add('active');
+                sections[0].classList.add('active');
+            }
+        }
+
+        // settings-navigation.js style: .settings-nav-item with href
+        const navItems = document.querySelectorAll('.settings-nav-item');
+        if (navItems.length > 0) {
+            navItems.forEach(item => {
+                addSafeEventListener(item, 'click', function(e) {
+                    e.preventDefault();
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    sections.forEach(section => section.style.display = 'none');
+                    this.classList.add('active');
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                    history.pushState(null, null, '#' + targetId);
+                });
+            });
+
+            const hash = window.location.hash;
+            if (hash) {
+                const targetNav = document.querySelector(`.settings-nav-item[href="${hash}"]`);
+                if (targetNav) {
+                    targetNav.click();
+                }
+            } else if (sections.length > 0 && sections[0]) {
+                sections[0].style.display = 'block';
+            }
+        }
+    }
+
+    // Form submissions with validation
+    function initializeForms() {
+        const forms = document.querySelectorAll('.settings-form');
+        forms.forEach(form => {
+            addSafeEventListener(form, 'submit', function(e) {
+                e.preventDefault();
+                if (validateForm(this)) {
+                    saveSettings(this);
+                }
+            });
+        });
+
+        const inputs = document.querySelectorAll('.form-input, .form-select, .form-textarea');
+        inputs.forEach(input => {
+            addSafeEventListener(input, 'blur', function() {
+                validateField(this);
+            });
+        });
+    }
+
+    // Toggle switches
+    function initializeToggles() {
+        // settings-improved.js style: .toggle-switch with data-setting
+        const toggleSwitches = document.querySelectorAll('.toggle-switch');
+        toggleSwitches.forEach(toggle => {
+            addSafeEventListener(toggle, 'click', function() {
+                this.classList.toggle('active');
+                const settingName = this.getAttribute('data-setting');
+                const isActive = this.classList.contains('active');
+                saveSetting(settingName, isActive);
+            });
+        });
+
+        // settings-navigation.js style: .toggle-input checkboxes
+        const toggleInputs = document.querySelectorAll('.toggle-input');
+        toggleInputs.forEach(input => {
+            const slider = input.nextElementSibling;
+            updateToggleState(input, slider);
+            addSafeEventListener(input, 'change', function() {
+                const toggleSwitch = this.closest('.toggle-switch');
+                const slider = this.nextElementSibling;
+                if (toggleSwitch) toggleSwitch.classList.add('loading');
+                safeSetTimeout(() => {
+                    if (toggleSwitch) toggleSwitch.classList.remove('loading');
+                    updateToggleState(this, slider);
+                    showToast('設定を更新しました', 'success');
+                }, 500);
+            });
+        });
+    }
+
+    function updateToggleState(input, slider) {
+        if (!slider) return;
+        slider.setAttribute('aria-checked', input.checked ? 'true' : 'false');
+    }
+
+    // Data management
+    function initializeDataManagement() {
+        const exportBtn = document.querySelector('[data-action="export"]');
+        const deleteBtn = document.querySelector('[data-action="delete-account"]');
+        if (exportBtn) addSafeEventListener(exportBtn, 'click', exportData);
+        if (deleteBtn) addSafeEventListener(deleteBtn, 'click', confirmDeleteAccount);
+    }
+
+    // App integrations
+    function initializeAppIntegrations() {
+        const appButtons = document.querySelectorAll('.app-action-btn');
+        appButtons.forEach(btn => {
+            addSafeEventListener(btn, 'click', function() {
+                const appName = this.getAttribute('data-app');
+                toggleAppIntegration(appName, this);
+            });
+        });
+    }
+
+    // Password strength indicator
+    function initializePasswordStrength() {
+        const passwordInput = document.getElementById('new-password');
+        const strengthIndicator = document.querySelector('.password-strength');
+        if (passwordInput && strengthIndicator) {
+            addSafeEventListener(passwordInput, 'input', function() {
+                const strength = calculatePasswordStrength(this.value);
+                updateStrengthIndicator(strengthIndicator, strength);
+            });
+        }
+    }
+
+    // Danger zone actions
+    function initializeDangerZone() {
+        const dangerButtons = document.querySelectorAll('.danger-zone .btn');
+        dangerButtons.forEach(btn => {
+            addSafeEventListener(btn, 'click', function(e) {
+                e.preventDefault();
+                const action = this.getAttribute('data-action');
+                confirmDangerousAction(action);
+            });
+        });
+    }
+
+    // Form validation
+    function validateForm(form) {
+        const fields = form.querySelectorAll('[required]');
+        let isValid = true;
+        fields.forEach(field => {
+            if (!validateField(field)) isValid = false;
+        });
+        return isValid;
+    }
+
+    function validateField(field) {
+        const value = field.value.trim();
+        const type = field.type;
+        let isValid = true;
+
+        const errorElement = field.parentElement.querySelector('.form-error');
+        if (errorElement) errorElement.remove();
+
+        if (field.hasAttribute('required') && !value) {
+            showFieldError(field, 'この項目は必須です');
+            isValid = false;
+        } else if (type === 'email' && value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                showFieldError(field, '有効なメールアドレスを入力してください');
+                isValid = false;
+            }
+        } else if (type === 'password' && field.id === 'new-password' && value) {
+            if (value.length < 8) {
+                showFieldError(field, 'パスワードは8文字以上で入力してください');
+                isValid = false;
+            }
+        } else if (field.id === 'confirm-password') {
+            const newPassword = document.getElementById('new-password');
+            if (newPassword && value !== newPassword.value) {
+                showFieldError(field, 'パスワードが一致しません');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    function showFieldError(field, message) {
+        const error = document.createElement('div');
+        error.className = 'form-error';
+        error.textContent = message;
+        field.parentElement.appendChild(error);
+        field.classList.add('error');
+    }
+
+    // Save settings
+    function saveSettings(form) {
+        const formData = new FormData(form);
+        const settings = {};
+        for (let [key, value] of formData.entries()) {
+            settings[key] = value;
+        }
+
+        const saveBtn = form.querySelector('.btn-save');
+        const originalText = saveBtn.textContent;
+        saveBtn.textContent = '保存中...';
+        saveBtn.disabled = true;
+
+        safeSetTimeout(() => {
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
+            showToast('設定を保存しました', 'success');
+        }, 1000);
+    }
+
+    function saveSetting(name, value) {
+        showToast(`${name}を更新しました`, 'success');
+    }
+
+    function toggleAppIntegration(appName, button) {
+        const isConnected = button.textContent === '解除';
+        const appItem = button.closest('.app-item');
+
+        button.textContent = '処理中...';
+        button.disabled = true;
+
+        safeSetTimeout(() => {
+            if (isConnected) {
+                button.textContent = '連携';
+                button.className = 'btn btn-primary btn-small';
+                const status = appItem.querySelector('.app-status');
+                status.textContent = '未連携';
+                status.className = 'app-status';
+                showToast(`${appName}との連携を解除しました`);
+            } else {
+                button.textContent = '解除';
+                button.className = 'btn btn-outline btn-small';
+                const status = appItem.querySelector('.app-status');
+                status.textContent = '連携済み';
+                status.className = 'app-status connected';
+                showToast(`${appName}と連携しました`);
+            }
+            button.disabled = false;
+        }, 1500);
+    }
+
+    function exportData() {
+        const button = event.target;
+        const originalText = button.textContent;
+
+        button.textContent = 'エクスポート中...';
+        button.disabled = true;
+
+        safeSetTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+            showToast('データのエクスポートが完了しました', 'success');
+
+            const data = {};
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'interconnect-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }, 2000);
+    }
+
+    function calculatePasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.length >= 12) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+        return Math.min(Math.floor((strength / 6) * 4), 4);
+    }
+
+    function updateStrengthIndicator(indicator, strength) {
+        const strengthTexts = ['弱い', '普通', '強い', '非常に強い'];
+        const strengthColors = ['#ef4444', '#f59e0b', '#10b981', '#059669'];
+        indicator.textContent = strengthTexts[strength - 1] || '';
+        indicator.style.color = strengthColors[strength - 1] || '#6b7280';
+    }
+
+    function confirmDangerousAction(action) {
+        const messages = {
+            'delete-account': 'アカウントを削除すると、すべてのデータが失われます。本当に削除しますか？',
+            'clear-data': 'すべてのデータをクリアします。この操作は取り消せません。続行しますか？'
+        };
+        if (confirm(messages[action] || '本当に実行しますか？')) {
+            executeDangerousAction(action);
+        }
+    }
+
+    function executeDangerousAction(action) {
+        showToast(`${action}を実行しました`, 'info');
+        if (action === 'delete-account') {
+            safeSetTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+    }
+
+    function confirmDeleteAccount() {
+        if (confirm('アカウントを削除すると、すべてのデータが失われます。本当に削除しますか？')) {
+            if (confirm('この操作は取り消せません。本当によろしいですか？')) {
+                deleteAccount();
+            }
+        }
+    }
+
+    function deleteAccount() {
+        showToast('アカウントを削除しています...', 'info');
+        safeSetTimeout(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }, 2000);
+    }
+
+    // Toast notification (XSS safe, fallback if global showToast not available)
+    function showToast(message, type = 'info') {
+        if (window.showToast && window.showToast !== showToast) {
+            return window.showToast(message, type);
+        }
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        const textNode = document.createTextNode(message);
+        toast.appendChild(textNode);
+        document.body.appendChild(toast);
+        safeSetTimeout(() => toast.classList.add('show'), 10);
+        safeSetTimeout(() => {
+            toast.classList.remove('show');
+            safeSetTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+})();

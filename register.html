@@ -16,14 +16,10 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
-    <!-- 認証ページ基本スタイル -->
-    <link rel="stylesheet" href="css/auth.css">
-    <!-- 認証ページ統一スタイル（auth.cssの後に読み込む） -->
+    <!-- 認証ページ統一スタイル -->
     <link rel="stylesheet" href="css/auth-unified.css">
-    <!-- 登録ページ固有の修正（最後に読み込む） -->
-    <link rel="stylesheet" href="css/auth-register-fix.css">
-    <link rel="stylesheet" href="css/register-ui-fix.css">
-    <link rel="stylesheet" href="css/register-responsive.css">
+    <!-- 登録ページCSS（統合済み） -->
+    <link rel="stylesheet" href="css/register-page.css">
 </head>
 <body>
     <div class="auth-container">
@@ -654,30 +650,18 @@
     <!-- Scripts -->
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/register-referral-handler.js"></script>
-    <!-- ログイン状態チェック（最初に実行） -->
-    <script src="js/register-auth-check.js"></script>
+    <script src="js/registration-unified.js"></script>
     
-    <!-- 統一Toast通知（最初に読み込む） -->
-    <script src="js/toast-unified-global.js"></script>
-    <!-- イベントリスナー管理システム -->
-    <script src="js/event-listener-manager.js"></script>
+    <!-- 統一通知システム -->
+    <script src="js/notification-system-unified.js"></script>
+    <!-- イベントリスナー管理システム（registration-unified.jsに統合済み） -->
     
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/global-functions.js"></script>
-    <script src="js/registration-flow.js"></script>
-    <!-- バリデーション統合版 -->
-    <script src="js/register-enhanced-validation.js"></script>
-    <!-- 招待コード対応の登録処理 -->
-    <script src="js/register-with-invite.js"></script>
-    <script src="js/supabase-unified.js?v=1.0"></script>
-    <!-- 文字カウントとバリデーション -->
-    <script src="js/register-char-count.js"></script>
-    <script src="js/register-strict-validation.js"></script>
+    <!-- registration-flow.js, register-enhanced-validation.js, register-with-invite.js は registration-unified.js に統合済み -->
+    <script src="js/supabase-unified.js?v=1.1"></script>
+    <!-- register-char-count.js, register-strict-validation.js は registration-unified.js に統合済み -->
     
     <!-- 最終的な次へボタンの修正 -->
     <script>

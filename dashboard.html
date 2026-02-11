@@ -20,35 +20,15 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/dashboard-states.css">
     <!-- ログアウトボタンUI修正 -->
     <link rel="stylesheet" href="css/logout-button-fix.css">
     <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/realtime-notifications.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
-    <!-- ヘッダーユーザーメニューのリデザイン -->
-    <link rel="stylesheet" href="css/header-user-menu-redesign.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
+    <!-- ユーザーメニューCSS（統合済み） -->
+    <link rel="stylesheet" href="css/user-menu.css">
     <link rel="stylesheet" href="css/event-modal.css">
-    <link rel="stylesheet" href="css/event-detail-modal.css">
-    <link rel="stylesheet" href="css/activity-enhanced.css">
-    <link rel="stylesheet" href="css/activity-event-filter.css">
-    <link rel="stylesheet" href="css/dashboard-charts.css">
-    <!-- CSS競合修正 -->
-    <link rel="stylesheet" href="css/css-conflict-fix.css">
-    <link rel="stylesheet" href="css/responsive-complete.css">
-    <!-- サイドバーレスポンシブ統一修正 -->
-    <link rel="stylesheet" href="css/sidebar-responsive-fix.css">
-    <!-- バランスの取れた青系テーマ -->
-    <!-- TimeRex予約ボタンスタイル -->
-    <link rel="stylesheet" href="css/timerex-booking.css">
-    <!-- TimeRex予約モーダルスタイル -->
-    <!-- z-index優先順位管理 -->
-    <link rel="stylesheet" href="css/z-index-priority.css">
-    <!-- アバターサイズ統一 -->
-    <link rel="stylesheet" href="css/avatar-size-unified.css">
-    <!-- ヘッダー余白修正 -->
-    <link rel="stylesheet" href="css/header-padding-fix.css">
+    <!-- Dashboard page bundle (activity-enhanced + activity-event-filter + timerex-booking) -->
+    <link rel="stylesheet" href="css/dashboard-page.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -449,54 +429,32 @@
     
     <!-- Scripts -->
     <!-- Service Workerログフィルター（最初に読み込む） -->
-    <script src="js/service-worker-filter.js"></script>
     <!-- コンソール履歴管理 -->
-    <script src="js/console-history-logger.js"></script>
     <!-- 重複実行警告の抑制 -->
-    <script src="js/suppress-duplicate-warnings.js"></script>
     <!-- 関数実行トラッカー -->
-    <script src="js/function-execution-tracker.js"></script>
     <!-- Supabase統一初期化（最初に読み込む） -->
+    <script src="js/supabase-unified.js?v=1.1"></script>
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
-    <script src="js/supabase-unified.js?v=1.0"></script>
     <!-- Supabase参照修正（不要になったため無効化） -->
     <!-- <script src="js/supabase-wait-fix.js"></script> -->
     <!-- Core initialization -->
-    <script src="js/interconnect-core.js"></script>
     <!-- ゲストモード管理 -->
     <script src="js/guest-mode-manager.js"></script>
     
     <!-- Dashboard early fix は削除されました -->
     
     <!-- Core utilities (必須) -->
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <!-- リアルタイム通知システム -->
     <script src="js/notifications-realtime-unified.js?v=1.0"></script>
     
-    <!-- Dashboard bundle (統合版) -->
-    <script src="js/dashboard-bundle.js"></script>
-    <script src="js/dashboard-event-fix.js"></script>
-    
-    <!-- Dashboard stats initializer (読み込み中表示) -->
-    <script src="js/dashboard-stats-initializer.js"></script>
-    
-    <!-- Dashboard calculators for accurate statistics -->
-    <script src="js/dashboard-member-calculator.js"></script>
-    <script src="js/dashboard-event-calculator.js"></script>
-    <script src="js/dashboard-matching-calculator.js"></script>
-    <script src="js/dashboard-upcoming-events.js"></script>
-    
-    <!-- Dashboard loading fix -->
-    <script src="js/dashboard-fix-loading.js"></script>
+    <!-- Dashboard unified (9 files merged) -->
+    <script src="js/dashboard-unified.js"></script>
     
     <!-- Database table name fix -->
-    <script src="js/database-table-fix.js"></script>
     
     <!-- Debug scripts (only load in development) -->
     <script>
@@ -518,9 +476,6 @@
     
     <!-- Features -->
     <script src="js/responsive-menu-simple.js"></script>
-    <script src="js/activity-event-filter.js?v=2.0"></script>
-    <script src="js/activity-event-filter-fix.js?v=2.0"></script>
-    <script src="js/dashboard-charts.js"></script>
     <script src="js/dashboard.js"></script>
     <!-- 通知送信機能は統一版に含まれています -->
     <!-- <script src="js/notification-sender.js"></script> -->

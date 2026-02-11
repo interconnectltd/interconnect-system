@@ -128,6 +128,18 @@
         checkAuthStatus();
     }
 
+    // 安全なgetUserヘルパー（data が null でもクラッシュしない）
+    window.safeGetUser = async function() {
+        try {
+            if (!window.supabaseClient) return null;
+            const { data, error } = await window.supabaseClient.auth.getUser();
+            if (error || !data) return null;
+            return data.user || null;
+        } catch (e) {
+            return null;
+        }
+    };
+
     // メールアドレスでのログイン
     async function handleEmailLogin(e) {
         e.preventDefault();
@@ -270,7 +282,12 @@
                     const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
                     if (redirectUrl) {
                         sessionStorage.removeItem('redirectAfterLogin');
-                        window.location.href = redirectUrl;
+                        // 相対パスまたは同一オリジンのみ許可（オープンリダイレクト防止）
+                        if (redirectUrl.startsWith('/') || redirectUrl.startsWith(window.location.origin)) {
+                            window.location.href = redirectUrl;
+                        } else {
+                            window.location.href = 'dashboard.html';
+                        }
                     } else {
                         window.location.href = 'dashboard.html';
                     }

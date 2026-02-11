@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/auth-unified.css">
     <link rel="stylesheet" href="css/invite.css">
-    <link rel="stylesheet" href="css/css-conflict-fix.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .invite-container {
@@ -264,12 +263,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
     <script>
-        // Supabase初期化
-        const supabaseUrl = 'https://smpmnkypzblmmlnwgmsj.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtcG1ua3lwemJsbW1sbndnbXNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MDA2OTAsImV4cCI6MjA0OTQ3NjY5MH0.JBJfkpe98hEIs_oOPd3CvP9T5CiTAEPZ6SgHYMxOmWA';
-        const { createClient } = supabase;
-        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+        // supabase-unified.jsの統一クライアントを使用
+        // window.supabaseClientが初期化される
 
         // URLパラメータから招待コードを取得
         const pathParts = window.location.pathname.split('/');
@@ -278,7 +275,10 @@
         if (!inviteCode) {
             showError('招待リンクが無効です');
         } else {
-            loadInviteInfo(inviteCode);
+            // Supabase初期化を待ってから実行
+            (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve())
+                .then(() => loadInviteInfo(inviteCode))
+                .catch(() => showError('初期化に失敗しました'));
         }
 
         async function loadInviteInfo(code) {

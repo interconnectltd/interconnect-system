@@ -19,24 +19,13 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <!-- ログアウトボタンUI修正 -->
     <link rel="stylesheet" href="css/logout-button-fix.css">
-    <link rel="stylesheet" href="css/members.css">
-    <link rel="stylesheet" href="css/member-profile-preview.css">
+    <!-- Members page bundle (members + member-profile-preview + advanced-search) -->
+    <link rel="stylesheet" href="css/members-page.css">
     <link rel="stylesheet" href="css/members-profile-modal.css?v=20250811-2">
     <link rel="stylesheet" href="css/notifications.css">
-    <link rel="stylesheet" href="css/realtime-notifications.css">
-    <link rel="stylesheet" href="css/responsive-menu.css">
-    <link rel="stylesheet" href="css/user-menu-zindex-only.css">
-    <link rel="stylesheet" href="css/responsive-complete.css">
-    <!-- z-index優先順位管理 -->
-    <link rel="stylesheet" href="css/z-index-priority.css">
-    <!-- アバターサイズ統一 -->
-    <link rel="stylesheet" href="css/avatar-size-unified.css">
-    <!-- サイドバーレスポンシブ統一修正 -->
-    <link rel="stylesheet" href="css/sidebar-responsive-fix.css">
-    <!-- 高度な検索機能 -->
-    <link rel="stylesheet" href="css/advanced-search.css">
-    <!-- ヘッダー余白修正 -->
-    <link rel="stylesheet" href="css/header-padding-fix.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
+    <!-- ユーザーメニューCSS（統合済み） -->
+    <link rel="stylesheet" href="css/user-menu.css">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -295,144 +284,17 @@
     
     <!-- Scripts -->
     <!-- Core initialization (must be first) -->
-    <script src="js/interconnect-core.js"></script>
     
-    <script src="js/error-prevention.js"></script>
-    <script src="js/null-check-fixes.js"></script>
-    <script src="js/safe-dom-utils.js"></script>
-    <script src="js/safe-storage.js"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
     <script src="js/notifications-realtime-unified.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
     <!-- Members specific scripts -->
-    <!-- モーダルを先に読み込む（members-supabaseより前） -->
-    <script src="js/members-profile-modal.js?v=20250812"></script>
-    <script>
-        // モーダルの初期化を確実に行う
-        (function() {
-            function ensureModalInitialized() {
-                // 既にインスタンスがある場合は作成しない（重複防止）
-                if (window.membersProfileModal && window.membersProfileModal.show) {
-                    console.log('[members.html] Modal instance already exists');
-                    return;
-                }
-                
-                if (typeof MembersProfileModal === 'undefined') {
-                    console.error('[CRITICAL] members-profile-modal.js failed to load!');
-                    // エラー時はモーダル表示を試みる（リダイレクトしない）
-                    window.membersProfileModal = {
-                        show: function(userId) {
-                            console.log('[Fallback] Modal not available, but NOT redirecting');
-                            alert('プロフィールを読み込めませんでした。ページを再読み込みしてください。');
-                        }
-                    };
-                } else {
-                    console.log('[members.html] Creating modal instance');
-                    window.membersProfileModal = new MembersProfileModal();
-                    console.log('[members.html] Modal instance created:', !!window.membersProfileModal);
-                }
-            }
-            
-            // 即座に実行
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', ensureModalInitialized);
-            } else {
-                ensureModalInitialized();
-            }
-        })();
-    </script>
-    <script>
-        // モーダルの初期化を確認
-        console.log('[members.html] After members-profile-modal.js load:');
-        console.log('  - window.MembersProfileModal:', !!window.MembersProfileModal);
-        console.log('  - window.membersProfileModal:', !!window.membersProfileModal);
-        console.log('  - window.showMemberProfileModal:', !!window.showMemberProfileModal);
-        
-        // 動作テスト用の関数
-        window.testModal = function() {
-            console.log('[TEST] Modal test function called');
-            if (window.showMemberProfileModal) {
-                window.showMemberProfileModal('test-user-id');
-            } else {
-                console.error('[TEST] showMemberProfileModal not available');
-            }
-        };
-        
-        // デモユーザーのモーダル表示テスト
-        window.testDemoModal = function(userId = 'fallback-1') {
-            console.log('[TEST] Demo modal test for userId:', userId);
-            if (window.showMemberProfileModal) {
-                window.showMemberProfileModal(userId);
-            } else {
-                console.error('[TEST] showMemberProfileModal not available');
-            }
-        };
-        
-        // モーダル状態の診断
-        window.diagnoseModal = function() {
-            console.log('=== Modal Diagnosis ===');
-            console.log('MembersProfileModal class:', !!window.MembersProfileModal);
-            console.log('membersProfileModal instance:', !!window.membersProfileModal);
-            console.log('showMemberProfileModal function:', !!window.showMemberProfileModal);
-            console.log('Modal element in DOM:', !!document.getElementById('memberProfileModal'));
-            
-            if (window.membersProfileModal) {
-                console.log('Modal instance details:');
-                console.log('  - modal element:', !!window.membersProfileModal.modal);
-                console.log('  - currentUserId:', window.membersProfileModal.currentUserId);
-                console.log('  - currentTab:', window.membersProfileModal.currentTab);
-            }
-            
-            const profileButtons = document.querySelectorAll('.view-profile-btn');
-            console.log('Profile buttons found:', profileButtons.length);
-            profileButtons.forEach((btn, index) => {
-                console.log(`  Button ${index + 1}:`, btn.dataset.memberId);
-            });
-        };
-        
-        // 1秒後に最終確認（デバッグ用）
-        setTimeout(() => {
-            console.log('[members.html] Final check at 1 second:');
-            console.log('  - membersProfileModal exists:', !!window.membersProfileModal);
-            console.log('  - membersProfileModal.show exists:', !!(window.membersProfileModal && window.membersProfileModal.show));
-            
-            // モーダルのDOM状態を確認
-            const modalElement = document.getElementById('memberProfileModal');
-            if (modalElement) {
-                // モーダルが誤って表示されている場合は隠す
-                if (window.getComputedStyle(modalElement).display !== 'none' && !modalElement.classList.contains('show')) {
-                    console.log('[members.html] Hiding unintentionally visible modal');
-                    modalElement.style.display = 'none';
-                }
-            }
-            
-            // モーダルインスタンスが存在しない場合の最終フォールバック
-            if (!window.membersProfileModal || !window.membersProfileModal.show) {
-                console.error('[CRITICAL] Modal still not initialized after 1 second!');
-                // 再度初期化を試みる（既存インスタンスがない場合のみ）
-                if (window.MembersProfileModal && !window.membersProfileModal) {
-                    window.membersProfileModal = new window.MembersProfileModal();
-                    console.log('[members.html] Emergency modal creation completed');
-                }
-            }
-        }, 1000);
-        
-        // デバッグ用: プロフィールボタンクリックの監視
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.view-profile-btn')) {
-                console.log('[members.html] Profile button click detected');
-                console.log('  - Button element:', e.target.closest('.view-profile-btn'));
-                console.log('  - User ID:', e.target.closest('.view-profile-btn').dataset.memberId);
-            }
-        });
-    </script>
-    <script src="js/members-supabase.js?v=20250812"></script>
-    <script src="js/member-profile-preview.js?v=20250812"></script>
-    <script src="js/members-search.js?v=20250812"></script>
-    <script src="js/members-connection.js?v=20250812"></script>
-    <script src="js/members-view-mode.js?v=20250812"></script>
+    <!-- プロフィールモーダル（統合版）- members-bundleより前に読み込む -->
+    <script src="js/profile-modal-unified.js"></script>
+    <script src="js/members-bundle.js"></script>
     
     <!-- グローバル閲覧履歴 -->
     <script src="js/global-viewing-history.js"></script>
@@ -441,9 +303,8 @@
     <script src="js/user-dropdown-handler.js"></script>
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
-    <script src="js/supabase-unified.js?v=1.0"></script>
-    <!-- 高度な検索機能 -->
-    <script src="js/advanced-search.js"></script>
+    <script src="js/supabase-unified.js?v=1.1"></script>
+    <!-- 高度な検索機能 (members-bundle.jsに統合済み) -->
     <!-- アバターサイズ強制適用 -->
     <script src="js/avatar-size-enforcer.js"></script>
 <!-- 重要機能復活スクリプト -->
