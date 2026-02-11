@@ -85,7 +85,28 @@
                         <label for="company">会社名<span class="required">*</span></label>
                         <input type="text" id="company" name="company" required>
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="industry">業種<span class="required">*</span></label>
+                        <select id="industry" name="industry" required>
+                            <option value="">選択してください</option>
+                            <option value="IT・テクノロジー">IT・テクノロジー</option>
+                            <option value="製造業">製造業</option>
+                            <option value="小売・EC">小売・EC</option>
+                            <option value="金融・保険">金融・保険</option>
+                            <option value="不動産・建設">不動産・建設</option>
+                            <option value="医療・ヘルスケア">医療・ヘルスケア</option>
+                            <option value="教育">教育</option>
+                            <option value="飲食・サービス">飲食・サービス</option>
+                            <option value="広告・メディア">広告・メディア</option>
+                            <option value="コンサルティング">コンサルティング</option>
+                            <option value="物流・運輸">物流・運輸</option>
+                            <option value="エネルギー・環境">エネルギー・環境</option>
+                            <option value="農業・食品">農業・食品</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label for="email">メールアドレス<span class="required">*</span></label>
                         <input type="email" id="email" name="email" autocomplete="email" required>
@@ -451,8 +472,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="skills-pr">あなたのスキル・専門分野のPR<span class="required">*</span></label>
-                        <textarea id="skills-pr" name="skills-pr" rows="5" minlength="100" placeholder="あなたができること、専門分野、実績などを100文字以上で詳しくPRしてください" data-required="true"></textarea>
+                        <label for="skills-pr">あなたのスキル・専門分野のPR</label>
+                        <textarea id="skills-pr" name="skills-pr" rows="5" minlength="100" placeholder="あなたができること、専門分野、実績などを100文字以上で詳しくPRしてください（スキルを選択した場合は必須）"></textarea>
                         <small class="char-count"><span id="skills-pr-count">0</span>/100文字</small>
                     </div>
                     
@@ -648,148 +669,12 @@
     </div>
 
     <!-- Scripts -->
-    <!-- Supabase -->
+    <!-- Supabase SDK → 初期化 → ユーティリティ → 登録ロジックの順に読み込み -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/registration-unified.js"></script>
-    
-    <!-- 統一通知システム -->
-    <script src="js/notification-system-unified.js"></script>
-    <!-- イベントリスナー管理システム（registration-unified.jsに統合済み） -->
-    
     <script src="js/core-utils.js"></script>
-    <script src="js/global-functions.js"></script>
-    <!-- registration-flow.js, register-enhanced-validation.js, register-with-invite.js は registration-unified.js に統合済み -->
     <script src="js/supabase-unified.js?v=1.1"></script>
-    <!-- register-char-count.js, register-strict-validation.js は registration-unified.js に統合済み -->
-    
-    <!-- 最終的な次へボタンの修正 -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // console.log('[FINAL FIX] Setting up next/prev button handlers');
-            
-            // 既存のリスナーをクリアしない（cloneNodeは他のイベントリスナーも削除してしまうため）
-            // document.querySelectorAll('[data-action="next"]').forEach(button => {
-            //     const newButton = button.cloneNode(true);
-            //     button.parentNode.replaceChild(newButton, button);
-            // });
-            
-            // document.querySelectorAll('[data-action="prev"]').forEach(button => {
-            //     const newButton = button.cloneNode(true);
-            //     button.parentNode.replaceChild(newButton, button);
-            // });
-            
-            // この重複リスナー設定を無効化（global-functions.jsで既に設定済み）
-            /*
-            setTimeout(() => {
-                document.querySelectorAll('[data-action="next"]').forEach(button => {
-                    // 重複防止チェック
-                    if (!button.dataset.nextInitialized) {
-                        button.dataset.nextInitialized = 'true';
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // console.log('[FINAL FIX] Next button clicked - calling window.nextStep()');
-                        
-                        // global-functions.jsのnextStep関数を呼び出す（バリデーション付き）
-                        if (typeof window.nextStep === 'function') {
-                            window.nextStep();
-                        } else {
-                            // console.error('[FINAL FIX] window.nextStep is not a function');
-                        }
-                    });
-                    }
-                });
-                
-                document.querySelectorAll('[data-action="prev"]').forEach(button => {
-                    // 重複防止チェック
-                    if (!button.dataset.prevInitialized) {
-                        button.dataset.prevInitialized = 'true';
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // console.log('[FINAL FIX] Prev button clicked');
-                        
-                        const currentStep = document.querySelector('.form-step.active');
-                        if (!currentStep) return;
-                        
-                        const currentStepNum = parseInt(currentStep.dataset.step);
-                        const prevStep = document.querySelector(`.form-step[data-step="${currentStepNum - 1}"]`);
-                        
-                        if (prevStep) {
-                            // console.log(`[FINAL FIX] Moving from step ${currentStepNum} to ${currentStepNum - 1}`);
-                            currentStep.classList.remove('active');
-                            prevStep.classList.add('active');
-                            
-                            // プログレスインジケーター更新
-                            document.querySelectorAll('.progress-step').forEach(step => {
-                                const stepNum = parseInt(step.dataset.step);
-                                if (stepNum <= currentStepNum - 1) {
-                                    step.classList.add('active');
-                                } else {
-                                    step.classList.remove('active');
-                                }
-                            });
-                            
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    });
-                    }
-                });
-                
-                // console.log('[FINAL FIX] Button handlers setup complete');
-            }, 100);
-            */
-            
-            // パスワードトグル機能の修正
-            setTimeout(() => {
-                // console.log('[Password Toggle Fix] Setting up password toggle buttons');
-                const toggleButtons = document.querySelectorAll('.password-toggle');
-                
-                toggleButtons.forEach((button, index) => {
-                    // console.log(`[Password Toggle Fix] Found button ${index}:`, button);
-                    
-                    // 既存のリスナーをクリアしない（cloneNodeは他の機能も壊すため）
-                    // const newButton = button.cloneNode(true);
-                    // button.parentNode.replaceChild(newButton, button);
-                    
-                    // データ属性で重複チェック
-                    if (!button.dataset.toggleInitialized) {
-                        button.dataset.toggleInitialized = 'true';
-                        
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        const wrapper = this.closest('.password-input-wrapper');
-                        const input = wrapper ? wrapper.querySelector('input[type="password"], input[type="text"]') : null;
-                        const icon = this.querySelector('i');
-                        
-                        // console.log('[Password Toggle Fix] Toggling:', { wrapper, input, icon });
-                        
-                        if (input && icon) {
-                            if (input.type === 'password') {
-                                input.type = 'text';
-                                icon.classList.remove('fa-eye');
-                                icon.classList.add('fa-eye-slash');
-                                this.setAttribute('aria-label', 'パスワードを非表示');
-                                // console.log('[Password Toggle Fix] Changed to text');
-                            } else {
-                                input.type = 'password';
-                                icon.classList.remove('fa-eye-slash');
-                                icon.classList.add('fa-eye');
-                                this.setAttribute('aria-label', 'パスワードを表示');
-                                // console.log('[Password Toggle Fix] Changed to password');
-                            }
-                        } else {
-                            // console.error('[Password Toggle Fix] Could not find input or icon');
-                        }
-                    });
-                    }
-                });
-                
-                // console.log('[Password Toggle Fix] Setup complete');
-            }, 200);
-        });
-    </script>
+    <script src="js/notification-system-unified.js"></script>
+    <script src="js/global-functions.js"></script>
+    <script src="js/registration-unified.js"></script>
 </body>
 </html>

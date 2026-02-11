@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS connections (
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     connected_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     status TEXT NOT NULL DEFAULT 'pending'
-        CHECK (status IN ('pending', 'accepted', 'rejected', 'cancelled', 'removed', 'blocked')),
+        CHECK (status IN ('pending', 'accepted', 'rejected', 'cancelled', 'removed', 'blocked', 'reaccepted')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     responded_at TIMESTAMP WITH TIME ZONE,
@@ -798,6 +798,90 @@ CREATE TABLE IF NOT EXISTS referral_details (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- ========================
+-- 17b. RLSポリシー（追加分）
+-- ========================
+
+-- settings: ユーザーは自分の設定のみ読み書き可能
+ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own settings" ON settings
+    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own settings" ON settings
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own settings" ON settings
+    FOR UPDATE USING (auth.uid() = user_id);
+
+-- search_history: ユーザーは自分の検索履歴のみ
+ALTER TABLE search_history ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own search history" ON search_history
+    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own search history" ON search_history
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own search history" ON search_history
+    FOR DELETE USING (auth.uid() = user_id);
+
+-- user_activities: ユーザーは自分のアクティビティのみ
+ALTER TABLE user_activities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own activities" ON user_activities
+    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own activities" ON user_activities
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- share_activities: ユーザーは自分のシェアのみ
+ALTER TABLE share_activities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own shares" ON share_activities
+    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own shares" ON share_activities
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- event_certificates: ユーザーは自分の証明書のみ
+ALTER TABLE event_certificates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own certificates" ON event_certificates
+    FOR SELECT USING (auth.uid() = participant_id);
+
+-- meeting_confirmations: ユーザーは自分のミーティング確認のみ
+ALTER TABLE meeting_confirmations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own meeting confirmations" ON meeting_confirmations
+    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own meeting confirmations" ON meeting_confirmations
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- meeting_minutes: ユーザーは自分の議事録のみ
+ALTER TABLE meeting_minutes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own meeting minutes" ON meeting_minutes
+    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own meeting minutes" ON meeting_minutes
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own meeting minutes" ON meeting_minutes
+    FOR UPDATE USING (auth.uid() = user_id);
+
+-- referral_details: ユーザーは自分が関係する紹介詳細のみ
+ALTER TABLE referral_details ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own referral details" ON referral_details
+    FOR SELECT USING (auth.uid() = referrer_id OR auth.uid() = referred_id);
+
+-- fraud_flags: service_roleのみ（一般ユーザーはアクセス不可）
+ALTER TABLE fraud_flags ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role only for fraud flags" ON fraud_flags
+    FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+-- ip_registration_stats: service_roleのみ
+ALTER TABLE ip_registration_stats ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role only for ip stats" ON ip_registration_stats
+    FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+-- tldv_meeting_records: service_roleのみ
+ALTER TABLE tldv_meeting_records ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role only for tldv records" ON tldv_meeting_records
+    FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+-- referral_clicks: 匿名挿入可、閲覧はservice_roleのみ
+ALTER TABLE referral_clicks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can insert referral clicks" ON referral_clicks
+    FOR INSERT WITH CHECK (true);
+CREATE POLICY "Service role can view referral clicks" ON referral_clicks
+    FOR SELECT USING (auth.jwt() ->> 'role' = 'service_role');
 
 -- ========================
 -- 18. ビュー

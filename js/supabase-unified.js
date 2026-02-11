@@ -17,10 +17,6 @@
     const SUPABASE_URL = 'https://whyoqhhzwtlxprhizmor.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
 
-    // LINE Login設定
-    const LINE_CHANNEL_ID = '2007688781';
-    const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
-
     // 初期化フラグ
     let isInitialized = false;
     let authInitialized = false;
@@ -113,19 +109,8 @@
             // console.log('[SupabaseUnified] ログインフォームハンドラー設定完了');
         }
 
-        // LINEログインボタンの処理
-        const lineLoginBtn = document.getElementById('lineLoginBtn');
-        if (lineLoginBtn) {
-            lineLoginBtn.addEventListener('click', handleLineLogin);
-            // console.log('[SupabaseUnified] LINEログインボタンハンドラー設定完了');
-        }
-
-        // LINE登録ボタンの処理
-        const lineRegisterBtn = document.getElementById('lineRegisterBtn');
-        if (lineRegisterBtn) {
-            lineRegisterBtn.addEventListener('click', handleLineLogin);
-            // console.log('[SupabaseUnified] LINE登録ボタンハンドラー設定完了');
-        }
+        // LINEログインボタンの処理は login-bundle.js (line-login-simple.js) に一本化
+        // ここでは二重バインドを防ぐため何もしない
 
         // 認証状態をチェック
         checkAuthStatus();
@@ -143,32 +128,54 @@
         }
     };
 
+    // ログイン試行回数制限（クライアント側）
+    let loginFailCount = 0;
+    let loginLockUntil = 0;
+
     // メールアドレスでのログイン
     async function handleEmailLogin(e) {
         e.preventDefault();
-        
+
+        const submitButton = e.target.querySelector('button[type="submit"]');
+
+        // ロックアウトチェック
+        if (Date.now() < loginLockUntil) {
+            const remainSec = Math.ceil((loginLockUntil - Date.now()) / 1000);
+            showError(`ログイン試行回数が上限に達しました。${remainSec}秒後に再度お試しください。`);
+            return;
+        }
+
         const email = e.target.email.value;
         const password = e.target.password.value;
-        const submitButton = e.target.querySelector('button[type="submit"]');
-        
+
         // ローディング状態
         submitButton.classList.add('loading');
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ログイン中...';
-        
+
         try {
             const { data, error } = await window.supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password
             });
-            
+
             if (error) {
-                showError('ログインに失敗しました: ' + error.message);
+                loginFailCount++;
+                if (loginFailCount >= 3) {
+                    loginLockUntil = Date.now() + 30000; // 30秒ロック
+                    loginFailCount = 0;
+                    showError('ログイン試行回数が上限に達しました。30秒後に再度お試しください。');
+                } else {
+                    showError('ログインに失敗しました: ' + error.message);
+                }
                 submitButton.classList.remove('loading');
                 submitButton.disabled = false;
                 submitButton.textContent = 'ログイン';
                 return;
             }
+
+            // ログイン成功時はカウンターリセット
+            loginFailCount = 0;
             
             // ログイン成功
             // console.log('[SupabaseUnified] ログイン成功:', data.user.email);
@@ -192,63 +199,20 @@
         }
     }
 
-    // LINEログイン
-    function handleLineLogin(e) {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        // console.log('[SupabaseUnified] LINEログイン開始');
-        
-        // 二重実行を防ぐ
-        if (window._lineLoginInProgress) {
-            // console.log('[SupabaseUnified] LINEログイン処理中');
-            return;
-        }
-        window._lineLoginInProgress = true;
-        
-        try {
-            // LINE認証URLを構築
-            const state = generateRandomString(32);
-            const nonce = generateRandomString(32);
-            
-            // stateを保存（CSRF対策）
-            sessionStorage.setItem('line_state', state);
-            
-            const params = new URLSearchParams({
-                response_type: 'code',
-                client_id: LINE_CHANNEL_ID,
-                redirect_uri: LINE_REDIRECT_URI,
-                state: state,
-                scope: 'profile openid email',
-                nonce: nonce
-            });
-            
-            const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-            // console.log('[SupabaseUnified] LINE認証URLへリダイレクト');
-            
-            // LINE認証ページへリダイレクト
-            window.location.href = authUrl;
-        } catch (error) {
-            console.error('[SupabaseUnified] LINEログインエラー:', error);
-            window._lineLoginInProgress = false;
-            showError('LINEログインエラーが発生しました');
-        }
-    }
+    // LINEログインは login-bundle.js (line-login-simple.js) に一本化
 
     // 認証状態をチェック
     async function checkAuthStatus() {
         // 公開ページでは認証チェックをスキップ
         const currentPath = window.location.pathname;
-        const publicPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'line-callback.html', 'invite.html'];
+        const publicPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'reset-password.html', 'line-callback.html', 'invite.html'];
         const isPublicPage = publicPages.some(page => {
             if (page === '/' || page === '') {
                 return currentPath === '/' || currentPath === '/index.html' || currentPath === '';
             }
             return currentPath.includes(page);
         });
-        
+
         // 公開ページの場合は認証チェックをスキップ
         if (isPublicPage) {
             // console.log('[SupabaseUnified] 公開ページのため認証チェックをスキップ');
@@ -332,25 +296,17 @@
         setTimeout(() => errorDiv.remove(), 5000);
     }
 
-    // ランダム文字列生成
-    function generateRandomString(length) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
-    }
-
     // 認証状態変更リスナー（セッション期限切れ時の自動リダイレクト、タブ間同期）
+    let authStateUnsubscribe = null;
+
     function setupAuthStateListener() {
         if (!window.supabaseClient) return;
 
-        window.supabaseClient.auth.onAuthStateChange((event, session) => {
+        const { data: { subscription } } = window.supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
                 // 公開ページでは何もしない
                 const currentPath = window.location.pathname;
-                const publicPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'line-callback.html', 'invite.html'];
+                const publicPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'reset-password.html', 'line-callback.html', 'invite.html'];
                 const isPublicPage = publicPages.some(page => {
                     if (page === '/' || page === '') return currentPath === '/' || currentPath === '/index.html' || currentPath === '';
                     return currentPath.includes(page);
@@ -362,10 +318,18 @@
                 }
             }
         });
+
+        authStateUnsubscribe = subscription;
     }
 
-    // グローバル関数として公開
-    window.handleLineLogin = handleLineLogin;
+    // ページ離脱時にunsubscribe（メモリリーク防止）
+    window.addEventListener('beforeunload', function() {
+        if (authStateUnsubscribe && typeof authStateUnsubscribe.unsubscribe === 'function') {
+            authStateUnsubscribe.unsubscribe();
+        }
+    });
+
+    // グローバル関数として公開（LINEログインはlogin-bundle.jsに一本化）
     window.initializeAuth = initializeAuth;
 
     // 初期化を実行

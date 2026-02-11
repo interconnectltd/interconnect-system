@@ -672,16 +672,20 @@ function showSuccessMessage(message) {
 
         // ステップ4の特別なバリデーション（PR欄）
         if (step === 4) {
+            const checkedSkills = stepElement.querySelectorAll('input[name="skills"]:checked');
             const prTextarea = stepElement.querySelector('#skills-pr');
-            if (prTextarea && prTextarea.value.length < 100) {  // trimを削除して表示と一致させる
+            // スキル選択時またはPR入力済みの場合のみ100文字チェック
+            if (prTextarea && prTextarea.value.trim().length > 0 && prTextarea.value.trim().length < 100) {
                 errors.push('スキル・専門分野のPRは100文字以上で入力してください');
+            } else if (checkedSkills.length > 0 && prTextarea && prTextarea.value.trim().length < 100) {
+                errors.push('スキルを選択した場合、PRは100文字以上で入力してください');
             }
         }
 
         // ステップ5の特別なバリデーション（詳細欄）
         if (step === 5) {
             const detailsTextarea = stepElement.querySelector('#interests-details');
-            if (detailsTextarea && detailsTextarea.value.length < 100) {  // trimを削除して表示と一致させる
+            if (detailsTextarea && detailsTextarea.value.trim().length < 100) {
                 errors.push('興味・困りごとの詳細は100文字以上で入力してください');
             }
         }
@@ -761,6 +765,7 @@ function showSuccessMessage(message) {
         step1: {
             name: false,
             company: false,
+            industry: false,
             email: false,
             password: false,
             passwordConfirm: false
@@ -790,7 +795,7 @@ function showSuccessMessage(message) {
 
     // ステップごとの必須チェック項目
     const stepRequirements = {
-        1: ['name', 'company', 'email', 'password', 'passwordConfirm'],
+        1: ['name', 'company', 'industry', 'email', 'password', 'passwordConfirm'],
         2: ['challenges', 'budget'], // テキストエリアは条件付き
         3: ['phone', 'lineId', 'lineQr', 'position'],
         4: ['skillsPr'],
@@ -887,6 +892,11 @@ function showSuccessMessage(message) {
                 isValid = field.value.trim().length > 0;
                 break;
 
+            case 'industry':
+                fieldKey = 'industry';
+                isValid = field.value.trim().length > 0;
+                break;
+
             case 'email':
                 fieldKey = 'email';
                 isValid = field.value.trim().length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value);
@@ -915,7 +925,9 @@ function showSuccessMessage(message) {
 
             case 'phone':
                 fieldKey = 'phone';
-                isValid = field.value.trim().length > 0;
+                // 日本の電話番号形式（ハイフンあり/なし対応）
+                const phoneDigits = field.value.replace(/[-\s]/g, '');
+                isValid = /^0[0-9]{9,10}$/.test(phoneDigits);
                 break;
 
             case 'line-id':
@@ -944,18 +956,18 @@ function showSuccessMessage(message) {
                 if (noChallenge) {
                     isValid = true; // 現状課題なしの場合は常にtrue
                 } else {
-                    isValid = field.value.length >= 50;  // trimを削除して表示と一致させる
+                    isValid = field.value.trim().length >= 50;
                 }
                 break;
 
             case 'skills-pr':
                 fieldKey = 'skillsPr';
-                isValid = field.value.length >= 100;  // trimを削除して表示と一致させる
+                isValid = field.value.trim().length >= 100;
                 break;
 
             case 'interests-details':
                 fieldKey = 'interestsDetails';
-                isValid = field.value.length >= 100;  // trimを削除して表示と一致させる
+                isValid = field.value.trim().length >= 100;
                 break;
         }
 
@@ -1092,7 +1104,7 @@ function showSuccessMessage(message) {
                     if (!stepState[key]) {
                         // 現在のステップに関連するフィールドのみエラーをチェック
                         const stepFields = {
-                            1: ['name', 'company', 'email', 'password', 'passwordConfirm'],
+                            1: ['name', 'company', 'industry', 'email', 'password', 'passwordConfirm'],
                             2: ['challenges', 'budget', 'revenueDetails', 'hrDetails', 'dxDetails', 'strategyDetails'],
                             3: ['phone', 'lineId', 'lineQr', 'position'],
                             4: ['skillsPr'],
@@ -1107,12 +1119,13 @@ function showSuccessMessage(message) {
                         switch(key) {
                             case 'name': errors.push('お名前を入力してください'); break;
                             case 'company': errors.push('会社名を入力してください'); break;
+                            case 'industry': errors.push('業種を選択してください'); break;
                             case 'email': errors.push('有効なメールアドレスを入力してください'); break;
                             case 'password': errors.push('パスワードは8文字以上で入力してください'); break;
                             case 'passwordConfirm': errors.push('パスワードが一致しません'); break;
                             case 'challenges': errors.push('各カテゴリーで少なくとも1つの課題を選択してください'); break;
                             case 'budget': errors.push('年間予算規模を数字で入力してください'); break;
-                            case 'phone': errors.push('電話番号を入力してください'); break;
+                            case 'phone': errors.push('有効な電話番号を入力してください（例: 090-1234-5678）'); break;
                             case 'lineId': errors.push('LINE IDまたはURLを入力してください'); break;
                             case 'lineQr': errors.push('LINE QRコードをアップロードしてください'); break;
                             case 'position': errors.push('役職を入力してください'); break;
@@ -1146,9 +1159,10 @@ function showSuccessMessage(message) {
         //     updateButtonState(i);
         // }
 
-        // テキストフィールドのイベントリスナー
-        document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], input[type="tel"]').forEach(field => {
+        // テキストフィールドとselectのイベントリスナー
+        document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], input[type="tel"], select').forEach(field => {
             field.addEventListener('input', () => validateField(field));
+            field.addEventListener('change', () => validateField(field));
             field.addEventListener('blur', () => validateField(field));
         });
 
@@ -1362,7 +1376,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 文字カウント更新関数
     function updateCharCount(textarea, countElement, minLength) {
-        const currentLength = textarea.value.length;
+        const currentLength = textarea.value.trim().length;
         countElement.textContent = currentLength;
         // console.log(`[updateCharCount] Setting ${countElement.id} to ${currentLength}`);
 
@@ -1442,7 +1456,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 基本情報のバリデーション
     function validateBasicInfo() {
-        const requiredFields = ['name', 'company', 'email', 'password', 'password-confirm'];
+        const requiredFields = ['name', 'company', 'industry', 'email', 'password', 'password-confirm'];
         let isValid = true;
 
         requiredFields.forEach(fieldId => {
@@ -1492,7 +1506,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 continue; // このグループはスキップ
             }
 
-            // その他の課題が選択されている場合のみ、詳細の文字数をチェック
+            // その他の課題が選択されている場合のみ、詳細のtrim後文字数チェック
             if (otherChallenges.length > 0) {
                 if (textarea.value.trim().length < 50) {
                     return false;
@@ -1532,15 +1546,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // スキルのバリデーション
     function validateSkills() {
-        // 少なくとも1つのスキルが選択されているか
         const checkedSkills = document.querySelectorAll('input[name="skills"]:checked');
-        if (checkedSkills.length === 0) {
-            return false;
+
+        // スキルが選択されている場合のみPRテキスト必須
+        if (checkedSkills.length > 0) {
+            const skillsPr = document.getElementById('skills-pr');
+            if (!skillsPr || skillsPr.value.trim().length < 100) {
+                return false;
+            }
         }
 
-        // PRテキストの文字数チェック
+        // PRテキストが入力されている場合は文字数チェック
         const skillsPr = document.getElementById('skills-pr');
-        if (!skillsPr || skillsPr.value.length < 100) {
+        if (skillsPr && skillsPr.value.trim().length > 0 && skillsPr.value.trim().length < 100) {
             return false;
         }
 
@@ -1557,7 +1575,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 詳細テキストの文字数チェック
         const interestsDetails = document.getElementById('interests-details');
-        if (!interestsDetails || interestsDetails.value.length < 100) {
+        if (!interestsDetails || interestsDetails.value.trim().length < 100) {
             return false;
         }
 
@@ -1788,7 +1806,7 @@ window.InterConnect.Registration.validateCurrentStep = function(stepNum) {
         const textareas = currentStepElement.querySelectorAll('textarea[minlength]');
         textareas.forEach(textarea => {
             const minLength = parseInt(textarea.getAttribute('minlength'));
-            if (textarea.value.length < minLength) {
+            if (textarea.value.trim().length < minLength) {
                 window.InterConnect.Registration.showFieldError(textarea, `${minLength}文字以上入力してください`);
                 isValid = false;
             }
@@ -2111,6 +2129,9 @@ document.addEventListener('DOMContentLoaded', function() {
 (function() {
     'use strict';
 
+    // 二重送信防止フラグ
+    let isSubmitting = false;
+
     // 既存のregistration-flow.jsの登録処理をオーバーライド
     window.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('registerForm');
@@ -2124,6 +2145,10 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handleRegistrationWithInvite(e) {
         e.preventDefault();
         e.stopImmediatePropagation(); // 他のsubmitリスナーの二重実行を防止
+
+        // 二重送信防止
+        if (isSubmitting) return;
+        isSubmitting = true;
 
         const form = e.target;
         const submitButton = form.querySelector('button[type="submit"]');
@@ -2142,18 +2167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.textContent = '登録処理中...';
 
         try {
-            // まず既存ユーザーをチェック
-            const { data: existingUser, error: checkError } = await window.supabaseClient
-                .from('user_profiles')
-                .select('email')
-                .eq('email', formData.email)
-                .single();
-
-            if (existingUser) {
-                throw new Error('このメールアドレスは既に登録されています。ログインページへお進みください。');
-            }
-
-            // Supabaseでユーザー登録
+            // auth.signUpのエラーで既存ユーザーを判定（レースコンディション防止）
             const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
                 email: formData.email,
                 password: formData.password,
@@ -2194,7 +2208,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     phone: formData.phone,
                     line_id: formData.lineId,
                     budget_range: formData.budget,
-                    bio: formData['skills-pr'] || '',
+                    bio: formData['skills-pr'] || '', // bioカラムにスキルPRテキストを保存
                     skills: formData.skills,
                     interests: formData.interests,
                     business_challenges: {
@@ -2204,7 +2218,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         dx_details: formData['dx-details'] || '',
                         strategy_details: formData['strategy-details'] || ''
                     },
-                    industry: formData.industry || '',
+                    industry: formData.industry,
                     is_active: true,
                     is_online: true,
                     last_login_at: new Date().toISOString(),
@@ -2222,7 +2236,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         .from('avatars')
                         .upload(filePath, window._selectedLineQrFile, { upsert: true });
 
-                    if (!uploadError) {
+                    if (uploadError) {
+                        console.error('LINE QRアップロードエラー:', uploadError);
+                        (window.showToast || function(m){alert(m)})('LINE QRコードのアップロードに失敗しました。プロフィール設定から再アップロードできます。', 'error');
+                    } else {
                         const { data: urlData } = window.supabaseClient.storage
                             .from('avatars')
                             .getPublicUrl(filePath);
@@ -2237,6 +2254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     window._selectedLineQrFile = null;
                 } catch (qrError) {
                     console.error('LINE QRアップロードエラー:', qrError);
+                    (window.showToast || function(m){alert(m)})('LINE QRコードのアップロードに失敗しました。プロフィール設定から再アップロードできます。', 'error');
                 }
             }
 
@@ -2250,6 +2268,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .insert({
                         inviter_id: inviterId,
                         invitee_id: authData.user.id,
+                        invitee_email: formData.email,
                         status: 'registered',
                         invitation_code: inviteCode,
                         registered_at: new Date().toISOString()
@@ -2283,7 +2302,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // 成功メッセージ
-            (window.showToast || function(m){alert(m)})('登録が完了しました！', 'success');
+            (window.showToast || function(m){alert(m)})('登録が完了しました！メールをご確認ください。', 'success');
 
             // ユーザー情報を保存
             localStorage.setItem('user', JSON.stringify({
@@ -2294,10 +2313,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }));
             sessionStorage.setItem('isLoggedIn', 'true');
 
-            // ダッシュボードへリダイレクト
+            // 認証状態を待ってからリダイレクト（メール確認後にログインページへ）
+            const { data: { subscription } } = window.supabaseClient.auth.onAuthStateChange((event) => {
+                if (event === 'SIGNED_IN') {
+                    subscription.unsubscribe();
+                    window.location.href = '/login.html';
+                }
+            });
+
+            // フォールバック: 3秒後にログインページへ（メール確認待ちの場合）
             setTimeout(() => {
-                window.location.href = '/dashboard.html';
-            }, 1500);
+                subscription.unsubscribe();
+                window.location.href = '/login.html';
+            }, 3000);
 
         } catch (error) {
             // console.error('登録エラー:', error);
@@ -2306,6 +2334,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = false;
             submitButton.classList.remove('loading');
             submitButton.textContent = '登録する';
+            isSubmitting = false;
         }
     }
 
@@ -2319,6 +2348,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 基本情報
             name: getElementValue('name'),
             company: getElementValue('company'),
+            industry: getElementValue('industry'),
             email: getElementValue('email'),
             password: getElementValue('password'),
             position: getElementValue('position'),

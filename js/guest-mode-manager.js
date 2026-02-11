@@ -46,11 +46,25 @@
         }
         
         setupGuestMode() {
+            // ゲストモードでの管理者ページアクセスをブロック
+            this.blockAdminAccess();
+
             // Supabaseのクエリをインターセプト
             this.interceptSupabaseQueries();
-            
+
             // デモデータプロバイダーを設定
             this.setupDemoDataProviders();
+        }
+
+        blockAdminAccess() {
+            const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+            const restrictedPages = ['admin', 'super-admin', 'settings', 'billing'];
+
+            if (restrictedPages.includes(currentPage)) {
+                // ゲストユーザーは管理者ページにアクセス不可
+                alert('ゲストモードではこのページにアクセスできません。');
+                window.location.href = 'dashboard.html?guest=true';
+            }
         }
         
         interceptSupabaseQueries() {
