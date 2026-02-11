@@ -2167,6 +2167,11 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.textContent = '登録処理中...';
 
         try {
+            // Supabaseクライアントの確認
+            if (!window.supabaseClient) {
+                throw new Error('システムが初期化されていません。ページを再読み込みしてください。');
+            }
+
             // auth.signUpのエラーで既存ユーザーを判定（レースコンディション防止）
             const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
                 email: formData.email,
@@ -2192,6 +2197,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('有効なメールアドレスを入力してください。');
                 }
                 throw authError;
+            }
+
+            // Supabaseのメール列挙防止: signUpがエラーなしで user: null を返す場合がある
+            if (!authData || !authData.user) {
+                throw new Error('このメールアドレスは既に登録されています。ログインページからお試しください。');
             }
 
             // プロフィール作成（user_profilesテーブルに保存）
@@ -2255,6 +2265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } catch (qrError) {
                     console.error('LINE QRアップロードエラー:', qrError);
                     (window.showToast || function(m){alert(m)})('LINE QRコードのアップロードに失敗しました。プロフィール設定から再アップロードできます。', 'error');
+                    window._selectedLineQrFile = null;
                 }
             }
 
@@ -2386,4 +2397,34 @@ document.addEventListener('DOMContentLoaded', function() {
     // showToast関数は toast-unified-global.js で定義済み
     // 既存のshowToast関数を使用
 
+})();
+
+// ============================================================
+// Section: password-toggle (register.html用)
+// ============================================================
+(function() {
+    'use strict';
+    if (window.passwordToggleInitialized) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.password-toggle').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var wrapper = this.closest('.password-input-wrapper');
+                var input = wrapper && wrapper.querySelector('input');
+                var icon = this.querySelector('i');
+                if (input && icon) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('fa-eye', 'fa-eye-slash');
+                        this.setAttribute('aria-label', 'パスワードを非表示');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('fa-eye-slash', 'fa-eye');
+                        this.setAttribute('aria-label', 'パスワードを表示');
+                    }
+                }
+            });
+        });
+        window.passwordToggleInitialized = true;
+    });
 })();

@@ -839,6 +839,8 @@ CREATE POLICY "Users can insert own shares" ON share_activities
 ALTER TABLE event_certificates ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own certificates" ON event_certificates
     FOR SELECT USING (auth.uid() = participant_id);
+CREATE POLICY "Service role can insert certificates" ON event_certificates
+    FOR INSERT WITH CHECK (auth.jwt() ->> 'role' = 'service_role');
 
 -- meeting_confirmations: ユーザーは自分のミーティング確認のみ
 ALTER TABLE meeting_confirmations ENABLE ROW LEVEL SECURITY;
@@ -860,6 +862,8 @@ CREATE POLICY "Users can update own meeting minutes" ON meeting_minutes
 ALTER TABLE referral_details ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own referral details" ON referral_details
     FOR SELECT USING (auth.uid() = referrer_id OR auth.uid() = referred_id);
+CREATE POLICY "Users can insert own referral details" ON referral_details
+    FOR INSERT WITH CHECK (auth.uid() = referrer_id);
 
 -- fraud_flags: service_roleのみ（一般ユーザーはアクセス不可）
 ALTER TABLE fraud_flags ENABLE ROW LEVEL SECURITY;
