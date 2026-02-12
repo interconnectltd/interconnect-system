@@ -413,7 +413,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalEventTitle">イベント詳細</h2>
-                <button class="modal-close" onclick="window.dashboardUI.closeEventModal()">
+                <button class="modal-close" onclick="window.dashboardBundle.closeEventModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -421,7 +421,7 @@
                 <!-- Event details will be dynamically inserted here -->
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="window.dashboardUI.closeEventModal()">閉じる</button>
+                <button class="btn btn-secondary" onclick="window.dashboardBundle.closeEventModal()">閉じる</button>
                 <button class="btn btn-primary" id="eventActionBtn">参加する</button>
             </div>
         </div>
@@ -436,13 +436,10 @@
     <script src="js/supabase-unified.js?v=1.1"></script>
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
-    <!-- Supabase参照修正（不要になったため無効化） -->
-    <!-- <script src="js/supabase-wait-fix.js"></script> -->
     <!-- Core initialization -->
     <!-- ゲストモード管理 -->
     <script src="js/guest-mode-manager.js"></script>
     
-    <!-- Dashboard early fix は削除されました -->
     
     <!-- Core utilities (必須) -->
     <script src="js/core-utils.js"></script>
@@ -477,16 +474,12 @@
     <!-- Features -->
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
-    <!-- 通知送信機能は統一版に含まれています -->
-    <!-- <script src="js/notification-sender.js"></script> -->
     <script src="js/message-integration.js"></script>
     
     <!-- グローバル閲覧履歴 -->
     <script src="js/global-viewing-history.js"></script>
     <!-- TimeRex予約システム -->
     <!-- booking_intentsテーブル使用停止 -->
-    <!-- 通知機能はJSを無効化 -->
-    <!-- <script src="js/notifications.js"></script> -->
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
     
@@ -503,15 +496,5 @@
     </script>
     <!-- アバターサイズ強制適用 -->
     <script src="js/avatar-size-enforcer.js"></script>
-<!-- 重要機能復活スクリプト -->
-<!-- <script src="js/critical-features-restoration.js"></script> -->
-<!-- 追加重要機能復活スクリプト -->
-<!-- <script src="js/additional-critical-features.js"></script> -->
-<!-- 見逃していた重要機能 -->
-<!-- <script src="js/missing-critical-features.js"></script> -->
-<!-- 最終必須機能（辛口チェック完全版） -->
-<!-- <script src="js/final-critical-features.js"></script> -->
-<!-- <script src="js/final-essential-fixes.js"></script> -->
-<!-- <script src="js/dedupe-restoration-classes.js"></script> -->
 </body>
 </html>

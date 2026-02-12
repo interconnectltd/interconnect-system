@@ -45,10 +45,11 @@
             setTimeout(() => updateUserInfoSafe(), 1000);
         }
         
-        // supabaseReadyイベントでも更新
+        // supabaseReadyイベントでも更新（DBからプロフィールを取得）
         window.addEventListener('supabaseReady', function() {
-            // console.log('Dashboard: supabaseReady event received, updating user info');
             setTimeout(() => updateUserInfoSafe(), 500);
+            // DBからプロフィールを取得してlocalStorageを更新
+            fetchUserProfileFromDB();
             
             // ダッシュボード更新システムを初期化
             if (window.dashboardUpdater) {
@@ -70,15 +71,11 @@
 
     /**
      * Check authentication
+     * 認証はsupabase-unified.jsのprotectedPagesリスト(line:229)で処理済み。
+     * 未ログインの場合はsupabase-unified.jsがlogin.htmlへリダイレクトする。
      */
     function checkAuth() {
-        // Authentication check disabled for testing
-        // console.log('[Dashboard] Auth check skipped for testing');
-        // const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-        // 
-        // if (!isLoggedIn || isLoggedIn !== 'true') {
-        //     window.location.href = 'login.html';
-        // }
+        // no-op: supabase-unified.js handles redirect for protected pages
     }
 
     /**
@@ -232,6 +229,45 @@
      * 重複を避けるためここでは定義しない
      */
     
+    /**
+     * DBからユーザープロフィールを取得してlocalStorageとUIを更新
+     */
+    async function fetchUserProfileFromDB() {
+        try {
+            const user = await window.safeGetUser();
+            if (!user) return;
+
+            const supabaseInstance = window.supabaseClient;
+            if (!supabaseInstance) return;
+
+            const { data: profile, error } = await supabaseInstance
+                .from('user_profiles')
+                .select('name, full_name, avatar_url')
+                .eq('id', user.id)
+                .single();
+
+            if (error || !profile) return;
+
+            // localStorageを更新
+            const userDataStr = localStorage.getItem('user');
+            const userData = userDataStr ? JSON.parse(userDataStr) : {};
+
+            if (profile.name || profile.full_name) {
+                userData.name = profile.name || profile.full_name;
+            }
+            if (profile.avatar_url) {
+                userData.picture = profile.avatar_url;
+            }
+
+            localStorage.setItem('user', JSON.stringify(userData));
+
+            // UIを再更新
+            updateUserInfo();
+        } catch (error) {
+            console.error('[Dashboard] DBプロフィール取得エラー:', error);
+        }
+    }
+
     // グローバルに公開（デバッグ用）
     window.updateDashboardUserInfo = updateUserInfo;
 

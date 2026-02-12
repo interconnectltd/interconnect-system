@@ -97,12 +97,17 @@
             try {
                 if (!window.supabase) return;
 
+                // Calculator群が存在する場合はそちらに任せる（重複APIコール防止）
+                if (window.dashboardMemberCalculator || window.dashboardEventCalculator || window.dashboardMatchingCalculator) {
+                    return;
+                }
+
                 // メンバー数を取得
                 const { count: memberCount } = await window.supabase
                     .from('user_profiles')
                     .select('*', { count: 'exact', head: true });
 
-                this.stats.totalMembers = memberCount || 1234;
+                this.stats.totalMembers = memberCount || 0;
 
                 // 今月のイベント数を取得
                 const currentMonth = new Date().getMonth();
@@ -114,10 +119,10 @@
                     .gte('event_date', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-01`)
                     .lte('event_date', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-31`);
 
-                this.stats.monthlyEvents = events?.length || 15;
+                this.stats.monthlyEvents = events?.length || 0;
 
-                // その他の統計はダミーデータ
-                this.stats.matchingSuccess = 89;
+                // マッチング成功数は0で初期化（Calculatorが後から正確な値を設定する）
+                this.stats.matchingSuccess = 0;
 
             } catch (error) {
                 console.error('[DashboardStats] Error loading stats:', error);
@@ -125,7 +130,7 @@
         }
 
         updateUI() {
-            // 統計値を更新
+            // 統計値を更新（0の場合は「--」を表示）
             const statElements = {
                 totalMembers: document.querySelector('.stat-card:nth-child(1) .stat-value'),
                 monthlyEvents: document.querySelector('.stat-card:nth-child(2) .stat-value'),
@@ -134,7 +139,8 @@
 
             Object.entries(statElements).forEach(([key, element]) => {
                 if (element) {
-                    element.textContent = this.stats[key].toLocaleString();
+                    const value = this.stats[key];
+                    element.textContent = value > 0 ? value.toLocaleString() : '--';
                 }
             });
         }
@@ -319,11 +325,35 @@
 
             if (modalTitle) modalTitle.textContent = event.title;
             if (modalBody) {
-                modalBody.innerHTML = `
-                    <p><strong>日時:</strong> ${new Date(event.event_date).toLocaleDateString('ja-JP')} ${event.start_time}〜</p>
-                    <p><strong>形式:</strong> ${event.event_type === 'online' ? 'オンライン' : 'オフライン'}</p>
-                    ${event.description ? `<p><strong>説明:</strong> ${event.description}</p>` : ''}
-                `;
+                // DOM構築（XSS防止のためinnerHTMLを使わない）
+                modalBody.innerHTML = '';
+
+                const datePara = document.createElement('p');
+                const dateLabel = document.createElement('strong');
+                dateLabel.textContent = '日時:';
+                datePara.appendChild(dateLabel);
+                datePara.appendChild(document.createTextNode(
+                    ` ${new Date(event.event_date).toLocaleDateString('ja-JP')} ${event.start_time || ''}〜`
+                ));
+                modalBody.appendChild(datePara);
+
+                const typePara = document.createElement('p');
+                const typeLabel = document.createElement('strong');
+                typeLabel.textContent = '形式:';
+                typePara.appendChild(typeLabel);
+                typePara.appendChild(document.createTextNode(
+                    ` ${event.event_type === 'online' ? 'オンライン' : 'オフライン'}`
+                ));
+                modalBody.appendChild(typePara);
+
+                if (event.description) {
+                    const descPara = document.createElement('p');
+                    const descLabel = document.createElement('strong');
+                    descLabel.textContent = '説明:';
+                    descPara.appendChild(descLabel);
+                    descPara.appendChild(document.createTextNode(` ${event.description}`));
+                    modalBody.appendChild(descPara);
+                }
             }
 
             this.modal.classList.add('show');
@@ -360,6 +390,9 @@
             // console.log('[DashboardBundle] Initializing...');
             await this.loader.init();
 
+            // UIモジュールをグローバルに公開（Calculator群のモンキーパッチで参照される）
+            window.dashboardUI = this.loader.getModule('ui');
+
             // グローバルメソッドを公開
             this.exposeMethods();
         }
@@ -383,274 +416,39 @@
         }
     }
 
-    // ===================================
-    // dashboard-final-fixes.jsから救出したコード
-    // ===================================
-    class DashboardFinalFixes {
-        static fixEventsDateField() {
-            // dashboard-realtimeのloadUpcomingEventsを修正（拡張版）
-            if (window.dashboardRealtimeCalculator) {
-                const originalLoadUpcomingEvents = window.dashboardRealtimeCalculator.loadUpcomingEvents;
-
-                window.dashboardRealtimeCalculator.loadUpcomingEvents = async function() {
-                    try {
-                        const now = new Date();
-                        const dateStr = now.toISOString().split('T')[0];
-
-                        // event_dateを使用（正規スキーマ）
-                        const { data: events, error } = await window.supabase
-                            .from('events')
-                            .select('*')
-                            .gte('event_date', dateStr)
-                            .order('event_date', { ascending: true })
-                            .limit(5);
-
-                        if (error) {
-                            console.error('[FinalFixes] イベント取得エラー:', error);
-                            // デフォルトイベントを返す
-                            return [{
-                                id: '1',
-                                title: '経営戦略セミナー',
-                                event_date: '2025-07-15',
-                                start_date: '2025-07-15',
-                                time: '14:00〜',
-                                location: 'オンライン開催'
-                            }, {
-                                id: '2',
-                                title: '交流ランチ会',
-                                event_date: '2025-07-18',
-                                start_date: '2025-07-18',
-                                time: '12:00〜',
-                                location: '東京・丸の内'
-                            }, {
-                                id: '3',
-                                title: '新規事業ピッチ大会',
-                                event_date: '2025-07-25',
-                                start_date: '2025-07-25',
-                                time: '18:00〜',
-                                location: '大阪・梅田'
-                            }];
-                        }
-
-                        // イベントデータの形式を調整
-                        return (events || []).map(event => ({
-                            ...event,
-                            event_date: event.start_date || event.created_at,
-                            time: event.time || '時間未定',
-                            location: event.location || (event.is_online ? 'オンライン' : '場所未定')
-                        }));
-
-                    } catch (error) {
-                        console.error('[FinalFixes] loadUpcomingEvents エラー:', error);
-                        return this.defaultData.upcomingEvents;
-                    }
-                };
-            }
+    // ページ離脱時のクリーンアップ
+    function cleanupOnUnload() {
+        // Chart.jsインスタンスの破棄
+        if (window.dashboardCharts && window.dashboardCharts.charts) {
+            Object.values(window.dashboardCharts.charts).forEach(chart => {
+                if (chart && typeof chart.destroy === 'function') {
+                    chart.destroy();
+                }
+            });
         }
-
-        static fixMatchingsQueries() {
-            // matchingsテーブル404エラーの追加修正
-            if (window.dashboardMatchingCalculator) {
-                const originalGetSuccessfulMatches = window.dashboardMatchingCalculator.getSuccessfulMatches;
-
-                window.dashboardMatchingCalculator.getSuccessfulMatches = async function() {
-                    try {
-                        // matchingsテーブルが存在しないため、user_activitiesを使用
-                        const { count, error } = await window.supabase
-                            .from('user_activities')
-                            .select('*', { count: 'exact', head: true })
-                            .in('activity_type', ['matching', 'profile_exchange', 'connection']);
-
-                        if (error) {
-                            console.error('[FinalFixes] マッチング取得エラー:', error);
-                            return 0;
-                        }
-
-                        return count || 0;
-
-                    } catch (error) {
-                        console.error('[FinalFixes] getSuccessfulMatches エラー:', error);
-                        return 0;
-                    }
-                };
-            }
-        }
-
-        static applyAllFixes() {
-            // すべての修正を適用
-            setTimeout(() => {
-                this.fixEventsDateField();
-                this.fixMatchingsQueries();
-            }, 100);
+        // DashboardUpcomingEventsの定期更新を停止
+        if (window.dashboardUpcomingEvents && window.dashboardUpcomingEvents.updateInterval) {
+            clearInterval(window.dashboardUpcomingEvents.updateInterval);
         }
     }
+
+    window.addEventListener('beforeunload', cleanupOnUnload);
 
     // DOMContentLoaded時に初期化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             new DashboardBundle();
-            DashboardFinalFixes.applyAllFixes();
         });
     } else {
         new DashboardBundle();
-        DashboardFinalFixes.applyAllFixes();
     }
 
 })();
 
-// ============================================================
-// Section: dashboard-event-fix.js
-// ============================================================
-/**
- * ダッシュボードイベントクエリ修正
- * eventsテーブルのカラム名問題を解決
- */
-
-(function() {
-    'use strict';
-
-    // console.log('[DashboardEventFix] イベントクエリ修正スクリプト読み込み');
-
-    // 元のfetchEventsメソッドを安全に拡張
-    if (window.DashboardEvents && window.DashboardEvents.prototype) {
-        const originalFetchEvents = window.DashboardEvents.prototype.fetchEvents;
-        window.DashboardEvents.prototype.fetchEvents = async function() {
-            try {
-                if (!window.supabase && !window.supabaseClient) {
-                    // console.log('[DashboardEventFix] Supabaseクライアントが利用できません');
-                    return;
-                }
-
-                const client = window.supabase || window.supabaseClient;
-
-                // まずテーブル構造を確認
-                const { data: sampleData, error: sampleError } = await client
-                    .from('events')
-                    .select('*')
-                    .limit(1);
-
-                if (sampleError) {
-                    console.error('[DashboardEventFix] eventsテーブル確認エラー:', sampleError);
-                    this.loadDummyEvents();
-                    return;
-                }
-
-                // 利用可能な日付カラムを特定
-                let dateColumn = null;
-                if (sampleData && sampleData.length > 0) {
-                    const columns = Object.keys(sampleData[0]);
-                    const possibleDateColumns = ['event_date', 'start_date', 'date', 'created_at'];
-
-                    for (const col of possibleDateColumns) {
-                        if (columns.includes(col)) {
-                            dateColumn = col;
-                            break;
-                        }
-                    }
-                }
-
-                if (!dateColumn) {
-                    // console.log('[DashboardEventFix] 日付カラムが見つかりません');
-                    this.loadDummyEvents();
-                    return;
-                }
-
-                // console.log('[DashboardEventFix] 使用する日付カラム:', dateColumn);
-
-                // イベントを取得
-                const { data: events, error } = await client
-                    .from('events')
-                    .select('*')
-                    .eq('is_public', true)
-                    .eq('is_cancelled', false)
-                    .gte(dateColumn, new Date().toISOString())
-                    .order(dateColumn, { ascending: true })
-                    .limit(5);
-
-                if (error) {
-                    console.error('[DashboardEventFix] イベント取得エラー:', error);
-                    this.loadDummyEvents();
-                    return;
-                }
-
-                this.events = events || [];
-                this.renderEvents();
-                // console.log('[DashboardEventFix] イベント取得成功:', this.events.length);
-
-            } catch (error) {
-                console.error('[DashboardEventFix] Error loading events:', error);
-                this.loadDummyEvents();
-            }
-        };
-    }
-
-    // DashboardCalculatorの修正（安全に拡張）
-    if (window.DashboardCalculator && window.DashboardCalculator.prototype) {
-        const originalCalculate = window.DashboardCalculator.prototype.calculateStats;
-
-        window.DashboardCalculator.prototype.calculateStats = async function() {
-            try {
-                if (!window.supabase && !window.supabaseClient) {
-                    // console.log('[DashboardEventFix] Calculatorで使用: ダミーデータ');
-                    this.setDummyStats();
-                    return;
-                }
-
-                const client = window.supabase || window.supabaseClient;
-
-                // メンバー数の取得
-                const { count: memberCount } = await client
-                    .from('user_profiles')
-                    .select('*', { count: 'exact', head: true });
-
-                this.stats.totalMembers = memberCount || 1234;
-
-                // イベント数の取得（カラム名を動的に決定）
-                const currentMonth = new Date().getMonth();
-                const currentYear = new Date().getFullYear();
-
-                // まずサンプルデータで利用可能なカラムを確認
-                const { data: sampleData } = await client
-                    .from('events')
-                    .select('*')
-                    .limit(1);
-
-                let dateColumn = 'created_at'; // デフォルト
-                if (sampleData && sampleData.length > 0) {
-                    const columns = Object.keys(sampleData[0]);
-                    const possibleDateColumns = ['event_date', 'start_date', 'date'];
-
-                    for (const col of possibleDateColumns) {
-                        if (columns.includes(col)) {
-                            dateColumn = col;
-                            break;
-                        }
-                    }
-                }
-
-                const { data: events } = await client
-                    .from('events')
-                    .select('*')
-                    .gte(dateColumn, `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-01`)
-                    .lte(dateColumn, `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-31`);
-
-                this.stats.monthlyEvents = events?.length || 15;
-
-                // その他の統計
-                this.stats.matchingSuccess = 89;
-
-                this.updateStats();
-
-            } catch (error) {
-                console.error('[DashboardEventFix] 統計計算エラー:', error);
-                this.setDummyStats();
-            }
-        };
-    }
-
-    // console.log('[DashboardEventFix] 修正適用完了');
-
-})();
+// Section: dashboard-event-fix.js は削除済み
+// DashboardEvents/DashboardCalculatorはIIFEスコープ内のクラスであり、
+// window.DashboardEvents.prototypeは存在しないためパッチは無効だった。
+// イベント取得はDashboardEvents.loadEvents()とDashboardUpcomingEventsが担当。
 
 // ============================================================
 // Section: dashboard-stats-initializer.js
@@ -1205,26 +1003,12 @@
 
                 // console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベントを取得: ${startDate} ~ ${endDate}`);
 
-                // まずevent_dateフィールドで試す
-                let { count, error } = await window.supabase
+                // event_dateカラムを使用（正規スキーマ）
+                const { count, error } = await window.supabase
                     .from('events')
                     .select('*', { count: 'exact', head: true })
                     .gte('event_date', startDate)
                     .lte('event_date', endDate);
-
-                // event_dateがエラーの場合、dateフィールドで試す
-                if (error && error.message.includes('event_date')) {
-                    // console.log('[EventCalculator] event_dateフィールドが存在しません。dateフィールドで再試行...');
-
-                    const result = await window.supabase
-                        .from('events')
-                        .select('*', { count: 'exact', head: true })
-                        .gte('date', startDate)
-                        .lte('date', endDate);
-
-                    count = result.count;
-                    error = result.error;
-                }
 
                 if (error) {
                     console.error(`[EventCalculator] イベント取得エラー:`, error);
@@ -1435,7 +1219,7 @@
                     .select('*', { count: 'exact', head: true });
 
                 if (error) {
-                    // matchingsビューが存在しない場合、user_activitiesから取得
+                    // user_activitiesテーブル: 個人のアクティビティログ（フォールバック）
                     const result = await window.supabase
                         .from('user_activities')
                         .select('*', { count: 'exact', head: true })
@@ -1492,7 +1276,7 @@
                     .lte('created_at', endDate);
 
                 if (error) {
-                    // user_activitiesから取得
+                    // user_activitiesテーブル: 個人のアクティビティログ（フォールバック）
                     const result = await window.supabase
                         .from('user_activities')
                         .select('*', { count: 'exact', head: true })
@@ -1511,8 +1295,6 @@
                     value: matchingCount,
                     timestamp: Date.now()
                 });
-
-                // console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチング数: ${matchingCount}`);
                 return matchingCount;
 
             } catch (error) {
@@ -2167,19 +1949,13 @@
     async function fixRealtimeNotifications() {
         await waitForSupabase();
 
-        if (!window.supabase) {
+        if (!window.supabaseClient) {
             console.error('[DashboardFix] Supabaseが利用できません');
             return;
         }
 
-        // RealtimeNotificationsの再初期化を試みる
-        if (!window.realtimeNotifications && window.RealtimeNotifications) {
-            try {
-                window.realtimeNotifications = new window.RealtimeNotifications();
-            } catch (error) {
-                console.error('[DashboardFix] リアルタイム通知の初期化エラー:', error);
-            }
-        }
+        // notifications-realtime-unified.js が初期化を担当するため、
+        // ここでは重複初期化を行わない
     }
 
     // 初期化
@@ -2944,6 +2720,7 @@
                     const oneWeekAgo = new Date();
                     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
+                    // activitiesテーブル: コミュニティ全体のアクティビティフィード
                     const { data, error } = await window.supabase
                         .from('activities')
                         .select('created_at')
@@ -3127,7 +2904,7 @@
                 }
 
                 if (window.supabase && window.supabaseClient.from) {
-                    // Supabaseからアクティビティを取得
+                    // activitiesテーブル: コミュニティ全体のアクティビティフィード
                     const { data, error } = await window.supabase
                         .from('activities')
                         .select('*')
@@ -3160,6 +2937,10 @@
         /**
          * アクティビティデータを変換
          */
+        /**
+         * activitiesテーブルのレコードをUI用に変換
+         * activitiesテーブルカラム: id, type, title, user_id, created_at
+         */
         transformActivity(activity) {
             const iconMap = {
                 'member_joined': 'fa-user-plus',
@@ -3175,11 +2956,9 @@
                 id: activity.id,
                 type: activity.type,
                 title: activity.title,
-                description: activity.description,
                 user: activity.user_id,
                 timestamp: new Date(activity.created_at),
-                icon: iconMap[activity.type] || 'fa-bell',
-                data: activity.data
+                icon: iconMap[activity.type] || 'fa-bell'
             };
         }
 
@@ -3241,24 +3020,20 @@
                 }
 
                 if (window.supabase && window.supabaseClient.from) {
-                    // イベントデータを取得
+                    // イベントデータ + 参加者数をjoinクエリで一括取得（N+1防止）
                     const { data: events, error } = await window.supabase
                         .from('event_items')
-                        .select('*')
+                        .select('*, event_participants!left(id, status)')
                         .eq('is_public', true)
                         .eq('is_cancelled', false)
                         .order('event_date', { ascending: true });
 
                     if (!error && events && events.length > 0) {
-                        // 参加者数を取得
+                        // joinデータから参加者数を計算
                         for (const event of events) {
-                            const { count } = await window.supabase
-                                .from('event_participants')
-                                .select('*', { count: 'exact', head: true })
-                                .eq('event_id', event.id)
-                                .eq('status', 'registered');
-
-                            event.participant_count = count || 0;
+                            event.participant_count = (event.event_participants || [])
+                                .filter(p => p.status === 'registered').length;
+                            delete event.event_participants;
                         }
 
                         this.events = events;
