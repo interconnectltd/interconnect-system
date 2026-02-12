@@ -322,87 +322,23 @@
     <!-- Scripts -->
     <!-- Supabase統一初期化（最優先で読み込む） -->
     <script src="js/supabase-unified.js?v=1.1"></script>
-    
-    <!-- デバッグ用スクリプトは本番環境では無効化 -->
     <!-- 統一通知システム -->
     <script src="js/notification-system-unified.js"></script>
-    <!-- Supabase参照修正（不要になったため無効化） -->
-    <!-- <script src="js/supabase-wait-fix.js"></script> -->
-    <!-- Core utilities (必須) -->
+    <!-- Core utilities -->
     <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
+    <script src="js/notifications-realtime-unified.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
-    <!-- dashboard.jsはマッチングページには不要 -->
-    <!-- <script src="js/dashboard.js"></script> -->
-    
+    <!-- プロファイル詳細モーダル（統合版）- matching-bundleより前に読み込む -->
+    <script src="js/profile-modal-unified.js"></script>
     <!-- マッチングシステム統合JavaScript -->
     <script src="js/matching-bundle.js"></script>
-    
-    <!-- デバッグ用スクリプト（一時的） -->
-    <script>
-        // matching-unified.jsが実行されているか確認
-        window.addEventListener('load', function() {
-            if (window.matchingUnifiedLoaded) {
-                console.error('✅ matching-unified.js は正常に読み込まれました');
-            } else {
-                console.error('❌ matching-unified.js が読み込まれていません！');
-            }
-            
-            // matching-gridの状態を確認
-            const matchingGrid = document.querySelector('.matching-grid');
-            if (matchingGrid) {
-                console.error('マッチンググリッドの状態:', {
-                    存在: true,
-                    子要素数: matchingGrid.children.length,
-                    HTML内容の長さ: matchingGrid.innerHTML.length
-                });
-                
-                // DOM変更を監視
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        console.error('🔄 マッチンググリッドが変更されました:', {
-                            追加ノード数: mutation.addedNodes.length,
-                            削除ノード数: mutation.removedNodes.length,
-                            現在の子要素数: matchingGrid.children.length
-                        });
-                    });
-                });
-                
-                observer.observe(matchingGrid, {
-                    childList: true,
-                    subtree: true
-                });
-            }
-        });
-    </script>
-    <!-- 以下は無効化（matching-unified.jsに統合済み） -->
-    <!-- <script src="js/matching-init-fix.js"></script> -->
-    <!-- <script src="js/matching-complete-fix.js"></script> -->
-    <!-- <script src="js/matching-table-adapter.js"></script> -->
-    <!-- <script src="js/database-table-resolver.js"></script> -->
-    
     <!-- グローバル閲覧履歴 -->
     <script src="js/global-viewing-history.js"></script>
-    
-    <!-- 全てのマッチング機能はmatching-unified.jsに統合済み -->
-    
-    <!-- プロファイル詳細モーダル（統合版） -->
-    <script src="js/profile-modal-unified.js"></script>
-    <!-- profile-modal-priority.js, matching-filter-reset.js, matching-realtime-updates.js は matching-bundle.js に統合済み -->
-    <!-- パフォーマンス最適化は本番環境では無効化 -->
-    <!-- <script src="js/matching-missing-features.js"></script> -->
     <!-- ユーザードロップダウンハンドラー -->
     <script src="js/user-dropdown-handler.js"></script>
-    <!-- アバターサイズ強制適用は不要 -->
-    <!-- <script src="js/avatar-size-enforcer.js"></script> -->
-<!-- 以下のcritical系スクリプトは無効化（重複と競合の原因） -->
-<!-- <script src="js/critical-features-restoration.js"></script> -->
-<!-- <script src="js/additional-critical-features.js"></script> -->
-<!-- <script src="js/missing-critical-features.js"></script> -->
-<!-- <script src="js/final-critical-features.js"></script> -->
-<!-- <script src="js/matching-connections-essential-only.js"></script> -->
-<!-- <script src="js/final-essential-fixes.js"></script> -->
-<!-- <script src="js/dedupe-restoration-classes.js"></script> -->
+    <!-- アバターサイズ強制適用 -->
+    <script src="js/avatar-size-enforcer.js"></script>
 </body>
 </html>

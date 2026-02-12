@@ -1026,7 +1026,7 @@
         let score = 0;
         
         // 補完性スコアを重視（40点満点）
-        score += (complementarity.totalScore * 0.4);
+        score += ((complementarity && complementarity.totalScore) || 0) * 0.4;
         
         // スキルの一致度（20点満点）
         if (profileUser.skills && currentUser.skills) {
@@ -1375,8 +1375,7 @@
                 return '';
             }
             
-            // スコアが未設定の場合は、ユーザーIDベースの疑似ランダム値を生成（一貫性を保つ）
-            const matchScore = user.matchScore || generateConsistentScore(user.id);
+            const matchScore = user.matchScore;
         // スキルデータの処理（配列または文字列）
         let skillsArray = [];
         if (Array.isArray(user.skills)) {
@@ -1448,7 +1447,7 @@
         
         return `
             <div class="matching-card enhanced" data-user-id="${userId}" data-profile-id="${userId}" style="position: relative;">
-                <div class="matching-score">${matchScore}%</div>
+                <div class="matching-score">${matchScore != null ? matchScore + '%' : '--'}</div>
                 ${user.picture_url ? 
                     `<img src="${sanitizeImageUrl(user.picture_url)}" alt="${escapeHtml(user.name)}" class="matching-avatar">` :
                     `<div class="matching-avatar-placeholder">
@@ -2997,8 +2996,7 @@
                 industry: 'IT・テクノロジー・SaaS・プロダクト開発',
                 location: '東京都渋谷区神宮前1-2-3',
                 bio: 'プロダクトマネジメントに10年以上携わり、BtoBおよびBtoCの両方で成功を収めてきました。',
-                business_challenges: ['プロダクトの成長戦略', 'ユーザー体験の改善', 'チーム生産性の向上'],
-                matchScore: 95
+                business_challenges: ['プロダクトの成長戦略', 'ユーザー体験の改善', 'チーム生産性の向上']
             },
             {
                 id: 'dummy2',
@@ -3011,8 +3009,7 @@
                 industry: '小売',
                 location: '大阪',
                 bio: '現在インターンとして勉強中です。',
-                business_challenges: ['経験を積みたい'],
-                matchScore: 88
+                business_challenges: ['経験を積みたい']
             },
             {
                 id: 'dummy3',
@@ -3022,8 +3019,7 @@
                 skills: ['プログラミング', 'AI', 'データ分析'],
                 interests: ['AI', '機械学習'],
                 industry: 'IT',
-                location: '東京',
-                matchScore: 82
+                location: '東京'
             },
             {
                 id: 'dummy4',
@@ -3033,8 +3029,7 @@
                 skills: ['UI/UX', 'グラフィックデザイン', 'ブランディング'],
                 interests: ['デザイン', 'アート'],
                 industry: 'デザイン',
-                location: '大阪',
-                matchScore: 78
+                location: '大阪'
             },
             {
                 id: 'dummy5',
@@ -3044,8 +3039,7 @@
                 skills: ['デジタルマーケティング', 'SEO', 'コンテンツ制作'],
                 interests: ['マーケティング', 'グロース'],
                 industry: 'マーケティング',
-                location: '名古屋',
-                matchScore: 75
+                location: '名古屋'
             },
             {
                 id: 'dummy6',
@@ -3055,8 +3049,7 @@
                 skills: ['戦略立案', '事業開発', 'プロジェクト管理'],
                 interests: ['ビジネス戦略', 'イノベーション'],
                 industry: 'コンサルティング',
-                location: '福岡',
-                matchScore: 72
+                location: '福岡'
             }
         ];
 
@@ -3538,13 +3531,18 @@
                     <div style="font-weight: 600; margin-bottom: 4px;">
                         新しいユーザーが参加しました！
                     </div>
-                    <div style="opacity: 0.9; font-size: 14px;">
-                        ${profile.name || '新規ユーザー'} さん
+                    <div style="opacity: 0.9; font-size: 14px;" class="new-user-name">
                     </div>
                 </div>
             </div>
         `;
         
+        // ユーザー名をtextContentで安全に設定（XSS防止）
+        const nameEl = banner.querySelector('.new-user-name');
+        if (nameEl) {
+            nameEl.textContent = (profile.name || '新規ユーザー') + ' さん';
+        }
+
         // クリックでマッチングページへ
         banner.onclick = () => {
             if (!window.location.pathname.includes('matching.html')) {
@@ -3716,10 +3714,11 @@
         document.head.appendChild(style);
     }
     
-    // クリーンアップ
-    window.addEventListener('unload', () => {
+    // クリーンアップ（beforeunloadの方がブラウザ互換性が高い）
+    window.addEventListener('beforeunload', () => {
         if (realtimeSubscription) {
             realtimeSubscription.unsubscribe();
+            realtimeSubscription = null;
         }
     });
     

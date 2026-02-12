@@ -453,7 +453,7 @@
                     title: '代表取締役CEO',
                     company: '株式会社テックイノベーション',
                     skills: ['IT', 'AI', 'DX推進'],
-                    connectionCount: 156,
+                    connectionCount: 0,
                     is_online: true
                 },
                 {
@@ -463,7 +463,7 @@
                     title: 'マーケティング部長',
                     company: 'グローバルコマース株式会社',
                     skills: ['マーケティング', 'EC', 'グローバル'],
-                    connectionCount: 234,
+                    connectionCount: 0,
                     is_online: false
                 },
                 {
@@ -473,7 +473,7 @@
                     title: 'CTO',
                     company: 'デジタルソリューションズ',
                     skills: ['開発', 'クラウド', 'DevOps'],
-                    connectionCount: 198,
+                    connectionCount: 0,
                     is_online: true
                 }
             ];
