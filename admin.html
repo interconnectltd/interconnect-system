@@ -330,7 +330,7 @@
                             新規ユーザー追加
                         </button>
                     </div>
-                    
+
                     <div class="admin-filters">
                         <input type="text" class="form-input" placeholder="ユーザーを検索...">
                         <select class="form-select">
@@ -341,7 +341,7 @@
                         </select>
                         <button class="btn btn-outline">フィルター</button>
                     </div>
-                    
+
                     <div class="admin-table">
                         <table>
                             <thead>
@@ -358,6 +358,113 @@
                                 <!-- Table rows will be dynamically loaded -->
                             </tbody>
                         </table>
+                    </div>
+                </section>
+
+                <!-- Events Management Section (F5修正) -->
+                <section id="events" class="admin-section">
+                    <div class="section-header">
+                        <h2>イベント管理</h2>
+                    </div>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>タイトル</th>
+                                    <th>日時</th>
+                                    <th>場所</th>
+                                    <th>参加者数</th>
+                                    <th>ステータス</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-table-body">
+                                <tr><td colspan="5" style="text-align:center;padding:2rem;color:#888;">読み込み中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Reports Section (F5修正) -->
+                <section id="reports" class="admin-section">
+                    <div class="section-header">
+                        <h2>レポート</h2>
+                    </div>
+                    <div class="admin-stats" style="margin-bottom:1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="report-new-users">--</div>
+                                <div class="stat-label">今月の新規登録</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-handshake"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="report-matchings">--</div>
+                                <div class="stat-label">マッチング成立数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="report-event-participants">--</div>
+                                <div class="stat-label">イベント参加者数（累計）</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-link"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="report-connections">--</div>
+                                <div class="stat-label">コネクション総数</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:var(--card-bg,#fff);border-radius:12px;padding:1.5rem;border:1px solid var(--border-color,#e5e7eb);">
+                        <h3 style="margin:0 0 1rem;font-size:1rem;">月別登録ユーザー数</h3>
+                        <div id="monthly-chart" style="display:flex;align-items:flex-end;gap:4px;height:120px;"></div>
+                    </div>
+                </section>
+
+                <!-- System Settings Section (F5修正) -->
+                <section id="system" class="admin-section">
+                    <div class="section-header">
+                        <h2>システム設定</h2>
+                    </div>
+                    <div style="display:grid;gap:1rem;">
+                        <div style="background:var(--card-bg,#fff);border-radius:12px;padding:1.5rem;border:1px solid var(--border-color,#e5e7eb);">
+                            <h3 style="margin:0 0 1rem;font-size:1rem;"><i class="fas fa-server" style="margin-right:0.5rem;color:#667eea;"></i>接続状態</h3>
+                            <div style="display:grid;gap:0.75rem;" id="system-status">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span>Supabase接続</span>
+                                    <span id="sys-supabase-status" class="status-badge status-active">確認中...</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span>Realtime</span>
+                                    <span id="sys-realtime-status" class="status-badge status-active">確認中...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:var(--card-bg,#fff);border-radius:12px;padding:1.5rem;border:1px solid var(--border-color,#e5e7eb);">
+                            <h3 style="margin:0 0 1rem;font-size:1rem;"><i class="fas fa-info-circle" style="margin-right:0.5rem;color:#667eea;"></i>バージョン情報</h3>
+                            <div style="display:grid;gap:0.75rem;">
+                                <div style="display:flex;justify-content:space-between;">
+                                    <span>アプリケーション</span>
+                                    <span>INTERCONNECT v1.0</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;">
+                                    <span>フロントエンド</span>
+                                    <span>Netlify Static</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;">
+                                    <span>バックエンド</span>
+                                    <span>Supabase</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;">
+                                    <span>DB テーブル数</span>
+                                    <span id="sys-table-count">--</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -414,14 +521,23 @@
                 // ユーザーテーブル読み込み
                 await loadUsersTable(client);
 
-                // タブ切り替え
+                // タブ切り替え（各タブのデータ遅延ロード）
+                var tabDataLoaded = { users: true, events: false, reports: false, system: false };
                 document.querySelectorAll('.admin-tabs .tab-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
                         document.querySelectorAll('.admin-tabs .tab-btn').forEach(function(b) { b.classList.remove('active'); });
                         document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
                         this.classList.add('active');
-                        var section = document.getElementById(this.dataset.tab);
+                        var tab = this.dataset.tab;
+                        var section = document.getElementById(tab);
                         if (section) section.classList.add('active');
+                        // 各タブのデータを初回表示時にロード
+                        if (!tabDataLoaded[tab]) {
+                            tabDataLoaded[tab] = true;
+                            if (tab === 'events') loadEventsTable(client);
+                            if (tab === 'reports') loadReports(client);
+                            if (tab === 'system') loadSystemInfo(client);
+                        }
                     });
                 });
 
@@ -431,7 +547,7 @@
         })();
 
         async function loadUsersTable(client) {
-            var tbody = document.querySelector('.admin-table tbody');
+            var tbody = document.querySelector('#users .admin-table tbody');
             if (!tbody) return;
 
             var { data: users, error } = await client
@@ -471,6 +587,142 @@
                 tr.appendChild(actions);
                 tbody.appendChild(tr);
             });
+        }
+
+        // イベント一覧読み込み（F5修正）
+        async function loadEventsTable(client) {
+            var tbody = document.getElementById('events-table-body');
+            if (!tbody) return;
+            try {
+                var { data: events, error } = await client
+                    .from('event_items')
+                    .select('id, title, event_date, location, max_participants, status')
+                    .order('event_date', { ascending: false })
+                    .limit(50);
+                if (error) throw error;
+                if (!events || events.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#888;">イベントデータがありません</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = '';
+                events.forEach(function(ev) {
+                    var tr = document.createElement('tr');
+                    var cells = [
+                        ev.title || '無題',
+                        ev.event_date ? new Date(ev.event_date).toLocaleDateString('ja-JP') : '未定',
+                        ev.location || '-',
+                        (ev.max_participants || '-') + '名',
+                        ev.status || 'draft'
+                    ];
+                    cells.forEach(function(text, i) {
+                        var td = document.createElement('td');
+                        if (i === 4) {
+                            var badge = document.createElement('span');
+                            badge.className = 'status-badge status-' + text;
+                            badge.textContent = text === 'published' ? '公開' : text === 'draft' ? '下書き' : text;
+                            td.appendChild(badge);
+                        } else {
+                            td.textContent = text;
+                        }
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#e74c3c;">読み込みエラー: ' + (e.message || e) + '</td></tr>';
+            }
+        }
+
+        // レポート読み込み（F5修正）
+        async function loadReports(client) {
+            try {
+                var now = new Date();
+                var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+                var [newUsersRes, matchingsRes, connectionsRes] = await Promise.all([
+                    client.from('user_profiles').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
+                    client.from('matchings').select('id', { count: 'exact', head: true }),
+                    client.from('connections').select('id', { count: 'exact', head: true })
+                ]);
+
+                var el = document.getElementById('report-new-users');
+                if (el) el.textContent = (newUsersRes.count || 0).toLocaleString();
+                el = document.getElementById('report-matchings');
+                if (el) el.textContent = (matchingsRes.count || 0).toLocaleString();
+                el = document.getElementById('report-connections');
+                if (el) el.textContent = (connectionsRes.count || 0).toLocaleString();
+
+                // イベント参加者数
+                var { count: participantCount } = await client
+                    .from('event_participants')
+                    .select('id', { count: 'exact', head: true });
+                el = document.getElementById('report-event-participants');
+                if (el) el.textContent = (participantCount || 0).toLocaleString();
+
+                // 月別チャート（直近6ヶ月）
+                var chartEl = document.getElementById('monthly-chart');
+                if (chartEl) {
+                    var months = [];
+                    for (var i = 5; i >= 0; i--) {
+                        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                        months.push(d);
+                    }
+                    var counts = await Promise.all(months.map(function(m) {
+                        var start = m.toISOString();
+                        var end = new Date(m.getFullYear(), m.getMonth() + 1, 1).toISOString();
+                        return client.from('user_profiles').select('id', { count: 'exact', head: true })
+                            .gte('created_at', start).lt('created_at', end)
+                            .then(function(r) { return r.count || 0; });
+                    }));
+                    var maxCount = Math.max.apply(null, counts.concat([1]));
+                    chartEl.innerHTML = '';
+                    months.forEach(function(m, idx) {
+                        var bar = document.createElement('div');
+                        bar.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;';
+                        var height = Math.max(4, (counts[idx] / maxCount) * 100);
+                        bar.innerHTML = '<span style="font-size:12px;font-weight:600;">' + counts[idx] + '</span>' +
+                            '<div style="width:100%;height:' + height + 'px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:4px;"></div>' +
+                            '<span style="font-size:11px;color:#888;">' + (m.getMonth() + 1) + '月</span>';
+                        chartEl.appendChild(bar);
+                    });
+                }
+            } catch (e) {
+                console.error('[Admin] レポート読み込みエラー:', e);
+            }
+        }
+
+        // システム情報読み込み（F5修正）
+        async function loadSystemInfo(client) {
+            try {
+                // Supabase接続テスト
+                var { error } = await client.from('user_profiles').select('id', { head: true, count: 'exact' }).limit(1);
+                var statusEl = document.getElementById('sys-supabase-status');
+                if (statusEl) {
+                    statusEl.textContent = error ? '接続エラー' : '正常';
+                    statusEl.className = 'status-badge status-' + (error ? 'inactive' : 'active');
+                }
+
+                // Realtime接続テスト
+                var realtimeEl = document.getElementById('sys-realtime-status');
+                if (realtimeEl) {
+                    var connected = client.realtime && client.realtime.isConnected && client.realtime.isConnected();
+                    realtimeEl.textContent = connected ? '接続中' : '未接続';
+                    realtimeEl.className = 'status-badge status-' + (connected ? 'active' : 'inactive');
+                }
+
+                // テーブル数（既知の主要テーブルをカウント）
+                var tables = ['user_profiles', 'event_items', 'connections', 'matchings', 'messages',
+                    'notifications', 'invitations', 'event_participants', 'chat_messages'];
+                var tableCount = 0;
+                for (var i = 0; i < tables.length; i++) {
+                    var res = await client.from(tables[i]).select('id', { head: true, count: 'exact' }).limit(0);
+                    if (!res.error) tableCount++;
+                }
+                var tcEl = document.getElementById('sys-table-count');
+                if (tcEl) tcEl.textContent = tableCount + '+';
+            } catch (e) {
+                console.error('[Admin] システム情報読み込みエラー:', e);
+            }
         }
     </script>
 </body>

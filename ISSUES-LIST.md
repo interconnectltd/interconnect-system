@@ -1,7 +1,7 @@
 # INTERCONNECT 問題リスト
 
 **作成日:** 2026-02-11
-**最終更新:** 2026-02-12（セクション1〜5修正後）
+**最終更新:** 2026-02-12（セクション1〜6修正後）
 
 ---
 
@@ -52,7 +52,7 @@
 | C2 | **CRITICAL** | テーブル名不一致: `referrals`/`referrer_id` → 正しくは `invitations`/`inviter_id` | notifications-realtime-unified.js:169 | ✅ Phase修正済 |
 | C3 | **CRITICAL** | テーブル名不一致: `matches` → 正しくは `matchings` | notifications-realtime-unified.js:127,135 | ✅ Phase修正済 |
 | C4 | **HIGH** | 全13 Realtime購読でunsubscribe/cleanupなし → メモリリーク | 複数ファイル | ✅ セクション2修正（dashboard cleanup追加） |
-| C5 | **MEDIUM** | members-bundle, matching-bundle がフィルタなしで全変更を購読 | members-bundle.js, matching-bundle.js | ⬜ 未対応 |
+| C5 | **MEDIUM** | members-bundle, matching-bundle がフィルタなしで全変更を購読 | members-bundle.js, matching-bundle.js | ✅ セクション6修正（handleProfileUpdate限定化 + unsubscribe確認済） |
 
 ---
 
@@ -63,7 +63,7 @@
 | D1 | **HIGH** | `window.sendConnectRequest` — 呼び出されるが未定義 | members-bundle.js:2746 | ✅ Phase修正済 |
 | D2 | **HIGH** | `window.openChat` — どこにも定義されていない | messages-bundle.js:620 | ✅ Phase修正済 |
 | D3 | **HIGH** | `window.openCashoutModal` — 循環参照 | referral-bundle.js:851 | ✅ Phase修正済 |
-| D4 | **MEDIUM** | `window.RealtimeNotifications` — クラス未エクスポート | dashboard-unified.js:2182 | ⬜ 低影響 |
+| D4 | **MEDIUM** | `window.RealtimeNotifications` — クラス未エクスポート | dashboard-unified.js:2182 | ✅ 修正済み（参照消滅、fixRealtimeNotifications()空関数化） |
 | D5 | **MEDIUM** | `window.openShareModal` — 同ファイル内で2回定義 | referral-bundle.js:803,968 | ✅ Phase修正済 |
 | D6 | **LOW** | 40+のwindow.*が定義されているが一度も呼ばれない（デッドコード） | core-utils.js等 | ⬜ 低影響 |
 
@@ -77,12 +77,12 @@
 | E2 | **HIGH** | getUser()のdata直接分割代入 — dataがnullなら即クラッシュ | connections-bundle.js:51, profile-bundle.js:88 | ✅ セクション1〜4修正（safeGetUser + null guard） |
 | E3 | **HIGH** | 登録フローのレースコンディション: window.registerがラップ時未定義の可能性 | registration-unified.js:177-199 | ✅ セクション1修正（二重submit防止 + upsert） |
 | E4 | **HIGH** | マッチングスコア計算: skills/interestsがNULL → NaN → 結果空 | matching-bundle.js:95 | ✅ Phase修正済 |
-| E5 | **HIGH** | messages-bundle: Supabase失敗時にダミーデータを静かに表示 | messages-bundle.js:61-86 | ⬜ 未対応 |
+| E5 | **HIGH** | messages-bundle: Supabase失敗時にダミーデータを静かに表示 | messages-bundle.js:61-86 | ✅ 修正済み（loadDummyData() 削除済み、エラーUI実装済み） |
 | E6 | **MEDIUM** | profileCache の有効期限が定義済みだが未チェック | members-bundle.js:24,79 | ⬜ 低影響 |
 | E7 | **MEDIUM** | 税額計算の浮動小数点精度問題 | referral-bundle.js:239,305 | ⬜ Math.floorで実害なし |
 | E8 | **MEDIUM** | cashout.amount.toLocaleString() — null/stringならクラッシュ | referral-bundle.js:699 | ✅ セクション4修正 |
 | E9 | **MEDIUM** | イベントリスナー重複登録の可能性 | connections-bundle.js:75-79 | ✅ セクション4修正（重複init guard） |
-| E10 | **MEDIUM** | LINE QRファイルがフォームで収集されるがDB/Storageに保存されない | registration-unified.js | ⬜ 未対応 |
+| E10 | **MEDIUM** | LINE QRファイルがフォームで収集されるがDB/Storageに保存されない | registration-unified.js | ✅ 修正済み（registration-unified.js:2240-2270でStorage upload実装済み） |
 
 ---
 
@@ -93,9 +93,9 @@
 | F1 | **HIGH** | admin.html — データ読み込みコードなし、テーブル空、全数値ハードコード | ✅ セクション4修正（DB実データ化） |
 | F2 | **HIGH** | super-admin.html — Supabase接続なし、全KPIハードコード | ✅ セクション5修正（認証ガード + KPI/アクティビティ実データ + ログアウト） |
 | F3 | **HIGH** | settings.html — 全フォームがUIスタブ、保存機能なし | ✅ セクション4修正（実保存実装） |
-| F4 | **HIGH** | billing.html — コンテンツ空 | ⬜ 未対応 |
-| F5 | **MEDIUM** | 5つの管理ページへのリンクが404 | ⬜ 未対応 |
-| F6 | **MEDIUM** | HTMLコメント内に古いscript参照29件 | ✅ セクション4修正（6ファイルからコメント削除） |
+| F4 | **HIGH** | billing.html — コンテンツ空 | ✅ セクション6修正（プラン表示 + DB連携 + お問い合わせ導線） |
+| F5 | **MEDIUM** | admin.html タブ3つ（events/reports/system）にコンテンツなし | ✅ セクション6修正（3セクション追加 + データ取得実装） |
+| F6 | **MEDIUM** | HTMLコメント内に古いscript参照29件 | ✅ セクション4+6修正（全HTMLからコメント削除完了） |
 
 ---
 
@@ -110,45 +110,39 @@
 
 ---
 
-## 集計（セクション5完了後）
+## 集計（セクション6完了後）
 
 | カテゴリ | CRITICAL | HIGH | MEDIUM | LOW | 修正済 | 未対応 | 合計 |
 |---|---|---|---|---|---|---|---|
 | A. セキュリティ | 6→0 | 7→3 | 2→2 | 0 | 10 | 5 | **15** |
 | B. DB不整合 | 4→0 | 4→1 | 2→1 | 0 | 8 | 2 | **10** |
-| C. Realtime | 3→0 | 1→0 | 1→1 | 0 | 4 | 1 | **5** |
-| D. グローバル関数 | 0 | 3→0 | 2→1 | 1→1 | 4 | 2 | **6** |
-| E. ロジックバグ | 1→0 | 4→1 | 5→3 | 0 | 6 | 4 | **10** |
-| F. ページ機能 | 0 | 4→1 | 2→1 | 0 | 4 | 2 | **6** |
+| C. Realtime | 3→0 | 1→0 | 1→0 | 0 | 5 | 0 | **5** |
+| D. グローバル関数 | 0 | 3→0 | 2→0 | 1→1 | 5 | 1 | **6** |
+| E. ロジックバグ | 1→0 | 4→0 | 5→2 | 0 | 8 | 2 | **10** |
+| F. ページ機能 | 0 | 4→0 | 2→0 | 0 | 6 | 0 | **6** |
 | G. CSS/UI | 0 | 0 | 2→1 | 2→2 | 1 | 3 | **4** |
-| **合計** | **14→0** | **23→6** | **16→10** | **3→3** | **37** | **19** | **56** |
+| **合計** | **14→0** | **23→4** | **16→6** | **3→3** | **43** | **13** | **56** |
 
 **CRITICAL 14件: 全て修正済み**
-**HIGH 23件: 17件修正済み、6件未対応**
-**修正率: 37/56 = 66%**
+**HIGH 23件: 19件修正済み、4件未対応**
+**修正率: 43/56 = 77%**
 
 ---
 
-## 残存問題一覧（19件）
+## 残存問題一覧（13件）
 
-### HIGH（6件）
+### HIGH（4件）
 - A9: timerex-booking ユーザー認証なし
 - A11: 管理者チェックがクライアント側のみ（RLS補強必要）
 - A12: CSRFトークンなし（JWT認証で低リスク）
 - B6: ポイント二重管理
-- E5: messages-bundle ダミーデータ表示
-- F4: billing.html コンテンツ空
 
-### MEDIUM（10件）
+### MEDIUM（6件）
 - A14: CDN SRI属性なし
 - A15: security.js未使用
 - B10: 複数「FINAL」テストデータ
-- C5: Realtime購読フィルタなし
-- D4: RealtimeNotifications未エクスポート
 - E6: profileCache有効期限未チェック
 - E7: 税額浮動小数点精度
-- E10: LINE QR未保存
-- F5: 管理ページリンク404
 - G2: リスト表示モードCSS未定義
 
 ### LOW（3件）

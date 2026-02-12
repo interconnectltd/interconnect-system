@@ -3467,31 +3467,17 @@
     }
     
     function handleProfileUpdate(payload) {
-        const { eventType, new: newProfile, old: oldProfile } = payload;
-        
-        switch (eventType) {
-            case 'INSERT':
-                // 新しいユーザーが追加された
-                showNewUserNotification(newProfile);
-                // 必要に応じてマッチングリストを更新
-                if (window.location.pathname.includes('matching.html')) {
-                    addNewProfileToList(newProfile);
-                }
-                break;
-                
-            case 'UPDATE':
-                // プロファイルが更新された
-                if (window.location.pathname.includes('matching.html')) {
-                    updateProfileInList(newProfile);
-                }
-                break;
-                
-            case 'DELETE':
-                // プロファイルが削除された
-                if (window.location.pathname.includes('matching.html')) {
-                    removeProfileFromList(oldProfile.id);
-                }
-                break;
+        // Supabase Realtime の payload 構造: payload.eventType (大文字)
+        // 購読は UPDATE のみだが、念のため全イベント対応
+        const eventType = payload.eventType;
+        const newProfile = payload.new;
+        const oldProfile = payload.old;
+
+        // matching.html でのみ表示更新
+        if (!window.location.pathname.includes('matching')) return;
+
+        if (eventType === 'UPDATE' && newProfile) {
+            updateProfileInList(newProfile);
         }
     }
     

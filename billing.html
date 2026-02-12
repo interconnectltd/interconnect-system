@@ -235,17 +235,137 @@
                 </div>
             </header>
             
-            <!-- Billing Content -->
+            <!-- Billing Content (F4修正) -->
             <div class="content-container">
-                <!-- Content will be added here -->
+                <!-- 現在のプラン -->
+                <div style="background:var(--card-bg,#fff);border-radius:16px;padding:2rem;border:1px solid var(--border-color,#e5e7eb);margin-bottom:1.5rem;">
+                    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+                        <div style="width:48px;height:48px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-crown" style="color:#fff;font-size:1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h2 style="margin:0;font-size:1.25rem;">現在のプラン</h2>
+                            <p style="margin:0;color:#888;font-size:0.875rem;" id="billing-plan-name">読み込み中...</p>
+                        </div>
+                    </div>
+                    <div style="background:var(--bg-color,#f9fafb);border-radius:12px;padding:1.25rem;">
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;" id="billing-plan-details">
+                            <div>
+                                <div style="font-size:0.75rem;color:#888;margin-bottom:0.25rem;">会員タイプ</div>
+                                <div style="font-weight:600;" id="billing-membership-type">--</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.75rem;color:#888;margin-bottom:0.25rem;">登録日</div>
+                                <div style="font-weight:600;" id="billing-registered-date">--</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.75rem;color:#888;margin-bottom:0.25rem;">ステータス</div>
+                                <div id="billing-status"><span class="status-badge status-active">アクティブ</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- プラン機能一覧 -->
+                <div style="background:var(--card-bg,#fff);border-radius:16px;padding:2rem;border:1px solid var(--border-color,#e5e7eb);margin-bottom:1.5rem;">
+                    <h3 style="margin:0 0 1.25rem;font-size:1.1rem;"><i class="fas fa-check-circle" style="color:#667eea;margin-right:0.5rem;"></i>ご利用可能な機能</h3>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0.75rem;" id="billing-features">
+                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-color,#f9fafb);border-radius:8px;">
+                            <i class="fas fa-users" style="color:#667eea;width:20px;text-align:center;"></i>
+                            <span>メンバー検索・閲覧</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-color,#f9fafb);border-radius:8px;">
+                            <i class="fas fa-handshake" style="color:#667eea;width:20px;text-align:center;"></i>
+                            <span>AIマッチング</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-color,#f9fafb);border-radius:8px;">
+                            <i class="fas fa-envelope" style="color:#667eea;width:20px;text-align:center;"></i>
+                            <span>メッセージ送受信</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-color,#f9fafb);border-radius:8px;">
+                            <i class="fas fa-calendar-alt" style="color:#667eea;width:20px;text-align:center;"></i>
+                            <span>イベント参加</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-color,#f9fafb);border-radius:8px;">
+                            <i class="fas fa-user-plus" style="color:#667eea;width:20px;text-align:center;"></i>
+                            <span>紹介プログラム</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-color,#f9fafb);border-radius:8px;">
+                            <i class="fas fa-link" style="color:#667eea;width:20px;text-align:center;"></i>
+                            <span>コネクション管理</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- お問い合わせ -->
+                <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:16px;padding:2rem;color:#fff;text-align:center;">
+                    <h3 style="margin:0 0 0.5rem;font-size:1.1rem;">プランの変更・お問い合わせ</h3>
+                    <p style="margin:0 0 1.25rem;opacity:0.9;font-size:0.875rem;">プランのアップグレードやお支払いに関するご質問はお気軽にお問い合わせください。</p>
+                    <a href="mailto:support@and-interconnect.com" style="display:inline-flex;align-items:center;gap:0.5rem;background:#fff;color:#667eea;padding:0.75rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.875rem;">
+                        <i class="fas fa-envelope"></i>
+                        お問い合わせ
+                    </a>
+                </div>
             </div>
         </main>
     </div>
-    
+
     <!-- Scripts -->
     <script src="js/supabase-unified.js?v=1.1"></script>
     <script src="js/core-utils.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
+    <script>
+        // 請求情報読み込み（F4修正）
+        (async function loadBillingData() {
+            try {
+                await (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve());
+                var client = window.supabaseClient;
+                if (!client) return;
+
+                var result = await client.auth.getUser();
+                var user = result.data && result.data.user;
+                if (!user) {
+                    document.getElementById('billing-plan-name').textContent = 'ログインが必要です';
+                    return;
+                }
+
+                var { data: profile, error } = await client
+                    .from('user_profiles')
+                    .select('full_name, membership_type, status, created_at')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error || !profile) {
+                    document.getElementById('billing-plan-name').textContent = 'プロフィール情報を取得できませんでした';
+                    return;
+                }
+
+                var planNames = {
+                    'free': 'フリープラン',
+                    'basic': 'ベーシックプラン',
+                    'premium': 'プレミアムプラン',
+                    'enterprise': 'エンタープライズプラン'
+                };
+                var planName = planNames[profile.membership_type] || profile.membership_type || 'スタンダードプラン';
+
+                document.getElementById('billing-plan-name').textContent = planName;
+                document.getElementById('billing-membership-type').textContent = planName;
+                document.getElementById('billing-registered-date').textContent =
+                    profile.created_at ? new Date(profile.created_at).toLocaleDateString('ja-JP') : '--';
+
+                var statusEl = document.getElementById('billing-status');
+                if (statusEl) {
+                    var isActive = !profile.status || profile.status === 'active';
+                    statusEl.innerHTML = '<span class="status-badge status-' + (isActive ? 'active' : 'inactive') + '">' +
+                        (isActive ? 'アクティブ' : '非アクティブ') + '</span>';
+                }
+            } catch (e) {
+                console.error('[Billing] データ読み込みエラー:', e);
+                var el = document.getElementById('billing-plan-name');
+                if (el) el.textContent = '読み込みエラー';
+            }
+        })();
+    </script>
 </body>
 </html>
