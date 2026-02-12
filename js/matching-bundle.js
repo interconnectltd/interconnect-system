@@ -3467,176 +3467,37 @@
     }
     
     function handleProfileUpdate(payload) {
-        // Supabase Realtime の payload 構造: payload.eventType (大文字)
-        // 購読は UPDATE のみだが、念のため全イベント対応
-        const eventType = payload.eventType;
         const newProfile = payload.new;
-        const oldProfile = payload.old;
 
         // matching.html でのみ表示更新
         if (!window.location.pathname.includes('matching')) return;
+        if (!newProfile) return;
 
-        if (eventType === 'UPDATE' && newProfile) {
-            updateProfileInList(newProfile);
-        }
+        updateProfileInList(newProfile);
     }
     
-    function showNewUserNotification(profile) {
-        // 通知バナーを表示
-        const banner = document.createElement('div');
-        banner.className = 'new-user-notification';
-        banner.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            z-index: 10000;
-            animation: slideInRight 0.5s ease;
-            cursor: pointer;
-            max-width: 350px;
-        `;
-        
-        banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="
-                    width: 40px;
-                    height: 40px;
-                    background: rgba(255, 255, 255, 0.2);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <div>
-                    <div style="font-weight: 600; margin-bottom: 4px;">
-                        新しいユーザーが参加しました！
-                    </div>
-                    <div style="opacity: 0.9; font-size: 14px;" class="new-user-name">
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // ユーザー名をtextContentで安全に設定（XSS防止）
-        const nameEl = banner.querySelector('.new-user-name');
-        if (nameEl) {
-            nameEl.textContent = (profile.name || '新規ユーザー') + ' さん';
-        }
-
-        // クリックでマッチングページへ
-        banner.onclick = () => {
-            if (!window.location.pathname.includes('matching.html')) {
-                window.location.href = 'matching.html';
-            }
-            banner.remove();
-        };
-        
-        document.body.appendChild(banner);
-        
-        // 5秒後に自動削除
-        setTimeout(() => {
-            banner.style.animation = 'slideOutRight 0.5s ease';
-            setTimeout(() => banner.remove(), 500);
-        }, 5000);
-    }
-    
-    function addNewProfileToList(profile) {
-        // マッチングリストの先頭に新しいプロファイルを追加
-        const container = document.getElementById('matching-container');
-        if (!container) return;
-        
-        const matchingGrid = container.querySelector('.matching-grid');
-        if (!matchingGrid) return;
-        
-        // 新規バッジ付きでカードを作成
-        const newCard = createProfileCard(profile, true);
-        
-        // 最初の要素として挿入
-        matchingGrid.insertBefore(newCard, matchingGrid.firstChild);
-        
-        // アニメーション
-        newCard.style.animation = 'fadeInScale 0.5s ease';
-        
-        // 最後の要素を削除（ページあたりの表示数を維持）
-        const cards = matchingGrid.querySelectorAll('.matching-card');
-        if (cards.length > 12) {
-            cards[cards.length - 1].remove();
-        }
-    }
-    
+    // 既存カード内のテキストのみ更新（カード構造を保持）
     function updateProfileInList(profile) {
-        const card = document.querySelector(`[data-profile-id="${profile.id}"]`);
-        if (card) {
-            // カードの内容を更新
-            const updatedCard = createProfileCard(profile, false);
-            card.parentNode.replaceChild(updatedCard, card);
-            
-            // 更新アニメーション
-            updatedCard.style.animation = 'pulse 0.5s ease';
-        }
+        const card = document.querySelector('[data-profile-id="' + profile.id + '"]');
+        if (!card) return;
+
+        // 名前（h3 直下）
+        var h3 = card.querySelector('h3');
+        if (h3) h3.textContent = profile.name || profile.full_name || h3.textContent;
+
+        // 役職
+        var titleEl = card.querySelector('.matching-title');
+        if (titleEl && profile.position) titleEl.textContent = profile.position;
+
+        // 会社
+        var companyEl = card.querySelector('.matching-company');
+        if (companyEl && profile.company) companyEl.textContent = profile.company;
+
+        // アバター
+        var imgEl = card.querySelector('.matching-avatar');
+        if (imgEl && profile.picture_url) imgEl.src = profile.picture_url;
     }
-    
-    function removeProfileFromList(profileId) {
-        const card = document.querySelector(`[data-profile-id="${profileId}"]`);
-        if (card) {
-            // フェードアウトアニメーション
-            card.style.animation = 'fadeOutScale 0.5s ease';
-            setTimeout(() => card.remove(), 500);
-        }
-    }
-    
-    function createProfileCard(profile, isNew = false) {
-        const card = document.createElement('div');
-        card.className = 'matching-card';
-        card.dataset.profileId = profile.id;
-        
-        // 新規バッジ
-        const newBadge = isNew ? `
-            <div style="
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background: #e74c3c;
-                color: white;
-                padding: 4px 12px;
-                border-radius: 20px;
-                font-size: 12px;
-                font-weight: 600;
-                z-index: 10;
-            ">NEW</div>
-        ` : '';
-        
-        card.innerHTML = `
-            ${newBadge}
-            <div class="card-header">
-                <img src="${profile.avatar_url || 'assets/default-avatar.svg'}" 
-                     alt="${profile.name}" 
-                     class="profile-image">
-            </div>
-            <div class="card-body">
-                <h3 class="profile-name">${profile.name || '名前未設定'}</h3>
-                <p class="profile-title">${profile.title || '役職未設定'}</p>
-                <p class="profile-company">${profile.company || '会社未設定'}</p>
-            </div>
-            <div class="card-footer">
-                <button class="btn btn-secondary view-profile-btn" data-user-id="${profile.id}">
-                    プロフィール
-                </button>
-                <button class="btn btn-primary connect-btn" data-user-id="${profile.id}">
-                    コネクト
-                </button>
-            </div>
-        `;
-        
-        return card;
-    }
-    
+
     // アニメーションCSS追加
     function addAnimationStyles() {
         if (document.getElementById('realtime-animations')) return;

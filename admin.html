@@ -552,7 +552,7 @@
 
             var { data: users, error } = await client
                 .from('user_profiles')
-                .select('id, full_name, email, created_at, status')
+                .select('id, full_name, email, created_at, is_active')
                 .order('created_at', { ascending: false })
                 .limit(50);
 
@@ -570,8 +570,9 @@
                 date.textContent = user.created_at ? new Date(user.created_at).toLocaleDateString('ja-JP') : '';
                 var status = document.createElement('td');
                 var badge = document.createElement('span');
-                badge.className = 'status-badge status-' + (user.status || 'active');
-                badge.textContent = user.status === 'inactive' ? '非アクティブ' : 'アクティブ';
+                var isActive = user.is_active !== false;
+                badge.className = 'status-badge status-' + (isActive ? 'active' : 'inactive');
+                badge.textContent = isActive ? 'アクティブ' : '非アクティブ';
                 status.appendChild(badge);
                 var actions = document.createElement('td');
                 actions.textContent = '-';
@@ -596,7 +597,7 @@
             try {
                 var { data: events, error } = await client
                     .from('event_items')
-                    .select('id, title, event_date, location, max_participants, status')
+                    .select('id, title, event_date, location, max_participants, is_cancelled')
                     .order('event_date', { ascending: false })
                     .limit(50);
                 if (error) throw error;
@@ -607,29 +608,38 @@
                 tbody.innerHTML = '';
                 events.forEach(function(ev) {
                     var tr = document.createElement('tr');
+                    var isCancelled = ev.is_cancelled === true;
+                    var statusText = isCancelled ? 'キャンセル' : '公開中';
+                    var statusClass = isCancelled ? 'inactive' : 'active';
                     var cells = [
                         ev.title || '無題',
                         ev.event_date ? new Date(ev.event_date).toLocaleDateString('ja-JP') : '未定',
                         ev.location || '-',
-                        (ev.max_participants || '-') + '名',
-                        ev.status || 'draft'
+                        ev.max_participants ? ev.max_participants + '名' : '-'
                     ];
-                    cells.forEach(function(text, i) {
+                    cells.forEach(function(text) {
                         var td = document.createElement('td');
-                        if (i === 4) {
-                            var badge = document.createElement('span');
-                            badge.className = 'status-badge status-' + text;
-                            badge.textContent = text === 'published' ? '公開' : text === 'draft' ? '下書き' : text;
-                            td.appendChild(badge);
-                        } else {
-                            td.textContent = text;
-                        }
+                        td.textContent = text;
                         tr.appendChild(td);
                     });
+                    // ステータス列
+                    var statusTd = document.createElement('td');
+                    var badge = document.createElement('span');
+                    badge.className = 'status-badge status-' + statusClass;
+                    badge.textContent = statusText;
+                    statusTd.appendChild(badge);
+                    tr.appendChild(statusTd);
                     tbody.appendChild(tr);
                 });
             } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#e74c3c;">読み込みエラー: ' + (e.message || e) + '</td></tr>';
+                var errTr = document.createElement('tr');
+                var errTd = document.createElement('td');
+                errTd.colSpan = 5;
+                errTd.style.cssText = 'text-align:center;padding:2rem;color:#e74c3c;';
+                errTd.textContent = '読み込みエラー: ' + (e.message || e);
+                errTr.appendChild(errTd);
+                tbody.innerHTML = '';
+                tbody.appendChild(errTr);
             }
         }
 
@@ -702,22 +712,23 @@
                     statusEl.className = 'status-badge status-' + (error ? 'inactive' : 'active');
                 }
 
-                // Realtime接続テスト
+                // Realtime接続状態（Supabase JS v2: connectionState()）
                 var realtimeEl = document.getElementById('sys-realtime-status');
                 if (realtimeEl) {
-                    var connected = client.realtime && client.realtime.isConnected && client.realtime.isConnected();
-                    realtimeEl.textContent = connected ? '接続中' : '未接続';
+                    var state = client.realtime && typeof client.realtime.connectionState === 'function'
+                        ? client.realtime.connectionState() : null;
+                    var connected = state === 'open' || state === 'OPEN';
+                    realtimeEl.textContent = connected ? '接続中' : (state || '未接続');
                     realtimeEl.className = 'status-badge status-' + (connected ? 'active' : 'inactive');
                 }
 
-                // テーブル数（既知の主要テーブルをカウント）
+                // テーブル数（並列チェック）
                 var tables = ['user_profiles', 'event_items', 'connections', 'matchings', 'messages',
-                    'notifications', 'invitations', 'event_participants', 'chat_messages'];
-                var tableCount = 0;
-                for (var i = 0; i < tables.length; i++) {
-                    var res = await client.from(tables[i]).select('id', { head: true, count: 'exact' }).limit(0);
-                    if (!res.error) tableCount++;
-                }
+                    'notifications', 'invitations', 'event_participants'];
+                var results = await Promise.all(tables.map(function(t) {
+                    return client.from(t).select('id', { head: true, count: 'exact' }).limit(0);
+                }));
+                var tableCount = results.filter(function(r) { return !r.error; }).length;
                 var tcEl = document.getElementById('sys-table-count');
                 if (tcEl) tcEl.textContent = tableCount + '+';
             } catch (e) {

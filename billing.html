@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/responsive-layout.css">
     <!-- ユーザーメニューCSS（統合済み） -->
@@ -313,6 +314,7 @@
     <!-- Scripts -->
     <script src="js/supabase-unified.js?v=1.1"></script>
     <script src="js/core-utils.js"></script>
+    <script src="js/global-functions.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
     <script>
@@ -332,7 +334,7 @@
 
                 var { data: profile, error } = await client
                     .from('user_profiles')
-                    .select('full_name, membership_type, status, created_at')
+                    .select('full_name, is_active, created_at')
                     .eq('id', user.id)
                     .single();
 
@@ -341,13 +343,7 @@
                     return;
                 }
 
-                var planNames = {
-                    'free': 'フリープラン',
-                    'basic': 'ベーシックプラン',
-                    'premium': 'プレミアムプラン',
-                    'enterprise': 'エンタープライズプラン'
-                };
-                var planName = planNames[profile.membership_type] || profile.membership_type || 'スタンダードプラン';
+                var planName = 'スタンダードプラン';
 
                 document.getElementById('billing-plan-name').textContent = planName;
                 document.getElementById('billing-membership-type').textContent = planName;
@@ -356,9 +352,12 @@
 
                 var statusEl = document.getElementById('billing-status');
                 if (statusEl) {
-                    var isActive = !profile.status || profile.status === 'active';
-                    statusEl.innerHTML = '<span class="status-badge status-' + (isActive ? 'active' : 'inactive') + '">' +
-                        (isActive ? 'アクティブ' : '非アクティブ') + '</span>';
+                    var isActive = profile.is_active !== false;
+                    statusEl.textContent = '';
+                    var badge = document.createElement('span');
+                    badge.className = 'status-badge status-' + (isActive ? 'active' : 'inactive');
+                    badge.textContent = isActive ? 'アクティブ' : '非アクティブ';
+                    statusEl.appendChild(badge);
                 }
             } catch (e) {
                 console.error('[Billing] データ読み込みエラー:', e);
