@@ -22,6 +22,35 @@
     <link rel="stylesheet" href="css/super-admin.css">
 </head>
 <body class="admin-theme">
+    <!-- 管理者認証ガード（セクション5修正） -->
+    <script>
+    (async function() {
+        function waitForClient() {
+            return new Promise(function(resolve) {
+                if (window.supabaseClient) return resolve(window.supabaseClient);
+                var interval = setInterval(function() {
+                    if (window.supabaseClient) { clearInterval(interval); resolve(window.supabaseClient); }
+                }, 100);
+                setTimeout(function() { clearInterval(interval); resolve(null); }, 5000);
+            });
+        }
+        var client = await waitForClient();
+        if (!client) { window.location.href = 'login.html'; return; }
+        try {
+            var result = await client.auth.getUser();
+            var user = result.data && result.data.user;
+            if (!user) { window.location.href = 'login.html'; return; }
+            var profileResult = await client.from('user_profiles').select('is_admin').eq('id', user.id).single();
+            if (!profileResult.data || !profileResult.data.is_admin) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+        } catch (e) { window.location.href = 'login.html'; return; }
+        document.body.style.visibility = 'visible';
+    })();
+    </script>
+    <style>body { visibility: hidden; }</style>
+
     <!-- Mobile Header -->
     <header class="mobile-header admin-mobile-header">
         <button class="mobile-menu-toggle" id="superAdminMobileToggle">
@@ -238,11 +267,11 @@
                                 </div>
                             </div>
                             <div class="kpi-content">
-                                <div class="kpi-value">1,247</div>
+                                <div class="kpi-value" id="kpi-total-users">--</div>
                                 <div class="kpi-label">総ユーザー数</div>
-                                <div class="kpi-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span>+12.5%</span>
+                                <div class="kpi-change neutral">
+                                    <i class="fas fa-minus"></i>
+                                    <span>--</span>
                                     <small>先月比</small>
                                 </div>
                             </div>
@@ -255,11 +284,11 @@
                                 </div>
                             </div>
                             <div class="kpi-content">
-                                <div class="kpi-value">¥2,340,000</div>
+                                <div class="kpi-value" id="kpi-monthly-revenue">--</div>
                                 <div class="kpi-label">月間売上</div>
-                                <div class="kpi-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span>+18.2%</span>
+                                <div class="kpi-change neutral">
+                                    <i class="fas fa-minus"></i>
+                                    <span>--</span>
                                     <small>先月比</small>
                                 </div>
                             </div>
@@ -272,11 +301,11 @@
                                 </div>
                             </div>
                             <div class="kpi-content">
-                                <div class="kpi-value">156</div>
+                                <div class="kpi-value" id="kpi-matchings">--</div>
                                 <div class="kpi-label">マッチング成立</div>
-                                <div class="kpi-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span>+8.7%</span>
+                                <div class="kpi-change neutral">
+                                    <i class="fas fa-minus"></i>
+                                    <span>--</span>
                                     <small>先月比</small>
                                 </div>
                             </div>
@@ -289,11 +318,11 @@
                                 </div>
                             </div>
                             <div class="kpi-content">
-                                <div class="kpi-value">24</div>
+                                <div class="kpi-value" id="kpi-events">--</div>
                                 <div class="kpi-label">開催イベント</div>
                                 <div class="kpi-change neutral">
                                     <i class="fas fa-minus"></i>
-                                    <span>±0%</span>
+                                    <span>--</span>
                                     <small>先月比</small>
                                 </div>
                             </div>
@@ -307,43 +336,10 @@
                                 <h3>最近のアクティビティ</h3>
                                 <a href="#activity" class="view-all">すべて見る</a>
                             </div>
-                            <div class="activity-list">
+                            <div class="activity-list" id="activity-list">
                                 <div class="activity-item">
-                                    <div class="activity-avatar">
-                                        <img src="assets/user-placeholder.svg" alt="User">
-                                    </div>
                                     <div class="activity-content">
-                                        <p><strong>田中太郎</strong>さんが新規登録しました</p>
-                                        <span class="activity-time">2分前</span>
-                                    </div>
-                                    <div class="activity-type">
-                                        <i class="fas fa-user-plus"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="activity-item">
-                                    <div class="activity-avatar">
-                                        <img src="assets/user-placeholder.svg" alt="User">
-                                    </div>
-                                    <div class="activity-content">
-                                        <p><strong>佐藤花子</strong>さんがイベントに参加しました</p>
-                                        <span class="activity-time">15分前</span>
-                                    </div>
-                                    <div class="activity-type">
-                                        <i class="fas fa-calendar-check"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="activity-item">
-                                    <div class="activity-avatar">
-                                        <img src="assets/user-placeholder.svg" alt="User">
-                                    </div>
-                                    <div class="activity-content">
-                                        <p><strong>山田一郎</strong>さんがプロフィールを更新しました</p>
-                                        <span class="activity-time">1時間前</span>
-                                    </div>
-                                    <div class="activity-type">
-                                        <i class="fas fa-edit"></i>
+                                        <p>読み込み中...</p>
                                     </div>
                                 </div>
                             </div>
@@ -1385,21 +1381,6 @@
     <script src="js/supabase-unified.js?v=1.1"></script>
     <script src="js/core-utils.js"></script>
     <script>
-        // 管理者認証ガード
-        (async function adminAuthGuard() {
-            try {
-                await (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve());
-                const client = window.supabaseClient;
-                if (!client) { window.location.href = 'login.html'; return; }
-                const { data: { user } } = await client.auth.getUser();
-                if (!user) { window.location.href = 'login.html'; return; }
-                const { data: profile } = await client
-                    .from('user_profiles').select('is_admin').eq('id', user.id).single();
-                if (!profile || !profile.is_admin) { window.location.href = 'dashboard.html'; }
-            } catch (e) { window.location.href = 'login.html'; }
-        })();
-    </script>
-    <script>
         // Simple admin functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Navigation functionality
@@ -1536,13 +1517,118 @@
         });
         
         // Logout function
-        function superAdminLogout() {
-            if (confirm('ログアウトしますか？')) {
-                alert('ログアウトしました（デモ機能）');
-                // In real implementation, would redirect to login page
-                // window.location.href = 'index.html';
-            }
+        async function superAdminLogout() {
+            if (!confirm('ログアウトしますか？')) return;
+            try {
+                if (window.supabaseClient) await window.supabaseClient.auth.signOut();
+            } catch (e) { /* ignore */ }
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'login.html';
         }
+
+        // KPI・アクティビティ実データ取得
+        (async function loadDashboardData() {
+            try {
+                await (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve());
+                var client = window.supabaseClient;
+                if (!client) return;
+
+                // KPI: 総ユーザー数
+                var usersResult = await client.from('user_profiles').select('id', { count: 'exact', head: true });
+                var totalUsers = (usersResult.count != null) ? usersResult.count : 0;
+                var el = document.getElementById('kpi-total-users');
+                if (el) el.textContent = totalUsers.toLocaleString('ja-JP');
+
+                // KPI: 月間売上（cashout_requests の completed 合計）
+                var now = new Date();
+                var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+                var revenueResult = await client.from('cashout_requests')
+                    .select('amount')
+                    .eq('status', 'completed')
+                    .gte('created_at', monthStart);
+                var totalRevenue = 0;
+                if (revenueResult.data) {
+                    revenueResult.data.forEach(function(r) { totalRevenue += (Number(r.amount) || 0); });
+                }
+                el = document.getElementById('kpi-monthly-revenue');
+                if (el) el.textContent = '\u00A5' + totalRevenue.toLocaleString('ja-JP');
+
+                // KPI: マッチング成立数
+                var matchResult = await client.from('matchings').select('id', { count: 'exact', head: true });
+                var totalMatches = (matchResult.count != null) ? matchResult.count : 0;
+                el = document.getElementById('kpi-matchings');
+                if (el) el.textContent = totalMatches.toLocaleString('ja-JP');
+
+                // KPI: 開催イベント数
+                var eventsResult = await client.from('event_items').select('id', { count: 'exact', head: true });
+                var totalEvents = (eventsResult.count != null) ? eventsResult.count : 0;
+                el = document.getElementById('kpi-events');
+                if (el) el.textContent = totalEvents.toLocaleString('ja-JP');
+
+                // アクティビティ: 最新5件のユーザー登録
+                var activityList = document.getElementById('activity-list');
+                if (activityList) {
+                    var actResult = await client.from('user_profiles')
+                        .select('display_name, created_at')
+                        .order('created_at', { ascending: false })
+                        .limit(5);
+                    if (actResult.data && actResult.data.length > 0) {
+                        activityList.innerHTML = '';
+                        actResult.data.forEach(function(u) {
+                            var item = document.createElement('div');
+                            item.className = 'activity-item';
+
+                            var avatar = document.createElement('div');
+                            avatar.className = 'activity-avatar';
+                            var img = document.createElement('img');
+                            img.src = 'assets/user-placeholder.svg';
+                            img.alt = 'User';
+                            avatar.appendChild(img);
+
+                            var content = document.createElement('div');
+                            content.className = 'activity-content';
+                            var p = document.createElement('p');
+                            var strong = document.createElement('strong');
+                            strong.textContent = u.display_name || '名前未設定';
+                            p.appendChild(strong);
+                            p.appendChild(document.createTextNode('さんが新規登録しました'));
+                            content.appendChild(p);
+
+                            var timeSpan = document.createElement('span');
+                            timeSpan.className = 'activity-time';
+                            var diff = Date.now() - new Date(u.created_at).getTime();
+                            var mins = Math.floor(diff / 60000);
+                            if (mins < 60) timeSpan.textContent = mins + '分前';
+                            else if (mins < 1440) timeSpan.textContent = Math.floor(mins / 60) + '時間前';
+                            else timeSpan.textContent = Math.floor(mins / 1440) + '日前';
+                            content.appendChild(timeSpan);
+
+                            var typeDiv = document.createElement('div');
+                            typeDiv.className = 'activity-type';
+                            var icon = document.createElement('i');
+                            icon.className = 'fas fa-user-plus';
+                            typeDiv.appendChild(icon);
+
+                            item.appendChild(avatar);
+                            item.appendChild(content);
+                            item.appendChild(typeDiv);
+                            activityList.appendChild(item);
+                        });
+                    } else {
+                        activityList.innerHTML = '';
+                        var emptyDiv = document.createElement('div');
+                        emptyDiv.className = 'activity-item';
+                        var emptyP = document.createElement('p');
+                        emptyP.textContent = '最近のアクティビティはありません';
+                        emptyDiv.appendChild(emptyP);
+                        activityList.appendChild(emptyDiv);
+                    }
+                }
+            } catch (e) {
+                console.error('Dashboard data load error:', e);
+            }
+        })();
     </script>
 </body>
 </html>
