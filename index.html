@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Video Preload Optimization -->
-    <!-- 動画のプリロードは削除（サイズが大きすぎるため） -->
     <link rel="dns-prefetch" href="assets/">
     
     <!-- Styles -->
@@ -35,10 +34,6 @@
     <!-- 斜め線の強制削除（::beforeと::afterを削除してしまうので無効化） -->
     <!-- <link rel="stylesheet" href="css/hero-slant-fix.css"> -->
 
-    <!-- Hero関連スクリプトはhomepage-perfect-final.jsに統合済み -->
-    <!-- <script src="js/hero-simple.js"></script> -->
-    <!-- <script src="js/hero-slant-remover.js"></script> -->
-    <!-- <script src="js/typewriter-effect.js"></script> -->
 </head>
 <body>
     <!-- プリローディング画面（最初に表示） -->
@@ -732,27 +727,9 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/core-utils.js"></script>
-    <!-- ローディング動画修正（homepage-perfect-final.jsと重複するため無効化） -->
-    <!-- <script src="js/homepage-loading-final-fix.js"></script> -->
-    <!-- <script src="js/homepage-loading-video-fix.js"></script> -->
-    <!-- 動画プリロード最適化（video-performance-optimizer.jsと重複するため無効化） -->
-    <!-- <script src="js/video-preload-optimize.js"></script> -->
     <!-- homepage-perfect-final.js + referral-landing.js 統合バンドル -->
     <script src="js/homepage-bundle.js"></script>
     <script src="js/main.js"></script>
     <script src="js/supabase-unified.js?v=1.1"></script>
-    <!-- 動画パフォーマンス最適化 -->
-    <!-- 動画最適化はmain.jsとhomepage-perfect-final.jsに統合済み -->
-    <!-- <script src="js/video-performance-optimizer.js"></script> -->
-    <!-- Service Worker登録（video-performance-optimizer.jsで登録済みのため無効化） -->
-    <!-- <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw-video-cache.js')
-                    .then(registration => console.log('[SW] 登録成功:', registration.scope))
-                    .catch(err => console.error('[SW] 登録失敗:', err));
-            });
-        }
-    </script> -->
 </body>
 </html>

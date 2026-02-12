@@ -24,6 +24,37 @@
     <link rel="stylesheet" href="css/user-menu.css">
 </head>
 <body>
+    <!-- 管理者認証ガード（A6修正） -->
+    <script>
+    (async function() {
+        // Supabase SDK を待つ
+        function waitForClient() {
+            return new Promise(function(resolve) {
+                if (window.supabaseClient) return resolve(window.supabaseClient);
+                var interval = setInterval(function() {
+                    if (window.supabaseClient) { clearInterval(interval); resolve(window.supabaseClient); }
+                }, 100);
+                setTimeout(function() { clearInterval(interval); resolve(null); }, 5000);
+            });
+        }
+        var client = await waitForClient();
+        if (!client) { window.location.href = 'login.html'; return; }
+        try {
+            var result = await client.auth.getUser();
+            var user = result.data && result.data.user;
+            if (!user) { window.location.href = 'login.html'; return; }
+            var profileResult = await client.from('user_profiles').select('is_admin').eq('id', user.id).single();
+            if (!profileResult.data || !profileResult.data.is_admin) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+        } catch (e) { window.location.href = 'login.html'; return; }
+        // 認証OK → ページ表示
+        document.body.style.visibility = 'visible';
+    })();
+    </script>
+    <style>body { visibility: hidden; }</style>
+
     <!-- Mobile Header -->
     <header class="mobile-header">
         <button class="mobile-menu-toggle" id="adminSidebarToggle">
@@ -244,7 +275,7 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-value">1,234</div>
+                        <div class="stat-value" id="stat-total-users">--</div>
                         <div class="stat-label">総ユーザー数</div>
                     </div>
                 </div>
@@ -254,7 +285,7 @@
                         <i class="fas fa-user-check"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-value">892</div>
+                        <div class="stat-value" id="stat-active-users">--</div>
                         <div class="stat-label">アクティブユーザー</div>
                     </div>
                 </div>
@@ -264,7 +295,7 @@
                         <i class="fas fa-calendar-check"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-value">45</div>
+                        <div class="stat-value" id="stat-events">--</div>
                         <div class="stat-label">開催イベント</div>
                     </div>
                 </div>
@@ -274,7 +305,7 @@
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-value">12</div>
+                        <div class="stat-value" id="stat-reports">--</div>
                         <div class="stat-label">報告件数</div>
                     </div>
                 </div>
@@ -340,33 +371,107 @@
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
     <script>
-        // 管理者認証ガード
-        (async function adminAuthGuard() {
+        // 管理画面データ読み込み（F1修正）
+        (async function loadAdminData() {
             try {
                 await (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve());
                 const client = window.supabaseClient;
-                if (!client) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                const { data: { user } } = await client.auth.getUser();
-                if (!user) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                // 管理者権限チェック（user_profilesテーブル）
-                const { data: profile } = await client
+                if (!client) return;
+
+                // 統計データを並列で取得
+                const [usersResult, eventsResult] = await Promise.all([
+                    client.from('user_profiles').select('id, status, created_at', { count: 'exact', head: true }),
+                    client.from('event_items').select('id', { count: 'exact', head: true })
+                ]);
+
+                // 総ユーザー数
+                const totalUsers = usersResult.count || 0;
+                var el = document.getElementById('stat-total-users');
+                if (el) el.textContent = totalUsers.toLocaleString();
+
+                // アクティブユーザー（直近30日にログイン）
+                var thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                const { count: activeCount } = await client
                     .from('user_profiles')
-                    .select('is_admin')
-                    .eq('id', user.id)
-                    .single();
-                if (!profile || !profile.is_admin) {
-                    window.location.href = 'dashboard.html';
-                }
+                    .select('id', { count: 'exact', head: true })
+                    .gte('updated_at', thirtyDaysAgo.toISOString());
+                el = document.getElementById('stat-active-users');
+                if (el) el.textContent = (activeCount || 0).toLocaleString();
+
+                // イベント数
+                el = document.getElementById('stat-events');
+                if (el) el.textContent = (eventsResult.count || 0).toLocaleString();
+
+                // 報告件数（notificationsでtype='report'をカウント）
+                const { count: reportCount } = await client
+                    .from('notifications')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('type', 'report');
+                el = document.getElementById('stat-reports');
+                if (el) el.textContent = (reportCount || 0).toLocaleString();
+
+                // ユーザーテーブル読み込み
+                await loadUsersTable(client);
+
+                // タブ切り替え
+                document.querySelectorAll('.admin-tabs .tab-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('.admin-tabs .tab-btn').forEach(function(b) { b.classList.remove('active'); });
+                        document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
+                        this.classList.add('active');
+                        var section = document.getElementById(this.dataset.tab);
+                        if (section) section.classList.add('active');
+                    });
+                });
+
             } catch (e) {
-                window.location.href = 'login.html';
+                console.error('[Admin] データ読み込みエラー:', e);
             }
         })();
+
+        async function loadUsersTable(client) {
+            var tbody = document.querySelector('.admin-table tbody');
+            if (!tbody) return;
+
+            var { data: users, error } = await client
+                .from('user_profiles')
+                .select('id, full_name, email, created_at, status')
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            if (error || !users) return;
+
+            tbody.innerHTML = '';
+            users.forEach(function(user) {
+                var tr = document.createElement('tr');
+                var shortId = (user.id || '').substring(0, 8);
+                var name = document.createElement('td');
+                name.textContent = user.full_name || '未設定';
+                var email = document.createElement('td');
+                email.textContent = user.email || '';
+                var date = document.createElement('td');
+                date.textContent = user.created_at ? new Date(user.created_at).toLocaleDateString('ja-JP') : '';
+                var status = document.createElement('td');
+                var badge = document.createElement('span');
+                badge.className = 'status-badge status-' + (user.status || 'active');
+                badge.textContent = user.status === 'inactive' ? '非アクティブ' : 'アクティブ';
+                status.appendChild(badge);
+                var actions = document.createElement('td');
+                actions.textContent = '-';
+
+                var idCell = document.createElement('td');
+                idCell.textContent = shortId;
+
+                tr.appendChild(idCell);
+                tr.appendChild(name);
+                tr.appendChild(email);
+                tr.appendChild(date);
+                tr.appendChild(status);
+                tr.appendChild(actions);
+                tbody.appendChild(tr);
+            });
+        }
     </script>
 </body>
 </html>

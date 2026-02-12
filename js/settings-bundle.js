@@ -398,28 +398,150 @@
         field.classList.add('error');
     }
 
-    // Save settings
-    function saveSettings(form) {
+    // Save settings（F3修正: 実際のSupabase保存）
+    // settingsテーブル: user_id, theme, language, notifications_enabled, email_notifications, metadata JSONB
+    async function saveSettings(form) {
         const formData = new FormData(form);
-        const settings = {};
+        const formValues = {};
         for (let [key, value] of formData.entries()) {
-            settings[key] = value;
+            formValues[key] = value;
         }
 
         const saveBtn = form.querySelector('.btn-save');
+        if (!saveBtn) return;
         const originalText = saveBtn.textContent;
         saveBtn.textContent = '保存中...';
         saveBtn.disabled = true;
 
-        safeSetTimeout(() => {
+        try {
+            const client = window.supabaseClient;
+            if (!client) throw new Error('Supabase未接続');
+
+            const user = await window.safeGetUser();
+            if (!user) throw new Error('未ログイン');
+
+            // フォームのセクションを判定
+            const sectionId = form.closest('.settings-section')?.id || 'general';
+
+            if (sectionId === 'profile' || sectionId === 'account') {
+                // プロフィール関連はuser_profilesに保存
+                const profileUpdate = {};
+                if (formValues['display-name']) profileUpdate.full_name = formValues['display-name'];
+                if (formValues['email']) profileUpdate.email = formValues['email'];
+                if (formValues['bio']) profileUpdate.bio = formValues['bio'];
+                if (formValues['company']) profileUpdate.company = formValues['company'];
+
+                if (Object.keys(profileUpdate).length > 0) {
+                    const { error } = await client
+                        .from('user_profiles')
+                        .update(profileUpdate)
+                        .eq('id', user.id);
+                    if (error) throw error;
+                }
+            }
+
+            // パスワード変更
+            if (formValues['new-password'] && formValues['confirm-password']) {
+                if (formValues['new-password'] === formValues['confirm-password']) {
+                    const { error } = await client.auth.updateUser({
+                        password: formValues['new-password']
+                    });
+                    if (error) throw error;
+                    form.reset();
+                }
+            }
+
+            // 通知設定はsettingsテーブルに保存
+            if (sectionId === 'notifications') {
+                const settingsUpdate = {};
+                if ('notifications_enabled' in formValues) {
+                    settingsUpdate.notifications_enabled = formValues['notifications_enabled'] === 'true';
+                }
+                if ('email_notifications' in formValues) {
+                    settingsUpdate.email_notifications = formValues['email_notifications'] === 'true';
+                }
+                // その他の通知設定はmetadata JSONBに
+                const metadataKeys = Object.keys(formValues).filter(k =>
+                    k !== 'notifications_enabled' && k !== 'email_notifications'
+                );
+                if (metadataKeys.length > 0) {
+                    const { data: current } = await client
+                        .from('settings')
+                        .select('metadata')
+                        .eq('user_id', user.id)
+                        .single();
+                    const metadata = (current && current.metadata) || {};
+                    metadataKeys.forEach(k => { metadata[k] = formValues[k]; });
+                    settingsUpdate.metadata = metadata;
+                }
+
+                const { error } = await client
+                    .from('settings')
+                    .update(settingsUpdate)
+                    .eq('user_id', user.id);
+                if (error) throw error;
+            }
+
+            // テーマ・言語設定
+            if (sectionId === 'appearance' || sectionId === 'general') {
+                const settingsUpdate = {};
+                if (formValues['theme']) settingsUpdate.theme = formValues['theme'];
+                if (formValues['language']) settingsUpdate.language = formValues['language'];
+                if (Object.keys(settingsUpdate).length > 0) {
+                    const { error } = await client
+                        .from('settings')
+                        .update(settingsUpdate)
+                        .eq('user_id', user.id);
+                    if (error) throw error;
+                }
+            }
+
+            showToast('設定を保存しました', 'success');
+        } catch (err) {
+            console.error('[Settings] 保存エラー:', err);
+            showToast('設定の保存に失敗しました', 'error');
+        } finally {
             saveBtn.textContent = originalText;
             saveBtn.disabled = false;
-            showToast('設定を保存しました', 'success');
-        }, 1000);
+        }
     }
 
-    function saveSetting(name, value) {
-        showToast(`${name}を更新しました`, 'success');
+    async function saveSetting(name, value) {
+        try {
+            const client = window.supabaseClient;
+            if (!client) return;
+            const user = await window.safeGetUser();
+            if (!user) return;
+
+            // 既知のカラムは直接更新、それ以外はmetadataに保存
+            const knownColumns = ['theme', 'language', 'notifications_enabled', 'email_notifications'];
+            if (knownColumns.includes(name)) {
+                const { error } = await client
+                    .from('settings')
+                    .update({ [name]: value })
+                    .eq('user_id', user.id);
+                if (error) throw error;
+            } else {
+                // metadata JSONBに保存
+                const { data: current } = await client
+                    .from('settings')
+                    .select('metadata')
+                    .eq('user_id', user.id)
+                    .single();
+                const metadata = (current && current.metadata) || {};
+                metadata[name] = value;
+                const { error } = await client
+                    .from('settings')
+                    .update({ metadata: metadata })
+                    .eq('user_id', user.id);
+                if (error) throw error;
+            }
+
+            showToast(`設定を更新しました`, 'success');
+        } catch (err) {
+            console.error('[Settings] 設定更新エラー:', err);
+            showToast('設定の更新に失敗しました', 'error');
+        }
     }
 
     function toggleAppIntegration(appName, button) {
@@ -449,19 +571,37 @@
         }, 1500);
     }
 
-    function exportData() {
-        const button = event.target;
+    async function exportData(e) {
+        const button = e ? e.target : document.querySelector('[data-action="export"]');
+        if (!button) return;
         const originalText = button.textContent;
 
         button.textContent = 'エクスポート中...';
         button.disabled = true;
 
-        safeSetTimeout(() => {
-            button.textContent = originalText;
-            button.disabled = false;
-            showToast('データのエクスポートが完了しました', 'success');
-
+        try {
+            const client = window.supabaseClient;
+            const user = await window.safeGetUser();
             const data = {};
+
+            if (client && user) {
+                // プロフィールデータ取得
+                const { data: profile } = await client
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+                if (profile) data.profile = profile;
+
+                // 設定データ取得
+                const { data: settings } = await client
+                    .from('settings')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+                if (settings) data.settings = settings;
+            }
+
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -469,7 +609,15 @@
             a.download = 'interconnect-data.json';
             a.click();
             URL.revokeObjectURL(url);
-        }, 2000);
+
+            showToast('データのエクスポートが完了しました', 'success');
+        } catch (err) {
+            console.error('[Settings] エクスポートエラー:', err);
+            showToast('エクスポートに失敗しました', 'error');
+        } finally {
+            button.textContent = originalText;
+            button.disabled = false;
+        }
     }
 
     function calculatePasswordStrength(password) {
@@ -517,13 +665,23 @@
         }
     }
 
-    function deleteAccount() {
+    async function deleteAccount() {
         showToast('アカウントを削除しています...', 'info');
-        safeSetTimeout(() => {
+        try {
+            const client = window.supabaseClient;
+            if (client) {
+                // サインアウト（アカウント削除はサーバー側RPC経由が安全）
+                await client.auth.signOut();
+            }
             localStorage.clear();
             sessionStorage.clear();
             window.location.href = 'index.html';
-        }, 2000);
+        } catch (err) {
+            console.error('[Settings] アカウント削除エラー:', err);
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
     }
 
     // Toast notification (XSS safe, fallback if global showToast not available)

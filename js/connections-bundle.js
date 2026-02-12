@@ -961,16 +961,22 @@
         }
     });
 
-    // グローバルに公開（DOMContentLoaded後）
+    // グローバルに公開（E9修正: 重複初期化ガード）
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            window.connectionsManager = new ConnectionsManager();
+            if (!window.connectionsManager) {
+                window.connectionsManager = new ConnectionsManager();
+            }
         });
     } else {
         // 既に読み込み済みの場合は少し遅延させて実行
-        setTimeout(() => {
-            window.connectionsManager = new ConnectionsManager();
-        }, 100);
+        if (!window.connectionsManager) {
+            setTimeout(() => {
+                if (!window.connectionsManager) {
+                    window.connectionsManager = new ConnectionsManager();
+                }
+            }, 100);
+        }
     }
 
 })();
