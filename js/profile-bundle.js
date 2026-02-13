@@ -291,7 +291,7 @@ window.InterConnect.Profile = {
                         name: data.full_name || data.name || window.InterConnect.Profile.profileData.name,
                         company: data.company || window.InterConnect.Profile.profileData.company,
                         position: data.position || window.InterConnect.Profile.profileData.position,
-                        title: data.position || window.InterConnect.Profile.profileData.title, // titleカラムは存在しない
+                        title: data.position || window.InterConnect.Profile.profileData.position, // titleはpositionのエイリアス
                         industry: data.industry || window.InterConnect.Profile.profileData.industry,
                         skills: data.skills || window.InterConnect.Profile.profileData.skills || [],
                         bio: data.bio || window.InterConnect.Profile.profileData.bio,
@@ -461,7 +461,7 @@ window.InterConnect.Profile = {
         
         // 役職
         const positionElement = document.querySelector('.profile-title');
-        if (positionElement) positionElement.textContent = data.title || data.position || '役職・肩書き';
+        if (positionElement) positionElement.textContent = data.position || '役職・肩書き';
         
         // 統計情報の更新
         this.updateProfileStats(data);
@@ -1121,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // 役職・会社
-            updateElement('.profile-title', profile.title);
+            updateElement('.profile-title', profile.position);
             updateElement('.profile-company', profile.company);
 
             // 自己紹介

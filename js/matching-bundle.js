@@ -2029,7 +2029,7 @@
                 sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 break;
             case 'active':
-                sorted.sort((a, b) => new Date(b.last_login) - new Date(a.last_login));
+                sorted.sort((a, b) => new Date(b.last_login_at) - new Date(a.last_login_at));
                 break;
         }
 

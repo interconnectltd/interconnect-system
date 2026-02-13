@@ -212,7 +212,7 @@ exports.handler = async (event, context) => {
                                     picture: profile.pictureUrl,
                                     provider: 'line',
                                     line_user_id: profile.userId,
-                                    last_login: new Date().toISOString()
+                                    last_login_at: new Date().toISOString()
                                 }
                             }
                         );
@@ -251,7 +251,7 @@ exports.handler = async (event, context) => {
                             if (createError.message && createError.message.includes('already been registered')) {
                                 console.log('User already exists, attempting to find...');
                                 // 再度検索を試みる
-                                const { data: { users: retryUsers }, error: retryError } = await supabase.auth.admin.listUsers();
+                                const { data: { users: retryUsers }, error: retryError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
                                 
                                 if (!retryError && retryUsers) {
                                     const foundUser = retryUsers.find(u => u.email === lineEmail);

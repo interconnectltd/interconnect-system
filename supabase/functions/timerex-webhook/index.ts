@@ -198,8 +198,8 @@ async function notifyReferrer(supabase: any, referralCode: string, notification:
       .select('created_by')
       .eq('link_code', referralCode)
       .eq('is_active', true)
-      .single()
-    
+      .maybeSingle()
+
     if (!invitation) {
       console.log('Referrer not found for code:', referralCode)
       return
@@ -242,8 +242,8 @@ async function awardReferralPoints(supabase: any, referralCode: string, bookingI
       .select('created_by')
       .eq('link_code', referralCode)
       .eq('is_active', true)
-      .single()
-    
+      .maybeSingle()
+
     if (!invitation) {
       console.log('Referrer not found for points award:', referralCode)
       return

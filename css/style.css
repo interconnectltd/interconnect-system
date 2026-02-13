@@ -1335,9 +1335,9 @@ body[data-page="referral"] .content-body {
     isolation: isolate;
 }
 
-/* z-index競合の修正 */
+/* z-index統一スケール: Cards 10-1100, Navbar 1800, Dropdowns 3000, Modals 5000-5500, Toasts 9999, Loading 9998 */
 .modal {
-    z-index: 9999;
+    z-index: 5000;
 }
 
 .notification-popup {
@@ -1345,12 +1345,12 @@ body[data-page="referral"] .content-body {
 }
 
 .user-menu-dropdown {
-    z-index: 9998;
+    z-index: 3000;
 }
 
 /* レスポンシブメニューの競合修正 */
 .mobile-nav {
-    z-index: 9997;
+    z-index: 1800;
 }
 
 /* ボタンスタイルの統一 */
