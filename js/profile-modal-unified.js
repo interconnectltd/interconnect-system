@@ -436,7 +436,7 @@
                     const { data, error } = await window.supabase
                         .from('meeting_minutes')
                         .select('*')
-                        .eq('profile_id', profileId)  // user_idではなくprofile_idを使用
+                        .eq('user_id', profileId)
                         .order('meeting_date', { ascending: false })
                         .limit(3);
 

@@ -501,9 +501,9 @@
    =========================== */
 .sidebar { z-index: 100; }
 .mobile-sidebar { z-index: 999; }
-.user-dropdown { z-index: 200; }
-.notification-dropdown { z-index: 200; }
-.modal { z-index: 10000; }
+.user-dropdown { z-index: 3000; }
+.notification-dropdown { z-index: 3000; }
+.modal { z-index: 5000; }
 
 /* ===========================
    5. レスポンシブデザイン

@@ -11,7 +11,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 100000 !important; /* 最高優先度 */
+    z-index: 5200 !important; /* style.cssのz-indexスケールに統一 */
 }
 
 #memberProfileModal.show {
@@ -42,7 +42,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    z-index: 100001; /* オーバーレイより上 */
+    z-index: 5201; /* オーバーレイより上 */
 }
 
 #memberProfileModal .modal-body {

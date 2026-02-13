@@ -148,7 +148,7 @@ async function handleBookingCompleted(supabase: any, booking: any) {
         status: 'completed',
         completed_at: new Date().toISOString()
       })
-      .eq('timerex_id', booking.id)
+      .eq('booking_id', booking.id)
     
     if (updateError) {
       console.error('Error updating booking status:', updateError)
@@ -178,7 +178,7 @@ async function handleBookingCancelled(supabase: any, booking: any) {
         status: 'cancelled',
         cancelled_at: new Date().toISOString()
       })
-      .eq('timerex_id', booking.id)
+      .eq('booking_id', booking.id)
     
     if (error) {
       console.error('Error updating booking status:', error)

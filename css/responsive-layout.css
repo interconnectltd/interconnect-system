@@ -840,6 +840,12 @@ body.menu-open {
 
     table {
         min-width: 600px;
+        word-break: break-word;
+    }
+
+    table th,
+    table td {
+        white-space: nowrap;
     }
 }
 

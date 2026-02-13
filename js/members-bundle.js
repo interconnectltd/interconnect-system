@@ -2614,7 +2614,7 @@
             if (searchFilters.lastLoginDays > 0) {
                 const cutoffDate = new Date();
                 cutoffDate.setDate(cutoffDate.getDate() - searchFilters.lastLoginDays);
-                query = query.gte('last_login', cutoffDate.toISOString());
+                query = query.gte('last_login_at', cutoffDate.toISOString());
             }
 
             // ソート
@@ -2623,7 +2623,7 @@
                     query = query.order('created_at', { ascending: false });
                     break;
                 case 'active':
-                    query = query.order('last_login', { ascending: false });
+                    query = query.order('last_login_at', { ascending: false });
                     break;
                 default:
                     // relevance sorting would require full-text search

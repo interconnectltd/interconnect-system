@@ -820,7 +820,7 @@ class AdminReferralManager {
                 .update({
                     status: 'approved',
                     approved_at: new Date().toISOString(),
-                    approved_by: currentUser.id
+                    processed_at: new Date().toISOString()
                 })
                 .eq('id', cashoutId);
 
@@ -848,8 +848,7 @@ class AdminReferralManager {
                 .update({
                     status: 'rejected',
                     rejection_reason: reason,
-                    rejected_at: new Date().toISOString(),
-                    rejected_by: currentUser.id
+                    processed_at: new Date().toISOString()
                 })
                 .eq('id', cashoutId);
 

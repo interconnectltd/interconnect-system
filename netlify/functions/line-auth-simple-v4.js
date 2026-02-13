@@ -187,15 +187,15 @@ exports.handler = async (event, context) => {
                 // まず、既存ユーザーを検索
                 console.log('Searching for existing user with email:', lineEmail);
                 const { data: { users }, error: listError } = await supabase.auth.admin.listUsers({
-                    filter: `email.eq.${lineEmail}`
+                    perPage: 1000
                 });
-                
+
                 if (listError && listError.code !== 'resource_not_found') {
                     console.error('Error listing users:', listError);
                     throw listError;
                 }
-                
-                const existingUser = users && users.length > 0 ? users[0] : null;
+
+                const existingUser = users ? users.find(u => u.email === lineEmail) : null;
                 
                 if (existingUser) {
                     console.log('Existing user found:', existingUser.id);

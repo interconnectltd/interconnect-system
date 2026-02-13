@@ -236,7 +236,7 @@
                             name: '名前を取得中...', 
                             email: '',
                             company: '',
-                            title: ''
+                            position: ''
                         };
                         this.connections.received.push(conn);
                     } else if (conn.user_id === this.currentUserId && conn.status === 'pending') {
@@ -246,7 +246,7 @@
                             name: '名前を取得中...', 
                             email: '',
                             company: '',
-                            title: ''
+                            position: ''
                         };
                         this.connections.sent.push(conn);
                     } else if (conn.status === 'accepted') {
@@ -256,14 +256,14 @@
                             name: '名前を取得中...', 
                             email: '',
                             company: '',
-                            title: ''
+                            position: ''
                         };
                         conn.connected_user = profileMap[conn.connected_user_id] || { 
                             id: conn.connected_user_id,
                             name: '名前を取得中...', 
                             email: '',
                             company: '',
-                            title: ''
+                            position: ''
                         };
                         this.connections.connected.push(conn);
                     } else if (conn.status === 'rejected') {
@@ -273,14 +273,14 @@
                             name: '名前を取得中...', 
                             email: '',
                             company: '',
-                            title: ''
+                            position: ''
                         };
                         conn.connected_user = profileMap[conn.connected_user_id] || { 
                             id: conn.connected_user_id,
                             name: '名前を取得中...', 
                             email: '',
                             company: '',
-                            title: ''
+                            position: ''
                         };
                         this.connections.rejected.push(conn);
                     }

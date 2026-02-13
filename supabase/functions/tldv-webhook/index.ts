@@ -40,7 +40,7 @@ async function verifyWebhookSignature(payload: string, signature: string): Promi
 async function findInvitationByEmail(email: string) {
   // ユーザーを検索
   const { data: userData } = await supabase
-    .from('profiles')
+    .from('user_profiles')
     .select('id')
     .eq('email', email)
     .single()
