@@ -132,9 +132,6 @@
             // 新しいイベントリスナーを追加
             newButton.addEventListener('click', handleLineLogin);
 
-            // グローバルに公開
-            window.handleLineLoginSimple = handleLineLogin;
-
             // console.log('✅ LINE Login button setup complete');
         }
 

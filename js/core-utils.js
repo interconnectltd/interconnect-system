@@ -140,53 +140,6 @@
         }
     };
 
-    // 安全な複数要素取得
-    window.safeQuerySelectorAll = function(selector, parent = document) {
-        try {
-            return Array.from(parent.querySelectorAll(selector));
-        } catch (e) {
-            console.error('Invalid selector:', selector);
-            return [];
-        }
-    };
-
-    // 安全なJSON parse
-    window.safeJSONParse = function(str, defaultValue = null) {
-        try {
-            return JSON.parse(str);
-        } catch (e) {
-            return defaultValue;
-        }
-    };
-
-    // 安全なイベントリスナー追加（自動クリーンアップ付き）
-    const eventListeners = new WeakMap();
-
-    window.safeAddEventListener = function(element, event, handler, options) {
-        if (!element || typeof element.addEventListener !== 'function') {
-            console.warn('Invalid element for event listener');
-            return null;
-        }
-
-        const safeHandler = function(e) {
-            try {
-                handler.call(this, e);
-            } catch (error) {
-                console.error('Error in event handler:', error);
-            }
-        };
-
-        element.addEventListener(event, safeHandler, options);
-
-        if (!eventListeners.has(element)) {
-            eventListeners.set(element, []);
-        }
-        eventListeners.get(element).push({ event, handler: safeHandler, options });
-
-        return function() {
-            element.removeEventListener(event, safeHandler, options);
-        };
-    };
 
     // 安全なsetTimeout
     window.safeSetTimeout = function(callback, delay) {
@@ -306,78 +259,6 @@
         }
     };
 
-    // テキストのみを安全に設定
-    window.safeSetText = function(element, text) {
-        if (!element) return;
-        element.textContent = text || '';
-    };
-
-    // 属性を安全に設定
-    window.safeSetAttribute = function(element, attribute, value) {
-        if (!element || !attribute) return;
-
-        const dangerousAttrs = ['onclick', 'onload', 'onerror', 'onmouseover', 'onfocus', 'onblur'];
-        const attrLower = attribute.toLowerCase();
-
-        if (dangerousAttrs.includes(attrLower)) {
-            console.warn('Blocked dangerous attribute:', attribute);
-            return;
-        }
-
-        if (attrLower === 'href' && value && value.toString().toLowerCase().includes('javascript:')) {
-            console.warn('Blocked javascript: protocol in href');
-            return;
-        }
-
-        element.setAttribute(attribute, value);
-    };
-
-    // クラスを安全に追加
-    window.safeAddClass = function(element, className) {
-        if (!element || !className) return;
-
-        const safeClassName = className.replace(/[^a-zA-Z0-9-_\s]/g, '');
-        if (safeClassName) {
-            element.classList.add(safeClassName);
-        }
-    };
-
-    // データ属性を安全に設定
-    window.safeSetData = function(element, key, value) {
-        if (!element || !key) return;
-
-        const safeKey = key.replace(/[^a-zA-Z0-9-]/g, '');
-        if (safeKey) {
-            element.dataset[safeKey] = value || '';
-        }
-    };
-
-    // URLを安全に設定
-    window.safeSetURL = function(element, url) {
-        if (!element || !url) return;
-
-        try {
-            const urlObj = new URL(url, window.location.origin);
-
-            const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
-            if (!allowedProtocols.includes(urlObj.protocol)) {
-                console.warn('Blocked unsafe protocol:', urlObj.protocol);
-                return;
-            }
-
-            if (element.tagName === 'A') {
-                element.href = urlObj.href;
-                if (urlObj.origin !== window.location.origin) {
-                    element.rel = 'noopener noreferrer';
-                    element.target = '_blank';
-                }
-            } else if (element.tagName === 'IMG' || element.tagName === 'IFRAME') {
-                element.src = urlObj.href;
-            }
-        } catch (e) {
-            console.error('Invalid URL:', url);
-        }
-    };
 
     // HTMLエスケープ
     window.escapeHTML = function(str) {
@@ -394,16 +275,6 @@
             .replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     };
 
-    // テンプレートリテラル用の安全なHTML生成
-    window.safeHTML = function(strings, ...values) {
-        let result = strings[0];
-
-        for (let i = 0; i < values.length; i++) {
-            result += escapeHTML(values[i]) + strings[i + 1];
-        }
-
-        return result;
-    };
 
     // 既存のinnerHTML使用箇所を警告（デバッグモード時）
     if (window.DEBUG_MODE) {
@@ -665,53 +536,6 @@
         return true;
     };
 
-    // 複数要素のnullチェック
-    window.checkElements = function(elements, elementName = 'Elements') {
-        if (!elements || elements.length === 0) {
-            console.warn(`${elementName} not found`);
-            return false;
-        }
-        return true;
-    };
-
-    // シンプルなストレージアクセス（SafeStorageクラスの簡易版互換）
-    window.safeStorage = {
-        getItem: function(key, storage = localStorage) {
-            try {
-                return storage.getItem(key);
-            } catch (e) {
-                console.error('Storage access error:', e);
-                return null;
-            }
-        },
-        setItem: function(key, value, storage = localStorage) {
-            try {
-                storage.setItem(key, value);
-                return true;
-            } catch (e) {
-                console.error('Storage write error:', e);
-                return false;
-            }
-        },
-        removeItem: function(key, storage = localStorage) {
-            try {
-                storage.removeItem(key);
-                return true;
-            } catch (e) {
-                console.error('Storage remove error:', e);
-                return false;
-            }
-        },
-        clear: function(storage = localStorage) {
-            try {
-                storage.clear();
-                return true;
-            } catch (e) {
-                console.error('Storage clear error:', e);
-                return false;
-            }
-        }
-    };
 
     // JSONの安全なパース/文字列化（JSON.safeParse / JSON.safeStringify）
     window.JSON.safeParse = function(text, reviver) {

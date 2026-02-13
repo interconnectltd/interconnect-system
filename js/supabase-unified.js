@@ -226,7 +226,7 @@
                 // 401/403エラーの場合は認証が必要
                 if (error.status === 401 || error.status === 403) {
                     // 保護されたページの場合はログインページへリダイレクト
-                    const protectedPages = ['dashboard', 'members', 'events', 'messages', 'matching', 'profile', 'referral', 'notifications', 'settings', 'billing'];
+                    const protectedPages = ['dashboard', 'members', 'events', 'messages', 'matching', 'profile', 'referral', 'notifications', 'settings', 'billing', 'activities'];
                     const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
                     
                     if (protectedPages.includes(currentPage)) {

@@ -21,21 +21,6 @@
 (function() {
     'use strict';
 
-    // グローバルフラグでスクリプト実行を確認
-    window.matchingUnifiedLoaded = true;
-    console.error('[MatchingUnified] スクリプト実行開始', new Date().toISOString());
-    
-    // デバッグ表示（一時的）
-    if (window.location.pathname.includes('matching.html')) {
-        document.addEventListener('DOMContentLoaded', function() {
-            const debugDiv = document.createElement('div');
-            debugDiv.style.cssText = 'position:fixed;top:10px;right:10px;background:red;color:white;padding:10px;z-index:99999;border-radius:5px;';
-            debugDiv.textContent = 'matching-unified.js 実行中';
-            document.body.appendChild(debugDiv);
-            setTimeout(() => debugDiv.remove(), 5000);
-        });
-    }
-    
     // Supabaseの準備ができていない場合は待機
     if (!window.waitForSupabase || !window.supabaseClient) {
         console.error('[MatchingUnified] Supabaseの初期化を待機中...', {

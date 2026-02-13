@@ -104,11 +104,6 @@
             
             document.addEventListener('click', outsideClickHandler);
             
-            // クリーンアップ用にハンドラーを保存
-            window._sidebarHandlers = {
-                toggle: sidebarToggleHandler,
-                outside: outsideClickHandler
-            };
         }
     }
 
@@ -136,11 +131,6 @@
             
             document.addEventListener('click', dropdownCloseHandler);
             
-            // クリーンアップ用にハンドラーを保存
-            window._userMenuHandlers = {
-                click: menuClickHandler,
-                close: dropdownCloseHandler
-            };
         }
     }
 
@@ -267,9 +257,6 @@
             console.error('[Dashboard] DBプロフィール取得エラー:', error);
         }
     }
-
-    // グローバルに公開（デバッグ用）
-    window.updateDashboardUserInfo = updateUserInfo;
 
     // 紹介ポイントを読み込む関数
     async function loadReferralPoints() {

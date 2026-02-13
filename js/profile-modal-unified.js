@@ -928,7 +928,6 @@
     // 後方互換エイリアス（members-profile-modal.js互換）
     // ==========================================
     window.ProfileDetailModal = ProfileDetailModal;
-    window.MembersProfileModal = ProfileDetailModal;
     window.membersProfileModal = window.profileDetailModal;
     window.showMemberProfileModal = function(userId) {
         if (window.profileDetailModal) {

@@ -1177,16 +1177,5 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
         initialize();
     }
 
-    // グローバルAPIとして公開
-    window.ShareModalHandler = {
-        openShareModal: window.openShareModal,
-        closeShareModal: window.closeShareModal,
-        shareToTwitter: window.shareToTwitter,
-        shareToLine: window.shareToLine,
-        shareToFacebook: window.shareToFacebook,
-        shareByEmail: window.shareByEmail,
-        copyShareLink: window.copyShareLink
-    };
-
 })();
 

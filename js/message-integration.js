@@ -257,10 +257,10 @@
     // 自動初期化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            window.messageIntegration = new MessageIntegration();
+            new MessageIntegration();
         });
     } else {
-        window.messageIntegration = new MessageIntegration();
+        new MessageIntegration();
     }
 
 })();

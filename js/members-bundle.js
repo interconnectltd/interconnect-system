@@ -2284,10 +2284,10 @@
     // DOMContentLoaded時に初期化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            window.memberProfilePreview = new MemberProfilePreview();
+            new MemberProfilePreview();
         });
     } else {
-        window.memberProfilePreview = new MemberProfilePreview();
+        new MemberProfilePreview();
     }
 
 })();

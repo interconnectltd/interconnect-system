@@ -379,15 +379,6 @@
         }, 100);
     }
 
-    // グローバル公開（デバッグ用）
-    window.HomepagePerfectFinal = {
-        GlobalState,
-        DisableConflicts,
-        PerfectLoader,
-        PerfectAnimator,
-        ScrollEffects
-    };
-
 })();
 
 // ============================================================
@@ -606,14 +597,5 @@ function customizeCTAButtons(referralCode) {
     });
 }
 
-// 登録ページへの遷移時に紹介コードを渡す
-window.goToRegister = function() {
-    const referralCode = sessionStorage.getItem('referral_code');
-    if (referralCode) {
-        window.location.href = `/register.html?ref=${referralCode}`;
-    } else {
-        window.location.href = '/register.html';
-    }
-};
 
 // console.log('=== 紹介リンク処理準備完了 ===');

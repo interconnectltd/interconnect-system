@@ -364,11 +364,4 @@
         initialize();
     }
 
-    // グローバルAPIとして公開
-    window.UserDropdownHandler = {
-        closeAllDropdowns,
-        loadNotifications,
-        markAllNotificationsAsRead
-    };
-
 })();

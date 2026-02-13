@@ -239,21 +239,6 @@
     })
     
     /**
-     * 現在のステップを取得
-     */
-    window.getCurrentStep = function() {
-        return currentStep;
-    };
-    
-    /**
-     * ステップをリセット
-     */
-    window.resetSteps = function() {
-        currentStep = 1;
-        updateProgressBar();
-    };
-    
-    /**
      * 初期化完了を通知
      */
     // console.log('Global functions initialized');

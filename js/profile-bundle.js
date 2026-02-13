@@ -1260,8 +1260,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // DOMContentLoaded後に初期化
     document.addEventListener('DOMContentLoaded', () => {
-        window.profileViewer = new ProfileViewer();
-        // console.log('[ProfileViewer] Initialized');
+        new ProfileViewer();
     });
 
 })();
