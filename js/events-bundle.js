@@ -408,7 +408,7 @@
                     .select('id, status')
                     .eq('event_id', eventId)
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (existing) {
                     if (existing.status === 'cancelled') {
@@ -866,7 +866,7 @@
                     .from('event_items')
                     .select('*')
                     .eq('id', eventId)
-                    .single();
+                    .maybeSingle();
 
                 if (error) {
                     console.error('[EventModal] Error fetching event:', error);
@@ -1166,7 +1166,7 @@
                     .select('status')
                     .eq('event_id', eventId)
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (participation && participation.status !== 'cancelled') {
                     this.eventActionBtn.textContent = '参加登録済み';

@@ -840,7 +840,7 @@ ul {
 
 /* ローディング画面のみ最高優先度 */
 #instantLoadingScreen {
-  z-index: 9999 !important; /* 99999から9999に変更 */
+  z-index: 9998 !important; /* ローディングはトースト(9999)の下 */
 }
 
 /* 最優先: サイドバー関連 (z-index: 2000番台に変更) */

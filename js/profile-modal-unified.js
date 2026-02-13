@@ -37,7 +37,7 @@
                         .from('user_profiles')
                         .select('*')
                         .eq('id', user.id)
-                        .single();
+                        .maybeSingle();
                     this.currentUserProfile = data;
                 }
             } catch (error) {
@@ -426,7 +426,7 @@
                     .from('user_profiles')
                     .select('*')
                     .eq('id', profileId)
-                    .single();
+                    .maybeSingle();
 
                 if (error) throw error;
 
@@ -839,7 +839,7 @@
                     .select('*')
                     .eq('user_id', user.id)
                     .eq('connected_user_id', profileId)
-                    .single();
+                    .maybeSingle();
 
                 if (existing) {
                     alert('既にコネクト申請済みです');

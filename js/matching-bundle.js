@@ -1060,7 +1060,7 @@
                     location
                 `)
                 .eq('id', currentUserId)
-                .single();
+                .maybeSingle();
             
             const currentUser = currentUserData;
 
@@ -3149,7 +3149,7 @@
                 .from('user_profiles')
                 .select('*')
                 .eq('id', userId)
-                .single();
+                .maybeSingle();
             
             return error ? null : data;
         } catch {

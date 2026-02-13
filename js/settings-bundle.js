@@ -469,7 +469,7 @@
                         .from('settings')
                         .select('metadata')
                         .eq('user_id', user.id)
-                        .single();
+                        .maybeSingle();
                     const metadata = (current && current.metadata) || {};
                     metadataKeys.forEach(k => { metadata[k] = formValues[k]; });
                     settingsUpdate.metadata = metadata;
@@ -527,7 +527,7 @@
                     .from('settings')
                     .select('metadata')
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle();
                 const metadata = (current && current.metadata) || {};
                 metadata[name] = value;
                 const { error } = await client
@@ -590,7 +590,7 @@
                     .from('user_profiles')
                     .select('*')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle();
                 if (profile) data.profile = profile;
 
                 // 設定データ取得
@@ -598,7 +598,7 @@
                     .from('settings')
                     .select('*')
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle();
                 if (settings) data.settings = settings;
             }
 

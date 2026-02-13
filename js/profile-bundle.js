@@ -164,7 +164,7 @@ window.InterConnect.Profile = {
                 `)
                 .eq('id', userId)
                 .eq('is_active', true)
-                .single();
+                .maybeSingle();
             
             if (error) {
                 console.error('[Profile] プロフィール取得エラー:', error);
@@ -251,7 +251,7 @@ window.InterConnect.Profile = {
                 .or(`user_id.eq.${this.currentUserId},connected_user_id.eq.${this.currentUserId}`)
                 .eq('user_id', userId)
                 .eq('connected_user_id', userId)
-                .single();
+                .maybeSingle();
             
             if (data) {
                 this.connectionStatus = data.status;
@@ -277,7 +277,7 @@ window.InterConnect.Profile = {
                     .from('user_profiles')
                     .select('*')
                     .eq('id', this.currentUserId)
-                    .single();
+                    .maybeSingle();
                 
                 if (data && !error) {
                     // console.log('[Profile] 自分のSupabaseデータ:', data);
@@ -1083,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .from('user_profiles')
                     .select('*')
                     .eq('id', this.targetUserId)
-                    .single();
+                    .maybeSingle();
 
                 if (error) {
                     console.error('[ProfileViewer] Error loading profile:', error);

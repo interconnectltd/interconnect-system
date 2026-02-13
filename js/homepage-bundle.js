@@ -461,7 +461,7 @@ async function getInviteLinkId(code) {
             .from('invite_links')
             .select('id')
             .eq('link_code', code)
-            .single();
+            .maybeSingle();
 
         if (error) throw error;
         return data?.id || null;

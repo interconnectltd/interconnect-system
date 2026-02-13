@@ -234,7 +234,7 @@
                 .from('user_profiles')
                 .select('name, full_name, avatar_url')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
 
             if (error || !profile) return;
 
@@ -280,7 +280,7 @@
                 .from('user_points')
                 .select('available_points')
                 .eq('user_id', user.id)
-                .single();
+                .maybeSingle();
 
             if (!error && points) {
                 const pointsElement = document.getElementById('referral-points');

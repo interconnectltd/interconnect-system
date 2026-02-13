@@ -174,7 +174,7 @@
                     .from('user_profiles')
                     .select('full_name, avatar_url')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle();
 
                 const senderData = {
                     id: user.id,

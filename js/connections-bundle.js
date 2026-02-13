@@ -205,7 +205,7 @@
                             .from('user_profiles')
                             .select('id, name, email, company, position, avatar_url')
                             .eq('id', userId)
-                            .single();
+                            .maybeSingle();
                         
                         if (profile) {
                             profileMap[userId] = profile;

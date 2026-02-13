@@ -659,7 +659,7 @@
 /* z-index調整 */
 .user-dropdown,
 .notification-dropdown {
-    z-index: 9999;
+    z-index: 3000;
 }
 
 /* アニメーション */
@@ -679,49 +679,5 @@
     animation: dropdownFadeIn 0.3s ease forwards;
 }
 
-/* Source: user-menu-zindex-only.css */
-/* ===========================
-   User Menu Z-Index Only
-   ユーザーメニューのz-index調整のみ
-   =========================== */
-
-/* ユーザーメニューのz-index階層 */
-.user-menu {
-    position: relative;
-    z-index: 100;
-}
-
-.user-dropdown,
-.user-menu-dropdown {
-    z-index: 200;
-}
-
-/* 通知ドロップダウン */
-.notification-dropdown {
-    z-index: 200;
-}
-
-/* モバイルヘッダー */
-.mobile-header {
-    z-index: 300;
-}
-
-/* モバイルナビゲーション */
-.mobile-nav {
-    z-index: 400;
-}
-
-/* モバイルバックドロップ */
-.mobile-backdrop {
-    z-index: 399;
-}
-
-/* モーダル */
-.modal {
-    z-index: 1000;
-}
-
-/* 通知ポップアップ */
-.notification-popup {
-    z-index: 1100;
-}
+/* z-indexはstyle.cssの統一スケールで管理（このブロックは削除済み）
+   Cards 10-1100, Navbar 1800, Dropdowns 3000, Modals 5000-5500, Toasts 9999, Loading 9998 */

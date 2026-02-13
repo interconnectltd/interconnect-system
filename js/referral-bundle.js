@@ -482,7 +482,7 @@ window.cashoutModal = new CashoutModal();
                 .from('user_points')
                 .select('*')
                 .eq('user_id', currentUserId)
-                .single();
+                .maybeSingle();
 
             if (error) throw error;
 

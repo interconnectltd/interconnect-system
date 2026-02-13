@@ -38,7 +38,7 @@ class AdminReferralManager {
             .from('user_profiles')
             .select('is_admin')
             .eq('id', user.id)
-            .single();
+            .maybeSingle();
 
         if (!profile?.is_admin) {
             // alert('管理者権限がありません');
@@ -763,7 +763,7 @@ class AdminReferralManager {
                 invitee:profiles!invitations_invitee_id_fkey(*)
             `)
             .eq('id', referralId)
-            .single();
+            .maybeSingle();
 
         this.showDetailModal('紹介詳細', this.renderReferralDetails(referral));
     }
@@ -859,7 +859,7 @@ class AdminReferralManager {
                 .from('cashout_requests')
                 .select('user_id, amount')
                 .eq('id', cashoutId)
-                .single();
+                .maybeSingle();
 
             await window.supabaseClient.rpc('add_user_points', {
                 p_user_id: cashout.user_id,
@@ -1168,7 +1168,7 @@ class ManualMeetingConfirmation {
                 .from('invitations')
                 .select('invitee_id, invitee:profiles!invitations_invitee_id_fkey(email)')
                 .eq('id', invitationId)
-                .single();
+                .maybeSingle();
 
             const { error: meetingError } = await window.supabaseClient
                 .from('tldv_meeting_records')

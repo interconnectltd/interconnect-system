@@ -473,6 +473,7 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
     <script src="js/profile-sync.js"></script>
     <script src="js/notification-system-unified.js"></script>
     <script src="js/notifications-realtime-unified.js"></script>
+    <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/referral-bundle.js"></script>
     <script>
@@ -506,11 +507,8 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
         
         // モーダル関数はreferral-unified.jsで定義済み
     </script>
-    <!-- レスポンシブメニュー -->
-    <script src="js/responsive-menu-simple.js"></script>
-    <!-- サイドバートグルが既に読み込まれている場合は二重読み込みを防ぐ -->
+    <!-- サイドバートグルが既に読み込まれている場合の確認 -->
     <script>
-        // サイドバートグルの初期化確認
         if (!window.toggleSidebar) {
             console.log('[Referral] サイドバートグル機能を初期化します');
         }

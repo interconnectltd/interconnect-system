@@ -204,7 +204,7 @@
             .from('user_profiles')
             .select('name')
             .eq('id', message.sender_id)
-            .single();
+            .maybeSingle();
 
         // 通知を作成
         const notification = {
@@ -231,7 +231,7 @@
                 .from('user_profiles')
                 .select('name, company')
                 .eq('id', otherUserId)
-                .single();
+                .maybeSingle();
 
             // 通知を作成
             const notification = {
@@ -258,7 +258,7 @@
             .from('events')
             .select('title, event_date')
             .eq('id', participation.event_id)
-            .single();
+            .maybeSingle();
 
         // 通知を作成
         const notification = {
@@ -284,7 +284,7 @@
                 .from('user_profiles')
                 .select('name')
                 .eq('id', payload.new.accepted_by)
-                .single();
+                .maybeSingle();
 
             // 通知を作成
             const notification = {

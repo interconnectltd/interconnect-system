@@ -189,7 +189,7 @@ async function recordReferralRegistration(code, userId) {
             .from('invite_links')
             .select('id, created_by')
             .eq('link_code', code)
-            .single();
+            .maybeSingle();
 
         if (linkError || !inviteLink) {
             console.error('[Register] 紹介リンク取得エラー:', linkError);
@@ -2295,7 +2295,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .from('invite_links')
                     .select('id, used_count')
                     .eq('link_code', inviteCode)
-                    .single();
+                    .maybeSingle();
 
                 if (inviteLink) {
                     await window.supabaseClient

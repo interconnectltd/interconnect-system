@@ -776,7 +776,7 @@ body.menu-open {
     .site-header {
         position: sticky;
         top: 0;
-        z-index: 9999;
+        z-index: 1800;
     }
 }
 
@@ -796,7 +796,7 @@ body.menu-open {
         width: 280px;
         height: 100vh;
         transition: left 0.3s ease;
-        z-index: 9998;
+        z-index: 2000;
     }
 
     .sidebar.active {
@@ -811,7 +811,7 @@ body.menu-open {
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.5);
-        z-index: 9997;
+        z-index: 1999;
     }
 
     .sidebar-overlay.active {

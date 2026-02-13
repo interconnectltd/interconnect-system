@@ -1202,7 +1202,7 @@
                     .from('connections')
                     .select('id, status')
                     .or(`and(user_id.eq.${this.currentUserId},connected_user_id.eq.${memberId}),and(user_id.eq.${memberId},connected_user_id.eq.${this.currentUserId})`)
-                    .single();
+                    .maybeSingle();
 
                 if (existing) {
                     throw new Error('既にコネクション申請済みです');
@@ -2059,7 +2059,7 @@
                         last_login_at
                     `)
                     .eq('id', userId)
-                    .single();
+                    .maybeSingle();
 
                 if (error) throw error;
 
