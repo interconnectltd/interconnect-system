@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') ?? 'https://interconnect-auto.netlify.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
@@ -16,15 +16,44 @@ serve(async (req) => {
   }
 
   try {
-    const { referralCode, userId, userEmail, userName } = await req.json()
-    
+    // ユーザー認証チェック
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization header required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const token = authHeader.substring(7)
+
+    // Supabase anon client でJWTを検証
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    )
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
+
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // リクエストボディから referralCode のみ取得（userId はJWTから取得）
+    const { referralCode } = await req.json()
+    const userId = user.id
+    const userEmail = user.email ?? ''
+    const userName = user.user_metadata?.display_name ?? user.user_metadata?.name ?? ''
+
     console.log('Creating TimeRex booking session:', {
       referralCode,
       userId,
       userEmail,
       userName
     })
-    
+
     // TimeRexの予約セッションを作成
     const sessionResponse = await fetch(`${TIMEREX_API_URL}/booking-sessions`, {
       method: 'POST',
@@ -35,12 +64,12 @@ serve(async (req) => {
       body: JSON.stringify({
         bookingPageId: Deno.env.get('TIMEREX_BOOKING_PAGE_ID') || 'interconnect-consultation',
         prefill: {
-          name: userName || '',
-          email: userEmail || ''
+          name: userName,
+          email: userEmail
         },
         customFields: {
           referral_code: referralCode || 'DIRECT',
-          user_id: userId || '',
+          user_id: userId,
           source: 'interconnect'
         },
         metadata: {
@@ -50,22 +79,22 @@ serve(async (req) => {
         }
       })
     })
-    
+
     if (!sessionResponse.ok) {
       const errorText = await sessionResponse.text()
       console.error('TimeRex API error:', errorText)
       throw new Error(`TimeRex API error: ${sessionResponse.status}`)
     }
-    
+
     const session = await sessionResponse.json()
     console.log('TimeRex session created:', session)
-    
-    // Supabaseクライアント初期化
+
+    // Supabase service role clientでDB保存
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
-    
+
     // セッション情報をデータベースに保存
     const { error: dbError } = await supabase.from('booking_sessions').insert({
       session_id: session.id,
@@ -73,66 +102,45 @@ serve(async (req) => {
       user_email: userEmail,
       referral_code: referralCode || 'DIRECT',
       status: 'pending',
-      session_data: session, // カラム名を正しく修正
+      session_data: session,
       created_at: new Date().toISOString()
     })
-    
+
     if (dbError) {
       console.error('Error saving session to database:', dbError)
       // データベースエラーでもTimeRexのURLは返す
     }
-    
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
         sessionId: session.id,
         bookingUrl: session.bookingUrl || session.url,
         embedUrl: session.embedUrl
       }),
-      { 
-        headers: { 
+      {
+        headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json' 
-        } 
+          'Content-Type': 'application/json'
+        }
       }
     )
-    
+
   } catch (error) {
     console.error('Error creating booking session:', error)
-    
-    // TimeRex APIが使えない場合のフォールバック
-    const fallbackUrl = buildFallbackUrl(await req.json().catch(() => ({})))
-    
+
     return new Response(
-      JSON.stringify({ 
-        success: true,
-        sessionId: 'fallback',
-        bookingUrl: fallbackUrl,
-        embedUrl: fallbackUrl,
-        fallback: true
+      JSON.stringify({
+        success: false,
+        error: 'Failed to create booking session'
       }),
-      { 
-        headers: { 
+      {
+        status: 500,
+        headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json' 
-        } 
+          'Content-Type': 'application/json'
+        }
       }
     )
   }
 })
-
-// フォールバック用のTimeRex URLを生成
-function buildFallbackUrl(params: any) {
-  const { referralCode, userId, userEmail, userName } = params
-  const baseUrl = 'https://timerex.jp/book/interconnect-consultation'
-  
-  const urlParams = new URLSearchParams({
-    name: userName || '',
-    email: userEmail || '',
-    custom_referral_code: referralCode || 'DIRECT',
-    custom_user_id: userId || '',
-    source: 'interconnect'
-  })
-  
-  return `${baseUrl}?${urlParams.toString()}`
-}

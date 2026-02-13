@@ -3,10 +3,12 @@
  * より堅牢なユーザー作成・更新処理
  */
 
+const { checkRateLimit, getClientIP, isValidRedirectURL } = require('./utils/security');
+
 exports.handler = async (event, context) => {
     console.log('=== LINE Auth Simple v4 Handler ===');
     console.log('Method:', event.httpMethod);
-    
+
     // CORS: 許可オリジンのチェック
     const ALLOWED_ORIGINS = [
         'https://interconnect-auto.netlify.app',
@@ -35,6 +37,18 @@ exports.handler = async (event, context) => {
         };
     }
 
+    // レート制限チェック
+    const clientIP = getClientIP(event);
+    const rateLimitResult = checkRateLimit(clientIP);
+    if (!rateLimitResult.allowed) {
+        console.warn('Rate limit exceeded for IP:', clientIP);
+        return {
+            statusCode: 429,
+            headers: { ...headers, 'Retry-After': String(rateLimitResult.retryAfter) },
+            body: JSON.stringify({ error: 'Too many requests. Please try again later.' })
+        };
+    }
+
     try {
         // リクエストボディの解析
         let body;
@@ -50,12 +64,23 @@ exports.handler = async (event, context) => {
         }
 
         const { code, redirect_uri } = body;
-        
+
         if (!code || !redirect_uri) {
             return {
                 statusCode: 400,
                 headers,
                 body: JSON.stringify({ error: 'Missing required parameters' })
+            };
+        }
+
+        // redirect_uri のドメイン検証（オープンリダイレクト防止）
+        const ALLOWED_REDIRECT_DOMAINS = ['interconnect-auto.netlify.app', 'localhost'];
+        if (!isValidRedirectURL(redirect_uri, ALLOWED_REDIRECT_DOMAINS)) {
+            console.error('Invalid redirect_uri:', redirect_uri);
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Invalid redirect URI' })
             };
         }
 
@@ -316,11 +341,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ 
-                error: 'Internal server error',
-                details: error.message,
-                type: error.constructor.name
-            })
+            body: JSON.stringify({ error: 'Internal server error' })
         };
     }
 };

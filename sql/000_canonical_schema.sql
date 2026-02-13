@@ -122,6 +122,12 @@ DROP POLICY IF EXISTS "Users can update their connections" ON connections;
 CREATE POLICY "Users can update their connections" ON connections
     FOR UPDATE USING (auth.uid() = user_id OR auth.uid() = connected_user_id);
 
+DROP POLICY IF EXISTS "Admin can view all connections" ON connections;
+CREATE POLICY "Admin can view all connections" ON connections
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
 DROP TRIGGER IF EXISTS update_connections_updated_at ON connections;
 CREATE TRIGGER update_connections_updated_at
     BEFORE UPDATE ON connections
@@ -161,6 +167,12 @@ CREATE POLICY "Users can update own notifications" ON notifications
 DROP POLICY IF EXISTS "Authenticated users can create notifications" ON notifications;
 CREATE POLICY "Authenticated users can create notifications" ON notifications
     FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Admin can view all notifications" ON notifications;
+CREATE POLICY "Admin can view all notifications" ON notifications
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
 
 DROP POLICY IF EXISTS "Service role can manage all notifications" ON notifications;
 CREATE POLICY "Service role can manage all notifications" ON notifications
@@ -285,6 +297,12 @@ DROP POLICY IF EXISTS "Active links viewable for invites" ON invite_links;
 CREATE POLICY "Active links viewable for invites" ON invite_links
     FOR SELECT USING (is_active = true);
 
+DROP POLICY IF EXISTS "Admin can view all invite links" ON invite_links;
+CREATE POLICY "Admin can view all invite links" ON invite_links
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
 -- ========================
 -- 7. invitations
 -- ========================
@@ -337,6 +355,12 @@ DROP POLICY IF EXISTS "Users can create invitations" ON invitations;
 CREATE POLICY "Users can create invitations" ON invitations
     FOR INSERT WITH CHECK (inviter_id = auth.uid());
 
+DROP POLICY IF EXISTS "Admin can view all invitations" ON invitations;
+CREATE POLICY "Admin can view all invitations" ON invitations
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
 -- ========================
 -- 8. invite_history
 -- ========================
@@ -385,6 +409,12 @@ ALTER TABLE user_points ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view own points" ON user_points;
 CREATE POLICY "Users can view own points" ON user_points
     FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admin can view all user points" ON user_points;
+CREATE POLICY "Admin can view all user points" ON user_points
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
 
 DROP TRIGGER IF EXISTS update_user_points_updated_at ON user_points;
 CREATE TRIGGER update_user_points_updated_at
@@ -865,6 +895,12 @@ CREATE POLICY "Users can view own meeting confirmations" ON meeting_confirmation
 CREATE POLICY "Users can insert own meeting confirmations" ON meeting_confirmations
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admin can manage meeting confirmations" ON meeting_confirmations;
+CREATE POLICY "Admin can manage meeting confirmations" ON meeting_confirmations
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
 -- meeting_minutes: ユーザーは自分の議事録のみ
 ALTER TABLE meeting_minutes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own meeting minutes" ON meeting_minutes
@@ -881,20 +917,35 @@ CREATE POLICY "Users can view own referral details" ON referral_details
 CREATE POLICY "Users can insert own referral details" ON referral_details
     FOR INSERT WITH CHECK (auth.uid() = referrer_id);
 
--- fraud_flags: service_roleのみ（一般ユーザーはアクセス不可）
+-- fraud_flags: service_role + admin
 ALTER TABLE fraud_flags ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Service role only for fraud flags" ON fraud_flags
     FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+DROP POLICY IF EXISTS "Admin can manage fraud flags" ON fraud_flags;
+CREATE POLICY "Admin can manage fraud flags" ON fraud_flags
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
 
--- ip_registration_stats: service_roleのみ
+-- ip_registration_stats: service_role + admin
 ALTER TABLE ip_registration_stats ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Service role only for ip stats" ON ip_registration_stats
     FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+DROP POLICY IF EXISTS "Admin can view ip stats" ON ip_registration_stats;
+CREATE POLICY "Admin can view ip stats" ON ip_registration_stats
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
 
--- tldv_meeting_records: service_roleのみ
+-- tldv_meeting_records: service_role + admin
 ALTER TABLE tldv_meeting_records ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Service role only for tldv records" ON tldv_meeting_records
     FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+DROP POLICY IF EXISTS "Admin can manage tldv records" ON tldv_meeting_records;
+CREATE POLICY "Admin can manage tldv records" ON tldv_meeting_records
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
 
 -- referral_clicks: 匿名挿入可、閲覧はservice_roleのみ
 ALTER TABLE referral_clicks ENABLE ROW LEVEL SECURITY;
