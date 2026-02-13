@@ -158,6 +158,10 @@ DROP POLICY IF EXISTS "Users can update own notifications" ON notifications;
 CREATE POLICY "Users can update own notifications" ON notifications
     FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Authenticated users can create notifications" ON notifications;
+CREATE POLICY "Authenticated users can create notifications" ON notifications
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
 DROP POLICY IF EXISTS "Service role can manage all notifications" ON notifications;
 CREATE POLICY "Service role can manage all notifications" ON notifications
     FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
@@ -452,6 +456,18 @@ CREATE POLICY "Users can create cashout requests" ON cashout_requests
 DROP POLICY IF EXISTS "Users can cancel pending cashout requests" ON cashout_requests;
 CREATE POLICY "Users can cancel pending cashout requests" ON cashout_requests
     FOR UPDATE USING (auth.uid() = user_id AND status = 'pending');
+
+DROP POLICY IF EXISTS "Admin can view all cashout requests" ON cashout_requests;
+CREATE POLICY "Admin can view all cashout requests" ON cashout_requests
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+DROP POLICY IF EXISTS "Admin can update cashout requests" ON cashout_requests;
+CREATE POLICY "Admin can update cashout requests" ON cashout_requests
+    FOR UPDATE USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
 
 -- ========================
 -- 12. activities

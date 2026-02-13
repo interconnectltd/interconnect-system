@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>メッセージ - INTERCONNECT</title>
@@ -304,21 +305,19 @@
     
     <!-- Scripts -->
     <!-- Core initialization (must be first) -->
-    
+    <script src="js/supabase-unified.js?v=1.1"></script>
     <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
     <script src="js/profile-sync.js"></script>
+    <script src="js/notification-system-unified.js"></script>
     <script src="js/notifications-realtime-unified.js"></script>
     <script src="js/responsive-menu-simple.js"></script>
     <script src="js/dashboard.js"></script>
+    <!-- ページ固有 -->
     <script src="js/messages-bundle.js"></script>
     <script src="js/message-integration.js"></script>
-    <!-- 統一通知システム -->
-    <script src="js/notification-system-unified.js"></script>
-    <script src="js/supabase-unified.js?v=1.1"></script>
-    <!-- ユーザードロップダウンハンドラー -->
+    <!-- 後処理 -->
     <script src="js/user-dropdown-handler.js"></script>
-    <!-- アバターサイズ強制適用 -->
     <script src="js/avatar-size-enforcer.js"></script>
 </body>
 </html>

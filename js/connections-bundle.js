@@ -203,7 +203,7 @@
                     try {
                         const { data: profile, error: profileError } = await window.supabaseClient
                             .from('user_profiles')
-                            .select('id, name, email, company, title, avatar_url')
+                            .select('id, name, email, company, position, avatar_url')
                             .eq('id', userId)
                             .single();
                         
@@ -366,7 +366,7 @@
             
             container.innerHTML = pageItems.map(conn => {
                 const user = conn.sender;
-                const position = user.title || '';
+                const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}" data-date="${conn.created_at}">
                         <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}" 
@@ -417,7 +417,7 @@
             
             container.innerHTML = this.connections.sent.map(conn => {
                 const user = conn.receiver;
-                const position = user.title || '';
+                const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}">
                         <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}" 
@@ -463,7 +463,7 @@
             container.innerHTML = this.connections.connected.map(conn => {
                 // 相手のユーザー情報を取得
                 const user = conn.user_id === this.currentUserId ? conn.connected_user : conn.user;
-                const position = user.title || '';
+                const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}">
                         <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}" 
@@ -514,7 +514,7 @@
             container.innerHTML = this.connections.rejected.map(conn => {
                 const user = conn.user_id === this.currentUserId ? conn.connected_user : conn.user;
                 const isSentByMe = conn.user_id === this.currentUserId;
-                const position = user.title || '';
+                const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}" data-date="${conn.updated_at}">
                         <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=adb5bd&color=fff`}" 
