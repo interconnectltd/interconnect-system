@@ -7,8 +7,17 @@ exports.handler = async (event, context) => {
     console.log('=== LINE Auth Simple v4 Handler ===');
     console.log('Method:', event.httpMethod);
     
+    // CORS: 許可オリジンのチェック
+    const ALLOWED_ORIGINS = [
+        'https://interconnect-auto.netlify.app',
+        'http://localhost:8888',
+        'http://localhost:3000'
+    ];
+    const requestOrigin = event.headers.origin || event.headers.Origin || '';
+    const corsOrigin = ALLOWED_ORIGINS.includes(requestOrigin) ? requestOrigin : ALLOWED_ORIGINS[0];
+
     const headers = {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': corsOrigin,
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS'
     };
@@ -248,6 +257,27 @@ exports.handler = async (event, context) => {
                 throw authError;
             }
 
+            // Supabaseセッション用のマジックリンクトークンを生成
+            let sessionToken = null;
+            try {
+                const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+                    type: 'magiclink',
+                    email: lineEmail
+                });
+
+                if (!linkError && linkData?.properties?.hashed_token) {
+                    sessionToken = {
+                        token_hash: linkData.properties.hashed_token,
+                        email: lineEmail
+                    };
+                    console.log('Session token generated for:', lineEmail);
+                } else {
+                    console.warn('Could not generate session token:', linkError?.message);
+                }
+            } catch (tokenErr) {
+                console.warn('Session token generation error:', tokenErr.message);
+            }
+
             // 成功レスポンス
             return {
                 statusCode: 200,
@@ -262,6 +292,7 @@ exports.handler = async (event, context) => {
                         line_user_id: profile.userId,
                         is_new_user: isNewUser
                     },
+                    session: sessionToken,
                     redirect_to: 'dashboard.html',
                     message: isNewUser ? 'New user created successfully' : 'User logged in successfully'
                 })

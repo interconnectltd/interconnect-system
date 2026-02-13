@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_USERNAME/INTERCONNECT.git"
+    "url": "git+https://github.com/interconnectltd/interconnect-system.git"
   },
   "keywords": [
     "member-management",
@@ -21,9 +21,9 @@
   "author": "Your Name",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/INTERCONNECT/issues"
+    "url": "https://github.com/interconnectltd/interconnect-system/issues"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/INTERCONNECT#readme",
+  "homepage": "https://github.com/interconnectltd/interconnect-system#readme",
   "devDependencies": {
     "netlify-cli": "^15.0.0"
   },

@@ -44,11 +44,18 @@
         });
     };
 
-    // Supabase CDNを読み込み
+    // Supabase CDNを読み込み（バージョンピン + 重複防止）
     function loadSupabaseSDK() {
         return new Promise((resolve, reject) => {
+            // HTML側で既にロード済みならスキップ
+            if (typeof supabase !== 'undefined' && supabase.createClient) {
+                resolve();
+                return;
+            }
             const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.3';
+            script.integrity = 'sha384-aRAaCbKYByQpx0fjPuC0PQ9P9moWMEsHXP9tyzP7tbyD5fPK6oTp+THsxdWiq02L';
+            script.crossOrigin = 'anonymous';
             script.onload = resolve;
             script.onerror = reject;
             document.head.appendChild(script);

@@ -201,8 +201,27 @@
                 
                 const data = await response.json();
                 console.log('📡 Auth response data:', data);
-                
-                // ユーザー情報を保存
+
+                // Supabaseセッションを確立（verifyOtp）
+                if (data.session && data.session.token_hash && window.supabaseClient) {
+                    try {
+                        const { data: authData, error: authError } = await window.supabaseClient.auth.verifyOtp({
+                            token_hash: data.session.token_hash,
+                            type: 'magiclink'
+                        });
+                        if (authError) {
+                            console.error('Supabase session error:', authError);
+                        } else {
+                            console.log('✅ Supabase session established');
+                        }
+                    } catch (sessionErr) {
+                        console.error('Session verification error:', sessionErr);
+                    }
+                } else {
+                    console.warn('⚠️ No session token or Supabase client not ready');
+                }
+
+                // ユーザー情報を保存（補助用）
                 const userData = {
                     id: data.user.id,
                     email: data.user.email,
@@ -213,13 +232,9 @@
                     provider: 'line',
                     line_user_id: data.user.line_user_id
                 };
-                
+
                 console.log('Saving user data:', userData);
                 localStorage.setItem('user', JSON.stringify(userData));
-                
-                // セッション情報も保存（仮の実装）
-                sessionStorage.setItem('isLoggedIn', 'true');
-                sessionStorage.setItem('userEmail', data.user.email);
                 
                 // 成功メッセージ
                 document.querySelector('.callback-message').textContent = '認証成功！リダイレクトしています...';

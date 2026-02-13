@@ -36,7 +36,7 @@
 # TimeRex Webhook受信（Supabase Edge Functionにプロキシ）
 [[redirects]]
   from = "/api/timerex-webhook"
-  to = "https://YOUR_SUPABASE_PROJECT_REF.supabase.co/functions/v1/timerex-webhook"
+  to = "https://whyoqhhzwtlxprhizmor.supabase.co/functions/v1/timerex-webhook"
   status = 200
   force = true
   headers = {X-Forwarded-Host = "interconnect-auto.netlify.app"}
@@ -44,7 +44,7 @@
 # TimeRex予約セッション作成API
 [[redirects]]
   from = "/api/timerex-booking"
-  to = "https://YOUR_SUPABASE_PROJECT_REF.supabase.co/functions/v1/timerex-booking"
+  to = "https://whyoqhhzwtlxprhizmor.supabase.co/functions/v1/timerex-booking"
   status = 200
   force = true
   headers = {X-Forwarded-Host = "interconnect-auto.netlify.app"}
