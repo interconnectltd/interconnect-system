@@ -670,12 +670,11 @@
     </div>
 
     <!-- Scripts -->
-    <!-- Supabase SDK → 初期化 → ユーティリティ → 登録ロジックの順に読み込み -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.3" integrity="sha384-aRAaCbKYByQpx0fjPuC0PQ9P9moWMEsHXP9tyzP7tbyD5fPK6oTp+THsxdWiq02L" crossorigin="anonymous"></script>
-    <script src="js/core-utils.js"></script>
+    <!-- supabase-unified.js が CDN SDK を動的ロードするため、CDN script タグは不要 -->
     <script src="js/supabase-unified.js?v=1.1"></script>
-    <script src="js/notification-system-unified.js"></script>
+    <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
+    <script src="js/notification-system-unified.js"></script>
     <script src="js/login-bundle.js"></script>
     <script src="js/registration-unified.js"></script>
 </body>

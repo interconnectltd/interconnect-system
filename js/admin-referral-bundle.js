@@ -43,7 +43,7 @@ class AdminReferralManager {
         if (!profile?.is_admin) {
             // alert('管理者権限がありません');
             if (window.showError) {
-                showError('管理者権限がありません');
+                window.showError('管理者権限がありません');
             }
             window.location.href = '/dashboard.html';
         }
@@ -232,18 +232,18 @@ class AdminReferralManager {
                 <div class="referrer-item">
                     <div class="referrer-rank">${index + 1}</div>
                     <div class="referrer-info">
-                        <p class="referrer-name">${referrer.name}</p>
-                        <p class="referrer-company">${referrer.company || '未設定'}</p>
+                        <p class="referrer-name">${referrer.user_name || '不明'}</p>
+                        <p class="referrer-company">${referrer.user_company || '未設定'}</p>
                     </div>
                     <div class="referrer-stats">
                         <span class="stat">
-                            <i class="fas fa-user-plus"></i> ${referrer.referral_count}
+                            <i class="fas fa-user-plus"></i> ${referrer.total_referrals || 0}
                         </span>
                         <span class="stat">
-                            <i class="fas fa-check-circle"></i> ${referrer.successful_count}
+                            <i class="fas fa-check-circle"></i> ${referrer.successful_referrals || 0}
                         </span>
                         <span class="stat">
-                            <i class="fas fa-coins"></i> ${referrer.total_points?.toLocaleString() || 0}pt
+                            <i class="fas fa-coins"></i> ${referrer.total_points_earned?.toLocaleString() || 0}pt
                         </span>
                     </div>
                 </div>
@@ -298,8 +298,8 @@ class AdminReferralManager {
                     </span>
                 </td>
                 <td>
-                    ${referral.reward_status?.status === 'completed'
-                        ? `<span class="reward-amount">¥${referral.reward_status.reward_amount.toLocaleString()}</span>`
+                    ${referral.reward_status === 'earned'
+                        ? `<span class="reward-amount">${(referral.points_earned || 0).toLocaleString()}pt</span>`
                         : '<span class="text-muted">-</span>'
                     }
                 </td>
@@ -785,7 +785,7 @@ class AdminReferralManager {
                 </div>
                 <div class="detail-section">
                     <h3>紹介情報</h3>
-                    <p><strong>招待コード:</strong> ${referral.invite_code}</p>
+                    <p><strong>招待コード:</strong> ${referral.invitation_code || '-'}</p>
                     <p><strong>作成日:</strong> ${this.formatDate(referral.created_at)}</p>
                     <p><strong>登録日:</strong> ${referral.registered_at ? this.formatDate(referral.registered_at) : '-'}</p>
                     <p><strong>完了日:</strong> ${referral.meeting_completed_at ? this.formatDate(referral.meeting_completed_at) : '-'}</p>

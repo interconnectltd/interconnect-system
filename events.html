@@ -332,11 +332,10 @@
     <!-- Supabase統一初期化（最初に読み込む） -->
     <script src="js/supabase-unified.js?v=1.1"></script>
     <!-- Core initialization -->
-    <!-- 統一通知システム -->
-    <script src="js/notification-system-unified.js"></script>
-    
     <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
+    <!-- 統一通知システム（core-utils/global-functionsの後） -->
+    <script src="js/notification-system-unified.js"></script>
     <!-- profile-syncはSupabase初期化後に読み込む -->
     <script src="js/profile-sync.js"></script>
     <script src="js/notifications-realtime-unified.js"></script>
