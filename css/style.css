@@ -1341,7 +1341,7 @@ body[data-page="referral"] .content-body {
 }
 
 .notification-popup {
-    z-index: 10000;
+    z-index: 9999;
 }
 
 .user-menu-dropdown {

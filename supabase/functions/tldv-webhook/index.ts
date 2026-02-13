@@ -43,10 +43,10 @@ async function findInvitationByEmail(email: string) {
     .from('user_profiles')
     .select('id')
     .eq('email', email)
-    .single()
-  
+    .maybeSingle()
+
   if (!userData) return null
-  
+
   // 最新の未完了招待を検索
   const { data: invitation } = await supabase
     .from('invitations')
@@ -55,8 +55,8 @@ async function findInvitationByEmail(email: string) {
     .eq('status', 'registered')
     .order('created_at', { ascending: false })
     .limit(1)
-    .single()
-  
+    .maybeSingle()
+
   return invitation
 }
 

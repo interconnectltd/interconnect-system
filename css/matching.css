@@ -477,7 +477,7 @@
     gap: 12px;
     transform: translateX(400px);
     transition: transform 0.3s ease;
-    z-index: 10000;
+    z-index: 9999;
 }
 
 .toast.show {
@@ -757,7 +757,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 10000;
+    z-index: 5000;
     display: flex;
     align-items: center;
     justify-content: center;

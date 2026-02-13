@@ -514,7 +514,7 @@
                          class="profile-detail-avatar">
                     <h2 class="profile-detail-name">${profile.name || '名前未設定'}</h2>
                     <p class="profile-detail-title">
-                        ${profile.title || '役職未設定'}
+                        ${profile.position || '役職未設定'}
                         ${profile.company ? `@ ${profile.company}` : ''}
                     </p>
                     <div class="profile-detail-score">
@@ -578,7 +578,7 @@
                             </div>
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">役職</div>
-                                <div class="profile-detail-value">${profile.title || '未設定'}</div>
+                                <div class="profile-detail-value">${profile.position || '未設定'}</div>
                             </div>
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">業界</div>

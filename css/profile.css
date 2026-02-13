@@ -1397,7 +1397,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10001;
+    z-index: 9998;
 }
 
 .loading-content {
@@ -1434,7 +1434,7 @@
     gap: 12px;
     transform: translateX(400px);
     transition: transform 0.3s ease;
-    z-index: 10000;
+    z-index: 9999;
 }
 
 .toast.show {
