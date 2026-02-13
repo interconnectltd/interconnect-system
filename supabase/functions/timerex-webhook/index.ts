@@ -251,10 +251,10 @@ async function awardReferralPoints(supabase: any, referralCode: string, bookingI
     
     // ポイントを付与（1000ポイント）
     const { error: pointsError } = await supabase.rpc('add_referral_points', {
-      user_id: invitation.created_by,
-      points: 1000,
-      reason: 'referral_meeting_completed',
-      booking_id: bookingId
+      p_referral_code: referralCode,
+      p_points: 1000,
+      p_reason: 'referral_meeting_completed',
+      p_booking_id: bookingId
     })
     
     if (pointsError) {

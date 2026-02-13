@@ -783,6 +783,8 @@ CREATE TABLE IF NOT EXISTS tldv_meeting_records (
     meeting_date TIMESTAMP WITH TIME ZONE,
     duration_minutes INTEGER,
     is_valid BOOLEAN DEFAULT true,
+    recording_url TEXT,
+    transcript_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
