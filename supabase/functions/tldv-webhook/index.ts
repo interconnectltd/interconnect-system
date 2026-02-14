@@ -6,10 +6,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-tldv-signature',
 }
 
-// 環境変数
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const TLDV_WEBHOOK_SECRET = Deno.env.get('TLDV_WEBHOOK_SECRET')!
+// 環境変数（Supabase Edge Functionsが自動注入するURL/KEYに加え、カスタム変数を検証）
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+const TLDV_WEBHOOK_SECRET = Deno.env.get('TLDV_WEBHOOK_SECRET') ?? ''
 
 // Supabaseクライアント初期化
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
@@ -63,9 +63,14 @@ async function findInvitationByEmail(email: string) {
 // 面談終了時の処理
 async function processMeetingEnded(meetingData: any) {
   const { meeting_id, participants, duration_seconds, ended_at } = meetingData
-  
+
   console.log(`Processing meeting ended: ${meeting_id}`)
-  
+
+  if (!Array.isArray(participants) || participants.length === 0) {
+    console.log('No participants in meeting data, skipping')
+    return
+  }
+
   for (const participant of participants) {
     const invitation = await findInvitationByEmail(participant.email)
     
@@ -141,9 +146,18 @@ serve(async (req) => {
   }
 
   try {
+    // 環境変数チェック
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !TLDV_WEBHOOK_SECRET) {
+      console.error('Missing required environment variables')
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // リクエストボディを取得
     const payload = await req.text()
-    
+
     // 署名検証
     const signature = req.headers.get('x-tldv-signature')
     if (!signature || !await verifyWebhookSignature(payload, signature)) {

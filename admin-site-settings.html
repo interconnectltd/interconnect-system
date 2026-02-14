@@ -475,7 +475,7 @@
                 const { data: { user } } = await client.auth.getUser();
                 if (!user) { window.location.href = 'login.html'; return; }
                 const { data: profile } = await client
-                    .from('user_profiles').select('is_admin').eq('id', user.id).single();
+                    .from('user_profiles').select('is_admin').eq('id', user.id).maybeSingle();
                 if (!profile || !profile.is_admin) { window.location.href = 'dashboard.html'; }
             } catch (e) { window.location.href = 'login.html'; }
         })();

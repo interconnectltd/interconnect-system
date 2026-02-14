@@ -1308,13 +1308,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const textarea = document.getElementById(field.id);
         const countElement = document.getElementById(field.countId);
 
-        if (DEBUG) // console.log(`[CharCount] Setting up ${field.id}:`, {
+        /* if (DEBUG) console.log(`[CharCount] Setting up ${field.id}:`, {
             textarea: !!textarea,
             countElement: !!countElement,
             textareaId: field.id,
             countId: field.countId,
             textareaDisabled: textarea ? textarea.disabled : 'N/A'
-        });
+        }); */
 
         if (textarea && countElement) {
             // console.log(`[CharCount] Found elements for ${field.id}`);

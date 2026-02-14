@@ -298,7 +298,7 @@
                     `)
                     .eq('link_code', code)
                     .eq('is_active', true)
-                    .single();
+                    .maybeSingle();
 
                 if (linkError || !inviteLink) {
                     throw new Error('招待リンクが見つかりません');

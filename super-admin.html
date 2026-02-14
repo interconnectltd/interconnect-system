@@ -41,7 +41,7 @@
             var result = await client.auth.getUser();
             var user = result.data && result.data.user;
             if (!user) { window.location.href = 'login.html'; return; }
-            var profileResult = await client.from('user_profiles').select('is_admin').eq('id', user.id).single();
+            var profileResult = await client.from('user_profiles').select('is_admin').eq('id', user.id).maybeSingle();
             if (!profileResult.data || !profileResult.data.is_admin) {
                 window.location.href = 'dashboard.html';
                 return;
