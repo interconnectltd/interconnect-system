@@ -573,9 +573,19 @@
                         is_read: false
                     });
 
+                // アクティビティ記録
+                await window.supabaseClient
+                    .from('activities')
+                    .insert({
+                        type: 'connection_made',
+                        title: `${userName}さんとコネクトが成立しました`,
+                        user_id: this.currentUserId,
+                        related_user_id: userId
+                    });
+
                 // UI更新
                 await this.loadAllConnectionsSimple();
-                
+
                 // 成功メッセージ
                 if (window.showToast) {
                     window.showToast(`${userName}さんとコネクトしました！`, 'success');

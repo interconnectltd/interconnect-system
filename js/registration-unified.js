@@ -2312,6 +2312,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 sessionStorage.removeItem('inviterId');
             }
 
+            // アクティビティ記録
+            await window.supabaseClient
+                .from('activities')
+                .insert({
+                    type: 'member_joined',
+                    title: `${formData.name}さんがコミュニティに参加しました`,
+                    user_id: authData.user.id
+                });
+
             // 成功メッセージ
             (window.showToast || function(m){alert(m)})('登録が完了しました！メールをご確認ください。', 'success');
 

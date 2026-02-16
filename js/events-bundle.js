@@ -443,6 +443,17 @@
                     if (insertError) throw insertError;
                 }
 
+                // アクティビティ記録
+                const eventCard = button.closest('[data-event-id]');
+                const eventTitle = eventCard?.querySelector('.event-title, h3, h4')?.textContent || 'イベント';
+                await window.supabaseClient
+                    .from('activities')
+                    .insert({
+                        type: 'event_registered',
+                        title: `「${eventTitle}」に参加登録しました`,
+                        user_id: user.id
+                    });
+
                 // 成功通知
                 button.innerHTML = '<i class="fas fa-check"></i> 申込完了';
                 button.classList.remove('btn-primary', 'btn-outline');

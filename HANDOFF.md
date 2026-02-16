@@ -10,7 +10,7 @@
 - **名前:** INTERCONNECT — 日本語ビジネスコミュニティプラットフォーム
 - **リポジトリ:** `interconnectltd/interconnect-system` (GitHub)
 - **ローカルパス:** `/Users/sara/Desktop/interconnect`
-- **サイトURL:** https://interconnect-auto.netlify.app
+- **サイトURL:** https://interconnect-system.netlify.app
 - **アーキテクチャ:** Netlify（静的フロントエンド + Functions）+ Supabase（DB, Auth, Realtime, Storage, Edge Functions）
 
 ### 技術スタック

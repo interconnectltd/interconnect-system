@@ -15,7 +15,7 @@
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
-    Access-Control-Allow-Origin = "https://interconnect-auto.netlify.app"
+    Access-Control-Allow-Origin = "https://interconnect-system.netlify.app"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     Access-Control-Allow-Methods = "POST, OPTIONS"
 
@@ -42,7 +42,7 @@
   to = "https://whyoqhhzwtlxprhizmor.supabase.co/functions/v1/timerex-webhook"
   status = 200
   force = true
-  headers = {X-Forwarded-Host = "interconnect-auto.netlify.app"}
+  headers = {X-Forwarded-Host = "interconnect-system.netlify.app"}
 
 # TimeRex予約セッション作成API
 [[redirects]]
@@ -50,4 +50,4 @@
   to = "https://whyoqhhzwtlxprhizmor.supabase.co/functions/v1/timerex-booking"
   status = 200
   force = true
-  headers = {X-Forwarded-Host = "interconnect-auto.netlify.app"}
+  headers = {X-Forwarded-Host = "interconnect-system.netlify.app"}

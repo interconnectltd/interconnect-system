@@ -11,7 +11,7 @@ exports.handler = async (event, context) => {
 
     // CORS: 許可オリジンのチェック
     const ALLOWED_ORIGINS = [
-        'https://interconnect-auto.netlify.app',
+        'https://interconnect-system.netlify.app',
         'http://localhost:8888',
         'http://localhost:3000'
     ];
@@ -74,7 +74,7 @@ exports.handler = async (event, context) => {
         }
 
         // redirect_uri のドメイン検証（オープンリダイレクト防止）
-        const ALLOWED_REDIRECT_DOMAINS = ['interconnect-auto.netlify.app', 'localhost'];
+        const ALLOWED_REDIRECT_DOMAINS = ['interconnect-system.netlify.app', 'localhost'];
         if (!isValidRedirectURL(redirect_uri, ALLOWED_REDIRECT_DOMAINS)) {
             console.error('Invalid redirect_uri:', redirect_uri);
             return {

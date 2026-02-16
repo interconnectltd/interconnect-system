@@ -1,714 +1,511 @@
 // ============================================================
-// Section: messages-external-contacts.js
+// Messages Chat System
+// 1:1 メッセージ送受信 + リアルタイム更新
 // ============================================================
-/**
- * Messages External Contacts
- * 外部連絡先情報の管理と表示
- */
-
 (function() {
     'use strict';
 
-    // console.log('[MessagesExternalContacts] 初期化開始...');
-
-    class MessagesExternalContactsManager {
+    class ChatManager {
         constructor() {
-            this.connections = [];
-            this.init();
+            this.currentUserId = null;
+            this.selectedUserId = null;
+            this.conversations = [];
+            this.messages = [];
+            this.realtimeSubscription = null;
+            this.profilesCache = {};
         }
 
         async init() {
-            await this.loadRecentConnections();
-            this.setupEventListeners();
-        }
+            const user = await window.safeGetUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            this.currentUserId = user.id;
 
-        /**
-         * 最近のコネクションを読み込む
-         */
-        async loadRecentConnections() {
-            const connectionsList = document.getElementById('connectionsList');
-            if (!connectionsList) return;
+            // 自分のプロフィールをキャッシュ
+            const { data: myProfile } = await window.supabaseClient
+                .from('user_profiles')
+                .select('id, full_name, avatar_url')
+                .eq('id', this.currentUserId)
+                .maybeSingle();
+            if (myProfile) this.profilesCache[myProfile.id] = myProfile;
 
-            try {
-                // Supabase接続確認
-                if (window.supabaseClient) {
-                    await this.loadFromSupabase();
-                } else {
-                    this.connections = [];
-                }
+            await this.loadConversations();
+            this.setupUI();
+            this.subscribeRealtime();
 
-                this.renderConnections();
-            } catch (error) {
-                console.error('[MessagesExternalContacts] データ読み込みエラー:', error);
-                this.showError();
+            // URLパラメータでユーザー指定がある場合はそのチャットを開く
+            const params = new URLSearchParams(window.location.search);
+            const targetUserId = params.get('user');
+            if (targetUserId) {
+                this.openConversation(targetUserId);
             }
         }
 
-        /**
-         * Supabaseからデータを読み込む
-         */
-        async loadFromSupabase() {
+        // コネクション済みユーザー一覧 + 最新メッセージを読み込む
+        async loadConversations() {
             try {
-                // 現在のユーザーを取得
-                const user = await window.safeGetUser();
-                if (!user) {
-                    this.connections = [];
+                // accepted なコネクションを取得
+                const { data: connections, error: connError } = await window.supabaseClient
+                    .from('connections')
+                    .select('user_id, connected_user_id')
+                    .eq('status', 'accepted');
+
+                if (connError) throw connError;
+                if (!connections || connections.length === 0) {
+                    this.conversations = [];
+                    this.renderConversations();
                     return;
                 }
 
-                // 最近のマッチングまたはイベント参加者を取得
-                const { data: recentConnections, error } = await window.supabase
-                    .from('user_activities')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .in('activity_type', ['matching_success', 'event_participation'])
-                    .order('created_at', { ascending: false })
-                    .limit(10);
+                // 相手のIDリストを作成
+                const partnerIds = connections.map(c =>
+                    c.user_id === this.currentUserId ? c.connected_user_id : c.user_id
+                );
 
-                if (error) throw error;
+                // プロフィール取得
+                const { data: profiles } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('id, full_name, company, avatar_url')
+                    .in('id', partnerIds);
 
-                // related_idからプロフィール情報を別クエリで取得（FKなし）
-                const relatedIds = recentConnections
-                    .map(a => a.related_id)
-                    .filter(Boolean);
+                if (profiles) {
+                    profiles.forEach(p => { this.profilesCache[p.id] = p; });
+                }
 
-                let profilesMap = {};
-                if (relatedIds.length > 0) {
-                    const { data: profiles } = await window.supabase
-                        .from('user_profiles')
-                        .select('id, full_name, company, email, line_id, line_qr_url, phone, avatar_url')
-                        .in('id', relatedIds);
-                    if (profiles) {
-                        profiles.forEach(p => { profilesMap[p.id] = p; });
+                // 自分の全メッセージを取得して最新メッセージを抽出
+                const { data: allMessages } = await window.supabaseClient
+                    .from('messages')
+                    .select('sender_id, receiver_id, content, created_at, is_read')
+                    .or(`sender_id.eq.${this.currentUserId},receiver_id.eq.${this.currentUserId}`)
+                    .order('created_at', { ascending: false });
+
+                // パートナーごとに最新メッセージを整理
+                const lastMessageMap = {};
+                const unreadCountMap = {};
+                if (allMessages) {
+                    for (const msg of allMessages) {
+                        const partnerId = msg.sender_id === this.currentUserId ? msg.receiver_id : msg.sender_id;
+                        if (!lastMessageMap[partnerId]) {
+                            lastMessageMap[partnerId] = msg;
+                        }
+                        // 未読カウント
+                        if (msg.receiver_id === this.currentUserId && !msg.is_read) {
+                            unreadCountMap[partnerId] = (unreadCountMap[partnerId] || 0) + 1;
+                        }
                     }
                 }
 
-                this.connections = recentConnections.map(activity => {
-                    const profile = profilesMap[activity.related_id] || {};
+                // 会話リスト作成
+                this.conversations = partnerIds.map(pid => {
+                    const profile = this.profilesCache[pid] || {};
+                    const lastMsg = lastMessageMap[pid];
                     return {
-                        id: activity.related_id,
+                        userId: pid,
                         name: profile.full_name || 'ユーザー',
                         company: profile.company || '',
-                        email: profile.email || '',
-                        line_id: profile.line_id || '',
-                        line_qr: profile.line_qr_url || '',
-                        phone: profile.phone || '',
-                        avatar: profile.avatar_url || 'assets/user-placeholder.svg'
+                        avatar: profile.avatar_url || 'assets/default-avatar.svg',
+                        lastMessage: lastMsg ? lastMsg.content : null,
+                        lastMessageAt: lastMsg ? new Date(lastMsg.created_at) : null,
+                        unreadCount: unreadCountMap[pid] || 0
                     };
                 });
 
+                // 最新メッセージ順にソート（メッセージなしは末尾）
+                this.conversations.sort((a, b) => {
+                    if (!a.lastMessageAt && !b.lastMessageAt) return 0;
+                    if (!a.lastMessageAt) return 1;
+                    if (!b.lastMessageAt) return -1;
+                    return b.lastMessageAt - a.lastMessageAt;
+                });
+
+                this.renderConversations();
+
             } catch (error) {
-                console.error('[MessagesExternalContacts] Supabaseエラー:', error);
-                this.connections = [];
+                console.error('[Chat] 会話リスト読み込みエラー:', error);
+                this.conversations = [];
+                this.renderConversations();
             }
         }
 
-        // loadDummyData() 削除済み — 実データのみ使用
+        renderConversations() {
+            const container = document.getElementById('chatConversations');
+            if (!container) return;
 
-        /**
-         * コネクションをレンダリング
-         */
-        renderConnections() {
-            const connectionsList = document.getElementById('connectionsList');
-            if (!connectionsList) return;
-
-            if (this.connections.length === 0) {
-                connectionsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <p>まだコネクションがありません</p>
-                    </div>
-                `;
+            if (this.conversations.length === 0) {
+                container.innerHTML = `
+                    <div class="chat-empty-conversations">
+                        <i class="fas fa-user-friends"></i>
+                        <p>コネクション済みのユーザーがいません</p>
+                        <a href="matching.html" class="btn btn-small btn-primary">マッチングを始める</a>
+                    </div>`;
                 return;
             }
 
-            connectionsList.innerHTML = this.connections.map(connection => `
-                <div class="connection-item" data-connection-id="${connection.id}">
-                    <img src="${connection.avatar}" alt="${connection.name}" class="connection-avatar">
-                    <div class="connection-info">
-                        <h4>${this.escapeHtml(connection.name)}</h4>
-                        <p>${this.escapeHtml(connection.company)}</p>
-                    </div>
-                    <div class="connection-actions">
-                        <button class="btn btn-small btn-outline" onclick="window.messagesExternalContacts.showContactDetails(${connection.id})">
-                            <i class="fas fa-address-card"></i>
-                            連絡先を見る
-                        </button>
+            container.innerHTML = this.conversations.map(conv => `
+                <div class="chat-conv-item ${conv.userId === this.selectedUserId ? 'active' : ''}" data-user-id="${conv.userId}">
+                    <img src="${this.escapeAttr(conv.avatar)}" alt="" class="chat-conv-avatar"
+                         onerror="this.src='assets/default-avatar.svg'">
+                    <div class="chat-conv-info">
+                        <div class="chat-conv-top">
+                            <span class="chat-conv-name">${this.escapeHtml(conv.name)}</span>
+                            ${conv.lastMessageAt ? `<span class="chat-conv-time">${this.formatTimeShort(conv.lastMessageAt)}</span>` : ''}
+                        </div>
+                        <div class="chat-conv-bottom">
+                            <span class="chat-conv-preview">${conv.lastMessage ? this.escapeHtml(conv.lastMessage.substring(0, 40)) : conv.company || 'メッセージはまだありません'}</span>
+                            ${conv.unreadCount > 0 ? `<span class="chat-conv-badge">${conv.unreadCount}</span>` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
-        }
 
-        /**
-         * 連絡先詳細を表示
-         */
-        showContactDetails(connectionId) {
-            const connection = this.connections.find(c => c.id == connectionId);
-            if (!connection) return;
-
-            // モーダルを作成
-            const modal = document.createElement('div');
-            modal.className = 'contact-modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>連絡先情報</h3>
-                        <button class="btn-icon" onclick="this.closest('.contact-modal').remove()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="contact-profile">
-                            <img src="${connection.avatar}" alt="${connection.name}">
-                            <h4>${this.escapeHtml(connection.name)}</h4>
-                            <p>${this.escapeHtml(connection.company)}</p>
-                        </div>
-
-                        <div class="contact-details">
-                            ${connection.email ? `
-                                <div class="contact-item">
-                                    <i class="fas fa-envelope"></i>
-                                    <div>
-                                        <label>メール</label>
-                                        <a href="mailto:${connection.email}">${this.escapeHtml(connection.email)}</a>
-                                    </div>
-                                </div>
-                            ` : ''}
-
-                            ${connection.line_id ? `
-                                <div class="contact-item">
-                                    <i class="fab fa-line"></i>
-                                    <div>
-                                        <label>LINE ID</label>
-                                        <p>${this.escapeHtml(connection.line_id)}</p>
-                                        ${connection.line_qr ? `
-                                            <button class="btn btn-small btn-primary" onclick="window.messagesExternalContacts.showQRCode('${window.escapeAttr(connection.line_qr)}', '${window.escapeAttr(connection.name)}')">
-                                                <i class="fas fa-qrcode"></i>
-                                                QRコードを表示
-                                            </button>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            ` : ''}
-
-                            ${connection.phone ? `
-                                <div class="contact-item">
-                                    <i class="fas fa-phone"></i>
-                                    <div>
-                                        <label>電話番号</label>
-                                        <a href="tel:${connection.phone}">${this.escapeHtml(connection.phone)}</a>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-
-                        ${!connection.email && !connection.line_id && !connection.phone ? `
-                            <div class="empty-contact">
-                                <i class="fas fa-info-circle"></i>
-                                <p>連絡先情報が登録されていません</p>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(modal);
-
-            // モーダル外クリックで閉じる
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.remove();
-                }
+            // クリックイベント
+            container.querySelectorAll('.chat-conv-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    this.openConversation(item.dataset.userId);
+                });
             });
         }
 
-        /**
-         * QRコードを表示
-         */
-        showQRCode(qrUrl, name) {
-            // 既存のモーダルを閉じる
-            const existingModal = document.querySelector('.contact-modal');
-            if (existingModal) existingModal.remove();
+        async openConversation(userId) {
+            this.selectedUserId = userId;
 
-            const qrSection = document.getElementById('qrCodeSection');
-            const qrImage = document.getElementById('qrCodeImage');
-            const qrName = document.getElementById('qrCodeName');
+            // UIの表示切替
+            const emptyState = document.getElementById('chatEmptyState');
+            const thread = document.getElementById('chatThread');
+            const chatContainer = document.getElementById('chatContainer');
+            if (emptyState) emptyState.style.display = 'none';
+            if (thread) thread.style.display = 'flex';
+            if (chatContainer) chatContainer.classList.add('chat-active');
 
-            if (qrSection && qrImage && qrName) {
-                qrImage.src = qrUrl;
-                qrName.textContent = `${name}さんのLINE QRコード`;
-                qrSection.style.display = 'block';
+            // 会話リストのアクティブ状態を更新
+            document.querySelectorAll('.chat-conv-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.userId === userId);
+            });
 
-                // スムーズスクロール
-                qrSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // ヘッダー情報を設定
+            let profile = this.profilesCache[userId];
+            if (!profile) {
+                const { data } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('id, full_name, company, avatar_url')
+                    .eq('id', userId)
+                    .maybeSingle();
+                if (data) {
+                    profile = data;
+                    this.profilesCache[userId] = data;
+                }
+            }
+
+            const nameEl = document.getElementById('chatThreadName');
+            const companyEl = document.getElementById('chatThreadCompany');
+            const avatarEl = document.getElementById('chatThreadAvatar');
+            const profileLink = document.getElementById('chatProfileLink');
+            if (nameEl) nameEl.textContent = profile?.full_name || 'ユーザー';
+            if (companyEl) companyEl.textContent = profile?.company || '';
+            if (avatarEl) {
+                avatarEl.src = profile?.avatar_url || 'assets/default-avatar.svg';
+                avatarEl.onerror = function() { this.src = 'assets/default-avatar.svg'; };
+            }
+            if (profileLink) profileLink.href = `profile.html?user=${userId}`;
+
+            // メッセージを読み込み
+            await this.loadMessages(userId);
+
+            // 入力欄にフォーカス
+            const input = document.getElementById('chatInput');
+            if (input) input.focus();
+        }
+
+        async loadMessages(userId) {
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>';
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .or(
+                        `and(sender_id.eq.${this.currentUserId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${this.currentUserId})`
+                    )
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+                this.messages = data || [];
+                this.renderMessages();
+
+                // 未読を既読にする
+                this.markAsRead(userId);
+
+            } catch (error) {
+                console.error('[Chat] メッセージ読み込みエラー:', error);
+                container.innerHTML = '<div class="chat-error"><p>メッセージの読み込みに失敗しました</p></div>';
             }
         }
 
-        /**
-         * エラー表示
-         */
-        showError() {
-            const connectionsList = document.getElementById('connectionsList');
-            if (connectionsList) {
-                connectionsList.innerHTML = `
-                    <div class="error-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>データの読み込みに失敗しました</p>
-                        <button class="btn btn-small btn-primary" onclick="window.messagesExternalContacts.reload()">
-                            再読み込み
-                        </button>
-                    </div>
-                `;
+        renderMessages() {
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+
+            if (this.messages.length === 0) {
+                container.innerHTML = `
+                    <div class="chat-no-messages">
+                        <i class="fas fa-hand-peace"></i>
+                        <p>まだメッセージがありません。最初のメッセージを送ってみましょう！</p>
+                    </div>`;
+                return;
+            }
+
+            let lastDate = null;
+            let html = '';
+
+            for (const msg of this.messages) {
+                const msgDate = new Date(msg.created_at);
+                const dateStr = msgDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                // 日付区切り
+                if (dateStr !== lastDate) {
+                    html += `<div class="chat-date-divider"><span>${dateStr}</span></div>`;
+                    lastDate = dateStr;
+                }
+
+                const isMine = msg.sender_id === this.currentUserId;
+                const timeStr = msgDate.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+
+                html += `
+                    <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">
+                        <div class="chat-bubble-content">${this.escapeHtml(msg.content)}</div>
+                        <div class="chat-bubble-meta">
+                            <span class="chat-bubble-time">${timeStr}</span>
+                            ${isMine && msg.is_read ? '<i class="fas fa-check-double chat-read-icon"></i>' : ''}
+                        </div>
+                    </div>`;
+            }
+
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async sendMessage(content) {
+            if (!content.trim() || !this.selectedUserId) return;
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('messages')
+                    .insert({
+                        sender_id: this.currentUserId,
+                        receiver_id: this.selectedUserId,
+                        content: content.trim()
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                // メッセージを即座にUIに追加
+                this.messages.push(data);
+                this.renderMessages();
+
+                // 会話リストの最新メッセージも更新
+                const conv = this.conversations.find(c => c.userId === this.selectedUserId);
+                if (conv) {
+                    conv.lastMessage = content.trim();
+                    conv.lastMessageAt = new Date(data.created_at);
+                    this.renderConversations();
+                }
+
+                // 通知送信
+                await window.supabaseClient
+                    .from('notifications')
+                    .insert({
+                        user_id: this.selectedUserId,
+                        type: 'new_message',
+                        title: '新しいメッセージ',
+                        message: `${this.profilesCache[this.currentUserId]?.full_name || 'ユーザー'}さんからメッセージが届きました`,
+                        data: { related_id: this.currentUserId },
+                        is_read: false
+                    });
+
+            } catch (error) {
+                console.error('[Chat] メッセージ送信エラー:', error);
+                if (window.showToast) {
+                    window.showToast('メッセージの送信に失敗しました', 'error');
+                }
             }
         }
 
-        /**
-         * 再読み込み
-         */
-        async reload() {
-            await this.loadRecentConnections();
+        async markAsRead(userId) {
+            try {
+                await window.supabaseClient
+                    .from('messages')
+                    .update({ is_read: true })
+                    .eq('sender_id', userId)
+                    .eq('receiver_id', this.currentUserId)
+                    .eq('is_read', false);
+
+                // 会話リストの未読カウントをリセット
+                const conv = this.conversations.find(c => c.userId === userId);
+                if (conv) {
+                    conv.unreadCount = 0;
+                    this.renderConversations();
+                }
+            } catch (error) {
+                console.error('[Chat] 既読更新エラー:', error);
+            }
         }
 
-        /**
-         * HTMLエスケープ
-         */
+        subscribeRealtime() {
+            if (!window.supabaseClient) return;
+
+            this.realtimeSubscription = window.supabaseClient
+                .channel('messages-realtime')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `receiver_id=eq.${this.currentUserId}`
+                }, (payload) => {
+                    const newMsg = payload.new;
+                    // 現在開いている会話のメッセージなら即座に表示
+                    if (newMsg.sender_id === this.selectedUserId) {
+                        this.messages.push(newMsg);
+                        this.renderMessages();
+                        this.markAsRead(this.selectedUserId);
+                    }
+                    // 会話リストを更新
+                    this.updateConversationPreview(newMsg);
+                })
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `sender_id=eq.${this.currentUserId}`
+                }, (payload) => {
+                    // 既読状態の更新
+                    const updated = payload.new;
+                    const idx = this.messages.findIndex(m => m.id === updated.id);
+                    if (idx !== -1) {
+                        this.messages[idx].is_read = updated.is_read;
+                        this.renderMessages();
+                    }
+                })
+                .subscribe();
+        }
+
+        updateConversationPreview(msg) {
+            const partnerId = msg.sender_id === this.currentUserId ? msg.receiver_id : msg.sender_id;
+            const conv = this.conversations.find(c => c.userId === partnerId);
+            if (conv) {
+                conv.lastMessage = msg.content;
+                conv.lastMessageAt = new Date(msg.created_at);
+                if (msg.sender_id !== this.currentUserId && partnerId !== this.selectedUserId) {
+                    conv.unreadCount = (conv.unreadCount || 0) + 1;
+                }
+                // 再ソート
+                this.conversations.sort((a, b) => {
+                    if (!a.lastMessageAt && !b.lastMessageAt) return 0;
+                    if (!a.lastMessageAt) return 1;
+                    if (!b.lastMessageAt) return -1;
+                    return b.lastMessageAt - a.lastMessageAt;
+                });
+                this.renderConversations();
+            } else {
+                // 新規会話の場合はリロード
+                this.loadConversations();
+            }
+        }
+
+        setupUI() {
+            // 送信フォーム
+            const form = document.getElementById('chatForm');
+            const input = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('chatSendBtn');
+
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const content = input.value;
+                    if (!content.trim()) return;
+                    input.value = '';
+                    sendBtn.disabled = true;
+                    await this.sendMessage(content);
+                    sendBtn.disabled = !input.value.trim();
+                    input.focus();
+                });
+            }
+
+            if (input) {
+                input.addEventListener('input', () => {
+                    sendBtn.disabled = !input.value.trim();
+                });
+            }
+
+            // 戻るボタン（モバイル用）
+            const backBtn = document.getElementById('chatBackBtn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    const chatContainer = document.getElementById('chatContainer');
+                    if (chatContainer) chatContainer.classList.remove('chat-active');
+                    this.selectedUserId = null;
+                    document.querySelectorAll('.chat-conv-item').forEach(i => i.classList.remove('active'));
+                });
+            }
+        }
+
+        // ユーティリティ
         escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text || '';
             return div.innerHTML;
         }
 
-        /**
-         * イベントリスナーを設定
-         */
-        setupEventListeners() {
-            // プロフィールボタンのクリックイベント
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('.btn[href*="profile.html"]')) {
-                    // プロフィールページへの遷移処理
-                    const connectionItem = e.target.closest('.connection-item');
-                    if (connectionItem) {
-                        const connectionId = connectionItem.dataset.connectionId;
-                        // プロフィールページにIDを渡す
-                        window.location.href = `profile.html?user=${connectionId}`;
-                    }
-                }
-            });
-        }
-    }
-
-    // スタイルを追加
-    const style = document.createElement('style');
-    style.textContent = `
-        /* ローディングスピナー */
-        .loading-spinner {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
+        escapeAttr(text) {
+            return (text || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
-        .loading-spinner i {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        /* QRコードセクション */
-        .qr-code-section {
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            padding: var(--space-xl);
-            margin-top: var(--space-xl);
-            text-align: center;
-        }
-
-        .qr-code-display {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .qr-code-display img {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            margin: var(--space-lg) 0;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            background: white;
-        }
-
-        .qr-code-name {
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: var(--space-lg);
-        }
-
-        /* 連絡先モーダル */
-        .contact-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: var(--space-lg);
-        }
-
-        .contact-modal .modal-content {
-            background: white;
-            border-radius: var(--radius-lg);
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .contact-modal .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: var(--space-lg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .contact-modal .modal-header h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .contact-modal .modal-body {
-            padding: var(--space-lg);
-            overflow-y: auto;
-        }
-
-        .contact-profile {
-            text-align: center;
-            margin-bottom: var(--space-xl);
-        }
-
-        .contact-profile img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: var(--space-md);
-        }
-
-        .contact-profile h4 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: var(--space-xs);
-        }
-
-        .contact-profile p {
-            color: var(--text-secondary);
-        }
-
-        .contact-details {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-lg);
-        }
-
-        .contact-item {
-            display: flex;
-            gap: var(--space-md);
-            align-items: flex-start;
-        }
-
-        .contact-item i {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            font-size: 1.125rem;
-            color: var(--primary-color);
-            flex-shrink: 0;
-        }
-
-        .contact-item label {
-            display: block;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xs);
-        }
-
-        .contact-item p,
-        .contact-item a {
-            margin: 0;
-            color: var(--text-primary);
-            word-break: break-all;
-        }
-
-        .contact-item a:hover {
-            color: var(--primary-color);
-        }
-
-        .contact-item .btn {
-            margin-top: var(--space-sm);
-        }
-
-        .empty-contact {
-            text-align: center;
-            padding: var(--space-xl);
-            color: var(--text-secondary);
-        }
-
-        .empty-contact i {
-            font-size: 2rem;
-            margin-bottom: var(--space-md);
-            opacity: 0.5;
-        }
-
-        /* エラー状態 */
-        .error-state {
-            text-align: center;
-            padding: var(--space-xl);
-            color: var(--danger-color);
-        }
-
-        .error-state i {
-            font-size: 2rem;
-            margin-bottom: var(--space-md);
-        }
-
-        /* レスポンシブ対応 */
-        @media (max-width: 768px) {
-            .contact-modal {
-                padding: var(--space-md);
-            }
-
-            .contact-modal .modal-content {
-                margin: 0;
-            }
-
-            .qr-code-display img {
-                max-width: 250px;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // グローバル関数
-    window.closeQRCode = function() {
-        const qrSection = document.getElementById('qrCodeSection');
-        if (qrSection) {
-            qrSection.style.display = 'none';
-        }
-    };
-
-    // 初期化
-    window.messagesExternalContacts = new MessagesExternalContactsManager();
-
-})();
-
-// ============================================================
-// Section: messages-viewing-history.js
-// ============================================================
-/**
- * Messages Viewing History
- * プロフィール・マッチング詳細の閲覧履歴
- */
-
-(function() {
-    'use strict';
-
-    // console.log('[ViewingHistory] 閲覧履歴機能を初期化');
-
-    // 閲覧履歴を管理
-    const ViewingHistory = {
-        maxHistory: 10, // 最大履歴数
-        storageKey: 'message_viewing_history',
-
-        // 履歴を取得
-        getHistory() {
-            const history = localStorage.getItem(this.storageKey);
-            return history ? JSON.parse(history) : [];
-        },
-
-        // 履歴に追加
-        addToHistory(userId, userName, avatarUrl) {
-            let history = this.getHistory();
-
-            // 既存の履歴から同じユーザーを削除
-            history = history.filter(item => item.userId !== userId);
-
-            // 新しい履歴を先頭に追加
-            history.unshift({
-                userId,
-                userName,
-                avatarUrl: avatarUrl || 'assets/user-placeholder.svg',
-                viewedAt: new Date().toISOString()
-            });
-
-            // 最大数を超えたら古いものを削除
-            if (history.length > this.maxHistory) {
-                history = history.slice(0, this.maxHistory);
-            }
-
-            localStorage.setItem(this.storageKey, JSON.stringify(history));
-
-            // UIを更新
-            this.updateHistoryUI();
-        },
-
-        // UIを更新
-        updateHistoryUI() {
-            const connectionsList = document.querySelector('.connections-list');
-            if (!connectionsList) return;
-
-            const history = this.getHistory();
-
-            if (history.length === 0) {
-                connectionsList.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #999;">
-                        <i class="fas fa-history" style="font-size: 48px; margin-bottom: 10px;"></i>
-                        <p>まだ閲覧履歴がありません</p>
-                    </div>
-                `;
-                return;
-            }
-
-            connectionsList.innerHTML = history.map(item => {
-                const timeAgo = this.getTimeAgo(new Date(item.viewedAt));
-
-                return `
-                    <div class="connection-item" data-user-id="${item.userId}" style="cursor: pointer;">
-                        <img src="${item.avatarUrl}" alt="${item.userName}"
-                             onerror="this.src='assets/user-placeholder.svg'">
-                        <div class="connection-info">
-                            <span class="connection-name">${item.userName}</span>
-                            <span class="connection-time">${timeAgo}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // クリックイベントを設定
-            connectionsList.querySelectorAll('.connection-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const userId = item.dataset.userId;
-                    // メッセージを開く処理
-                    if (window.openChat) {
-                        window.openChat(userId);
-                    }
-                });
-            });
-        },
-
-        // 相対時間を取得
-        getTimeAgo(date) {
+        formatTimeShort(date) {
             const now = new Date();
             const diff = now - date;
-            const seconds = Math.floor(diff / 1000);
-            const minutes = Math.floor(seconds / 60);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            if (days === 0) return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+            if (days === 1) return '昨日';
+            if (days < 7) return `${days}日前`;
+            return date.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' });
+        }
 
-            if (days > 0) return `${days}日前`;
-            if (hours > 0) return `${hours}時間前`;
-            if (minutes > 0) return `${minutes}分前`;
-            return 'たった今';
-        },
-
-        // 初期化
-        init() {
-            // ページ読み込み時に履歴を表示
-            this.updateHistoryUI();
-
-            // プロフィール表示関数を監視
-            const originalViewProfile = window.viewProfile;
-            if (originalViewProfile) {
-                window.viewProfile = (userId) => {
-                    // 元の関数を実行
-                    originalViewProfile(userId);
-
-                    // ユーザー情報を取得して履歴に追加
-                    this.saveUserToHistory(userId);
-                };
+        destroy() {
+            if (this.realtimeSubscription) {
+                window.supabaseClient.removeChannel(this.realtimeSubscription);
             }
+        }
+    }
 
-            // showDetailedReport関数を監視（マッチング詳細）
-            const originalShowDetailedReport = window.showDetailedReport;
-            if (originalShowDetailedReport) {
-                window.showDetailedReport = (profileId) => {
-                    // 元の関数を実行
-                    originalShowDetailedReport(profileId);
+    // 初期化
+    let chatManager = null;
 
-                    // ユーザー情報を取得して履歴に追加
-                    this.saveUserToHistory(profileId);
-                };
-            }
+    async function initChat() {
+        if (window.waitForSupabase) {
+            await window.waitForSupabase();
+        }
+        chatManager = new ChatManager();
+        await chatManager.init();
+        window.chatManager = chatManager;
+    }
 
-            // プロフィールボタンのクリックイベントも監視
-            document.addEventListener('click', (e) => {
-                // プロフィールボタンまたはマッチング詳細ボタンをクリックした場合
-                if (e.target.closest('button[onclick*="viewProfile"]') ||
-                    e.target.closest('a[href*="profile.html"]') ||
-                    e.target.closest('button[onclick*="showDetailedReport"]')) {
-
-                    // ユーザーカードを探す
-                    const card = e.target.closest('.matching-card, .member-card, .chat-item');
-                    if (card) {
-                        const userId = card.dataset.profileId || card.dataset.userId;
-                        if (userId) {
-                            this.saveUserToHistory(userId);
-                        }
-                    }
-                }
-            });
-        },
-
-        // ユーザー情報を取得して履歴に保存
-        saveUserToHistory(userId) {
-            // ユーザー要素を探す
-            const userElement = document.querySelector(`[data-profile-id="${userId}"], [data-user-id="${userId}"]`);
-            if (userElement) {
-                const userName = userElement.querySelector('.user-info h3')?.textContent ||
-                               userElement.querySelector('.matching-card h3')?.textContent ||
-                               userElement.querySelector('.member-name')?.textContent ||
-                               userElement.querySelector('.chat-name')?.textContent ||
-                               'Unknown User';
-                const avatarUrl = userElement.querySelector('img')?.src;
-
-                this.addToHistory(userId, userName, avatarUrl);
-            } else {
-                // 要素が見つからない場合は、グローバルデータから探す
-                if (window.MPI && window.MPI.profiles) {
-                    const profile = window.MPI.profiles.find(p => p.id === userId);
-                    if (profile) {
-                        this.addToHistory(userId, profile.display_name || 'Unknown User', profile.avatar_url);
-                    }
-                }
-            }
+    // window.openChat をグローバルに公開
+    window.openChat = function(userId) {
+        if (chatManager && chatManager.currentUserId) {
+            chatManager.openConversation(userId);
+        } else {
+            window.location.href = `messages.html?user=${encodeURIComponent(userId)}`;
         }
     };
 
-    // DOMContentLoadedで初期化
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            ViewingHistory.init();
-        });
+        document.addEventListener('DOMContentLoaded', initChat);
     } else {
-        ViewingHistory.init();
+        initChat();
     }
-
-    // グローバルに公開
-    window.ViewingHistory = ViewingHistory;
-
 })();
-
-// window.openChat をグローバルに公開（他ファイルから呼ばれる）
-window.openChat = function(userId) {
-    window.location.href = `messages.html?user=${encodeURIComponent(userId)}`;
-};

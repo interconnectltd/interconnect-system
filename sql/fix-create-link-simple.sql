@@ -38,7 +38,7 @@ BEGIN
         'success', true,
         'link_code', v_link_code,
         'description', p_description,
-        'full_url', 'https://interconnect-auto-test.netlify.app/register?ref=' || v_link_code
+        'full_url', 'https://interconnect-system.netlify.app/register?ref=' || v_link_code
     ) INTO v_result;
     
     RETURN v_result;

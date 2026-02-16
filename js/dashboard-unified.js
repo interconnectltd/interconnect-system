@@ -178,33 +178,19 @@
 
             } catch (error) {
                 console.error('[DashboardEvents] Error loading events:', error);
-                this.loadDummyEvents();
+                this.events = [];
+                this.renderEvents();
             }
-        }
-
-        loadDummyEvents() {
-            this.events = [
-                {
-                    id: 1,
-                    title: '経営戦略セミナー',
-                    event_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                    start_time: '14:00',
-                    event_type: 'online'
-                },
-                {
-                    id: 2,
-                    title: '交流ランチ会',
-                    event_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-                    start_time: '12:00',
-                    location: '東京・丸の内'
-                }
-            ];
-            this.renderEvents();
         }
 
         renderEvents() {
             const container = document.querySelector('.event-list');
             if (!container) return;
+
+            if (this.events.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>予定されているイベントはありません</p></div>';
+                return;
+            }
 
             container.innerHTML = this.events.map(event => {
                 const date = new Date(event.event_date);
@@ -270,31 +256,11 @@
                 return; // 既存の実装を使用
             }
 
-            // フォールバック
-            this.renderDummyActivities();
-        }
-
-        renderDummyActivities() {
+            // フォールバック: 空状態を表示
             const container = document.querySelector('.activity-list');
-            if (!container) return;
-
-            const activities = [
-                { icon: 'fa-user-plus', title: '山田太郎さんがコミュニティに参加しました', time: '2時間前' },
-                { icon: 'fa-calendar-check', title: '月例ネットワーキング会が成功裏に終了', time: '5時間前' },
-                { icon: 'fa-handshake', title: '3件の新しいビジネスマッチングが成立', time: '昨日' }
-            ];
-
-            container.innerHTML = activities.map(activity => `
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas ${activity.icon}"></i>
-                    </div>
-                    <div class="activity-content">
-                        <p>${activity.title}</p>
-                        <span class="activity-time">${activity.time}</span>
-                    </div>
-                </div>
-            `).join('');
+            if (container) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>まだアクティビティがありません</p></div>';
+            }
         }
     }
 
@@ -2915,21 +2881,16 @@
                         // データを変換
                         this.activities = data.map(activity => this.transformActivity(activity));
                     } else {
-                        // データがない場合はダミーデータを使用
-                        // console.log('[ActivityEventFilter] No activities found, using dummy data');
-                        this.activities = this.getDummyActivities();
+                        this.activities = [];
                     }
                 } else {
-                    // Supabaseが利用できない場合はダミーデータを使用
-                    // console.log('[ActivityEventFilter] Supabase not available, using dummy data');
-                    this.activities = this.getDummyActivities();
+                    this.activities = [];
                 }
 
                 this.renderActivities();
             } catch (error) {
                 console.error('[ActivityEventFilter] Error loading activities:', error);
-                // エラー時はダミーデータを使用
-                this.activities = this.getDummyActivities();
+                this.activities = [];
                 this.renderActivities();
             }
         }
@@ -2962,51 +2923,7 @@
             };
         }
 
-        /**
-         * ダミーアクティビティデータを取得
-         */
-        getDummyActivities() {
-            return [
-                {
-                    id: 1,
-                    type: 'member_joined',
-                    title: '山田太郎さんがコミュニティに参加しました',
-                    user: '山田太郎',
-                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-                    icon: 'fa-user-plus'
-                },
-                {
-                    id: 2,
-                    type: 'event_completed',
-                    title: '月例ネットワーキング会が成功裏に終了',
-                    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
-                    icon: 'fa-calendar-check'
-                },
-                {
-                    id: 3,
-                    type: 'matching_success',
-                    title: '3件の新しいビジネスマッチングが成立',
-                    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-                    icon: 'fa-handshake'
-                },
-                {
-                    id: 4,
-                    type: 'message_sent',
-                    title: '鈴木花子さんからメッセージが届きました',
-                    user: '鈴木花子',
-                    timestamp: new Date(Date.now() - 30 * 60 * 1000),
-                    icon: 'fa-envelope'
-                },
-                {
-                    id: 5,
-                    type: 'connection_made',
-                    title: '田中次郎さんとつながりました',
-                    user: '田中次郎',
-                    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-                    icon: 'fa-link'
-                }
-            ];
-        }
+        // getDummyActivities() 削除済み — 実データのみ使用
 
         /**
          * イベントを読み込む
@@ -3038,51 +2955,21 @@
 
                         this.events = events;
                     } else {
-                        // console.log('[ActivityEventFilter] No events found, using dummy data');
-                        this.events = this.getDummyEvents();
+                        this.events = [];
                     }
                 } else {
-                    // console.log('[ActivityEventFilter] Supabase not available, using dummy data');
-                    this.events = this.getDummyEvents();
+                    this.events = [];
                 }
 
                 this.renderEvents();
             } catch (error) {
                 console.error('[ActivityEventFilter] Error loading events:', error);
-                // エラー時はダミーデータを使用
-                this.events = this.getDummyEvents();
+                this.events = [];
                 this.renderEvents();
             }
         }
 
-        /**
-         * ダミーイベントデータを取得
-         */
-        getDummyEvents() {
-            return [
-                {
-                    id: 1,
-                    title: 'DX推進セミナー',
-                    event_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-                    event_type: 'online',
-                    participant_count: 15
-                },
-                {
-                    id: 2,
-                    title: 'ビジネス交流会',
-                    event_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                    event_type: 'offline',
-                    participant_count: 8
-                },
-                {
-                    id: 3,
-                    title: 'スタートアップピッチ',
-                    event_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-                    event_type: 'hybrid',
-                    participant_count: 25
-                }
-            ];
-        }
+        // getDummyEvents() 削除済み — 実データのみ使用
 
         /**
          * イベントリスナーを設定

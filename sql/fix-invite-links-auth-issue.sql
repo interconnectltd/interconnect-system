@@ -122,7 +122,7 @@ BEGIN
         'id', id,
         'link_code', link_code,
         'description', description,
-        'full_url', 'https://interconnect-auto-test.netlify.app/register?ref=' || link_code,
+        'full_url', 'https://interconnect-system.netlify.app/register?ref=' || link_code,
         'created_at', created_at
     ) INTO v_result
     FROM invite_links

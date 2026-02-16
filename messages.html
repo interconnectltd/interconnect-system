@@ -237,65 +237,55 @@
                 </div>
             </div>
             
-            <!-- Messages Content -->
+            <!-- Chat Content -->
             <div class="content-container">
-                <div class="messages-info">
-                    <div class="info-card">
-                        <i class="fas fa-info-circle"></i>
-                        <h2>メッセージ機能について</h2>
-                        <p>現在準備中なので、直接相手の連絡先を知るためにマッチング申請して、プロフィールにLINEあるので、そこからご連絡してください。</p>
-                    </div>
-                    
-                    <div class="contact-methods">
-                        <h3>連絡方法</h3>
-                        <div class="method-grid">
-                            <div class="method-card">
-                                <div class="method-icon">
-                                    <i class="fab fa-line"></i>
-                                </div>
-                                <h4>LINE</h4>
-                                <p>メンバーのプロフィールからLINE IDまたはQRコードを確認できます。</p>
-                            </div>
-                            
-                            <div class="method-card">
-                                <div class="method-icon">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
-                                <h4>メール</h4>
-                                <p>ビジネス用メールアドレスでの連絡が可能です。</p>
-                            </div>
-                            
-                            <div class="method-card">
-                                <div class="method-icon">
-                                    <i class="fas fa-phone"></i>
-                                </div>
-                                <h4>電話</h4>
-                                <p>必要に応じて電話番号も共有されます。</p>
-                            </div>
+                <div class="chat-container" id="chatContainer">
+                    <!-- 会話リスト -->
+                    <div class="chat-sidebar" id="chatSidebar">
+                        <div class="chat-sidebar-header">
+                            <h3>会話</h3>
                         </div>
-                    </div>
-                    
-                    <div class="recent-connections">
-                        <h3>閲覧履歴</h3>
-                        <div class="connections-list" id="connectionsList">
-                            <!-- 動的に読み込まれます -->
+                        <div class="chat-conversations" id="chatConversations">
                             <div class="loading-spinner">
                                 <i class="fas fa-spinner fa-spin"></i>
                                 <p>読み込み中...</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- QRコード表示エリア -->
-                    <div class="qr-code-section" id="qrCodeSection" style="display: none;">
-                        <h3>LINE QRコード</h3>
-                        <div class="qr-code-display">
-                            <img id="qrCodeImage" src="" alt="LINE QRコード">
-                            <p class="qr-code-name" id="qrCodeName"></p>
-                            <button class="btn btn-outline" onclick="closeQRCode()">
-                                <i class="fas fa-times"></i>
-                                閉じる
-                            </button>
+                    <!-- メッセージスレッド -->
+                    <div class="chat-main" id="chatMain">
+                        <div class="chat-empty-state" id="chatEmptyState">
+                            <i class="fas fa-comments"></i>
+                            <h3>メッセージを始めましょう</h3>
+                            <p>左の会話リストからコネクション済みのユーザーを選択してください。</p>
+                        </div>
+                        <div class="chat-thread" id="chatThread" style="display:none;">
+                            <div class="chat-thread-header" id="chatThreadHeader">
+                                <button class="chat-back-btn" id="chatBackBtn">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <img src="assets/default-avatar.svg" alt="" class="chat-thread-avatar" id="chatThreadAvatar">
+                                <div class="chat-thread-info">
+                                    <h4 id="chatThreadName">ユーザー名</h4>
+                                    <span id="chatThreadCompany" class="chat-thread-company"></span>
+                                </div>
+                                <a href="#" class="chat-profile-link" id="chatProfileLink" title="プロフィールを見る">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                            </div>
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                            <div class="chat-input-area" id="chatInputArea">
+                                <form id="chatForm" class="chat-form">
+                                    <input type="text" id="chatInput" class="chat-input" placeholder="メッセージを入力..." autocomplete="off" maxlength="2000">
+                                    <button type="submit" class="chat-send-btn" id="chatSendBtn" disabled>
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -315,7 +305,6 @@
     <script src="js/dashboard.js"></script>
     <!-- ページ固有 -->
     <script src="js/messages-bundle.js"></script>
-    <script src="js/message-integration.js"></script>
     <!-- 後処理 -->
     <script src="js/user-dropdown-handler.js"></script>
     <script src="js/avatar-size-enforcer.js"></script>

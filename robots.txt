@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /super-admin
 
-Sitemap: https://interconnect-auto.netlify.app/sitemap.xml
+Sitemap: https://interconnect-system.netlify.app/sitemap.xml

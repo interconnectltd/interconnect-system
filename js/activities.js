@@ -94,12 +94,19 @@
         showLoadingState();
         
         try {
-            // Supabaseからアクティビティを取得
-            const { data, error } = await window.supabase
-                .from('user_activities')
+            // Supabaseからアクティビティを取得（activitiesテーブル）
+            const { data: rawData, error } = await window.supabase
+                .from('activities')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(1000); // 最大1000件取得
+                .limit(1000);
+
+            // activitiesテーブルのカラム名をactivities.jsの想定形式に変換
+            const data = (rawData || []).map(a => ({
+                ...a,
+                activity_type: a.type,
+                activity_data: a.title ? { description: a.title } : null
+            }));
             
             if (error) throw error;
             
@@ -270,8 +277,13 @@
     function getActivityIcon(type) {
         const iconMap = {
             'member_join': 'fa-user-plus',
+            'member_joined': 'fa-user-plus',
             'event_complete': 'fa-calendar-check',
+            'event_completed': 'fa-calendar-check',
+            'event_registered': 'fa-calendar-plus',
             'matching_success': 'fa-handshake',
+            'connection_made': 'fa-link',
+            'connect_request': 'fa-handshake',
             'profile_update': 'fa-user-edit',
             'message_sent': 'fa-envelope',
             'event_registration': 'fa-calendar-plus'
@@ -307,8 +319,13 @@
     function getActivityTypeLabel(type) {
         const labels = {
             'member_join': '新規参加',
+            'member_joined': '新規参加',
             'event_complete': 'イベント',
+            'event_completed': 'イベント',
+            'event_registered': 'イベント参加',
             'matching_success': 'マッチング',
+            'connection_made': 'コネクト成立',
+            'connect_request': 'コネクト申請',
             'profile_update': 'プロフィール',
             'message_sent': 'メッセージ',
             'event_registration': 'イベント参加'
