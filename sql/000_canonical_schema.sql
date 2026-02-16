@@ -84,8 +84,7 @@ CREATE TRIGGER update_user_profiles_updated_at
 -- 後方互換: 'profiles' ビューを作成（旧コードが参照する場合用）
 CREATE OR REPLACE VIEW profiles AS SELECT * FROM user_profiles;
 
--- 後方互換: 'events' ビューを作成（JSコードが .from('events') を使用）
-CREATE OR REPLACE VIEW events AS SELECT * FROM event_items;
+-- 後方互換: 'events' ビューは event_items テーブル作成後に定義（下記参照）
 
 -- ========================
 -- 2. connections
@@ -217,6 +216,9 @@ CREATE INDEX IF NOT EXISTS idx_event_items_event_date ON event_items(event_date)
 CREATE INDEX IF NOT EXISTS idx_event_items_is_public ON event_items(is_public) WHERE is_public = true;
 
 ALTER TABLE event_items ENABLE ROW LEVEL SECURITY;
+
+-- 後方互換: 'events' ビューを作成（JSコードが .from('events') を使用）
+CREATE OR REPLACE VIEW events AS SELECT * FROM event_items;
 
 DROP POLICY IF EXISTS "Public events viewable by authenticated" ON event_items;
 CREATE POLICY "Public events viewable by authenticated" ON event_items
