@@ -859,7 +859,7 @@ aside.sidebar,
   z-index: 2001 !important;
 }
 
-/* 第2優先: プロフィール・通知ボタン (z-index: 9000番台) */
+/* 第2優先: プロフィール・通知ボタン (z-index: 1900番台) */
 .profile-button,
 .profile-menu,
 .profile-dropdown,
@@ -886,7 +886,7 @@ aside.sidebar,
   z-index: 1930 !important;
 }
 
-/* カレンダー関連 (z-index: 8500番台) */
+/* カレンダー関連 (z-index: 1850) */
 .fc-popover,
 .fc-daygrid-event-harness,
 .fc-event,
@@ -895,7 +895,7 @@ aside.sidebar,
   z-index: 1850 !important;
 }
 
-/* 第3優先: ヘッダー・ナビゲーション (z-index: 8000番台) */
+/* 第3優先: ヘッダー・ナビゲーション (z-index: 1800) */
 header,
 .header,
 .navbar,
@@ -999,19 +999,6 @@ header,
   .mobile .notification-button {
     z-index: 1960 !important;
   }
-}
-
-/* デバッグ用: 開発環境でのみ有効 */
-.debug-z-index::after {
-  content: attr(data-z-index);
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: red;
-  color: white;
-  padding: 2px 6px;
-  font-size: 10px;
-  pointer-events: none;
 }
 
 /* Source: header-padding-fix.css */

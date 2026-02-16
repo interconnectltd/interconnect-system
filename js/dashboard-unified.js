@@ -1722,7 +1722,7 @@
     // Supabaseクライアントの初期化を待つ
     function waitForSupabase() {
         return new Promise((resolve) => {
-            if (window.supabaseClientClient) {
+            if (window.supabaseClient) {
                 resolve();
                 return;
             }
@@ -1734,7 +1734,7 @@
 
             // タイムアウト後も確認
             setTimeout(() => {
-                if (window.supabaseClientClient) {
+                if (window.supabaseClient) {
                     resolve();
                 }
             }, 3000);
@@ -1915,7 +1915,7 @@
     async function fixRealtimeNotifications() {
         await waitForSupabase();
 
-        if (!window.supabaseClientClient) {
+        if (!window.supabaseClient) {
             console.error('[DashboardFix] Supabaseが利用できません');
             return;
         }
@@ -2527,7 +2527,7 @@
          */
         async fetchMemberGrowthData(period) {
             try {
-                if (window.supabaseClientClient) {
+                if (window.supabaseClient) {
                     // Supabaseからメンバー成長データを取得
                     const { data, error } = await window.supabaseClient
                         .from('member_growth_stats')
@@ -2582,7 +2582,7 @@
          */
         async fetchEventStatsData(period) {
             try {
-                if (window.supabaseClientClient) {
+                if (window.supabaseClient) {
                     // Supabaseからイベント統計データを取得
                     const { data, error } = await window.supabaseClient
                         .from('event_stats')
@@ -2651,7 +2651,7 @@
          */
         async fetchIndustryData() {
             try {
-                if (window.supabaseClientClient) {
+                if (window.supabaseClient) {
                     // Supabaseから業界別分布データを取得
                     const { data, error } = await window.supabaseClient
                         .from('industry_distribution')
@@ -2681,7 +2681,7 @@
          */
         async fetchActivityHeatmapData() {
             try {
-                if (window.supabaseClientClient) {
+                if (window.supabaseClient) {
                     // 過去1週間のアクティビティを取得
                     const oneWeekAgo = new Date();
                     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -2869,7 +2869,7 @@
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabaseClient && window.supabaseClientClient.from) {
+                if (window.supabaseClient && window.supabaseClient.from) {
                     // activitiesテーブル: コミュニティ全体のアクティビティフィード
                     const { data, error } = await window.supabaseClient
                         .from('activities')
@@ -2936,7 +2936,7 @@
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabaseClient && window.supabaseClientClient.from) {
+                if (window.supabaseClient && window.supabaseClient.from) {
                     // イベントデータ + 参加者数をjoinクエリで一括取得（N+1防止）
                     const { data: events, error } = await window.supabaseClient
                         .from('event_items')
