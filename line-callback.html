@@ -158,6 +158,7 @@
                 console.log('📡 Auth response data:', data);
 
                 // Supabaseセッションを確立（verifyOtp）
+                let sessionEstablished = false;
                 if (data.session && data.session.token_hash && window.supabaseClient) {
                     try {
                         const { data: authData, error: authError } = await window.supabaseClient.auth.verifyOtp({
@@ -168,6 +169,7 @@
                             console.error('Supabase session error:', authError);
                         } else {
                             console.log('✅ Supabase session established');
+                            sessionEstablished = true;
                         }
                     } catch (sessionErr) {
                         console.error('Session verification error:', sessionErr);
@@ -176,7 +178,16 @@
                     console.warn('⚠️ No session token or Supabase client not ready');
                 }
 
-                // ユーザー情報を保存（補助用）
+                if (!sessionEstablished) {
+                    // セッション確立に失敗 → ログイン画面へ戻す
+                    showError('セッションの確立に失敗しました。再度ログインしてください。');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 3000);
+                    return;
+                }
+
+                // ユーザー情報を保存（セッション確立後のみ）
                 const userData = {
                     id: data.user.id,
                     email: data.user.email,
@@ -190,17 +201,18 @@
 
                 console.log('Saving user data:', userData);
                 localStorage.setItem('user', JSON.stringify(userData));
-                
+
                 // 成功メッセージ
-                document.querySelector('.callback-message').textContent = '認証成功！リダイレクトしています...';
-                
+                const msgEl = document.querySelector('.callback-message');
+                if (msgEl) msgEl.textContent = '認証成功！リダイレクトしています...';
+
                 // 成功アイコンに変更
                 const icon = document.querySelector('.callback-icon');
                 if (icon) {
                     icon.className = 'fas fa-check-circle callback-icon';
                     icon.style.color = '#10b981';
                 }
-                
+
                 // ダッシュボードへリダイレクト
                 console.log('Redirecting to dashboard...');
                 setTimeout(() => {
