@@ -1422,7 +1422,158 @@ CREATE POLICY "Users can upload own cover" ON storage.objects
     FOR INSERT WITH CHECK (bucket_id = 'covers' AND auth.uid()::text = (storage.foldername(name))[1]);
 
 -- ========================
--- 22. 権限付与
+-- 22. contact_inquiries（お問い合わせ）
+-- ========================
+
+CREATE TABLE IF NOT EXISTS contact_inquiries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    company TEXT,
+    email TEXT NOT NULL,
+    phone TEXT,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'new' CHECK (status IN ('new', 'read', 'replied', 'closed')),
+    admin_notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE contact_inquiries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can submit inquiries" ON contact_inquiries
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Admins can view inquiries" ON contact_inquiries
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+CREATE POLICY "Admins can update inquiries" ON contact_inquiries
+    FOR UPDATE USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+-- ========================
+-- 23. news_items（ニュース/お知らせ）
+-- ========================
+
+CREATE TABLE IF NOT EXISTS news_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT NOT NULL,
+    content TEXT,
+    category TEXT DEFAULT 'general' CHECK (category IN ('general', 'event', 'system', 'member', 'media', 'campaign')),
+    is_published BOOLEAN DEFAULT true,
+    published_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE news_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Published news visible to all" ON news_items
+    FOR SELECT USING (is_published = true);
+
+CREATE POLICY "Admins can manage news" ON news_items
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+-- ========================
+-- 24. site_settings（サイト設定キーバリュー）
+-- ========================
+
+CREATE TABLE IF NOT EXISTS site_settings (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL DEFAULT '{}',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Site settings readable by all" ON site_settings
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can update site settings" ON site_settings
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+-- ========================
+-- 25. login_sessions（ログイン履歴）
+-- ========================
+
+CREATE TABLE IF NOT EXISTS login_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    device TEXT,
+    browser TEXT,
+    ip_address TEXT,
+    location TEXT,
+    logged_in_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_login_sessions_user_id ON login_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_sessions_logged_in_at ON login_sessions(logged_in_at DESC);
+
+ALTER TABLE login_sessions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own sessions" ON login_sessions
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own sessions" ON login_sessions
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- ========================
+-- 26. faqs（よくある質問）
+-- ========================
+
+CREATE TABLE IF NOT EXISTS faqs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    category TEXT DEFAULT 'general' CHECK (category IN ('general', 'membership', 'roi', 'matching', 'billing', 'technical')),
+    sort_order INTEGER DEFAULT 0,
+    is_published BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE faqs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Published FAQs visible to all" ON faqs
+    FOR SELECT USING (is_published = true);
+
+CREATE POLICY "Admins can manage FAQs" ON faqs
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+-- ========================
+-- 27. case_studies（成功事例）
+-- ========================
+
+CREATE TABLE IF NOT EXISTS case_studies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT NOT NULL,
+    company_description TEXT,
+    category TEXT,
+    background TEXT,
+    solution TEXT,
+    metrics JSONB DEFAULT '[]',
+    sort_order INTEGER DEFAULT 0,
+    is_published BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE case_studies ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Published case studies visible to all" ON case_studies
+    FOR SELECT USING (is_published = true);
+
+CREATE POLICY "Admins can manage case studies" ON case_studies
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+-- ========================
+-- 28. 権限付与
 -- ========================
 
 GRANT USAGE ON SCHEMA public TO authenticated;

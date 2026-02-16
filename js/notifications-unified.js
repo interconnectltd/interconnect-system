@@ -90,6 +90,28 @@
                 closeNotificationDropdown();
             }
         });
+
+        // 通知アクションボタンのイベント委譲（XSS防止: onclickの代わりにdata属性を使用）
+        document.addEventListener('click', (e) => {
+            const actionBtn = e.target.closest('[data-notification-action]');
+            if (actionBtn) {
+                const actionName = actionBtn.dataset.notificationAction;
+                if (actionName && typeof window[actionName] === 'function') {
+                    window[actionName]();
+                } else if (actionName) {
+                    console.warn('[NotificationsUnified] Unknown action:', actionName);
+                }
+            }
+
+            // 通知削除ボタン
+            const deleteBtn = e.target.closest('[data-delete-notification]');
+            if (deleteBtn) {
+                const notificationId = deleteBtn.dataset.deleteNotification;
+                if (notificationId) {
+                    deleteNotification(notificationId);
+                }
+            }
+        });
     }
 
     // 通知の読み込み
@@ -231,7 +253,7 @@
                                 </div>
                             ` : ''}
                         </div>
-                        <button class="notification-delete" onclick="deleteNotification('${notification.id}')">
+                        <button class="notification-delete" data-delete-notification="${escapeHtml(notification.id)}">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -240,20 +262,42 @@
         `;
     }
 
+    // URL安全検証（http/httpsのみ許可）
+    function sanitizeUrl(url) {
+        if (!url) return '#';
+        try {
+            const parsed = new URL(url, window.location.origin);
+            if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                return parsed.href;
+            }
+        } catch (e) { /* invalid URL */ }
+        return '#';
+    }
+
+    // CSSクラス名のサニタイズ（英数字・ハイフン・アンダースコアのみ）
+    function sanitizeClassName(cls) {
+        if (!cls) return 'btn-primary';
+        return String(cls).replace(/[^a-zA-Z0-9\-_\s]/g, '') || 'btn-primary';
+    }
+
     // 通知アクションの作成
     function createNotificationActions(notification) {
         if (!notification.actions) return '';
 
         try {
-            const actions = typeof notification.actions === 'string' 
-                ? JSON.parse(notification.actions) 
+            const actions = typeof notification.actions === 'string'
+                ? JSON.parse(notification.actions)
                 : notification.actions;
 
             return actions.map(action => {
+                const safeStyle = sanitizeClassName(action.style);
+                const safeLabel = escapeHtml(action.label || '');
                 if (action.type === 'link') {
-                    return `<a href="${action.url}" class="btn btn-small ${action.style || 'btn-primary'}">${action.label}</a>`;
+                    const safeUrl = sanitizeUrl(action.url);
+                    return `<a href="${safeUrl}" class="btn btn-small ${safeStyle}">${safeLabel}</a>`;
                 } else if (action.type === 'button') {
-                    return `<button class="btn btn-small ${action.style || 'btn-primary'}" onclick="${action.action}">${action.label}</button>`;
+                    const safeAction = escapeHtml(action.action || '');
+                    return `<button class="btn btn-small ${safeStyle}" data-notification-action="${safeAction}">${safeLabel}</button>`;
                 }
                 return '';
             }).join(' ');

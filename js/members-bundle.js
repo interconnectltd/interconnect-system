@@ -2708,13 +2708,26 @@
         `;
     }
 
+    // URLプロトコル検証（http/httpsのみ許可）
+    function sanitizeImageUrl(url) {
+        if (!url) return '';
+        try {
+            const parsed = new URL(url, window.location.origin);
+            if (parsed.protocol === 'http:' || parsed.protocol === 'https:' || parsed.protocol === 'data:') {
+                return parsed.href;
+            }
+        } catch (e) { /* invalid URL */ }
+        return '';
+    }
+
     // ユーザーカードの作成
     function createUserCard(user) {
+        const safeImageUrl = sanitizeImageUrl(user.picture_url);
         return `
-            <div class="user-card" data-user-id="${user.id}">
+            <div class="user-card" data-user-id="${window.escapeAttr(user.id)}">
                 <div class="user-avatar">
-                    ${user.picture_url ? 
-                        `<img src="${user.picture_url}" alt="${user.name}">` :
+                    ${safeImageUrl ?
+                        `<img src="${window.escapeAttr(safeImageUrl)}" alt="${escapeHtml(user.name || '')}">` :
                         `<div class="avatar-placeholder"><i class="fas fa-user"></i></div>`
                     }
                 </div>
