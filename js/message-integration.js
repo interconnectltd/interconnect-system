@@ -130,7 +130,7 @@
                         created_at: new Date().toISOString()
                     })
                     .select()
-                    .single();
+                    .maybeSingle();
 
                 if (error) {
                     console.error('[MessageIntegration] Message send error:', error);

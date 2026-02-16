@@ -788,7 +788,7 @@ window.cashoutModal = new CashoutModal();
                     conversion_count: 0
                 })
                 .select()
-                .single();
+                .maybeSingle();
 
             if (error) throw error;
 

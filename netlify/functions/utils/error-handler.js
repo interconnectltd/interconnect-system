@@ -38,7 +38,7 @@ function createErrorResponse(error) {
         statusCode: error.statusCode || 500,
         headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || '*',
+            'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || 'https://interconnect-system.netlify.app',
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'POST, OPTIONS'
         },

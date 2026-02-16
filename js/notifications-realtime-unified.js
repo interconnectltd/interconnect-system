@@ -313,7 +313,7 @@
                     is_read: false
                 })
                 .select()
-                .single();
+                .maybeSingle();
 
             if (error) throw error;
 

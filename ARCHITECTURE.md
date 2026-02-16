@@ -626,7 +626,7 @@ Steps:
 | 用途 | URL |
 |------|-----|
 | 本番サイト | `https://interconnect-system.netlify.app` |
-| Supabase | `https://whyoqhhzwtlxprhizmor.supabase.co` |
+| Supabase | `https://zrddqaaaoerbguwxrlic.supabase.co` |
 | LINE OAuth Function | `/.netlify/functions/line-auth-simple-v4` |
 | TimeRex Webhook | `/api/timerex-webhook` → Supabase Edge Function |
 | TimeRex Booking | `/api/timerex-booking` → Supabase Edge Function |

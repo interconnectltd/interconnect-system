@@ -329,7 +329,7 @@
                         content: content.trim()
                     })
                     .select()
-                    .single();
+                    .maybeSingle();
 
                 if (error) throw error;
 

@@ -267,8 +267,8 @@ reset-password.html, settings.html, super-admin.html, terms.html
 
 | 項目 | 値 |
 |------|-----|
-| Project URL | `https://whyoqhhzwtlxprhizmor.supabase.co` |
-| Project Ref | `whyoqhhzwtlxprhizmor` |
+| Project URL | `https://zrddqaaaoerbguwxrlic.supabase.co` |
+| Project Ref | `zrddqaaaoerbguwxrlic` |
 | Anon Key | `.env` の `VITE_SUPABASE_ANON_KEY` 参照 |
 | Service Key | Supabase Dashboard → Settings → API → service_role key |
 

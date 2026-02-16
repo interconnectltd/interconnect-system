@@ -14,8 +14,8 @@
     // console.log('[SupabaseUnified] 統一初期化モジュール読み込み開始');
 
     // Supabase設定
-    const SUPABASE_URL = 'https://whyoqhhzwtlxprhizmor.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeW9xaGh6d3RseHByaGl6bW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MjMyNzUsImV4cCI6MjA2NzA5OTI3NX0.HI03HObR6GkTmYh4Adm_DRkUOAssA8P1dhqzCH-mLrw';
+    const SUPABASE_URL = 'https://zrddqaaaoerbguwxrlic.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyZGRxYWFhb2VyYmd1d3hybGljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMTk0NjAsImV4cCI6MjA4Njc5NTQ2MH0.Z0LLFDeDq2zja_jQXeYWDYB1uZe1wGIP-7HmEoUc6qk';
 
     // 初期化フラグ
     let isInitialized = false;

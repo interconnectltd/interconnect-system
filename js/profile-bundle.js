@@ -430,7 +430,7 @@ window.InterConnect.Profile = {
                 <div style="text-align: center; padding: 3rem;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 1rem;"></i>
                     <h2 style="color: #dc3545; margin-bottom: 0.5rem;">エラー</h2>
-                    <p style="color: #6c757d;">${message}</p>
+                    <p style="color: #6c757d;">${typeof window.escapeHTML === 'function' ? window.escapeHTML(message) : message.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p>
                     <a href="members.html" class="btn btn-primary" style="margin-top: 1rem;">メンバー一覧へ戻る</a>
                 </div>
             `;
@@ -1081,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // プロフィールデータを取得
                 const { data: profile, error } = await window.supabaseClient
                     .from('user_profiles')
-                    .select('id, name, email, company, position, avatar_url, bio, skills, interests, industry, experience_years, location, website, social_links, is_verified')
+                    .select('id, name, email, company, position, avatar_url, bio, skills, interests, industry, location, phone, line_id')
                     .eq('id', this.targetUserId)
                     .maybeSingle();
 

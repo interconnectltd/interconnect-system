@@ -1218,7 +1218,7 @@
                         created_at: new Date().toISOString()
                     })
                     .select()
-                    .single();
+                    .maybeSingle();
 
                 if (error) {
                     // Supabaseエラーの詳細を解析

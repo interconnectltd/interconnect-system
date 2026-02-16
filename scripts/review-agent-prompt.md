@@ -111,7 +111,7 @@ SDK: Supabase JS v2.95.3 (CDN, SRI)
 Auth: Email/Password + LINE OAuth (Magic Link)
 Canonical Schema: sql/000_canonical_schema.sql
 Site URL: https://interconnect-system.netlify.app
-Supabase: https://whyoqhhzwtlxprhizmor.supabase.co
+Supabase: https://zrddqaaaoerbguwxrlic.supabase.co
 
 Script Load Order (authenticated pages):
   1. supabase-unified.js (MUST be first)
