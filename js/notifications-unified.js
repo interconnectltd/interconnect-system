@@ -631,8 +631,8 @@
             try {
                 const browserNotification = new Notification(notification.title || '新しい通知', {
                     body: notification.message || '',
-                    icon: '/assets/icon-192.png',
-                    badge: '/assets/icon-72.png',
+                    icon: '/favicon.svg',
+                    badge: '/favicon.svg',
                     tag: notification.id,
                     requireInteraction: false,
                     silent: false

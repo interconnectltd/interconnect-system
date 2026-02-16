@@ -174,6 +174,16 @@ CREATE POLICY "Admin can view all notifications" ON notifications
         EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
     );
 
+DROP POLICY IF EXISTS "Users can delete own notifications" ON notifications;
+CREATE POLICY "Users can delete own notifications" ON notifications
+    FOR DELETE USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admin can delete all notifications" ON notifications;
+CREATE POLICY "Admin can delete all notifications" ON notifications
+    FOR DELETE USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
 DROP POLICY IF EXISTS "Service role can manage all notifications" ON notifications;
 CREATE POLICY "Service role can manage all notifications" ON notifications
     FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
@@ -359,6 +369,12 @@ DROP POLICY IF EXISTS "Admin can view all invitations" ON invitations;
 CREATE POLICY "Admin can view all invitations" ON invitations
     FOR SELECT USING (
         EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
+DROP POLICY IF EXISTS "Users can update invitations they accepted" ON invitations;
+CREATE POLICY "Users can update invitations they accepted" ON invitations
+    FOR UPDATE USING (
+        accepted_by = auth.uid() OR inviter_id = auth.uid()
     );
 
 -- ========================
