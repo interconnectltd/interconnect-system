@@ -207,12 +207,12 @@ CREATE POLICY "Admin can update cashout requests" ON cashout_requests
 
 | 変数名 | 値の取得場所 | 用途 |
 |--------|-------------|------|
-| `SUPABASE_URL` | `https://whyoqhhzwtlxprhizmor.supabase.co` | line-auth-simple-v4.js |
+| `SUPABASE_URL` | Supabase Dashboard → Settings → API → URL | line-auth-simple-v4.js |
 | `SUPABASE_SERVICE_KEY` | Supabase Dashboard → Settings → API → service_role key | line-auth-simple-v4.js（admin操作） |
-| `LINE_CHANNEL_ID` | `2007688781`（.env参照） | line-auth-simple-v4.js |
-| `LINE_CHANNEL_SECRET` | `REMOVED_LINE_CHANNEL_SECRET`（.env参照） | line-auth-simple-v4.js |
-| `NETLIFY_AUTH_TOKEN` | GitHub Secrets に設定済み（deploy.yml用） | GitHub Actions |
-| `NETLIFY_SITE_ID` | GitHub Secrets に設定済み（deploy.yml用） | GitHub Actions |
+| `LINE_CHANNEL_ID` | LINE Developers Console → チャネル基本設定 | line-auth-simple-v4.js |
+| `LINE_CHANNEL_SECRET` | LINE Developers Console → チャネル基本設定 | line-auth-simple-v4.js |
+| `NETLIFY_AUTH_TOKEN` | GitHub Secrets に設定（deploy.yml用） | GitHub Actions |
+| `NETLIFY_SITE_ID` | GitHub Secrets に設定（deploy.yml用） | GitHub Actions |
 
 **注意:** `SUPABASE_SERVICE_KEY` はフロントエンドに絶対に露出させないこと。Netlify Functions 内でのみ使用。
 

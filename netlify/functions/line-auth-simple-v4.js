@@ -87,7 +87,7 @@ exports.handler = async (event, context) => {
         console.log('Processing LINE auth with code:', code.substring(0, 10) + '...');
 
         // 環境変数の確認
-        const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID || '2007688781';
+        const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID;
         const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
         const SUPABASE_URL = process.env.SUPABASE_URL;
         const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
