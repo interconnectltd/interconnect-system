@@ -95,7 +95,7 @@
         
         try {
             // Supabaseからアクティビティを取得（activitiesテーブル）
-            const { data: rawData, error } = await window.supabase
+            const { data: rawData, error } = await window.supabaseClient
                 .from('activities')
                 .select('*')
                 .order('created_at', { ascending: false })

@@ -108,7 +108,7 @@
          */
         async sendMessage(recipientId, content) {
             try {
-                if (!window.supabase) {
+                if (!window.supabaseClient) {
                     console.error('[MessageIntegration] Supabase not initialized');
                     return { success: false };
                 }

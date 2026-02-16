@@ -701,7 +701,7 @@
             // Load profile data
             const { data: profile } = await client
                 .from('user_profiles')
-                .select('full_name, company, bio, username')
+                .select('full_name, company, bio, email')
                 .eq('id', user.id)
                 .maybeSingle();
 
@@ -710,7 +710,7 @@
                 const usernameInput = document.getElementById('settingsUsername');
                 const bioInput = document.getElementById('settingsBio');
                 if (nameInput) nameInput.value = profile.full_name || '';
-                if (usernameInput) usernameInput.value = profile.username || user.id.substring(0, 8);
+                if (usernameInput) usernameInput.value = profile.email || user.email || user.id.substring(0, 8);
                 if (bioInput) bioInput.value = profile.bio || '';
             }
 

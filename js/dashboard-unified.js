@@ -95,7 +95,7 @@
 
         async loadStats() {
             try {
-                if (!window.supabase) return;
+                if (!window.supabaseClient) return;
 
                 // Calculator群が存在する場合はそちらに任せる（重複APIコール防止）
                 if (window.dashboardMemberCalculator || window.dashboardEventCalculator || window.dashboardMatchingCalculator) {
@@ -103,7 +103,7 @@
                 }
 
                 // メンバー数を取得
-                const { count: memberCount } = await window.supabase
+                const { count: memberCount } = await window.supabaseClient
                     .from('user_profiles')
                     .select('*', { count: 'exact', head: true });
 
@@ -113,7 +113,7 @@
                 const currentMonth = new Date().getMonth();
                 const currentYear = new Date().getFullYear();
 
-                const { data: events } = await window.supabase
+                const { data: events } = await window.supabaseClient
                     .from('events')
                     .select('*')
                     .gte('event_date', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-01`)
@@ -162,9 +162,9 @@
 
         async loadEvents() {
             try {
-                if (!window.supabase) return;
+                if (!window.supabaseClient) return;
 
-                const { data: events } = await window.supabase
+                const { data: events } = await window.supabaseClient
                     .from('events')
                     .select('*')
                     .eq('is_public', true)
@@ -698,7 +698,7 @@
             }
 
             try {
-                const { count, error } = await window.supabase
+                const { count, error } = await window.supabaseClient
                     .from('user_profiles')
                     .select('*', { count: 'exact', head: true });
 
@@ -747,7 +747,7 @@
 
                 // console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバーを取得: ${startDate} ~ ${endDate}`);
 
-                const { count, error } = await window.supabase
+                const { count, error } = await window.supabaseClient
                     .from('user_profiles')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', startDate)
@@ -970,7 +970,7 @@
                 // console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベントを取得: ${startDate} ~ ${endDate}`);
 
                 // event_dateカラムを使用（正規スキーマ）
-                const { count, error } = await window.supabase
+                const { count, error } = await window.supabaseClient
                     .from('events')
                     .select('*', { count: 'exact', head: true })
                     .gte('event_date', startDate)
@@ -1013,7 +1013,7 @@
          */
         async checkEventTableStructure() {
             try {
-                const { data, error } = await window.supabase
+                const { data, error } = await window.supabaseClient
                     .from('events')
                     .select('*')
                     .limit(1);
@@ -1180,13 +1180,13 @@
 
             try {
                 // まずmatchingsテーブルを試す
-                let { count, error } = await window.supabase
+                let { count, error } = await window.supabaseClient
                     .from('matchings')
                     .select('*', { count: 'exact', head: true });
 
                 if (error) {
                     // user_activitiesテーブル: 個人のアクティビティログ（フォールバック）
-                    const result = await window.supabase
+                    const result = await window.supabaseClient
                         .from('user_activities')
                         .select('*', { count: 'exact', head: true })
                         .in('activity_type', ['matching_success', 'matching']);
@@ -1235,7 +1235,7 @@
                 // console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチングを取得: ${startDate} ~ ${endDate}`);
 
                 // まずmatchingsビューを試す（statusカラムなし）
-                let { count, error } = await window.supabase
+                let { count, error } = await window.supabaseClient
                     .from('matchings')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', startDate)
@@ -1243,7 +1243,7 @@
 
                 if (error) {
                     // user_activitiesテーブル: 個人のアクティビティログ（フォールバック）
-                    const result = await window.supabase
+                    const result = await window.supabaseClient
                         .from('user_activities')
                         .select('*', { count: 'exact', head: true })
                         .in('activity_type', ['matching_success', 'matching'])
@@ -1285,7 +1285,7 @@
         async checkMatchingTableStructure() {
             try {
                 // matchingsテーブル
-                const { data: matchingData, error: matchingError } = await window.supabase
+                const { data: matchingData, error: matchingError } = await window.supabaseClient
                     .from('matchings')
                     .select('*')
                     .limit(1);
@@ -1297,7 +1297,7 @@
                 }
 
                 // user_activitiesのマッチング関連データ
-                const { data: activityData } = await window.supabase
+                const { data: activityData } = await window.supabaseClient
                     .from('user_activities')
                     .select('*')
                     .in('activity_type', ['matching_success', 'matching'])
@@ -1460,7 +1460,7 @@
                 const now = new Date().toISOString();
 
                 // event_itemsテーブルから取得（参加者数も含めて）
-                let { data: events, error } = await window.supabase
+                let { data: events, error } = await window.supabaseClient
                     .from('event_items')
                     .select(`
                         *,
@@ -1477,7 +1477,7 @@
                 if (error && (error.code === '42P01' || error.message.includes('event_items'))) {
                     // console.log('[UpcomingEvents] event_itemsテーブルが存在しません。eventsテーブルで再試行...');
 
-                    const result = await window.supabase
+                    const result = await window.supabaseClient
                         .from('events')
                         .select('*')
                         .gte('event_date', now)
@@ -1661,14 +1661,14 @@
         async checkEventTableStructure() {
             try {
                 // event_itemsテーブルから確認
-                let { data, error } = await window.supabase
+                let { data, error } = await window.supabaseClient
                     .from('event_items')
                     .select('*')
                     .limit(1);
 
                 // event_itemsが存在しない場合はeventsテーブルを確認
                 if (error && (error.code === '42P01' || error.message.includes('event_items'))) {
-                    const result = await window.supabase
+                    const result = await window.supabaseClient
                         .from('events')
                         .select('*')
                         .limit(1);
@@ -1722,7 +1722,7 @@
     // Supabaseクライアントの初期化を待つ
     function waitForSupabase() {
         return new Promise((resolve) => {
-            if (window.supabaseClient) {
+            if (window.supabaseClientClient) {
                 resolve();
                 return;
             }
@@ -1734,7 +1734,7 @@
 
             // タイムアウト後も確認
             setTimeout(() => {
-                if (window.supabaseClient) {
+                if (window.supabaseClientClient) {
                     resolve();
                 }
             }, 3000);
@@ -1745,7 +1745,7 @@
     async function initializeStats() {
         await waitForSupabase();
 
-        if (!window.supabase) {
+        if (!window.supabaseClient) {
             console.error('[DashboardFix] Supabaseが初期化されていません');
             showFallbackData();
             return;
@@ -1885,7 +1885,7 @@
     async function fixUpcomingEvents() {
         await waitForSupabase();
 
-        if (!window.supabase) {
+        if (!window.supabaseClient) {
             console.error('[DashboardFix] Supabaseが利用できません');
             return;
         }
@@ -1915,7 +1915,7 @@
     async function fixRealtimeNotifications() {
         await waitForSupabase();
 
-        if (!window.supabaseClient) {
+        if (!window.supabaseClientClient) {
             console.error('[DashboardFix] Supabaseが利用できません');
             return;
         }
@@ -2527,9 +2527,9 @@
          */
         async fetchMemberGrowthData(period) {
             try {
-                if (window.supabaseClient) {
+                if (window.supabaseClientClient) {
                     // Supabaseからメンバー成長データを取得
-                    const { data, error } = await window.supabase
+                    const { data, error } = await window.supabaseClient
                         .from('member_growth_stats')
                         .select('*')
                         .order('month', { ascending: true });
@@ -2582,9 +2582,9 @@
          */
         async fetchEventStatsData(period) {
             try {
-                if (window.supabaseClient) {
+                if (window.supabaseClientClient) {
                     // Supabaseからイベント統計データを取得
-                    const { data, error } = await window.supabase
+                    const { data, error } = await window.supabaseClient
                         .from('event_stats')
                         .select('*')
                         .order('week', { ascending: true });
@@ -2651,9 +2651,9 @@
          */
         async fetchIndustryData() {
             try {
-                if (window.supabaseClient) {
+                if (window.supabaseClientClient) {
                     // Supabaseから業界別分布データを取得
-                    const { data, error } = await window.supabase
+                    const { data, error } = await window.supabaseClient
                         .from('industry_distribution')
                         .select('*')
                         .order('count', { ascending: false });
@@ -2681,13 +2681,13 @@
          */
         async fetchActivityHeatmapData() {
             try {
-                if (window.supabaseClient) {
+                if (window.supabaseClientClient) {
                     // 過去1週間のアクティビティを取得
                     const oneWeekAgo = new Date();
                     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
                     // activitiesテーブル: コミュニティ全体のアクティビティフィード
-                    const { data, error } = await window.supabase
+                    const { data, error } = await window.supabaseClient
                         .from('activities')
                         .select('created_at')
                         .gte('created_at', oneWeekAgo.toISOString())
@@ -2869,9 +2869,9 @@
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabase && window.supabaseClient.from) {
+                if (window.supabaseClient && window.supabaseClientClient.from) {
                     // activitiesテーブル: コミュニティ全体のアクティビティフィード
-                    const { data, error } = await window.supabase
+                    const { data, error } = await window.supabaseClient
                         .from('activities')
                         .select('*')
                         .order('created_at', { ascending: false })
@@ -2936,9 +2936,9 @@
                     container.innerHTML = '<div class="filter-loading"><i class="fas fa-spinner"></i></div>';
                 }
 
-                if (window.supabase && window.supabaseClient.from) {
+                if (window.supabaseClient && window.supabaseClientClient.from) {
                     // イベントデータ + 参加者数をjoinクエリで一括取得（N+1防止）
-                    const { data: events, error } = await window.supabase
+                    const { data: events, error } = await window.supabaseClient
                         .from('event_items')
                         .select('*, event_participants!left(id, status)')
                         .eq('is_public', true)
