@@ -368,29 +368,29 @@
             <h2 class="section-title">コミュニティの実績</h2>
             <p class="section-description">数字が証明する確かな成果</p>
             
-            <div class="data-grid">
+            <div class="data-grid" id="performanceStats">
                 <div class="data-card">
-                    <div class="data-value">78.5%</div>
+                    <div class="data-value" data-stat="matching_rate">78.5%</div>
                     <div class="data-label">マッチング成功率</div>
                 </div>
                 <div class="data-card">
-                    <div class="data-value">480件</div>
+                    <div class="data-value" data-stat="annual_matchings">480件</div>
                     <div class="data-label">年間マッチング件数</div>
                 </div>
                 <div class="data-card">
-                    <div class="data-value">18億円</div>
+                    <div class="data-value" data-stat="annual_funding">18億円</div>
                     <div class="data-label">年間資金調達総額</div>
                 </div>
                 <div class="data-card">
-                    <div class="data-value">180%</div>
+                    <div class="data-value" data-stat="average_roi">180%</div>
                     <div class="data-label">平均ROI</div>
                 </div>
                 <div class="data-card">
-                    <div class="data-value">82.3%</div>
+                    <div class="data-value" data-stat="retention_rate">82.3%</div>
                     <div class="data-label">継続率</div>
                 </div>
                 <div class="data-card">
-                    <div class="data-value">320万円</div>
+                    <div class="data-value" data-stat="average_revenue_growth">320万円</div>
                     <div class="data-label">平均収益向上</div>
                 </div>
             </div>
@@ -552,40 +552,41 @@
             <h2 class="section-title">最新ニュース</h2>
             
             <div class="news-timeline">
+                <!-- DB (news_items) から動的に読み込まれます。フォールバック: -->
                 <div class="news-month">
                     <div class="month-marker"></div>
-                    <h4>2025年7月</h4>
+                    <h4>2026年2月</h4>
                     <div class="news-items">
+                        <div class="news-item">
+                            <span class="news-category">システム更新</span>
+                            <span>1:1メッセージ機能をリリース - コネクション済みのメンバー間でチャットが可能に</span>
+                        </div>
                         <div class="news-item">
                             <span class="news-category">会員数増加</span>
                             <span>累計会員数200名突破 - おかげさまで多くの経営者にご参加いただいています</span>
                         </div>
                         <div class="news-item">
+                            <span class="news-category">実績報告</span>
+                            <span>今月のマッチング成功件数28件を達成 - 過去最高を更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-month">
+                    <div class="month-marker"></div>
+                    <h4>2026年1月</h4>
+                    <div class="news-items">
+                        <div class="news-item">
                             <span class="news-category">システム更新</span>
-                            <span>マッチング精度向上 - より適切な紹介ができるよう改善いたしました</span>
+                            <span>マッチング精度向上アップデート - より適切な紹介ができるよう改善</span>
                         </div>
                         <div class="news-item">
                             <span class="news-category">イベント開催</span>
                             <span>月次オンライン交流会を開催 - 30名の経営者が参加し活発な情報交換</span>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="news-month">
-                    <div class="month-marker"></div>
-                    <h4>2025年6月</h4>
-                    <div class="news-items">
                         <div class="news-item">
-                            <span class="news-category">新機能追加</span>
-                            <span>LINEコミュニティ機能を強化 - より使いやすくリニューアル</span>
-                        </div>
-                        <div class="news-item">
-                            <span class="news-category">実績報告</span>
-                            <span>今月のマッチング成功件数25件を達成</span>
-                        </div>
-                        <div class="news-item">
-                            <span class="news-category">メディア掲載</span>
-                            <span>地方経済誌「ビジネス東海」で当コミュニティが紹介されました</span>
+                            <span class="news-category">システム更新</span>
+                            <span>新規メンバー向けオンボーディング改善 - 初回マッチングまでの流れを簡略化</span>
                         </div>
                     </div>
                 </div>
@@ -622,13 +623,13 @@
                 </div>
             </div>
             
-            <div class="text-center" style="margin-top: 60px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <h3 style="color: white; margin-bottom: 30px;">
-                    <i class="fas fa-gift"></i> 8月限定！超お得キャンペーン
+            <div class="text-center" style="margin-top: 60px; display: flex; flex-direction: column; justify-content: center; align-items: center;" id="campaignSection">
+                <h3 style="color: white; margin-bottom: 30px;" id="campaignTitle">
+                    <i class="fas fa-gift"></i> 期間限定特典
                 </h3>
-                <p style="font-size: 1.25rem; margin-bottom: 30px;">
+                <p style="font-size: 1.25rem; margin-bottom: 30px;" id="campaignDescription">
                     先着30名様限定で<strong>合計210,000円分</strong>の特典付き<br>
-                    <span style="font-size: 1.5rem;">残りあと<strong style="font-size: 2rem;">22</strong>名様</span>
+                    <span style="font-size: 1.5rem;">残りあと<strong style="font-size: 2rem;" id="campaignRemaining">22</strong>名様</span>
                 </p>
                 <a href="register.html" class="btn btn-warning btn-lg" style="font-size: 1.25rem; padding: 20px 60px; border: 3px solid white; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);">
                     <i class="fas fa-bolt"></i> 今すぐ特典を受け取る
@@ -648,15 +649,15 @@
                         <div class="contact-item">
                             <i class="fas fa-phone fa-3x" style="color: #0066ff; margin-bottom: 20px;"></i>
                             <h4>電話で相談</h4>
-                            <p style="font-size: 1.5rem; font-weight: 700; color: #0066ff;">03-XXXX-XXXX</p>
-                            <p>平日9:00-18:00<br>土日祝10:00-17:00</p>
+                            <p style="font-size: 1.5rem; font-weight: 700; color: #0066ff;" id="contactPhone">03-XXXX-XXXX</p>
+                            <p id="contactPhoneHours">平日9:00-18:00<br>土日祝10:00-17:00</p>
                         </div>
                     </div>
                     <div class="contact-col">
                         <div class="contact-item">
                             <i class="fas fa-envelope fa-3x" style="color: #0066ff; margin-bottom: 20px;"></i>
                             <h4>メールで相談</h4>
-                            <p style="font-size: 1.25rem; font-weight: 700;">info@inter-connect.jp</p>
+                            <p style="font-size: 1.25rem; font-weight: 700;" id="contactEmail">info@inter-connect.jp</p>
                             <p>24時間以内に<br>必ずお返事します</p>
                         </div>
                     </div>
@@ -664,7 +665,7 @@
                         <div class="contact-item">
                             <i class="fab fa-line fa-3x" style="color: #00c300; margin-bottom: 20px;"></i>
                             <h4>LINEで相談</h4>
-                            <p style="font-size: 1.25rem; font-weight: 700;">@inter-connect</p>
+                            <p style="font-size: 1.25rem; font-weight: 700;" id="contactLine">@inter-connect</p>
                             <p>チャットで気軽に<br>ご相談ください</p>
                         </div>
                     </div>
@@ -720,7 +721,7 @@
             </div>
             
             <div class="copyright">
-                <p>&copy; 2025 INTER CONNECT. All rights reserved.</p>
+                <p>&copy; 2026 INTER CONNECT. All rights reserved.</p>
             </div>
         </div>
     </footer>

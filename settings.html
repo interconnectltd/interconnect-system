@@ -282,33 +282,33 @@
                             <div class="settings-group">
                                 <label class="settings-label">メールアドレス</label>
                                 <div class="input-group">
-                                    <input type="email" class="form-input" value="user@example.com">
+                                    <input type="email" class="form-input" id="settingsEmail" value="" placeholder="読み込み中...">
                                     <button class="btn btn-outline btn-small">変更</button>
                                 </div>
                                 <small class="help-text">ログインと通知に使用されます</small>
                             </div>
-                            
+
                             <div class="settings-group">
                                 <label class="settings-label">ユーザー名</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-input" value="username">
+                                    <input type="text" class="form-input" id="settingsUsername" value="" placeholder="読み込み中...">
                                     <button class="btn btn-outline btn-small">変更</button>
                                 </div>
                                 <small class="help-text">URLで使用される一意の識別子</small>
                             </div>
-                            
+
                             <div class="settings-group">
                                 <label class="settings-label">表示名</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-input" value="山田 太郎">
+                                    <input type="text" class="form-input" id="settingsDisplayName" value="" placeholder="読み込み中...">
                                     <button class="btn btn-outline btn-small">変更</button>
                                 </div>
                                 <small class="help-text">他のユーザーに表示される名前</small>
                             </div>
-                            
+
                             <div class="settings-group">
                                 <label class="settings-label">自己紹介</label>
-                                <textarea class="form-input" rows="4" placeholder="あなたについて簡単に紹介してください">テクノロジー企業のCEOです。イノベーションとビジネス成長に情熱を注いでいます。</textarea>
+                                <textarea class="form-input" id="settingsBio" rows="4" placeholder="あなたについて簡単に紹介してください"></textarea>
                                 <small class="help-text">プロフィールで表示される紹介文</small>
                             </div>
                         </div>
@@ -321,7 +321,7 @@
                                 <div class="password-info">
                                     <div class="password-status">
                                         <i class="fas fa-check-circle text-success"></i>
-                                        <span>最終更新: 2024年1月5日</span>
+                                        <span id="passwordLastUpdated">設定済み</span>
                                     </div>
                                     <button class="btn btn-outline">パスワードを変更</button>
                                 </div>
@@ -605,10 +605,10 @@
                             <div class="settings-group">
                                 <label class="settings-label">日付形式</label>
                                 <select class="form-select">
-                                    <option value="YYYY/MM/DD" selected>2024/01/15</option>
-                                    <option value="DD/MM/YYYY">15/01/2024</option>
-                                    <option value="MM/DD/YYYY">01/15/2024</option>
-                                    <option value="YYYY-MM-DD">2024-01-15</option>
+                                    <option value="YYYY/MM/DD" selected>2026/02/16</option>
+                                    <option value="DD/MM/YYYY">16/02/2026</option>
+                                    <option value="MM/DD/YYYY">02/16/2026</option>
+                                    <option value="YYYY-MM-DD">2026-02-16</option>
                                 </select>
                             </div>
                         </div>
@@ -624,47 +624,10 @@
                         <div class="settings-card">
                             <h3>ログインアクティビティ</h3>
                             
-                            <div class="activity-list">
-                                <div class="activity-item">
-                                    <div class="activity-info">
-                                        <div class="activity-device">
-                                            <i class="fas fa-desktop"></i>
-                                            <span>Windows PC - Chrome</span>
-                                        </div>
-                                        <div class="activity-details">
-                                            <span class="activity-location">東京, 日本</span>
-                                            <span class="activity-time">2時間前</span>
-                                        </div>
-                                    </div>
-                                    <span class="activity-status current">現在のセッション</span>
-                                </div>
-                                
-                                <div class="activity-item">
-                                    <div class="activity-info">
-                                        <div class="activity-device">
-                                            <i class="fas fa-mobile-alt"></i>
-                                            <span>iPhone - Safari</span>
-                                        </div>
-                                        <div class="activity-details">
-                                            <span class="activity-location">東京, 日本</span>
-                                            <span class="activity-time">1日前</span>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-outline btn-small">終了</button>
-                                </div>
-                                
-                                <div class="activity-item">
-                                    <div class="activity-info">
-                                        <div class="activity-device">
-                                            <i class="fas fa-tablet-alt"></i>
-                                            <span>iPad - Safari</span>
-                                        </div>
-                                        <div class="activity-details">
-                                            <span class="activity-location">大阪, 日本</span>
-                                            <span class="activity-time">3日前</span>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-outline btn-small">終了</button>
+                            <div class="activity-list" id="loginActivityList">
+                                <div class="loading-spinner" style="text-align:center; padding:20px;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>ログイン履歴を読み込み中...</p>
                                 </div>
                             </div>
                             

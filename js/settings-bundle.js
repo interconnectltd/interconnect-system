@@ -188,6 +188,8 @@
         initializeAppIntegrations();
         initializePasswordStrength();
         initializeDangerZone();
+        loadUserSettings();
+        loadLoginActivity();
     });
 
     // Navigation between settings sections
@@ -682,6 +684,128 @@
             sessionStorage.clear();
             window.location.href = 'index.html';
         }
+    }
+
+    // Load user profile data into settings form fields
+    async function loadUserSettings() {
+        try {
+            const client = window.supabaseClient;
+            if (!client) return;
+            const user = await window.safeGetUser();
+            if (!user) return;
+
+            // Populate email from auth
+            const emailInput = document.getElementById('settingsEmail');
+            if (emailInput) emailInput.value = user.email || '';
+
+            // Load profile data
+            const { data: profile } = await client
+                .from('user_profiles')
+                .select('full_name, company, bio, username')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            if (profile) {
+                const nameInput = document.getElementById('settingsDisplayName');
+                const usernameInput = document.getElementById('settingsUsername');
+                const bioInput = document.getElementById('settingsBio');
+                if (nameInput) nameInput.value = profile.full_name || '';
+                if (usernameInput) usernameInput.value = profile.username || user.id.substring(0, 8);
+                if (bioInput) bioInput.value = profile.bio || '';
+            }
+
+            // Remove placeholder text
+            document.querySelectorAll('#settingsEmail, #settingsUsername, #settingsDisplayName').forEach(el => {
+                el.placeholder = '';
+            });
+        } catch (e) {
+            console.error('[Settings] ユーザーデータ読み込みエラー:', e);
+        }
+    }
+
+    // Load login activity from login_sessions table
+    async function loadLoginActivity() {
+        const container = document.getElementById('loginActivityList');
+        if (!container) return;
+
+        try {
+            const client = window.supabaseClient;
+            if (!client) {
+                container.innerHTML = '<p style="text-align:center; color:#6b7280;">データを取得できません</p>';
+                return;
+            }
+            const user = await window.safeGetUser();
+            if (!user) {
+                container.innerHTML = '<p style="text-align:center; color:#6b7280;">ログインしてください</p>';
+                return;
+            }
+
+            const { data, error } = await client
+                .from('login_sessions')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('logged_in_at', { ascending: false })
+                .limit(10);
+
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#6b7280; padding:20px;">ログイン履歴はありません</p>';
+                return;
+            }
+
+            container.innerHTML = data.map((session, i) => {
+                const icon = getDeviceIcon(session.device || session.browser || '');
+                const deviceText = escapeForDisplay([session.device, session.browser].filter(Boolean).join(' - ')) || '不明なデバイス';
+                const location = escapeForDisplay(session.location || '');
+                const timeAgo = formatTimeAgoSettings(session.logged_in_at);
+                const isCurrent = i === 0;
+
+                return `<div class="activity-item">
+                    <div class="activity-info">
+                        <div class="activity-device">
+                            <i class="fas ${icon}"></i>
+                            <span>${deviceText}</span>
+                        </div>
+                        <div class="activity-details">
+                            ${location ? `<span class="activity-location">${location}</span>` : ''}
+                            <span class="activity-time">${timeAgo}</span>
+                        </div>
+                    </div>
+                    ${isCurrent ? '<span class="activity-status current">現在のセッション</span>' : ''}
+                </div>`;
+            }).join('');
+        } catch (e) {
+            console.error('[Settings] ログイン履歴読み込みエラー:', e);
+            container.innerHTML = '<p style="text-align:center; color:#6b7280;">履歴の取得に失敗しました</p>';
+        }
+    }
+
+    function getDeviceIcon(deviceString) {
+        const lower = (deviceString || '').toLowerCase();
+        if (lower.includes('iphone') || lower.includes('android') || lower.includes('mobile')) return 'fa-mobile-alt';
+        if (lower.includes('ipad') || lower.includes('tablet')) return 'fa-tablet-alt';
+        return 'fa-desktop';
+    }
+
+    function escapeForDisplay(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatTimeAgoSettings(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMin = Math.floor(diffMs / 60000);
+        const diffHr = Math.floor(diffMs / 3600000);
+        const diffDay = Math.floor(diffMs / 86400000);
+        if (diffMin < 1) return 'たった今';
+        if (diffMin < 60) return `${diffMin}分前`;
+        if (diffHr < 24) return `${diffHr}時間前`;
+        if (diffDay < 30) return `${diffDay}日前`;
+        return date.toLocaleDateString('ja-JP');
     }
 
     // Toast notification (XSS safe, fallback if global showToast not available)
