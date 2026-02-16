@@ -512,10 +512,10 @@
                     <img src="${profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}&background=4A90E2&color=fff&size=240`}"
                          alt="${profile.name}"
                          class="profile-detail-avatar">
-                    <h2 class="profile-detail-name">${profile.name || '名前未設定'}</h2>
+                    <h2 class="profile-detail-name">${window.escapeHTML(profile.name || '名前未設定')}</h2>
                     <p class="profile-detail-title">
-                        ${profile.position || '役職未設定'}
-                        ${profile.company ? `@ ${profile.company}` : ''}
+                        ${window.escapeHTML(profile.position || '役職未設定')}
+                        ${profile.company ? `@ ${window.escapeHTML(profile.company)}` : ''}
                     </p>
                     <div class="profile-detail-score">
                         マッチング度: ${matchingScore}%
@@ -574,19 +574,19 @@
                         <div class="profile-detail-grid">
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">会社</div>
-                                <div class="profile-detail-value">${profile.company || '未設定'}</div>
+                                <div class="profile-detail-value">${window.escapeHTML(profile.company || '未設定')}</div>
                             </div>
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">役職</div>
-                                <div class="profile-detail-value">${profile.position || '未設定'}</div>
+                                <div class="profile-detail-value">${window.escapeHTML(profile.position || '未設定')}</div>
                             </div>
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">業界</div>
-                                <div class="profile-detail-value">${profile.industry || '未設定'}</div>
+                                <div class="profile-detail-value">${window.escapeHTML(profile.industry || '未設定')}</div>
                             </div>
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">地域</div>
-                                <div class="profile-detail-value">${profile.location || '未設定'}</div>
+                                <div class="profile-detail-value">${window.escapeHTML(profile.location || '未設定')}</div>
                             </div>
                         </div>
                     </div>
@@ -599,7 +599,7 @@
                                 自己紹介
                             </h3>
                             <div class="profile-detail-bio">
-                                ${profile.bio}
+                                ${window.escapeHTML(profile.bio)}
                             </div>
                         </div>
                     ` : ''}
@@ -613,7 +613,7 @@
                             </h3>
                             <div class="profile-detail-tags">
                                 ${profile.skills.map(skill => `
-                                    <span class="profile-detail-tag skill">${skill}</span>
+                                    <span class="profile-detail-tag skill">${window.escapeHTML(skill)}</span>
                                 `).join('')}
                             </div>
                         </div>
@@ -628,7 +628,7 @@
                             </h3>
                             <div class="profile-detail-tags">
                                 ${profile.interests.map(interest => `
-                                    <span class="profile-detail-tag interest">${interest}</span>
+                                    <span class="profile-detail-tag interest">${window.escapeHTML(interest)}</span>
                                 `).join('')}
                             </div>
                         </div>

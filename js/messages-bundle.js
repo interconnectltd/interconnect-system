@@ -169,6 +169,21 @@
         }
 
         async openConversation(userId) {
+            // コネクション確認（未コネクションの相手にはメッセージ不可）
+            const { data: conn } = await window.supabaseClient
+                .from('connections')
+                .select('id')
+                .eq('status', 'accepted')
+                .or(`and(user_id.eq.${this.currentUserId},connected_user_id.eq.${userId}),and(user_id.eq.${userId},connected_user_id.eq.${this.currentUserId})`)
+                .maybeSingle();
+
+            if (!conn) {
+                if (window.showToast) {
+                    window.showToast('コネクション済みのユーザーとのみメッセージができます', 'warning');
+                }
+                return;
+            }
+
             this.selectedUserId = userId;
 
             // UIの表示切替
@@ -292,6 +307,20 @@
             if (!content.trim() || !this.selectedUserId) return;
 
             try {
+                // コネクション再確認（送信時にも確認）
+                const { data: connCheck } = await window.supabaseClient
+                    .from('connections')
+                    .select('id')
+                    .eq('status', 'accepted')
+                    .or(`and(user_id.eq.${this.currentUserId},connected_user_id.eq.${this.selectedUserId}),and(user_id.eq.${this.selectedUserId},connected_user_id.eq.${this.currentUserId})`)
+                    .maybeSingle();
+
+                if (!connCheck) {
+                    if (window.showToast) {
+                        window.showToast('コネクションが無効になりました', 'error');
+                    }
+                    return;
+                }
                 const { data, error } = await window.supabaseClient
                     .from('messages')
                     .insert({

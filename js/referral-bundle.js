@@ -296,30 +296,52 @@ class CashoutModal {
             const user = await window.safeGetUser();
             if (!user) throw new Error('ユーザー情報が取得できません');
 
-            const { data, error } = await window.supabaseClient
-                .from('cashout_requests')
-                .insert({
-                    user_id: user.id,
-                    amount: amount,
-                    gross_amount: amount,
-                    tax_amount: Math.floor(amount * this.taxRate),
-                    net_amount: amount - Math.floor(amount * this.taxRate),
-                    bank_info: bankInfo,
-                    status: 'pending'
-                })
-                .select()
-                .single();
-            
-            if (error) throw error;
-            
-            // ポイント残高を更新
-            const { error: pointError } = await window.supabaseClient
-                .rpc('deduct_user_points', {
-                    p_user_id: user.id,
-                    p_amount: amount
-                });
-            
-            if (pointError) throw pointError;
+            // 二重送信防止
+            if (this._cashoutSubmitting) {
+                this.showToast('処理中です。しばらくお待ちください', 'info');
+                return;
+            }
+            this._cashoutSubmitting = true;
+
+            let cashoutId = null;
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('cashout_requests')
+                    .insert({
+                        user_id: user.id,
+                        amount: amount,
+                        gross_amount: amount,
+                        tax_amount: Math.floor(amount * this.taxRate),
+                        net_amount: amount - Math.floor(amount * this.taxRate),
+                        bank_info: bankInfo,
+                        status: 'pending'
+                    })
+                    .select()
+                    .maybeSingle();
+
+                if (error) throw error;
+                cashoutId = data?.id;
+
+                // ポイント残高を更新
+                const { error: pointError } = await window.supabaseClient
+                    .rpc('deduct_user_points', {
+                        p_user_id: user.id,
+                        p_amount: amount
+                    });
+
+                if (pointError) {
+                    // ポイント減算失敗時、cashout_requestsもキャンセルに戻す
+                    if (cashoutId) {
+                        await window.supabaseClient
+                            .from('cashout_requests')
+                            .update({ status: 'failed' })
+                            .eq('id', cashoutId);
+                    }
+                    throw pointError;
+                }
+            } finally {
+                this._cashoutSubmitting = false;
+            }
             
             // 成功メッセージ
             this.showToast('換金申請が完了しました', 'success');

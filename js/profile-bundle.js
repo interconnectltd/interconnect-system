@@ -1081,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // プロフィールデータを取得
                 const { data: profile, error } = await window.supabaseClient
                     .from('user_profiles')
-                    .select('*')
+                    .select('id, name, email, company, position, avatar_url, bio, skills, interests, industry, experience_years, location, website, social_links, is_verified')
                     .eq('id', this.targetUserId)
                     .maybeSingle();
 

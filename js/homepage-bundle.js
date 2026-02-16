@@ -413,7 +413,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const refCode = urlParams.get('ref');
 
-        if (refCode) {
+        if (refCode && /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(refCode)) {
             // console.log('[Referral] クエリパラメータから紹介コード検出:', refCode);
             sessionStorage.setItem('referral_code', refCode);
             sessionStorage.setItem('referral_timestamp', new Date().toISOString());
@@ -485,7 +485,7 @@ function showReferralBanner(code) {
             <div class="referral-banner-content">
                 <i class="fas fa-gift"></i>
                 <span>特別招待リンクから訪問いただきました！</span>
-                <span class="referral-code">招待コード: ${code}</span>
+                <span class="referral-code">招待コード: <span id="referral-code-display"></span></span>
                 <button onclick="this.parentElement.parentElement.remove()" class="close-btn">
                     <i class="fas fa-times"></i>
                 </button>
@@ -495,6 +495,10 @@ function showReferralBanner(code) {
 
     // バナーを挿入
     document.body.insertAdjacentHTML('afterbegin', bannerHTML);
+
+    // コードをtextContentで安全に設定
+    const codeDisplay = document.getElementById('referral-code-display');
+    if (codeDisplay) codeDisplay.textContent = code;
 
     // バナーのスタイルを追加
     if (!document.getElementById('referral-banner-styles')) {
@@ -570,6 +574,9 @@ function showReferralBanner(code) {
 
 // CTAボタンをカスタマイズ
 function customizeCTAButtons(referralCode) {
+    // referralCode のバリデーション
+    if (!/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(referralCode)) return;
+
     // 面談予約ボタンを探して紹介コードを追加
     const ctaButtons = document.querySelectorAll('a[href*="register"], a[href*="signup"], button[onclick*="register"]');
 
@@ -580,11 +587,11 @@ function customizeCTAButtons(referralCode) {
             url.searchParams.set('ref', referralCode);
             button.href = url.toString();
         } else if (button.tagName === 'BUTTON') {
-            // ボタンの場合、onclickを修正
-            const originalOnclick = button.getAttribute('onclick');
-            if (originalOnclick) {
-                button.setAttribute('onclick', `sessionStorage.setItem('referral_code', '${referralCode}'); ${originalOnclick}`);
-            }
+            // ボタンの場合、addEventListenerで安全に処理
+            const safeCode = referralCode; // already validated above
+            button.addEventListener('click', () => {
+                sessionStorage.setItem('referral_code', safeCode);
+            });
         }
     });
 

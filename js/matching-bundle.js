@@ -2068,7 +2068,7 @@
             const searchTerm = searchInput?.value || '';
             
             if (searchTerm) {
-                countElement.innerHTML = `<i class="fas fa-search"></i> "${searchTerm}" の検索結果: ${count}件`;
+                countElement.innerHTML = `<i class="fas fa-search"></i> "${window.escapeHTML(searchTerm)}" の検索結果: ${count}件`;
             } else {
                 countElement.textContent = `${count}件のマッチング候補`;
             }

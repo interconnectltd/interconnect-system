@@ -164,8 +164,8 @@
                             <div class="empty-state">
                                 <i class="fas fa-exclamation-triangle"></i>
                                 <h3>データの読み込みに失敗しました</h3>
-                                <p>${connError.message || 'connectionsテーブルが存在しない可能性があります'}</p>
-                                <small>エラーコード: ${connError.code || 'unknown'}</small>
+                                <p>${this.escapeHtml(connError.message || 'connectionsテーブルが存在しない可能性があります')}</p>
+                                <small>エラーコード: ${this.escapeHtml(connError.code || 'unknown')}</small>
                             </div>
                         `;
                     });
@@ -197,26 +197,25 @@
                     if (conn.connected_user_id) userIds.add(conn.connected_user_id);
                 });
                 
-                // 3. profilesテーブルから個別にユーザー情報を取得
+                // 3. profilesテーブルから一括でユーザー情報を取得
                 const profileMap = {};
-                for (const userId of userIds) {
-                    try {
-                        const { data: profile, error: profileError } = await window.supabaseClient
-                            .from('user_profiles')
-                            .select('id, name, email, company, position, avatar_url')
-                            .eq('id', userId)
-                            .maybeSingle();
-                        
-                        if (profile) {
-                            profileMap[userId] = profile;
-                        }
-                        
-                        if (profileError) {
-                            console.warn(`[ConnectionsManager Simple] プロファイル取得エラー (${userId}):`, profileError);
-                        }
-                    } catch (err) {
-                        console.warn(`[ConnectionsManager Simple] プロファイル取得例外 (${userId}):`, err);
+                try {
+                    const { data: profiles, error: profileError } = await window.supabaseClient
+                        .from('user_profiles')
+                        .select('id, name, email, company, position, avatar_url')
+                        .in('id', Array.from(userIds));
+
+                    if (profiles) {
+                        profiles.forEach(profile => {
+                            profileMap[profile.id] = profile;
+                        });
                     }
+
+                    if (profileError) {
+                        console.warn('[ConnectionsManager Simple] プロファイル一括取得エラー:', profileError);
+                    }
+                } catch (err) {
+                    console.warn('[ConnectionsManager Simple] プロファイル取得例外:', err);
                 }
                 
                 console.log('[ConnectionsManager Simple] 取得したprofiles:', profileMap);
@@ -553,11 +552,12 @@
                 // コネクションを承認
                 const { error } = await window.supabaseClient
                     .from('connections')
-                    .update({ 
+                    .update({
                         status: 'accepted',
                         updated_at: new Date().toISOString()
                     })
-                    .eq('id', connectionId);
+                    .eq('id', connectionId)
+                    .eq('status', 'pending');
 
                 if (error) throw error;
 
@@ -609,11 +609,12 @@
                 // コネクションを拒否（削除ではなく更新）
                 const { error } = await window.supabaseClient
                     .from('connections')
-                    .update({ 
+                    .update({
                         status: 'rejected',
                         updated_at: new Date().toISOString()
                     })
-                    .eq('id', connectionId);
+                    .eq('id', connectionId)
+                    .eq('status', 'pending');
 
                 if (error) throw error;
 
@@ -804,7 +805,7 @@
                 noResults.className = 'no-search-results';
                 noResults.innerHTML = `
                     <i class="fas fa-search"></i>
-                    <p>「${searchTerm}」に一致する結果はありません</p>
+                    <p>「${this.escapeHtml(searchTerm)}」に一致する結果はありません</p>
                 `;
                 container.appendChild(noResults);
             } else if (visibleItems.length > 0) {

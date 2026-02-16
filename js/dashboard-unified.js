@@ -202,7 +202,7 @@
                         </div>
                         <div class="event-details">
                             <h4>${this.escapeHtml(event.title)}</h4>
-                            <p>${event.start_time}〜 ${event.event_type === 'online' ? 'オンライン開催' : event.location || ''}</p>
+                            <p>${event.start_time}〜 ${event.event_type === 'online' ? 'オンライン開催' : this.escapeHtml(event.location || '')}</p>
                             <button class="btn-small btn-primary" onclick="dashboardBundle.showEventDetails(${event.id})">詳細を見る</button>
                         </div>
                     </div>

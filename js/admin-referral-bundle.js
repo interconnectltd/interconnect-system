@@ -203,8 +203,8 @@ class AdminReferralManager {
                     </div>
                     <div class="activity-content">
                         <p class="activity-text">
-                            <strong>${activity.inviter?.name || '不明'}</strong> が
-                            <strong>${activity.invitee?.name || '未登録'}</strong> を招待
+                            <strong>${window.escapeHTML(activity.inviter?.name || '不明')}</strong> が
+                            <strong>${window.escapeHTML(activity.invitee?.name || '未登録')}</strong> を招待
                         </p>
                         <p class="activity-time">${this.formatRelativeTime(activity.created_at)}</p>
                     </div>
@@ -232,8 +232,8 @@ class AdminReferralManager {
                 <div class="referrer-item">
                     <div class="referrer-rank">${index + 1}</div>
                     <div class="referrer-info">
-                        <p class="referrer-name">${referrer.user_name || '不明'}</p>
-                        <p class="referrer-company">${referrer.user_company || '未設定'}</p>
+                        <p class="referrer-name">${window.escapeHTML(referrer.user_name || '不明')}</p>
+                        <p class="referrer-company">${window.escapeHTML(referrer.user_company || '未設定')}</p>
                     </div>
                     <div class="referrer-stats">
                         <span class="stat">
@@ -282,14 +282,14 @@ class AdminReferralManager {
                 <td>${this.formatDate(referral.created_at)}</td>
                 <td>
                     <div class="user-info">
-                        <span class="name">${referral.inviter?.name || '不明'}</span>
-                        <span class="email">${referral.inviter?.email || ''}</span>
+                        <span class="name">${window.escapeHTML(referral.inviter?.name || '不明')}</span>
+                        <span class="email">${window.escapeHTML(referral.inviter?.email || '')}</span>
                     </div>
                 </td>
                 <td>
                     <div class="user-info">
-                        <span class="name">${referral.invitee?.name || '未登録'}</span>
-                        <span class="email">${referral.invitee?.email || ''}</span>
+                        <span class="name">${window.escapeHTML(referral.invitee?.name || '未登録')}</span>
+                        <span class="email">${window.escapeHTML(referral.invitee?.email || '')}</span>
                     </div>
                 </td>
                 <td>
@@ -339,8 +339,8 @@ class AdminReferralManager {
                 <td>${this.formatDate(cashout.created_at)}</td>
                 <td>
                     <div class="user-info">
-                        <span class="name">${cashout.user?.name || '不明'}</span>
-                        <span class="email">${cashout.user?.email || ''}</span>
+                        <span class="name">${window.escapeHTML(cashout.user?.name || '不明')}</span>
+                        <span class="email">${window.escapeHTML(cashout.user?.email || '')}</span>
                     </div>
                 </td>
                 <td>¥${cashout.amount.toLocaleString()}</td>
@@ -394,7 +394,7 @@ class AdminReferralManager {
                     <div class="flag-header">
                         <div class="flag-user">
                             <i class="fas fa-user"></i>
-                            <span>${flag.user?.name || '不明'} (${flag.user?.email || ''})</span>
+                            <span>${window.escapeHTML(flag.user?.name || '不明')} (${window.escapeHTML(flag.user?.email || '')})</span>
                         </div>
                         <div class="flag-meta">
                             <span class="severity-badge ${flag.severity}">
@@ -436,7 +436,7 @@ class AdminReferralManager {
                 <div class="ip-stat-item ${stat.user_count > 5 ? 'warning' : ''}">
                     <div class="ip-address">
                         <i class="fas fa-network-wired"></i>
-                        <span>${stat.ip_address}</span>
+                        <span>${window.escapeHTML(stat.ip_address)}</span>
                     </div>
                     <div class="ip-stats">
                         <span class="stat">
@@ -717,7 +717,7 @@ class AdminReferralManager {
         if (!details) return '';
 
         return Object.entries(details)
-            .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+            .map(([key, value]) => `<p><strong>${window.escapeHTML(key)}:</strong> ${window.escapeHTML(String(value))}</p>`)
             .join('');
     }
 
@@ -773,15 +773,15 @@ class AdminReferralManager {
             <div class="detail-grid">
                 <div class="detail-section">
                     <h3>紹介者情報</h3>
-                    <p><strong>名前:</strong> ${referral.inviter?.name || '不明'}</p>
-                    <p><strong>会社:</strong> ${referral.inviter?.company || '未設定'}</p>
-                    <p><strong>メール:</strong> ${referral.inviter?.email || '不明'}</p>
+                    <p><strong>名前:</strong> ${window.escapeHTML(referral.inviter?.name || '不明')}</p>
+                    <p><strong>会社:</strong> ${window.escapeHTML(referral.inviter?.company || '未設定')}</p>
+                    <p><strong>メール:</strong> ${window.escapeHTML(referral.inviter?.email || '不明')}</p>
                 </div>
                 <div class="detail-section">
                     <h3>被紹介者情報</h3>
-                    <p><strong>名前:</strong> ${referral.invitee?.name || '未登録'}</p>
-                    <p><strong>会社:</strong> ${referral.invitee?.company || '未設定'}</p>
-                    <p><strong>メール:</strong> ${referral.invitee?.email || '不明'}</p>
+                    <p><strong>名前:</strong> ${window.escapeHTML(referral.invitee?.name || '未登録')}</p>
+                    <p><strong>会社:</strong> ${window.escapeHTML(referral.invitee?.company || '未設定')}</p>
+                    <p><strong>メール:</strong> ${window.escapeHTML(referral.invitee?.email || '不明')}</p>
                 </div>
                 <div class="detail-section">
                     <h3>紹介情報</h3>

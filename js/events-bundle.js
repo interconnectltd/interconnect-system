@@ -284,7 +284,7 @@
             return `
                 <div class="event-card" data-event-id="${event.id}">
                     <div class="event-image">
-                        <img src="${event.image_url || 'assets/user-placeholder.svg'}" alt="${event.title}" onerror="this.onerror=null; this.src='assets/user-placeholder.svg';">
+                        <img src="${event.image_url || 'assets/user-placeholder.svg'}" alt="${this.escapeHtml(event.title)}" onerror="this.onerror=null; this.src='assets/user-placeholder.svg';">
                         <div class="event-badge ${badgeClass}">${badgeText}</div>
                     </div>
                     <div class="event-content">
@@ -431,6 +431,23 @@
                         return;
                     }
                 } else {
+                    // 定員チェック（サーバーサイドにトリガーがないためクライアントで確認）
+                    const { count: currentCount } = await window.supabaseClient
+                        .from('event_participants')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('event_id', eventId)
+                        .neq('status', 'cancelled');
+
+                    const maxParticipants = this.allEvents?.find(e => e.id === eventId)?.max_participants;
+                    if (maxParticipants && currentCount >= maxParticipants) {
+                        if (window.showToast) {
+                            window.showToast('定員に達しています', 'warning');
+                        }
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        return;
+                    }
+
                     // 新規登録
                     const { error: insertError } = await window.supabaseClient
                         .from('event_participants')
@@ -840,6 +857,13 @@
             this.init();
         }
 
+        escapeHtml(text) {
+            if (text == null) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        }
+
         init() {
             // モーダルオーバーレイクリックで閉じる
             const overlay = this.modal.querySelector('.modal-overlay');
@@ -961,15 +985,15 @@
                             <div class="date">${eventDate.getDate()}</div>
                             <div class="month">${eventDate.getMonth() + 1}月</div>
                         </div>
-                        <h2 class="event-title-large">${event.title}</h2>
+                        <h2 class="event-title-large">${this.escapeHtml(event.title)}</h2>
                         <div class="event-meta">
                             <div class="event-meta-item">
                                 <i class="fas fa-clock"></i>
-                                <span>${event.time || '時間未定'}</span>
+                                <span>${this.escapeHtml(event.time || '時間未定')}</span>
                             </div>
                             <div class="event-meta-item">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span>${event.location || '場所未定'}</span>
+                                <span>${this.escapeHtml(event.location || '場所未定')}</span>
                             </div>
                             <div class="event-meta-item">
                                 <span class="event-status ${statusClass}">
@@ -983,7 +1007,7 @@
                     <div class="event-info-section">
                         <h3><i class="fas fa-info-circle"></i> イベント概要</h3>
                         <p class="event-description">
-                            ${event.description || 'イベントの詳細情報はまだ登録されていません。'}
+                            ${this.escapeHtml(event.description || 'イベントの詳細情報はまだ登録されていません。')}
                         </p>
                     </div>
 
@@ -1033,7 +1057,7 @@
                 info.push(`
                     <div class="event-info-section">
                         <h3><i class="fas fa-user-tie"></i> 主催者</h3>
-                        <p>${event.organizer}</p>
+                        <p>${this.escapeHtml(event.organizer)}</p>
                     </div>
                 `);
             }
@@ -1042,7 +1066,7 @@
                 info.push(`
                     <div class="event-info-section">
                         <h3><i class="fas fa-check-circle"></i> 参加条件</h3>
-                        <p>${event.requirements}</p>
+                        <p>${this.escapeHtml(event.requirements)}</p>
                     </div>
                 `);
             }
@@ -1051,7 +1075,7 @@
                 info.push(`
                     <div class="event-info-section">
                         <h3><i class="fas fa-list-ul"></i> アジェンダ</h3>
-                        <pre style="white-space: pre-wrap; font-family: inherit;">${event.agenda}</pre>
+                        <pre style="white-space: pre-wrap; font-family: inherit;">${this.escapeHtml(event.agenda)}</pre>
                     </div>
                 `);
             }
@@ -1067,8 +1091,8 @@
                 return '';
             }
 
-            const tagsHTML = event.tags.map(tag => 
-                `<span class="event-tag">${tag}</span>`
+            const tagsHTML = event.tags.map(tag =>
+                `<span class="event-tag">${this.escapeHtml(tag)}</span>`
             ).join('');
 
             return `
@@ -1263,6 +1287,24 @@
                         return;
                     }
                 } else {
+                    // 定員チェック（サーバーサイドにトリガーがないためクライアントで確認）
+                    if (this.currentEvent.max_participants) {
+                        const { count: currentCount } = await window.supabaseClient
+                            .from('event_participants')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('event_id', this.currentEvent.id)
+                            .neq('status', 'cancelled');
+
+                        if (currentCount >= this.currentEvent.max_participants) {
+                            if (window.showToast) {
+                                window.showToast('定員に達しています', 'warning');
+                            }
+                            this.eventActionBtn.textContent = '満席';
+                            this.eventActionBtn.disabled = true;
+                            return;
+                        }
+                    }
+
                     // 新規登録
                     const { error: insertError } = await window.supabaseClient
                         .from('event_participants')
