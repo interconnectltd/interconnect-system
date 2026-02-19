@@ -61,7 +61,7 @@
 (function() {
     'use strict';
 
-    const LINE_CHANNEL_ID = '2007688781';
+    const LINE_CHANNEL_ID = '2009174893';
     const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
 
     // console.log('📱 LINE Login Simple loaded');
