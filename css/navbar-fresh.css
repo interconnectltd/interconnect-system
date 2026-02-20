@@ -282,19 +282,47 @@ nav.navbar .container {
         display: block !important;
         text-decoration: none !important;
         color: #374151 !important;
-        border-radius: 8px !important;
+        border-radius: 0 !important;
+        background: none !important;
+        border: none !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .nav-link:last-child,
+    .navbar-nav > a:last-child,
+    .navbar-nav li:last-child .nav-link {
+        border-bottom: none !important;
     }
 
     .navbar-nav > a:hover,
     .nav-link:hover {
-        background: rgba(0, 102, 255, 0.05) !important;
+        background: none !important;
         color: #0066ff !important;
     }
 
-    .navbar-nav > a.btn-primary {
-        background: #0066ff !important;
-        color: white !important;
-        margin-top: 8px !important;
+    /* モバイルメニュー内ではボタン色を無効化 */
+    .navbar-nav > a.btn-primary,
+    .navbar-nav .nav-link.btn-login,
+    .navbar-nav .nav-link.btn-register,
+    .navbar-nav .nav-link.btn-contact {
+        background: none !important;
+        color: #374151 !important;
+        box-shadow: none !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .navbar-nav li:last-child .nav-link.btn-register,
+    .navbar-nav li:last-child .nav-link.btn-contact,
+    .navbar-nav > a.btn-primary:last-child {
+        border-bottom: none !important;
+    }
+
+    .navbar-nav > a.btn-primary:hover,
+    .navbar-nav .nav-link.btn-login:hover,
+    .navbar-nav .nav-link.btn-register:hover,
+    .navbar-nav .nav-link.btn-contact:hover {
+        background: none !important;
+        color: #0066ff !important;
     }
 }
 
