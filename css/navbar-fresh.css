@@ -111,43 +111,44 @@ nav.navbar .container {
     position: relative !important;
 }
 
-/* 通常のリンクホバー */
-.nav-link:not(.btn-login):not(.btn-register):not(.btn-contact):hover {
-    color: #0066ff !important;
-    background: rgba(0, 102, 255, 0.05) !important;
-}
+/* デスクトップ専用のリンク・ボタンスタイル（1025px以上のみ） */
+@media (min-width: 1025px) {
+    .nav-link:not(.btn-login):not(.btn-register):not(.btn-contact):hover {
+        color: #0066ff !important;
+        background: rgba(0, 102, 255, 0.05) !important;
+    }
 
-/* ボタンスタイル */
-.nav-link.btn-login {
-    background: #f3f4f6 !important;
-    color: #374151 !important;
-}
+    .nav-link.btn-login {
+        background: #f3f4f6 !important;
+        color: #374151 !important;
+    }
 
-.nav-link.btn-login:hover {
-    background: #e5e7eb !important;
-    transform: translateY(-1px) !important;
-}
+    .nav-link.btn-login:hover {
+        background: #e5e7eb !important;
+        transform: translateY(-1px) !important;
+    }
 
-.nav-link.btn-register {
-    background: #0066ff !important;
-    color: white !important;
-}
+    .nav-link.btn-register {
+        background: #0066ff !important;
+        color: white !important;
+    }
 
-.nav-link.btn-register:hover {
-    background: #0052cc !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25) !important;
-}
+    .nav-link.btn-register:hover {
+        background: #0052cc !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25) !important;
+    }
 
-.nav-link.btn-contact {
-    background: #10b981 !important;
-    color: white !important;
-}
+    .nav-link.btn-contact {
+        background: #10b981 !important;
+        color: white !important;
+    }
 
-.nav-link.btn-contact:hover {
-    background: #059669 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+    .nav-link.btn-contact:hover {
+        background: #059669 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+    }
 }
 
 /* ハンバーガーメニュー */
