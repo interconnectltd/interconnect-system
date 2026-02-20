@@ -96,59 +96,51 @@ nav.navbar .container {
     padding: 0 !important;
 }
 
-/* リンクスタイル */
-.nav-link {
+/* リンクスタイル（デスクトップ・モバイル共通の水テーマ） */
+.nav-link,
+.navbar-nav > a {
     display: inline-flex !important;
     align-items: center !important;
-    text-decoration: none !important;
     font-size: 14px !important;
     font-weight: 500 !important;
     color: #374151 !important;
-    transition: all 0.2s ease !important;
     white-space: nowrap !important;
     padding: 8px 16px !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     position: relative !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    /* 文字下の水色の下線 */
+    text-decoration: underline !important;
+    text-decoration-color: rgba(56, 189, 248, 0.45) !important;
+    text-underline-offset: 5px !important;
+    text-decoration-thickness: 1.5px !important;
+    text-decoration-skip-ink: auto !important;
+    /* 水の動きのトランジション */
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                background 0.35s ease,
+                box-shadow 0.35s ease,
+                color 0.3s ease,
+                text-decoration-color 0.4s ease !important;
 }
 
-/* デスクトップ専用のリンク・ボタンスタイル（1025px以上のみ） */
-@media (min-width: 1025px) {
-    .nav-link:not(.btn-login):not(.btn-register):not(.btn-contact):hover {
-        color: #0066ff !important;
-        background: rgba(0, 102, 255, 0.05) !important;
-    }
-
-    .nav-link.btn-login {
-        background: #f3f4f6 !important;
-        color: #374151 !important;
-    }
-
-    .nav-link.btn-login:hover {
-        background: #e5e7eb !important;
-        transform: translateY(-1px) !important;
-    }
-
-    .nav-link.btn-register {
-        background: #0066ff !important;
-        color: white !important;
-    }
-
-    .nav-link.btn-register:hover {
-        background: #0052cc !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25) !important;
-    }
-
-    .nav-link.btn-contact {
-        background: #10b981 !important;
-        color: white !important;
-    }
-
-    .nav-link.btn-contact:hover {
-        background: #059669 !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
-    }
+/* ホバー: 浮き上がり + 水の質感 + 下線フェードアウト（全リンク共通） */
+.nav-link:hover,
+.navbar-nav > a:hover {
+    transform: translateY(-3px) !important;
+    background: linear-gradient(
+        135deg,
+        rgba(56, 189, 248, 0.08) 0%,
+        rgba(59, 130, 246, 0.12) 50%,
+        rgba(14, 165, 233, 0.06) 100%
+    ) !important;
+    box-shadow:
+        0 4px 16px rgba(56, 189, 248, 0.15),
+        0 1px 4px rgba(59, 130, 246, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+    color: #0369a1 !important;
+    text-decoration-color: transparent !important;
 }
 
 /* ハンバーガーメニュー */
