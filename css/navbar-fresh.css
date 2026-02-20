@@ -272,57 +272,60 @@ nav.navbar .container {
         list-style: none !important;
     }
 
+    /* --- メニュー内リンク共通 --- */
     .nav-link,
-    .navbar-nav > a {
-        width: 100% !important;
-        justify-content: center !important;
-        padding: 12px 20px !important;
-        font-size: 15px !important;
-        text-align: center !important;
-        display: block !important;
-        text-decoration: none !important;
-        color: #374151 !important;
-        border-radius: 0 !important;
-        background: none !important;
-        border: none !important;
-        border-bottom: 1px solid #e5e7eb !important;
-    }
-
-    .nav-link:last-child,
-    .navbar-nav > a:last-child,
-    .navbar-nav li:last-child .nav-link {
-        border-bottom: none !important;
-    }
-
-    .navbar-nav > a:hover,
-    .nav-link:hover {
-        background: none !important;
-        color: #0066ff !important;
-    }
-
-    /* モバイルメニュー内ではボタン色を無効化 */
+    .navbar-nav > a,
     .navbar-nav > a.btn-primary,
     .navbar-nav .nav-link.btn-login,
     .navbar-nav .nav-link.btn-register,
     .navbar-nav .nav-link.btn-contact {
-        background: none !important;
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 14px 20px !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        text-align: center !important;
+        display: block !important;
         color: #374151 !important;
+        background: none !important;
+        border: none !important;
+        border-radius: 10px !important;
         box-shadow: none !important;
-        border-bottom: 1px solid #e5e7eb !important;
+        /* 文字下だけの下線（水色の川） */
+        text-decoration: underline !important;
+        text-decoration-color: rgba(56, 189, 248, 0.5) !important;
+        text-underline-offset: 6px !important;
+        text-decoration-thickness: 1.5px !important;
+        text-decoration-skip-ink: auto !important;
+        /* 滑らかな水の動きのトランジション */
+        transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    background 0.35s ease,
+                    box-shadow 0.35s ease,
+                    color 0.3s ease,
+                    text-decoration-color 0.4s ease !important;
     }
 
-    .navbar-nav li:last-child .nav-link.btn-register,
-    .navbar-nav li:last-child .nav-link.btn-contact,
-    .navbar-nav > a.btn-primary:last-child {
-        border-bottom: none !important;
-    }
-
+    /* --- ホバー: 浮き上がり + 水の質感 + 下線が消える --- */
+    .nav-link:hover,
+    .navbar-nav > a:hover,
     .navbar-nav > a.btn-primary:hover,
     .navbar-nav .nav-link.btn-login:hover,
     .navbar-nav .nav-link.btn-register:hover,
     .navbar-nav .nav-link.btn-contact:hover {
-        background: none !important;
-        color: #0066ff !important;
+        transform: translateY(-3px) !important;
+        background: linear-gradient(
+            135deg,
+            rgba(56, 189, 248, 0.08) 0%,
+            rgba(59, 130, 246, 0.12) 50%,
+            rgba(14, 165, 233, 0.06) 100%
+        ) !important;
+        box-shadow:
+            0 4px 16px rgba(56, 189, 248, 0.15),
+            0 1px 4px rgba(59, 130, 246, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+        color: #0369a1 !important;
+        /* 川が消えるように下線がフェードアウト */
+        text-decoration-color: transparent !important;
     }
 }
 
