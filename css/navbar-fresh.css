@@ -11,11 +11,31 @@ nav.navbar {
     left: 0 !important;
     width: 100% !important;
     height: 64px !important;
-    background: rgba(255, 255, 255, 0.98) !important;
+    background: none !important;
+    z-index: 1800 !important;
+    /* backdrop-filterをここに置くとposition:fixed子要素の基準がnavbarになるため、::afterに移動 */
+}
+
+/* navbarの背景・ぼかし・影を::afterで描画（containing block問題を回避） */
+nav.navbar::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-    z-index: 1800 !important; /* ナビバーはドロップダウン(3000)より下、コンテンツ(1100)より上 */
+    z-index: -1 !important;
+    pointer-events: none !important;
+    transition: background 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+nav.navbar.scrolled::after {
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
 }
 
 nav.navbar .container {
@@ -26,6 +46,8 @@ nav.navbar .container {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
 /* ロゴエリア */

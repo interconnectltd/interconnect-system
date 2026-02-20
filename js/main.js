@@ -83,22 +83,11 @@
             });
         }
 
-        // Navbar scroll effect
-        let lastScroll = 0;
+        // Navbar scroll effect (背景は::afterで処理、classで切替)
         window.addEventListener('scroll', function() {
-            const currentScroll = window.pageYOffset;
-            
             if (navbar) {
-                if (currentScroll > 100) {
-                    navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-                    navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-                } else {
-                    navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-                    navbar.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
-                }
+                navbar.classList.toggle('scrolled', window.pageYOffset > 100);
             }
-            
-            lastScroll = currentScroll;
         });
     }
 
