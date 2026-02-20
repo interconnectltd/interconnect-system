@@ -12,8 +12,12 @@ nav.navbar {
     width: 100% !important;
     height: 64px !important;
     background: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     z-index: 1800 !important;
-    /* backdrop-filterをここに置くとposition:fixed子要素の基準がnavbarになるため、::afterに移動 */
+    /* backdrop-filterをnoneで明示上書き（style.cssのblur(10px)を無効化）
+       実際の背景ぼかしは::afterで描画。navbarにbackdrop-filterがあると
+       position:fixed子要素の基準がnavbarになるため */
 }
 
 /* navbarの背景・ぼかし・影を::afterで描画（containing block問題を回避） */
