@@ -30,37 +30,20 @@
         const navMenu = document.querySelector('.navbar-nav');
         const navLinks = document.querySelectorAll('.nav-link');
 
-        // バックドロップ要素を作成
-        let navBackdrop = document.getElementById('navMenuBackdrop');
-        if (!navBackdrop && navToggler) {
-            navBackdrop = document.createElement('div');
-            navBackdrop.id = 'navMenuBackdrop';
-            navBackdrop.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1850;display:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);';
-            document.body.appendChild(navBackdrop);
-        }
-
         function closeMenu() {
             if (navMenu) navMenu.classList.remove('active');
             if (navToggler) navToggler.classList.remove('active');
-            if (navBackdrop) navBackdrop.style.display = 'none';
-            // navbarのz-indexを元に戻す（スタッキングコンテキスト解除）
-            if (navbar) navbar.style.zIndex = '';
+            if (navbar) navbar.classList.remove('menu-open');
         }
 
         // Mobile menu toggle
         if (navToggler) {
-            navToggler.addEventListener('click', function() {
+            navToggler.addEventListener('click', function(e) {
+                e.stopPropagation();
                 const isOpen = navMenu.classList.toggle('active');
                 this.classList.toggle('active');
-                if (navBackdrop) navBackdrop.style.display = isOpen ? 'block' : 'none';
-                // メニュー開時: navbarのz-indexをバックドロップより上に引き上げる
-                if (navbar) navbar.style.zIndex = isOpen ? '2000' : '';
+                if (navbar) navbar.classList.toggle('menu-open', isOpen);
             });
-        }
-
-        // バックドロップクリックでメニューを閉じる
-        if (navBackdrop) {
-            navBackdrop.addEventListener('click', closeMenu);
         }
 
         // Close mobile menu when clicking outside
@@ -73,14 +56,32 @@
             }
         });
 
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navMenu && navMenu.classList.contains('active')) {
+                closeMenu();
+            }
+        });
+
         // Close mobile menu on link click
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
-                if (navMenu.classList.contains('active')) {
+                if (navMenu && navMenu.classList.contains('active')) {
                     closeMenu();
                 }
             });
         });
+
+        // Also close for direct <a> children of navbar-nav
+        if (navMenu) {
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (navMenu.classList.contains('active')) {
+                        closeMenu();
+                    }
+                });
+            });
+        }
 
         // Navbar scroll effect
         let lastScroll = 0;

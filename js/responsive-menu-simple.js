@@ -9,37 +9,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileNavClose = document.querySelector('.mobile-nav-close');
     const body = document.body;
     const isNavbarType = mobileMenuToggle && mobileMenuToggle.classList.contains('navbar-toggler');
+    const navbar = isNavbarType ? document.querySelector('nav.navbar') : null;
 
-    // Check if elements exist - mobileBackdropは必須ではない
+    // Check if elements exist
     if (!mobileNav) {
         return;
     }
-
-    // navbar用バックドロップを動的生成
-    let navBackdrop = null;
-    if (isNavbarType && !mobileBackdrop) {
-        navBackdrop = document.getElementById('navMenuBackdrop');
-        if (!navBackdrop) {
-            navBackdrop = document.createElement('div');
-            navBackdrop.id = 'navMenuBackdrop';
-            navBackdrop.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1850;display:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);';
-            document.body.appendChild(navBackdrop);
-        }
-    }
-
-    // navbar要素を取得（z-index制御用）
-    const navbar = isNavbarType ? document.querySelector('nav.navbar') : null;
 
     // Function to open mobile menu
     function openMobileMenu() {
         mobileNav.classList.add('active');
         if (mobileMenuToggle) mobileMenuToggle.classList.add('active');
-        if (mobileBackdrop) {
-            mobileBackdrop.classList.add('active');
-        }
-        if (navBackdrop) navBackdrop.style.display = 'block';
-        // navbarのz-indexをバックドロップより上に引き上げる
-        if (navbar) navbar.style.zIndex = '2000';
+        if (mobileBackdrop) mobileBackdrop.classList.add('active');
+        if (navbar) navbar.classList.add('menu-open');
         body.classList.add('menu-open');
     }
 
@@ -47,12 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeMobileMenu() {
         mobileNav.classList.remove('active');
         if (mobileMenuToggle) mobileMenuToggle.classList.remove('active');
-        if (mobileBackdrop) {
-            mobileBackdrop.classList.remove('active');
-        }
-        if (navBackdrop) navBackdrop.style.display = 'none';
-        // navbarのz-indexを元に戻す
-        if (navbar) navbar.style.zIndex = '';
+        if (mobileBackdrop) mobileBackdrop.classList.remove('active');
+        if (navbar) navbar.classList.remove('menu-open');
         body.classList.remove('menu-open');
     }
 
@@ -69,17 +47,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Close menu on backdrop click
+    // Close menu on backdrop click (mobile-nav type)
     if (mobileBackdrop) {
         mobileBackdrop.addEventListener('click', closeMobileMenu);
-    }
-    if (navBackdrop) {
-        navBackdrop.addEventListener('click', closeMobileMenu);
     }
 
     // Close menu on close button click
     if (mobileNavClose) {
         mobileNavClose.addEventListener('click', closeMobileMenu);
+    }
+
+    // Close on outside click (navbar type)
+    if (isNavbarType) {
+        document.addEventListener('click', function(e) {
+            if (mobileNav.classList.contains('active') &&
+                !mobileMenuToggle.contains(e.target) &&
+                !mobileNav.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
     }
 
     // Close menu on escape key
@@ -105,7 +91,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() {
-            // navbar: 1024px, mobile-nav: 768px
             var threshold = isNavbarType ? 1024 : 768;
             if (window.innerWidth > threshold) {
                 closeMobileMenu();

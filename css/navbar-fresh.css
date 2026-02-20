@@ -196,7 +196,25 @@ nav.navbar .container {
     .navbar-toggler {
         display: block !important;
     }
-    
+
+    /* バックドロップ: navbar内の::beforeで実装（スタッキングコンテキスト問題を回避） */
+    nav.navbar.menu-open::before {
+        content: '' !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(0, 0, 0, 0.4) !important;
+        z-index: 1850 !important;
+    }
+
+    /* navbar内のコンテナをバックドロップより上に */
+    nav.navbar.menu-open .container {
+        position: relative !important;
+        z-index: 1860 !important;
+    }
+
     .navbar-nav {
         display: none !important;
         position: fixed !important;
@@ -205,7 +223,7 @@ nav.navbar .container {
         transform: translate(-50%, -50%) !important;
         width: 280px !important;
         max-width: 90vw !important;
-        background: rgba(255, 255, 255, 0.85) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         flex-direction: column !important;
@@ -217,11 +235,11 @@ nav.navbar .container {
         z-index: 1900 !important;
         list-style: none !important;
     }
-    
+
     .navbar-nav.active {
         display: flex !important;
     }
-    
+
     .navbar-nav li,
     .navbar-nav > a {
         width: 100% !important;
