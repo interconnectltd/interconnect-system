@@ -33,8 +33,16 @@
             // ローカルストレージから現在のユーザー情報を確認
             const currentUser = localStorage.getItem('currentUser');
             
-            if (guestModeFlag === 'true' || (currentUser && JSON.parse(currentUser).isGuest)) {
+            if (guestModeFlag === 'true') {
                 this.isGuestMode = true;
+            } else if (currentUser) {
+                try {
+                    if (JSON.parse(currentUser).isGuest) {
+                        this.isGuestMode = true;
+                    }
+                } catch (e) {
+                    // 壊れたlocalStorageデータを無視
+                }
             }
             
             // URLパラメータもチェック

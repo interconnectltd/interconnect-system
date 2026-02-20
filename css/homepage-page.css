@@ -47,22 +47,24 @@
 .hero-title {
     font-size: clamp(2rem, 5vw, 4rem);
     font-weight: 800;
-    color: white;
+    color: #111827;
     margin-bottom: 24px;
     line-height: 1.2;
     letter-spacing: -0.02em;
     visibility: hidden; /* ローディング完了まで非表示 */
     font-family: 'Courier New', 'Monaco', monospace; /* デジタル感のあるフォント */
     text-transform: uppercase; /* 大文字でよりデジタル感 */
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.3);
 }
 
 .hero-subtitle {
     font-size: clamp(1rem, 2vw, 1.5rem);
-    color: rgba(255, 255, 255, 0.9);
+    color: #1e293b;
     margin-bottom: 48px;
     line-height: 1.6;
     visibility: hidden; /* ローディング完了まで非表示 */
     font-family: 'Courier New', 'Monaco', monospace; /* デジタル感のあるフォント */
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
 }
 
 /* デバイス別の最適化 */
@@ -301,17 +303,19 @@
     font-weight: 800;
     text-align: center;
     margin-bottom: 60px;
-    position: relative;
     color: #1e293b;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 14px;
+    position: relative;
 }
 
 .section-title::after {
     content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
+    display: block;
+    margin: 10px auto 0;
+    width: 100%;
     height: 4px;
     background: linear-gradient(90deg, #0066ff 0%, #00d4ff 100%);
     border-radius: 2px;
@@ -905,16 +909,17 @@
 .hero-title {
     font-size: 3.5rem;
     font-weight: 700;
+    color: #111827;
     margin-bottom: 24px;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.3);
 }
 
 /* サブタイトル */
 .hero-subtitle {
     font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: #1e293b;
     margin-bottom: 32px;
     line-height: 1.6;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);

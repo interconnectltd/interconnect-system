@@ -45,19 +45,17 @@
 
 </head>
 <body>
-    <!-- プリローディング画面（最初に表示） -->
-    <div id="instantLoadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;">
-            <div style="color:white;font-size:24px;font-weight:300;letter-spacing:0.2em;margin-bottom:20px;">INTER CONNECT</div>
-            <div style="width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin:0 auto;">
-                <div id="loadingBar" style="height:100%;background:white;width:0%;transition:width 2s ease-out;"></div>
-            </div>
-        </div>
-    </div>
+    <!-- プリローディング画面（初回訪問時のみ表示） -->
     <script>
-        // document.writeを使わない安全な方法
-        document.body.style.overflow = 'hidden';
-        // プログレスバーの制御は homepage-perfect-final.js に統合
+        // 初回訪問チェック（sessionStorage で同セッション内の再訪問を判定）
+        if (sessionStorage.getItem('ic_visited')) {
+            // 再訪問時はロード画面を表示しない
+            document.write('<div id="instantLoadingScreen" style="display:none;"></div>');
+        } else {
+            sessionStorage.setItem('ic_visited', '1');
+            document.write('<div id="instantLoadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="color:white;font-size:24px;font-weight:300;letter-spacing:0.2em;margin-bottom:20px;">INTER CONNECT<\/div><div style="width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;margin:0 auto;"><div id="loadingBar" style="height:100%;background:white;width:0%;transition:width 2s ease-out;"><\/div><\/div><\/div><\/div>');
+            document.body.style.overflow = 'hidden';
+        }
     </script>
     
     <!-- Navigation -->
@@ -75,7 +73,7 @@
             </button>
             
             <ul class="navbar-nav" id="navbar-nav">
-                <li><a href="#service" class="nav-link">サービス概要</a></li>
+                <li><a href="#features" class="nav-link">サービス概要</a></li>
                 <li><a href="#difference" class="nav-link">他社との違い</a></li>
                 <li><a href="#cases" class="nav-link">成功事例</a></li>
                 <li><a href="#pricing" class="nav-link">料金プラン</a></li>
@@ -122,14 +120,11 @@
             </div>
         </div>
         
-        <div class="scroll-indicator">
-            <div class="scroll-icon"></div>
-            <div class="scroll-text">スクロール</div>
-        </div>
+        <!-- scroll-indicator removed -->
     </section>
 
     <!-- Service Overview Section -->
-    <section id="service" class="service-overview">
+    <section id="features" class="service-overview">
         <div class="container">
             <h2 class="section-title">INTER CONNECTの特徴</h2>
             
@@ -714,21 +709,37 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-info">
+            <div class="footer-grid">
+                <div class="footer-brand">
                     <h3>INTER CONNECT</h3>
-                    <p>powered by ベテランAI</p>
                     <p>日本最高峰の経営者専用コミュニティ</p>
                 </div>
-                
-                <div class="footer-links">
-                    <a href="privacy.html">プライバシーポリシー</a>
-                    <a href="terms.html">利用規約</a>
-                    <a href="about.html">運営会社</a>
+                <div class="footer-nav">
+                    <h4>サービス</h4>
+                    <ul>
+                        <li><a href="index.html#features">特徴</a></li>
+                        <li><a href="index.html#pricing">料金プラン</a></li>
+                        <li><a href="news.html?filter=event">イベント</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav">
+                    <h4>サポート</h4>
+                    <ul>
+                        <li><a href="index.html#faq">よくある質問</a></li>
+                        <li><a href="index.html#contact">お問い合わせ</a></li>
+                        <li><a href="news.html">お知らせ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav">
+                    <h4>会社情報</h4>
+                    <ul>
+                        <li><a href="about.html">運営会社</a></li>
+                        <li><a href="terms.html">利用規約</a></li>
+                        <li><a href="privacy.html">プライバシーポリシー</a></li>
+                    </ul>
                 </div>
             </div>
-            
-            <div class="copyright">
+            <div class="footer-bottom">
                 <p>&copy; 2026 INTER CONNECT. All rights reserved.</p>
             </div>
         </div>

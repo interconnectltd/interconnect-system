@@ -58,10 +58,11 @@
         }
         
         .booking-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: start;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 700px;
+            margin: 0 auto;
         }
         
         .booking-info {
@@ -207,11 +208,6 @@
                 font-size: 1.875rem;
             }
             
-            .booking-content {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-            
             .topic-list {
                 grid-template-columns: 1fr;
             }
@@ -232,69 +228,7 @@
             margin-top: 5rem;
         }
         
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .footer-section h3,
-        .footer-section h4 {
-            color: white;
-            margin-bottom: 1rem;
-        }
-        
-        .footer-section ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .footer-section a {
-            color: #d1d5db;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .footer-section a:hover {
-            color: #3b82f6;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .social-links a:hover {
-            background: #3b82f6;
-            transform: translateY(-2px);
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding: 1.5rem 2rem 0;
-            margin-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #9ca3af;
-        }
+        /* フッタースタイルは style.css で統一定義済み */
     </style>
 </head>
 <body>
@@ -403,42 +337,40 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>INTERCONNECT</h3>
-                <p>AIを活用した次世代のビジネスマッチングプラットフォーム</p>
-            </div>
-            
-            <div class="footer-section">
-                <h4>サービス</h4>
-                <ul>
-                    <li><a href="#features">特徴</a></li>
-                    <li><a href="#services">サービス内容</a></li>
-                    <li><a href="#pricing">料金プラン</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>サポート</h4>
-                <ul>
-                    <li><a href="/help">ヘルプセンター</a></li>
-                    <li><a href="/contact">お問い合わせ</a></li>
-                    <li><a href="/privacy">プライバシーポリシー</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>フォロー</h4>
-                <div class="social-links">
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>INTER CONNECT</h3>
+                    <p>日本最高峰の経営者専用コミュニティ</p>
+                </div>
+                <div class="footer-nav">
+                    <h4>サービス</h4>
+                    <ul>
+                        <li><a href="index.html#features">特徴</a></li>
+                        <li><a href="index.html#pricing">料金プラン</a></li>
+                        <li><a href="news.html?filter=event">イベント</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav">
+                    <h4>サポート</h4>
+                    <ul>
+                        <li><a href="index.html#faq">よくある質問</a></li>
+                        <li><a href="index.html#contact">お問い合わせ</a></li>
+                        <li><a href="news.html">お知らせ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav">
+                    <h4>会社情報</h4>
+                    <ul>
+                        <li><a href="about.html">運営会社</a></li>
+                        <li><a href="terms.html">利用規約</a></li>
+                        <li><a href="privacy.html">プライバシーポリシー</a></li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2026 INTERCONNECT. All rights reserved.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2026 INTER CONNECT. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
@@ -463,15 +395,7 @@
                 placeholder.textContent = 'お気軽にメールでご予約ください';
             }
             
-            // モバイルメニューの動作を設定
-            const toggler = document.querySelector('.navbar-toggler');
-            const nav = document.querySelector('.navbar-nav');
-            if (toggler && nav) {
-                toggler.addEventListener('click', function() {
-                    nav.classList.toggle('active');
-                    toggler.classList.toggle('active');
-                });
-            }
+            // モバイルメニューは responsive-menu-simple.js で処理
         });
     </script>
 </body>

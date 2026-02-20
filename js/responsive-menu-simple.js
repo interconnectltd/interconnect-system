@@ -8,27 +8,51 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileBackdrop = document.querySelector('.mobile-backdrop');
     const mobileNavClose = document.querySelector('.mobile-nav-close');
     const body = document.body;
+    const isNavbarType = mobileMenuToggle && mobileMenuToggle.classList.contains('navbar-toggler');
 
     // Check if elements exist - mobileBackdropは必須ではない
     if (!mobileNav) {
         return;
     }
 
+    // navbar用バックドロップを動的生成
+    let navBackdrop = null;
+    if (isNavbarType && !mobileBackdrop) {
+        navBackdrop = document.getElementById('navMenuBackdrop');
+        if (!navBackdrop) {
+            navBackdrop = document.createElement('div');
+            navBackdrop.id = 'navMenuBackdrop';
+            navBackdrop.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1850;display:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);';
+            document.body.appendChild(navBackdrop);
+        }
+    }
+
+    // navbar要素を取得（z-index制御用）
+    const navbar = isNavbarType ? document.querySelector('nav.navbar') : null;
+
     // Function to open mobile menu
     function openMobileMenu() {
         mobileNav.classList.add('active');
+        if (mobileMenuToggle) mobileMenuToggle.classList.add('active');
         if (mobileBackdrop) {
             mobileBackdrop.classList.add('active');
         }
+        if (navBackdrop) navBackdrop.style.display = 'block';
+        // navbarのz-indexをバックドロップより上に引き上げる
+        if (navbar) navbar.style.zIndex = '2000';
         body.classList.add('menu-open');
     }
 
     // Function to close mobile menu
     function closeMobileMenu() {
         mobileNav.classList.remove('active');
+        if (mobileMenuToggle) mobileMenuToggle.classList.remove('active');
         if (mobileBackdrop) {
             mobileBackdrop.classList.remove('active');
         }
+        if (navBackdrop) navBackdrop.style.display = 'none';
+        // navbarのz-indexを元に戻す
+        if (navbar) navbar.style.zIndex = '';
         body.classList.remove('menu-open');
     }
 
@@ -49,6 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (mobileBackdrop) {
         mobileBackdrop.addEventListener('click', closeMobileMenu);
     }
+    if (navBackdrop) {
+        navBackdrop.addEventListener('click', closeMobileMenu);
+    }
 
     // Close menu on close button click
     if (mobileNavClose) {
@@ -62,12 +89,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Close menu on link click (navbar type)
+    if (isNavbarType) {
+        mobileNav.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (mobileNav.classList.contains('active')) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    }
+
     // Handle window resize
     let resizeTimer;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() {
-            if (window.innerWidth > 768) {
+            // navbar: 1024px, mobile-nav: 768px
+            var threshold = isNavbarType ? 1024 : 768;
+            if (window.innerWidth > threshold) {
                 closeMobileMenu();
             }
         }, 250);

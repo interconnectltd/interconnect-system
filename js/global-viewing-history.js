@@ -42,7 +42,8 @@
         // 履歴を取得
         getHistory() {
             const history = localStorage.getItem(this.storageKey);
-            return history ? JSON.parse(history) : [];
+            if (!history) return [];
+            try { return JSON.parse(history); } catch (e) { return []; }
         },
         
         // プロフィール表示を監視

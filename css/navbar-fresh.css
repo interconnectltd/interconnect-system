@@ -134,20 +134,23 @@ nav.navbar .container {
     border: none !important;
     cursor: pointer !important;
     position: relative !important;
+    overflow: visible !important;
 }
 
 .navbar-toggler span {
     display: block !important;
     position: absolute !important;
-    left: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     width: 20px !important;
     height: 2px !important;
     background: #374151 !important;
     transition: all 0.3s ease !important;
+    transform-origin: center !important;
 }
 
 .navbar-toggler span:nth-child(1) {
-    top: 12px !important;
+    top: 13px !important;
 }
 
 .navbar-toggler span:nth-child(2) {
@@ -155,7 +158,21 @@ nav.navbar .container {
 }
 
 .navbar-toggler span:nth-child(3) {
-    top: 26px !important;
+    top: 25px !important;
+}
+
+.navbar-toggler.active span:nth-child(1) {
+    top: 19px !important;
+    transform: translateX(-50%) rotate(45deg) !important;
+}
+
+.navbar-toggler.active span:nth-child(2) {
+    opacity: 0 !important;
+}
+
+.navbar-toggler.active span:nth-child(3) {
+    top: 19px !important;
+    transform: translateX(-50%) rotate(-45deg) !important;
 }
 
 /* 1200px以下 */
@@ -182,31 +199,58 @@ nav.navbar .container {
     
     .navbar-nav {
         display: none !important;
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
-        right: 0 !important;
-        background: white !important;
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 280px !important;
+        max-width: 90vw !important;
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
         flex-direction: column !important;
-        padding: 20px !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
-        gap: 8px !important;
+        padding: 32px 24px !important;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15) !important;
+        gap: 4px !important;
         height: auto !important;
+        border-radius: 16px !important;
+        z-index: 1900 !important;
+        list-style: none !important;
     }
     
     .navbar-nav.active {
         display: flex !important;
     }
     
-    .navbar-nav li {
+    .navbar-nav li,
+    .navbar-nav > a {
         width: 100% !important;
+        list-style: none !important;
     }
-    
-    .nav-link {
+
+    .nav-link,
+    .navbar-nav > a {
         width: 100% !important;
         justify-content: center !important;
         padding: 12px 20px !important;
         font-size: 15px !important;
+        text-align: center !important;
+        display: block !important;
+        text-decoration: none !important;
+        color: #374151 !important;
+        border-radius: 8px !important;
+    }
+
+    .navbar-nav > a:hover,
+    .nav-link:hover {
+        background: rgba(0, 102, 255, 0.05) !important;
+        color: #0066ff !important;
+    }
+
+    .navbar-nav > a.btn-primary {
+        background: #0066ff !important;
+        color: white !important;
+        margin-top: 8px !important;
     }
 }
 
@@ -236,15 +280,4 @@ nav.navbar .container {
     }
 }
 
-/* ハンバーガーアニメーション */
-.navbar-toggler.active span:nth-child(1) {
-    transform: rotate(45deg) translateY(7px) !important;
-}
-
-.navbar-toggler.active span:nth-child(2) {
-    opacity: 0 !important;
-}
-
-.navbar-toggler.active span:nth-child(3) {
-    transform: rotate(-45deg) translateY(-7px) !important;
-}
+/* ハンバーガーアニメーション（上のセクションで定義済み）
