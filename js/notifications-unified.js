@@ -317,9 +317,12 @@
             await markAsRead(notificationId);
         }
 
-        // リンクがある場合は遷移
+        // リンクがある場合は遷移（同一オリジンまたは相対パスのみ許可）
         if (notification.link) {
-            window.location.href = notification.link;
+            const safeUrl = sanitizeUrl(notification.link);
+            if (safeUrl !== '#') {
+                window.location.href = safeUrl;
+            }
         }
     };
 

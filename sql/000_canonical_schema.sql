@@ -315,6 +315,16 @@ CREATE POLICY "Admin can view all invite links" ON invite_links
         EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
     );
 
+DROP POLICY IF EXISTS "Users can delete own invite links" ON invite_links;
+CREATE POLICY "Users can delete own invite links" ON invite_links
+    FOR DELETE USING (auth.uid() = created_by);
+
+DROP POLICY IF EXISTS "Admin can delete invite links" ON invite_links;
+CREATE POLICY "Admin can delete invite links" ON invite_links
+    FOR DELETE USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
+    );
+
 -- ========================
 -- 7. invitations
 -- ========================
@@ -732,6 +742,7 @@ CREATE TABLE IF NOT EXISTS fraud_flags (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     flag_type TEXT,
+    severity TEXT DEFAULT 'medium' CHECK (severity IN ('low', 'medium', 'high')),
     description TEXT,
     resolved BOOLEAN DEFAULT false,
     resolved_at TIMESTAMP WITH TIME ZONE,
@@ -789,8 +800,14 @@ CREATE TABLE IF NOT EXISTS user_activities (
 CREATE TABLE IF NOT EXISTS meeting_confirmations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id),
+    invitation_id UUID REFERENCES invitations(id),
     meeting_datetime TIMESTAMP WITH TIME ZONE,
+    meeting_method TEXT,
     duration_minutes INTEGER,
+    verification_methods JSONB,
+    meeting_summary TEXT,
+    admin_notes TEXT,
+    confirmed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

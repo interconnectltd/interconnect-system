@@ -69,12 +69,14 @@
     // console.log('   Channel ID:', LINE_CHANNEL_ID);
     // console.log('   Redirect URI:', LINE_REDIRECT_URI);
 
-    // ランダム文字列生成
+    // ランダム文字列生成（暗号学的に安全なランダム値を使用）
     function generateRandomString(length) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const array = new Uint32Array(length);
+        crypto.getRandomValues(array);
         let result = '';
         for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
+            result += chars.charAt(array[i] % chars.length);
         }
         return result;
     }

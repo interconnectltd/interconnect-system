@@ -153,7 +153,7 @@
                             ${conv.lastMessageAt ? `<span class="chat-conv-time">${this.formatTimeShort(conv.lastMessageAt)}</span>` : ''}
                         </div>
                         <div class="chat-conv-bottom">
-                            <span class="chat-conv-preview">${conv.lastMessage ? this.escapeHtml(conv.lastMessage.substring(0, 40)) : conv.company || 'メッセージはまだありません'}</span>
+                            <span class="chat-conv-preview">${conv.lastMessage ? this.escapeHtml(conv.lastMessage.substring(0, 40)) : this.escapeHtml(conv.company || 'メッセージはまだありません')}</span>
                             ${conv.unreadCount > 0 ? `<span class="chat-conv-badge">${conv.unreadCount}</span>` : ''}
                         </div>
                     </div>

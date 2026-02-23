@@ -404,7 +404,7 @@ class AdminReferralManager {
                         </div>
                     </div>
                     <div class="flag-details">
-                        ${this.formatFlagDetails(flag.details)}
+                        ${window.escapeHTML(flag.description || '')}
                     </div>
                     <div class="flag-actions">
                         <button class="btn btn-sm btn-primary" onclick="adminReferral.investigateUser('${flag.user_id}')">

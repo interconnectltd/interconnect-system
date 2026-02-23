@@ -330,11 +330,11 @@ class CashoutModal {
                     });
 
                 if (pointError) {
-                    // ポイント減算失敗時、cashout_requestsもキャンセルに戻す
+                    // ポイント減算失敗時、cashout_requestsをキャンセルに戻す
                     if (cashoutId) {
                         await window.supabaseClient
                             .from('cashout_requests')
-                            .update({ status: 'failed' })
+                            .update({ status: 'cancelled' })
                             .eq('id', cashoutId);
                     }
                     throw pointError;

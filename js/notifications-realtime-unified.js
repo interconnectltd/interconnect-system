@@ -12,6 +12,18 @@
 
     // console.log('[RealtimeNotificationsUnified] リアルタイム通知モジュール初期化');
 
+    // URL安全検証（http/httpsのみ許可）
+    function sanitizeNotificationUrl(url) {
+        if (!url) return '#';
+        try {
+            const parsed = new URL(url, window.location.origin);
+            if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                return parsed.href;
+            }
+        } catch (e) { /* invalid URL */ }
+        return '#';
+    }
+
     // グローバル変数
     let realtimeSubscriptions = {};
     let currentUserId = null;
@@ -353,14 +365,17 @@
             setTimeout(() => toast.remove(), 300);
         }, 5000);
 
-        // クリックでリンクに遷移
+        // クリックでリンクに遷移（安全なURLのみ許可）
         if (notification.link) {
-            toast.style.cursor = 'pointer';
-            toast.addEventListener('click', (e) => {
-                if (!e.target.closest('.toast-close')) {
-                    window.location.href = notification.link;
-                }
-            });
+            const safeLink = sanitizeNotificationUrl(notification.link);
+            if (safeLink !== '#') {
+                toast.style.cursor = 'pointer';
+                toast.addEventListener('click', (e) => {
+                    if (!e.target.closest('.toast-close')) {
+                        window.location.href = safeLink;
+                    }
+                });
+            }
         }
     }
 
@@ -379,7 +394,10 @@
         browserNotification.onclick = () => {
             window.focus();
             if (notification.link) {
-                window.location.href = notification.link;
+                const safeUrl = sanitizeNotificationUrl(notification.link);
+                if (safeUrl !== '#') {
+                    window.location.href = safeUrl;
+                }
             }
             browserNotification.close();
         };

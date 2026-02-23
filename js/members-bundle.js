@@ -2592,7 +2592,11 @@
 
             // キーワード検索
             if (searchFilters.keyword) {
-                query = query.or(`name.ilike.%${searchFilters.keyword}%,company.ilike.%${searchFilters.keyword}%,bio.ilike.%${searchFilters.keyword}%`);
+                // PostgRESTフィルター特殊文字をサニタイズ
+                const safeKeyword = searchFilters.keyword.replace(/[%_,.()"\\]/g, '');
+                if (safeKeyword) {
+                    query = query.or(`name.ilike.%${safeKeyword}%,company.ilike.%${safeKeyword}%,bio.ilike.%${safeKeyword}%`);
+                }
             }
 
             // 業界フィルター

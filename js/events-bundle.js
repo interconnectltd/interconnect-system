@@ -284,7 +284,7 @@
             return `
                 <div class="event-card" data-event-id="${event.id}">
                     <div class="event-image">
-                        <img src="${event.image_url || 'assets/user-placeholder.svg'}" alt="${this.escapeHtml(event.title)}" onerror="this.onerror=null; this.src='assets/user-placeholder.svg';">
+                        <img src="${window.escapeAttr(event.image_url || 'assets/user-placeholder.svg')}" alt="${this.escapeHtml(event.title)}" onerror="this.onerror=null; this.src='assets/user-placeholder.svg';">
                         <div class="event-badge ${badgeClass}">${badgeText}</div>
                     </div>
                     <div class="event-content">

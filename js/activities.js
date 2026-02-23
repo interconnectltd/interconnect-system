@@ -257,7 +257,7 @@
                 <i class="fas ${icon}"></i>
             </div>
             <div class="activity-content">
-                <p>${description}</p>
+                <p>${window.escapeHTML ? window.escapeHTML(description) : description}</p>
                 <div class="activity-meta">
                     <span class="activity-time">${timeAgo}</span>
                     <span class="activity-badge">${getActivityTypeLabel(activity.activity_type)}</span>
