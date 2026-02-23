@@ -54,7 +54,7 @@
     max-height: 500px;
     display: none;
     z-index: 3000;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .notification-dropdown.show {

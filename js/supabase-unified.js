@@ -225,6 +225,12 @@
             // console.log('[SupabaseUnified] 公開ページのため認証チェックをスキップ');
             return;
         }
+
+        // ゲストモードの場合は認証チェックをスキップ
+        if (sessionStorage.getItem('isGuestMode') === 'true') {
+            // console.log('[SupabaseUnified] ゲストモードのため認証チェックをスキップ');
+            return;
+        }
         
         try {
             const { data: { user }, error } = await window.supabaseClient.auth.getUser();
