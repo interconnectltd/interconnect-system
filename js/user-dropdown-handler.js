@@ -84,8 +84,28 @@
                     } else {
                         // position:fixed のドロップダウンをベルボタン基準で配置
                         var btnRect = this.getBoundingClientRect();
+                        var dropdownWidth = 360;
+                        var viewportWidth = window.innerWidth;
+
                         dropdown.style.top = (btnRect.bottom + 8) + 'px';
-                        dropdown.style.right = (window.innerWidth - btnRect.right) + 'px';
+                        // right/leftをリセット
+                        dropdown.style.right = 'auto';
+                        dropdown.style.left = 'auto';
+
+                        // ベルボタンの中心を基準にして配置
+                        var btnCenter = btnRect.left + btnRect.width / 2;
+                        var idealLeft = btnCenter - dropdownWidth / 2;
+
+                        // 画面右端からはみ出す場合は右寄せ
+                        if (idealLeft + dropdownWidth > viewportWidth - 16) {
+                            idealLeft = viewportWidth - dropdownWidth - 16;
+                        }
+                        // 画面左端からはみ出す場合は左寄せ
+                        if (idealLeft < 16) {
+                            idealLeft = 16;
+                        }
+
+                        dropdown.style.left = idealLeft + 'px';
 
                         dropdown.classList.add('active');
                         wrapper.classList.add('active');
