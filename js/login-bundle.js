@@ -62,7 +62,8 @@
     'use strict';
 
     const LINE_CHANNEL_ID = '2009174893';
-    const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
+    const PRODUCTION_ORIGIN = 'https://interconnect-system.netlify.app';
+    const LINE_REDIRECT_URI = PRODUCTION_ORIGIN + '/line-callback.html';
 
     // console.log('📱 LINE Login Simple loaded');
     // console.log('   Channel ID:', LINE_CHANNEL_ID);
