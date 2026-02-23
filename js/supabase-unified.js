@@ -126,6 +126,14 @@
     // 安全なgetUserヘルパー（data が null でもクラッシュしない）
     window.safeGetUser = async function() {
         try {
+            // ゲストモードの場合はゲストユーザーオブジェクトを返す
+            if (sessionStorage.getItem('isGuestMode') === 'true') {
+                return {
+                    id: 'guest-user',
+                    email: 'guest@interconnect.jp',
+                    user_metadata: { name: 'ゲストユーザー', isGuest: true }
+                };
+            }
             if (!window.supabaseClient) return null;
             const { data, error } = await window.supabaseClient.auth.getUser();
             if (error || !data) return null;
@@ -316,7 +324,10 @@
         if (!window.supabaseClient) return;
 
         const { data: { subscription } } = window.supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+            if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+                // ゲストモードでは何もしない
+                if (sessionStorage.getItem('isGuestMode') === 'true') return;
+
                 // 公開ページでは何もしない
                 const currentPath = window.location.pathname;
                 const publicPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'reset-password.html', 'line-callback.html', 'invite.html'];

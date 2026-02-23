@@ -42,23 +42,28 @@
     pointer-events: none;
 }
 
-/* Notification Dropdown */
+/* Notification Dropdown — position:fixed でoverflow:autoの親にクリップされない */
 .notification-dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
+    position: fixed;
     background: white;
-    border-radius: var(--radius-lg);
+    border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    width: 380px;
-    max-height: 500px;
-    display: none;
-    z-index: 3000;
-    overflow: visible;
+    width: 360px;
+    max-width: 90vw;
+    max-height: 480px;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-.notification-dropdown.show {
-    display: block;
+.notification-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .notification-header {

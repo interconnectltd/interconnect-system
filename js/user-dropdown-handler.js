@@ -81,13 +81,15 @@
                     if (isOpen) {
                         dropdown.classList.remove('active');
                         wrapper.classList.remove('active');
-                        // console.log('[UserDropdown] 通知ドロップダウンを閉じました');
                     } else {
+                        // position:fixed のドロップダウンをベルボタン基準で配置
+                        var btnRect = this.getBoundingClientRect();
+                        dropdown.style.top = (btnRect.bottom + 8) + 'px';
+                        dropdown.style.right = (window.innerWidth - btnRect.right) + 'px';
+
                         dropdown.classList.add('active');
                         wrapper.classList.add('active');
-                        // console.log('[UserDropdown] 通知ドロップダウンを開きました');
-                        
-                        // 通知を読み込む（必要に応じて）
+
                         loadNotifications(dropdown);
                     }
                 } else {
