@@ -85,14 +85,20 @@
             e.stopPropagation();
         }
 
-        // console.log('🚀 LINE Login initiated (Simple)');
+        // LINEアプリ内（LIFF環境）の場合はLIFF経由でログイン
+        if (window.isLiffInClient && typeof liff !== 'undefined' && liff.isInClient()) {
+            console.log('[LINE Login] LINEアプリ内のためLIFFログインを使用');
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            }
+            return;
+        }
 
+        // ブラウザの場合: 既存OAuth処理
         try {
-            // LINE認証URLを構築
             const state = generateRandomString(32);
             const nonce = generateRandomString(32);
 
-            // stateを保存（CSRF対策）
             sessionStorage.setItem('line_state', state);
 
             const params = new URLSearchParams({
@@ -105,14 +111,10 @@
             });
 
             const authUrl = `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`;
-            // console.log('📍 Redirecting to LINE auth');
-            // console.log('   URL:', authUrl);
-
-            // LINE認証ページへリダイレクト
             window.location.href = authUrl;
 
         } catch (error) {
-            console.error('❌ LINE login error:', error);
+            console.error('LINE login error:', error);
             alert('LINEログインでエラーが発生しました。もう一度お試しください。');
         }
     }

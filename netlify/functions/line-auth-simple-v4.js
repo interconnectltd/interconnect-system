@@ -63,9 +63,12 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const { code, redirect_uri } = body;
+        const { code, redirect_uri, liff_access_token } = body;
 
-        if (!code || !redirect_uri) {
+        // 2つのモード: OAuthコード or LIFFアクセストークン
+        const isLiffMode = !!liff_access_token;
+
+        if (!isLiffMode && (!code || !redirect_uri)) {
             return {
                 statusCode: 400,
                 headers,
@@ -73,18 +76,20 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // redirect_uri のドメイン検証（オープンリダイレクト防止）
-        const ALLOWED_REDIRECT_DOMAINS = ['interconnect-system.netlify.app', 'localhost'];
-        if (!isValidRedirectURL(redirect_uri, ALLOWED_REDIRECT_DOMAINS)) {
-            console.error('Invalid redirect_uri:', redirect_uri);
-            return {
-                statusCode: 400,
-                headers,
-                body: JSON.stringify({ error: 'Invalid redirect URI' })
-            };
+        // OAuthモード: redirect_uri のドメイン検証（オープンリダイレクト防止）
+        if (!isLiffMode) {
+            const ALLOWED_REDIRECT_DOMAINS = ['interconnect-system.netlify.app', 'localhost'];
+            if (!isValidRedirectURL(redirect_uri, ALLOWED_REDIRECT_DOMAINS)) {
+                console.error('Invalid redirect_uri:', redirect_uri);
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({ error: 'Invalid redirect URI' })
+                };
+            }
         }
 
-        console.log('Processing LINE auth with code:', code.substring(0, 10) + '...');
+        console.log('Processing LINE auth:', isLiffMode ? 'LIFF mode' : 'OAuth mode');
 
         // 環境変数の確認
         const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID;
@@ -92,7 +97,7 @@ exports.handler = async (event, context) => {
         const SUPABASE_URL = process.env.SUPABASE_URL;
         const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
 
-        if (!LINE_CHANNEL_ID || !LINE_CHANNEL_SECRET) {
+        if (!isLiffMode && (!LINE_CHANNEL_ID || !LINE_CHANNEL_SECRET)) {
             console.error('Missing LINE credentials');
             return {
                 statusCode: 500,
@@ -110,60 +115,87 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // LINEトークン取得
-        console.log('Getting LINE access token...');
-        const tokenResponse = await fetch('https://api.line.me/oauth2/v2.1/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                grant_type: 'authorization_code',
-                code: code,
-                redirect_uri: redirect_uri,
-                client_id: LINE_CHANNEL_ID,
-                client_secret: LINE_CHANNEL_SECRET
-            })
-        });
+        let profile;
 
-        if (!tokenResponse.ok) {
-            const errorText = await tokenResponse.text();
-            console.error('Token error:', tokenResponse.status, errorText);
-            return {
-                statusCode: 400,
-                headers,
-                body: JSON.stringify({ 
-                    error: 'Failed to get access token',
-                    details: errorText
-                })
-            };
-        }
+        if (isLiffMode) {
+            // === LIFFモード: アクセストークンで直接プロフィール取得 ===
+            console.log('Getting LINE profile via LIFF access token...');
+            const profileResponse = await fetch('https://api.line.me/v2/profile', {
+                headers: {
+                    'Authorization': `Bearer ${liff_access_token}`
+                }
+            });
 
-        const tokenData = await tokenResponse.json();
-        console.log('Access token obtained');
-
-        // LINEプロファイル取得
-        console.log('Getting LINE profile...');
-        const profileResponse = await fetch('https://api.line.me/v2/profile', {
-            headers: {
-                'Authorization': `Bearer ${tokenData.access_token}`
+            if (!profileResponse.ok) {
+                const errorText = await profileResponse.text();
+                console.error('LIFF profile error:', profileResponse.status, errorText);
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Failed to get user profile via LIFF token',
+                        details: errorText
+                    })
+                };
             }
-        });
 
-        if (!profileResponse.ok) {
-            const errorText = await profileResponse.text();
-            console.error('Profile error:', profileResponse.status, errorText);
-            return {
-                statusCode: 400,
-                headers,
-                body: JSON.stringify({ 
-                    error: 'Failed to get user profile',
-                    details: errorText
+            profile = await profileResponse.json();
+        } else {
+            // === OAuthモード: 認可コードでトークン交換 → プロフィール取得 ===
+            console.log('Getting LINE access token...');
+            const tokenResponse = await fetch('https://api.line.me/oauth2/v2.1/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    code: code,
+                    redirect_uri: redirect_uri,
+                    client_id: LINE_CHANNEL_ID,
+                    client_secret: LINE_CHANNEL_SECRET
                 })
-            };
-        }
+            });
 
-        const profile = await profileResponse.json();
+            if (!tokenResponse.ok) {
+                const errorText = await tokenResponse.text();
+                console.error('Token error:', tokenResponse.status, errorText);
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Failed to get access token',
+                        details: errorText
+                    })
+                };
+            }
+
+            const tokenData = await tokenResponse.json();
+            console.log('Access token obtained');
+
+            // LINEプロファイル取得
+            console.log('Getting LINE profile...');
+            const profileResponse = await fetch('https://api.line.me/v2/profile', {
+                headers: {
+                    'Authorization': `Bearer ${tokenData.access_token}`
+                }
+            });
+
+            if (!profileResponse.ok) {
+                const errorText = await profileResponse.text();
+                console.error('Profile error:', profileResponse.status, errorText);
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Failed to get user profile',
+                        details: errorText
+                    })
+                };
+            }
+
+            profile = await profileResponse.json();
+        }
         console.log('LINE Profile:', {
             userId: profile.userId,
             displayName: profile.displayName
