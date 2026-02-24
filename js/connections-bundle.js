@@ -368,8 +368,8 @@
                 const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}" data-date="${conn.created_at}">
-                        <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}" 
-                             alt="${user.name}" 
+                        <img src="${user.avatar_url ? window.escapeAttr(user.avatar_url) : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}"
+                             alt="${this.escapeHtml(user.name || 'User')}"
                              class="connection-avatar">
                         <div class="connection-info">
                             <div class="connection-name">${this.escapeHtml(user.name || '名前未設定')}</div>
@@ -419,8 +419,8 @@
                 const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}">
-                        <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}" 
-                             alt="${user.name}" 
+                        <img src="${user.avatar_url ? window.escapeAttr(user.avatar_url) : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}"
+                             alt="${this.escapeHtml(user.name || 'User')}"
                              class="connection-avatar">
                         <div class="connection-info">
                             <div class="connection-name">${this.escapeHtml(user.name || '名前未設定')}</div>
@@ -465,8 +465,8 @@
                 const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}">
-                        <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}" 
-                             alt="${user.name}" 
+                        <img src="${user.avatar_url ? window.escapeAttr(user.avatar_url) : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=4A90E2&color=fff`}"
+                             alt="${this.escapeHtml(user.name || 'User')}"
                              class="connection-avatar">
                         <div class="connection-info">
                             <div class="connection-name">${this.escapeHtml(user.name || '名前未設定')}</div>
@@ -516,8 +516,8 @@
                 const position = user.position || '';
                 return `
                     <div class="connection-item" data-connection-id="${conn.id}" data-date="${conn.updated_at}">
-                        <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=adb5bd&color=fff`}" 
-                             alt="${user.name}" 
+                        <img src="${user.avatar_url ? window.escapeAttr(user.avatar_url) : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=adb5bd&color=fff`}"
+                             alt="${this.escapeHtml(user.name || 'User')}"
                              class="connection-avatar" style="filter: grayscale(100%);">
                         <div class="connection-info">
                             <div class="connection-name">${this.escapeHtml(user.name || '名前未設定')}</div>

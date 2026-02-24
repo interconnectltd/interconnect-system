@@ -509,8 +509,8 @@
                 <!-- ヘッダー -->
                 <div class="profile-detail-header">
                     <button class="profile-detail-close" onclick="window.profileDetailModal.close()">×</button>
-                    <img src="${profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}&background=4A90E2&color=fff&size=240`}"
-                         alt="${profile.name}"
+                    <img src="${profile.avatar_url ? window.escapeAttr(profile.avatar_url) : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'User')}&background=4A90E2&color=fff&size=240`}"
+                         alt="${window.escapeHTML(profile.name || 'User')}"
                          class="profile-detail-avatar">
                     <h2 class="profile-detail-name">${window.escapeHTML(profile.name || '名前未設定')}</h2>
                     <p class="profile-detail-title">
@@ -535,13 +535,13 @@
                                 <div class="profile-detail-item">
                                     <div class="profile-detail-label">共通のスキル</div>
                                     <div class="profile-detail-value">
-                                        ${commonSkills.length > 0 ? commonSkills.join(', ') : 'なし'}
+                                        ${commonSkills.length > 0 ? commonSkills.map(s => window.escapeHTML(s)).join(', ') : 'なし'}
                                     </div>
                                 </div>
                                 <div class="profile-detail-item">
                                     <div class="profile-detail-label">共通の興味</div>
                                     <div class="profile-detail-value">
-                                        ${commonInterests.length > 0 ? commonInterests.join(', ') : 'なし'}
+                                        ${commonInterests.length > 0 ? commonInterests.map(s => window.escapeHTML(s)).join(', ') : 'なし'}
                                     </div>
                                 </div>
                                 <div class="profile-detail-item">
@@ -690,14 +690,16 @@
 
         getLocationMatch(loc1, loc2) {
             if (!loc1 || !loc2) return '不明';
-            if (loc1 === loc2) return `同じ地域 (${loc1})`;
-            return `${loc1} ↔ ${loc2}`;
+            const s1 = window.escapeHTML(loc1), s2 = window.escapeHTML(loc2);
+            if (loc1 === loc2) return `同じ地域 (${s1})`;
+            return `${s1} ↔ ${s2}`;
         }
 
         getIndustryMatch(ind1, ind2) {
             if (!ind1 || !ind2) return '不明';
-            if (ind1 === ind2) return `同じ業界 (${ind1})`;
-            return `${ind1} ↔ ${ind2}`;
+            const s1 = window.escapeHTML(ind1), s2 = window.escapeHTML(ind2);
+            if (ind1 === ind2) return `同じ業界 (${s1})`;
+            return `${s1} ↔ ${s2}`;
         }
 
         drawRadarChart(profile) {
@@ -893,7 +895,7 @@
                 <div class="profile-detail-loading">
                     <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #e74c3c; margin-bottom: 20px;"></i>
                     <p>エラーが発生しました</p>
-                    <p style="color: #999; font-size: 14px; margin-top: 10px;">${message}</p>
+                    <p style="color: #999; font-size: 14px; margin-top: 10px;">${window.escapeHTML ? window.escapeHTML(message) : message}</p>
                     <button class="profile-detail-btn profile-detail-btn-secondary"
                             onclick="window.profileDetailModal.close()"
                             style="margin-top: 20px;">

@@ -554,7 +554,7 @@
                 <div class="error-state">
                     <i class="fas fa-exclamation-circle fa-3x"></i>
                     <h3>エラー</h3>
-                    <p>${message}</p>
+                    <p>${window.escapeHTML ? window.escapeHTML(message) : message}</p>
                     <button class="btn btn-primary" onclick="window.eventsSupabase.loadEvents()">
                         再読み込み
                     </button>

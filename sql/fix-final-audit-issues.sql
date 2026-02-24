@@ -27,3 +27,7 @@ CREATE POLICY "Admin can delete invite links" ON invite_links
     FOR DELETE USING (
         EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
     );
+
+-- D1: ip_registration_stats に first_registration / last_registration カラムを追加
+ALTER TABLE ip_registration_stats ADD COLUMN IF NOT EXISTS first_registration TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE ip_registration_stats ADD COLUMN IF NOT EXISTS last_registration TIMESTAMP WITH TIME ZONE DEFAULT NOW();

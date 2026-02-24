@@ -858,7 +858,7 @@ window.InterConnect.Profile = {
         skillsContainer.innerHTML = data.skills.map(skill => `
             <div class="skill-item">
                 <i class="fas fa-check-circle"></i>
-                <span>${skill}</span>
+                <span>${window.escapeHTML(skill)}</span>
             </div>
         `).join('');
     },
@@ -1210,7 +1210,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 container.innerHTML = `
                     <div class="error-message" style="text-align: center; padding: 50px;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 20px;"></i>
-                        <h2>${message}</h2>
+                        <h2>${window.escapeHTML ? window.escapeHTML(message) : message}</h2>
                         <a href="matching.html" class="btn btn-primary" style="margin-top: 20px;">マッチングページに戻る</a>
                     </div>
                 `;

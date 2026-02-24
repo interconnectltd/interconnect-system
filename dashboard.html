@@ -398,12 +398,14 @@
     <script src="js/guest-mode-manager.js"></script>
     <!-- リアルタイム通知システム -->
     <script src="js/notifications-realtime-unified.js?v=1.0"></script>
-    
+
+    <!-- Features (shared modules - must load before page bundle) -->
+    <script src="js/responsive-menu-simple.js"></script>
+    <script src="js/dashboard.js"></script>
+
     <!-- Dashboard unified (9 files merged) -->
     <script src="js/dashboard-unified.js"></script>
-    
-    <!-- Database table name fix -->
-    
+
     <!-- Debug scripts (only load in development) -->
     <script>
         // デバッグモードの場合のみデバッグスクリプトを読み込む
@@ -421,10 +423,6 @@
             });
         }
     </script>
-    
-    <!-- Features -->
-    <script src="js/responsive-menu-simple.js"></script>
-    <script src="js/dashboard.js"></script>
     <script src="js/message-integration.js"></script>
     
     <!-- グローバル閲覧履歴 -->

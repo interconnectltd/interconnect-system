@@ -1929,9 +1929,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // 招待情報を表示
         const inviteNotice = document.createElement('div');
         inviteNotice.className = 'invite-notice';
+        const safeInviteCode = window.escapeHTML ? window.escapeHTML(inviteCode) : inviteCode.replace(/[<>&"']/g, '');
         inviteNotice.innerHTML = `
             <i class="fas fa-gift"></i>
-            <span>招待コードが適用されています: <strong>${inviteCode}</strong></span>
+            <span>招待コードが適用されています: <strong>${safeInviteCode}</strong></span>
         `;
         inviteNotice.style.cssText = `
             background: #f0f9ff;

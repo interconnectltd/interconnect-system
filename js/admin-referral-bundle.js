@@ -1145,8 +1145,16 @@ class ManualMeetingConfirmation {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
 
         try {
+            // 招待情報から被招待者IDを取得
+            const { data: invData } = await window.supabaseClient
+                .from('invitations')
+                .select('invitee_id')
+                .eq('id', invitationId)
+                .maybeSingle();
+
             const confirmationData = {
                 invitation_id: invitationId,
+                user_id: invData?.invitee_id || null,
                 meeting_datetime: document.getElementById('meeting-datetime').value,
                 meeting_method: document.getElementById('meeting-method').value,
                 duration_minutes: parseInt(document.getElementById('meeting-duration').value),

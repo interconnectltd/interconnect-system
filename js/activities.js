@@ -330,7 +330,7 @@
             'message_sent': 'メッセージ',
             'event_registration': 'イベント参加'
         };
-        return labels[type] || type;
+        return labels[type] || (window.escapeHTML ? window.escapeHTML(type) : type);
     }
 
     /**
@@ -363,7 +363,7 @@
                         <i class="fas ${getActivityIcon(activity.activity_type)}"></i>
                     </div>
                     <div class="detail-info">
-                        <h4>${getActivityDescription(activity)}</h4>
+                        <h4>${window.escapeHTML ? window.escapeHTML(getActivityDescription(activity)) : getActivityDescription(activity)}</h4>
                         <p>${formatTimeAgo(activity.created_at)}</p>
                     </div>
                 </div>
@@ -381,7 +381,7 @@
                 ${activity.activity_data ? `
                     <div class="detail-section">
                         <h5>詳細情報</h5>
-                        <pre style="white-space: pre-wrap;">${JSON.stringify(activity.activity_data, null, 2)}</pre>
+                        <pre style="white-space: pre-wrap;">${window.escapeHTML ? window.escapeHTML(JSON.stringify(activity.activity_data, null, 2)) : JSON.stringify(activity.activity_data, null, 2)}</pre>
                     </div>
                 ` : ''}
                 

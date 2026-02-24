@@ -3316,7 +3316,7 @@
                     align-items: center;
                     gap: 4px;
                 ">
-                    ${filter.label}: ${filter.value}
+                    ${window.escapeHTML(filter.label)}: ${window.escapeHTML(filter.value)}
                     <button onclick="window.removeFilter(this, '${window.escapeAttr(filter.element.name || filter.element.id)}')" style="
                         background: none;
                         border: none;

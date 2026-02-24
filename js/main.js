@@ -378,7 +378,10 @@
                 const emailEl = document.getElementById('contactEmail');
                 const lineEl = document.getElementById('contactLine');
                 if (phoneEl && info.phone) phoneEl.textContent = info.phone;
-                if (hoursEl && info.phone_hours) hoursEl.innerHTML = info.phone_hours.replace('/', '<br>');
+                if (hoursEl && info.phone_hours) {
+                    const safeHours = window.escapeHTML ? window.escapeHTML(info.phone_hours) : info.phone_hours;
+                    hoursEl.innerHTML = safeHours.replace('/', '<br>');
+                }
                 if (emailEl && info.email) emailEl.textContent = info.email;
                 if (lineEl && info.line_id) lineEl.textContent = info.line_id;
             }

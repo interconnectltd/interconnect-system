@@ -753,6 +753,8 @@ CREATE TABLE IF NOT EXISTS fraud_flags (
 CREATE TABLE IF NOT EXISTS ip_registration_stats (
     ip_address INET PRIMARY KEY,
     user_count INTEGER DEFAULT 1,
+    first_registration TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    last_registration TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

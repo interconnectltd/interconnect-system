@@ -377,22 +377,11 @@
     <script src="js/supabase-unified.js?v=1.1"></script>
     <script src="js/core-utils.js"></script>
     <script src="js/global-functions.js"></script>
+    <script src="js/profile-sync.js"></script>
     <script src="js/notification-system-unified.js"></script>
-    <script>
-        // 管理者認証ガード
-        (async function adminAuthGuard() {
-            try {
-                await (window.waitForSupabase ? window.waitForSupabase() : Promise.resolve());
-                const client = window.supabaseClient;
-                if (!client) { window.location.href = 'login.html'; return; }
-                const { data: { user } } = await client.auth.getUser();
-                if (!user) { window.location.href = 'login.html'; return; }
-                const { data: profile } = await client
-                    .from('user_profiles').select('is_admin').eq('id', user.id).maybeSingle();
-                if (!profile || !profile.is_admin) { window.location.href = 'dashboard.html'; }
-            } catch (e) { window.location.href = 'login.html'; }
-        })();
-    </script>
+    <script src="js/notifications-realtime-unified.js"></script>
+    <script src="js/responsive-menu-simple.js"></script>
+    <script src="js/dashboard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" integrity="sha384-FcQlsUOd0TJjROrBxhJdUhXTUgNJQxTMcxZe6nHbaEfFL1zjQ+bq/uRoBQxb0KMo" crossorigin="anonymous"></script>
     <script src="js/admin-referral-bundle.js"></script>
     <script src="js/user-dropdown-handler.js"></script>

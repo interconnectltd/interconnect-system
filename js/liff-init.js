@@ -110,10 +110,15 @@
 
             liffReadyResolve({ available: true, inClient: true, loggedIn: true, user: data.user });
 
-            // 認証ページにいる場合はダッシュボードへリダイレクト
+            // 認証ページにいる場合はダッシュボードへリダイレクト（同一オリジンのみ許可）
             var currentPage = window.location.pathname.split('/').pop();
             if (currentPage === 'login.html' || currentPage === 'register.html' || currentPage === '' || currentPage === 'index.html') {
-                window.location.href = data.redirect_to || 'dashboard.html';
+                var redirectTo = data.redirect_to || 'dashboard.html';
+                try {
+                    var parsed = new URL(redirectTo, window.location.origin);
+                    if (parsed.origin !== window.location.origin) redirectTo = 'dashboard.html';
+                } catch (e) { redirectTo = 'dashboard.html'; }
+                window.location.href = redirectTo;
             }
 
         } catch (err) {
