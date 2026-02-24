@@ -120,6 +120,9 @@
                     screen.style.display = 'none';
                     document.body.style.overflow = '';
                     document.body.classList.add('loading-complete');
+                    // ローディング中に隠していた要素を表示
+                    var hideStyle = document.getElementById('loadingHideStyle');
+                    if (hideStyle) hideStyle.remove();
                     self.onComplete(); // thisではなくselfを使用
                 }, 600); // 800msから600msに短縮
             };
