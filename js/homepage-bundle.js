@@ -101,7 +101,7 @@
         },
 
         setupCompletion(screen) {
-            const minTime = 800; // 1.5秒から0.8秒に短縮（動画読み込みを待たない）
+            const minTime = 500; // DOM準備完了後0.5秒で表示開始
             const startTime = Date.now();
 
             // thisを保存
@@ -362,21 +362,13 @@
         }
     });
 
-    // main.jsのDOMContentLoadedと競合しないように
-    // main.jsの初期化後に実行する
+    // DOMContentLoadedで即初期化（loadイベントは28MB動画を待つため遅い）
     if (document.readyState === 'loading') {
-        // main.jsの初期化を待つ
-        window.addEventListener('load', () => {
-            // main.jsの初期化が完了してから実行
-            setTimeout(() => {
-                PerfectLoader.init();
-            }, 100);
+        document.addEventListener('DOMContentLoaded', () => {
+            PerfectLoader.init();
         });
     } else {
-        // すでに読み込み完了している場合
-        setTimeout(() => {
-            PerfectLoader.init();
-        }, 100);
+        PerfectLoader.init();
     }
 
 })();
