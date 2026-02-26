@@ -70,8 +70,7 @@
             GlobalState.initialized = true;
 
             const screen = document.getElementById('instantLoadingScreen');
-            if (!screen) {
-                // console.log('[PerfectFinal] ローディング画面なし、スキップ');
+            if (!screen || screen.style.display === 'none') {
                 GlobalState.loadingComplete = true;
                 this.onComplete();
                 return;
@@ -80,7 +79,6 @@
             // プログレスバーアニメーションを開始（段階的に）
             const bar = document.getElementById('loadingBar');
             if (bar) {
-                // 段階的にプログレスを進める
                 setTimeout(() => bar.style.width = '30%', 100);
                 setTimeout(() => bar.style.width = '60%', 500);
                 setTimeout(() => bar.style.width = '90%', 1000);
@@ -95,51 +93,48 @@
         },
 
         setupVideo(screen) {
-            // ローディング画面の動画は削除（ヒーロー動画と重複して重い）
-            // 動画なしでもローディング画面は機能する
             return;
         },
 
         setupCompletion(screen) {
-            const minTime = 500; // DOM準備完了後0.5秒で表示開始
-            const startTime = Date.now();
-
-            // thisを保存
+            const minTime = 500;
             const self = this;
 
             const complete = () => {
                 if (GlobalState.loadingComplete) return;
                 GlobalState.loadingComplete = true;
 
-                // console.log('[PerfectFinal] ローディング完了');
+                // ローディング画面の裏でボタン以外を非表示にする（フラッシュ防止）
+                ['.section-badge', '.hero-title', '.hero-subtitle'].forEach(sel => {
+                    const el = document.querySelector(sel);
+                    if (el) { el.style.opacity = '0'; el.style.visibility = 'hidden'; }
+                });
 
-                screen.style.transition = 'opacity 0.6s ease-out'; // 0.8秒から0.6秒に短縮
+                // ローディング画面フェードアウト
+                screen.style.transition = 'opacity 0.6s ease-out';
                 screen.style.opacity = '0';
 
+                // フェードアウト完了後にアニメーション開始
                 setTimeout(() => {
                     screen.style.display = 'none';
                     document.body.style.overflow = '';
                     document.body.classList.add('loading-complete');
-                    self.onComplete(); // thisではなくselfを使用
-                }, 600); // 800msから600msに短縮
+                    self.onComplete();
+                }, 600);
             };
 
-            // 最小時間経過後に完了
             setTimeout(() => {
-                complete(); // 条件は不要（常にtrue）
+                complete();
             }, minTime);
         },
 
         onComplete() {
-            // ローディング画面を消す
             const screen = document.getElementById('instantLoadingScreen');
             if (screen) {
                 screen.style.display = 'none';
             }
 
-            // アニメーション開始
             PerfectAnimator.start();
-            // スクロールオブザーバー設定
             ScrollEffects.init();
         }
     };
@@ -166,7 +161,6 @@
         },
 
         animateHeroTitle() {
-            // disabled-scripts/typewriter-effect.jsから救出したタイプライター効果
             const elements = [
                 { selector: '.section-badge', delay: 0 },
                 { selector: '.hero-title', delay: 300 },
@@ -176,11 +170,9 @@
             elements.forEach(item => {
                 const element = document.querySelector(item.selector);
                 if (element) {
-                    // 元のテキストを保存
                     const originalText = element.textContent;
                     const originalHTML = element.innerHTML;
 
-                    // 子要素（アイコンなど）を保持
                     const hasIcon = originalHTML.includes('<i');
                     let iconHTML = '';
                     if (hasIcon) {
@@ -190,12 +182,10 @@
                         }
                     }
 
-                    // テキストをクリア
                     element.textContent = '';
                     element.style.visibility = 'visible';
                     element.style.opacity = '1';
 
-                    // タイプライター効果
                     setTimeout(() => {
                         this.typeWriter(element, originalText.trim(), iconHTML);
                     }, item.delay);
@@ -205,9 +195,8 @@
 
         typeWriter(element, text, iconHTML = '') {
             let index = 0;
-            const speed = 30; // 3倍速（通常90ms → 30ms）
+            const speed = 30;
 
-            // アイコンがある場合は最初に表示
             if (iconHTML) {
                 element.innerHTML = iconHTML;
             }
@@ -215,16 +204,13 @@
             function type() {
                 if (index < text.length) {
                     if (iconHTML) {
-                        // アイコンの後にテキストを追加
-                        const newText = iconHTML + text.substring(0, index + 1);
-                        element.innerHTML = newText;
+                        element.innerHTML = iconHTML + text.substring(0, index + 1);
                     } else {
                         element.textContent = text.substring(0, index + 1);
                     }
                     index++;
                     setTimeout(type, speed);
                 } else {
-                    // タイプライター完了後にボタンを表示
                     if (element.classList.contains('hero-subtitle')) {
                         setTimeout(() => {
                             const buttons = document.querySelector('.hero-buttons');
@@ -243,7 +229,6 @@
 
 
         fadeInElements() {
-            // アニメーションを無効化
             const elements = [
                 '.section-badge',
                 '.hero-buttons',
