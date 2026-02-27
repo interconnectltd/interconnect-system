@@ -1206,12 +1206,14 @@
 })();
 
 // ============================================================
-// Section: sidebar-toggle.js
+// Section: sidebar-toggle.js (削除済み)
 // ============================================================
+// responsive-menu-simple.js が統一的にモバイルメニューを管理するため、
+// ここにあった重複ハンドラーを削除。
+// 以前のコードは .mobile-menu-toggle に2つ目のクリックハンドラーを追加し、
+// responsive-menu-simple.js と競合してメニューが開かないバグの原因だった。
 
-// サイドバートグル機能
-// console.log('[Sidebar] sidebar-toggle.js loaded');
-
+/* 削除済み - responsive-menu-simple.js に統一
 document.addEventListener('DOMContentLoaded', () => {
     // console.log('[Sidebar] DOM loaded, initializing sidebar toggles');
     
@@ -1363,6 +1365,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 250);
     });
 });
-
-// console.log('[Sidebar] sidebar-toggle.js setup complete');
+*/
 

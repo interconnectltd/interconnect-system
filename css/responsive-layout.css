@@ -486,8 +486,8 @@ body.menu-open {
         left: 0;
         bottom: 0;
         width: 280px;
-        background: white;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        background: #1a1d29;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
         z-index: 2100 !important;
         overflow-y: auto;
     }
