@@ -49,8 +49,18 @@
                 
                 // 現在のユーザーを取得
                 const user = await window.safeGetUser();
-                if (!user) {
-                    window.location.href = 'login.html';
+                if (!user || (user.user_metadata && user.user_metadata.isGuest)) {
+                    // ゲストモードまたは未ログイン → ログイン案内
+                    document.querySelectorAll('.connection-list').forEach(list => {
+                        list.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <h3>ログインが必要です</h3>
+                                <p>コネクション機能を利用するにはログインしてください</p>
+                                <a href="login.html" class="btn btn-primary" style="margin-top:12px;">ログイン</a>
+                            </div>
+                        `;
+                    });
                     return;
                 }
 

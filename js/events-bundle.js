@@ -389,7 +389,7 @@
             try {
                 // ユーザー認証チェック
                 const user = await window.safeGetUser();
-                if (!user) {
+                if (!user || (user.user_metadata && user.user_metadata.isGuest)) {
                     if (window.showToast) {
                         window.showToast('ログインが必要です', 'warning');
                     }
@@ -1194,7 +1194,7 @@
         async checkUserParticipation(eventId) {
             try {
                 const user = await window.safeGetUser();
-                if (!user) return;
+                if (!user || (user.user_metadata && user.user_metadata.isGuest)) return;
 
                 const { data: participation } = await window.supabaseClient
                     .from('event_participants')
@@ -1241,7 +1241,7 @@
             try {
                 // ユーザー認証チェック
                 const user = await window.safeGetUser();
-                if (!user) {
+                if (!user || (user.user_metadata && user.user_metadata.isGuest)) {
                     if (window.showToast) {
                         window.showToast('ログインが必要です', 'warning');
                     }
@@ -1475,8 +1475,8 @@
 
         // 現在のユーザーを取得
         const user = await window.safeGetUser();
-        if (!user) {
-            console.error('[CalendarIntegration] ユーザーが認証されていません');
+        if (!user || (user.user_metadata && user.user_metadata.isGuest)) {
+            // ゲストモードではカレンダー統合をスキップ
             return;
         }
 
