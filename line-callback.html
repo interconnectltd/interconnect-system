@@ -26,7 +26,7 @@
             <i class="fab fa-line callback-icon"></i>
             <h2 class="callback-title">LINE認証処理中</h2>
             <p class="callback-message">しばらくお待ちください...</p>
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="errorMessage" class="error-message"></div>
         </div>
     </div>
     
@@ -209,8 +209,7 @@
                 // 成功アイコンに変更
                 const icon = document.querySelector('.callback-icon');
                 if (icon) {
-                    icon.className = 'fas fa-check-circle callback-icon';
-                    icon.style.color = '#10b981';
+                    icon.className = 'fas fa-check-circle callback-icon success';
                 }
 
                 // ダッシュボードへリダイレクト

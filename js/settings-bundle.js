@@ -640,12 +640,12 @@
         indicator.style.color = strengthColors[strength - 1] || '#6b7280';
     }
 
-    function confirmDangerousAction(action) {
+    async function confirmDangerousAction(action) {
         const messages = {
             'delete-account': 'アカウントを削除すると、すべてのデータが失われます。本当に削除しますか？',
             'clear-data': 'すべてのデータをクリアします。この操作は取り消せません。続行しますか？'
         };
-        if (confirm(messages[action] || '本当に実行しますか？')) {
+        if (await window.showConfirmModal(messages[action] || '本当に実行しますか？', { confirmLabel: '実行', danger: true })) {
             executeDangerousAction(action);
         }
     }
@@ -659,9 +659,9 @@
         }
     }
 
-    function confirmDeleteAccount() {
-        if (confirm('アカウントを削除すると、すべてのデータが失われます。本当に削除しますか？')) {
-            if (confirm('この操作は取り消せません。本当によろしいですか？')) {
+    async function confirmDeleteAccount() {
+        if (await window.showConfirmModal('アカウントを削除すると、すべてのデータが失われます。本当に削除しますか？', { confirmLabel: '削除', danger: true })) {
+            if (await window.showConfirmModal('この操作は取り消せません。本当によろしいですか？', { confirmLabel: '最終確認 - 削除する', danger: true })) {
                 deleteAccount();
             }
         }

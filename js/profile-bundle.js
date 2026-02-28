@@ -1200,7 +1200,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (window.matchingButtons && window.matchingButtons.sendConnectRequest) {
                 await window.matchingButtons.sendConnectRequest(this.targetUserId);
             } else {
-                alert('コネクト機能が利用できません');
+                if (window.showToast) window.showToast('コネクト機能が利用できません', 'error');
             }
         }
 

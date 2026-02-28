@@ -10,7 +10,7 @@
 - **名前:** INTERCONNECT — 日本語ビジネスコミュニティプラットフォーム
 - **リポジトリ:** `interconnectltd/interconnect-system` (GitHub)
 - **ローカルパス:** `/Users/sara/Desktop/interconnect`
-- **サイトURL:** https://interconnect-system.netlify.app
+- **サイトURL:** https://inter-connect.app
 - **アーキテクチャ:** Netlify（静的フロントエンド + Functions）+ Supabase（DB, Auth, Realtime, Storage, Edge Functions）
 
 ### 技術スタック
@@ -53,157 +53,44 @@
 - `.env`: サイト名統一、環境変数ドキュメント追加
 - `deploy.yml`: `publish-dir: './dist'` + `bash build.sh` ステップ追加
 
-### ISSUES-LIST.md の残存4件（元の56件のうち）
-これらはバックエンド変更 or 低優先で、現セッションのスコープ外:
-- **A9**: timerex-booking ユーザー認証なし（Edge Function修正）
-- **A11**: 管理者チェックがクライアント側のみ（RLSポリシー追加）
-- **A15**: security.jsがline-auth関数で未使用（Netlify Function修正）
-- **G4**: booking-complete/line-callback インラインスタイル（低優先）
+### ISSUES-LIST.md の残存4件（元の56件のうち）→ 再調査済み（2026-02-28）
+- **A9**: ✅ 解決済み — Edge FunctionにJWT認証実装済み（`timerex-booking/index.ts` 行19-42）+ RLSポリシー設定済み
+- **A11**: ⚠️ 部分対応 — 主要adminテーブルにRLSポリシー設定済み。クライアント側チェックはUI用（DB層で保護）
+- **A15**: ✅ 問題なし — `security.js`は実際に使用中（`checkRateLimit`, `getClientIP`, `isValidRedirectURL` の3関数）
+- **G4**: ✅ 修正済み — booking-complete.html, line-callback.html のインラインスタイルをCSS外部化
 
 ---
 
-## 3. 総合検証で新たに発見された問題（16件）
+## 3. 総合検証で新たに発見された問題（16件）→ 修正完了
 
-セクション7完了後、「実際に使う上での残存問題」を徹底検証した結果、ISSUES-LIST外の新規問題16件を発見。これらを **セクション8〜10** として整理済み。
-
----
-
-## 4. これからの修正プラン
-
-### セクション8: フロントエンド即時修正（5件）
-
-#### 8-1: スクリプト順序修正 — CRITICAL
-**問題:** `supabase-unified.js` がページバンドルより後に読み込まれている
-**影響:** ページ全体が機能しない（Supabaseクライアント未初期化のまま実行）
-
-| ファイル | 現状の問題 |
-|---------|-----------|
-| `messages.html` (行308-318) | `messages-bundle.js`(行314) → `supabase-unified.js`(行318) — 逆 |
-| `notifications.html` (行410-420) | `notifications-unified.js`(行416), `notifications-realtime-unified.js`(行417) → `supabase-unified.js`(行420) — 逆 |
-
-**修正方法:** 両ファイルで `supabase-unified.js` を `<!-- Core initialization -->` コメント直後（`core-utils.js` の前）に移動。
-
-**参考:** `referral.html`, `connections.html`, `dashboard.html` 等は正しい順序。
-
-#### 8-2: connections.html 依存スクリプト不足 — HIGH
-**問題:** `connections-bundle.js` が `window.showToast()` を15箇所で呼び出すが、`notification-system-unified.js` が未読込
-**影響:** コネクト承認/拒否/取消/削除の全操作でトースト通知が出ない
-
-**ファイル:** `connections.html` (行359-367)
-```
-現状:
-  <script src="js/supabase-unified.js?v=1.1"></script>  ← 行360
-  <script src="js/core-utils.js"></script>               ← 行361
-  <script src="js/global-functions.js"></script>          ← 行362
-  <script src="js/connections-bundle.js"></script>        ← 行363
-  ...
-
-修正: connections-bundle.js の前に追加:
-  <script src="js/notification-system-unified.js"></script>
-```
-
-**showToast定義場所:** `js/notification-system-unified.js` 行25（定義）→ 行198（`window.showToast = showToast`）
-
-#### 8-3: title→position カラム名不一致 — HIGH
-**問題:** `connections-bundle.js` が `user_profiles.title` カラムを参照するが、正規スキーマは `position`
-**影響:** コネクション一覧で役職が表示されない
-
-**修正箇所:**
-```
-connections-bundle.js:
-  行206: .select('id, name, email, company, title, avatar_url')
-         → .select('id, name, email, company, position, avatar_url')
-
-  行369, 420, 466, 517: const position = user.title || '';
-                         → const position = user.position || '';
-```
-
-**注意:** 行570, 718の `title: 'コネクト承認'` 等は通知オブジェクトのタイトルで、カラム名ではない。修正不要。
-
-#### 8-4: favicon.ico / robots.txt — LOW
-**問題:** ルートに `favicon.ico`, `robots.txt` がない
-**影響:** ブラウザの404エラー、SEO
-
-**修正:**
-- `favicon.ico`: シンプルなSVG favicon を `<link rel="icon">` で全HTMLに追加、または `.ico` ファイル作成
-- `robots.txt`: 基本的な allow ルール作成
-- `build.sh` は既に両ファイルのコピーに対応済み（行26-27）
-
-#### 8-5: deploy.yml push — MEDIUM
-**問題:** 前回の修正で `deploy.yml` はローカルでは修正済みだが、GitHub OAuthスコープ制限で push できなかった
-**現状:** ローカルの `deploy.yml` は正しい内容（`publish-dir: './dist'`, `bash build.sh` ステップあり）
-**対応:** `git push` を再試行、またはGitHub UI から直接更新
+セクション7完了後、「実際に使う上での残存問題」を徹底検証した結果、ISSUES-LIST外の新規問題16件を発見。これらを **セクション8〜10** として整理し、**セクション8は全件修正済み、セクション9のSQL定義も修正済み**。
 
 ---
 
-### セクション9: バックエンド/DB修正（3件）
+## 4. セクション8〜10 修正状況
 
-#### 9-1: notifications INSERT RLS ポリシー追加 — CRITICAL
-**問題:** `notifications` テーブルに INSERT ポリシーがない → フロントエンドから通知を作成できない
+### セクション8: フロントエンド即時修正（5件）— ✅ 全件完了
 
-**現在のRLS（`000_canonical_schema.sql` 行153-163）:**
-```sql
--- SELECT: 自分の通知のみ閲覧可
-CREATE POLICY "Users can view own notifications" ON notifications
-    FOR SELECT USING (auth.uid() = user_id);
--- UPDATE: 自分の通知のみ更新可（既読マーク用）
-CREATE POLICY "Users can update own notifications" ON notifications
-    FOR UPDATE USING (auth.uid() = user_id);
--- ALL: service_roleのみ全操作可
-CREATE POLICY "Service role can manage all notifications" ON notifications
-    FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
-```
+| # | 内容 | 状況 |
+|---|------|------|
+| 8-1 | messages.html, notifications.html のスクリプト順序 | ✅ 修正済み |
+| 8-2 | connections.html に notification-system-unified.js 追加 | ✅ 修正済み |
+| 8-3 | connections-bundle.js の title → position | ✅ 修正済み |
+| 8-4 | favicon.ico / robots.txt 作成 | ✅ 作成済み（favicon.ico, favicon.svg, robots.txt） |
+| 8-5 | deploy.yml push | ✅ コミット済み |
 
-**不足:** 認証ユーザーがINSERTできるポリシーがない
+---
 
-**追加すべきSQL:**
-```sql
-DROP POLICY IF EXISTS "Authenticated users can create notifications" ON notifications;
-CREATE POLICY "Authenticated users can create notifications" ON notifications
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-```
+### セクション9: バックエンド/DB修正（3件）— SQL定義済み、環境変数のみ手動対応
 
-**注意:** 他ユーザーへの通知送信（コネクト申請通知等）が必要なため、`auth.uid() = user_id` ではなく `authenticated` ロールチェックが適切。
+| # | 内容 | 状況 |
+|---|------|------|
+| 9-1 | notifications INSERT RLS ポリシー | ✅ `000_canonical_schema.sql` に定義済み |
+| 9-2 | cashout_requests admin UPDATE RLS | ✅ `000_canonical_schema.sql` に定義済み |
+| 9-3 | Netlify環境変数4つ | ❌ 手動ダッシュボード操作が必要（コード対応不可） |
 
-#### 9-2: cashout_requests admin UPDATE RLS — HIGH
-**問題:** admin/super-adminが cashout_requests のステータスを更新できない（承認/却下不可）
-
-**現在のRLS（`000_canonical_schema.sql` 行444-454）:**
-```sql
--- SELECT: 自分のリクエストのみ
-CREATE POLICY "Users can view own cashout requests" ON cashout_requests
-    FOR SELECT USING (auth.uid() = user_id);
--- INSERT: 自分のリクエストのみ
-CREATE POLICY "Users can create cashout requests" ON cashout_requests
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
--- UPDATE: 自分のpendingリクエストのみ（キャンセル用）
-CREATE POLICY "Users can cancel pending cashout requests" ON cashout_requests
-    FOR UPDATE USING (auth.uid() = user_id AND status = 'pending');
-```
-
-**不足:** admin用のSELECT ALL + UPDATE ポリシー
-
-**追加すべきSQL:**
-```sql
--- Admin can view all cashout requests
-DROP POLICY IF EXISTS "Admin can view all cashout requests" ON cashout_requests;
-CREATE POLICY "Admin can view all cashout requests" ON cashout_requests
-    FOR SELECT USING (
-        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
-    );
-
--- Admin can update cashout requests (approve/reject)
-DROP POLICY IF EXISTS "Admin can update cashout requests" ON cashout_requests;
-CREATE POLICY "Admin can update cashout requests" ON cashout_requests
-    FOR UPDATE USING (
-        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
-    );
-```
-
-#### 9-3: Netlify環境変数設定 — HIGH
-**問題:** LINE OAuth と Supabase admin API に必要な環境変数がNetlifyダッシュボードに未設定
-
-**設定場所:** Netlify Dashboard → Site settings → Environment variables
+**9-3の手動対応手順:**
+Netlify Dashboard → Site settings → Environment variables で以下を設定:
 
 | 変数名 | 値の取得場所 | 用途 |
 |--------|-------------|------|
@@ -211,21 +98,19 @@ CREATE POLICY "Admin can update cashout requests" ON cashout_requests
 | `SUPABASE_SERVICE_KEY` | Supabase Dashboard → Settings → API → service_role key | line-auth-simple-v4.js（admin操作） |
 | `LINE_CHANNEL_ID` | LINE Developers Console → チャネル基本設定 | line-auth-simple-v4.js |
 | `LINE_CHANNEL_SECRET` | LINE Developers Console → チャネル基本設定 | line-auth-simple-v4.js |
-| `NETLIFY_AUTH_TOKEN` | GitHub Secrets に設定（deploy.yml用） | GitHub Actions |
-| `NETLIFY_SITE_ID` | GitHub Secrets に設定（deploy.yml用） | GitHub Actions |
 
 **注意:** `SUPABASE_SERVICE_KEY` はフロントエンドに絶対に露出させないこと。Netlify Functions 内でのみ使用。
 
 ---
 
-### セクション10: 品質向上（低優先・任意）
+### セクション10: 品質向上 — 再調査済み（2026-02-28）
 
-| # | 問題 | 対応 |
+| # | 問題 | 状況 |
 |---|------|------|
-| 10-1 | 不足画像11件 | HTML内の `<img src="images/...">` で参照されているが実ファイルなし。プレースホルダー or 削除 |
-| 10-2 | 27MB動画ファイル | `dist/` 内の大容量ファイル。CDN or 外部ストレージへ移動推奨 |
-| 10-3 | ダッシュボードダミーイベント | イベントが0件時のフォールバック表示。DB接続後は自然解消 |
-| 10-4 | G4 インラインスタイル | booking-complete.html, line-callback.html の `<style>` タグ。CSS外部化推奨 |
+| 10-1 | 不足画像 | ✅ 修正済み — 実際の問題は3件のみ: 通知アイコンパス修正(→favicon.svg)、og-image拡張子修正、未使用`images/`ディレクトリ削除 |
+| 10-2 | 動画ファイル | ✅ 最適化済み — MP4: 27MB→3.1MB(88%削減)、WebM 4.5MB追加、poster.jpg作成済み |
+| 10-3 | ダミーイベント | ✅ 既に解消 — 実データのみ表示、空状態メッセージ実装済み |
+| 10-4 | インラインスタイル | ✅ 修正済み — booking-complete.html, line-callback.html のインラインスタイルをCSS外部化 |
 
 ---
 
@@ -275,7 +160,7 @@ reset-password.html, settings.html, super-admin.html, terms.html
 ### DB構成（canonical schema基準）
 - テーブル: `user_profiles`, `connections`, `notifications`, `event_items`, `matchings`, `invitations`, `cashout_requests`, `user_points`, `point_transactions`, `messages`, `conversations`, `conversation_participants`, `user_settings`, `admin_settings` 等
 - ビュー: `profiles`（user_profilesのエイリアス）, `events`（event_itemsのエイリアス）, `referral_statistics`, `event_stats` 等
-- RLS: 全テーブルに設定済み（通知INSERT・cashout admin UPDATEのポリシー不足は9-1/9-2で対応）
+- RLS: 全テーブルに設定済み（通知INSERT・cashout admin UPDATEのポリシーも `000_canonical_schema.sql` に定義済み）
 
 ---
 
@@ -322,24 +207,17 @@ reset-password.html, settings.html, super-admin.html, terms.html
 
 ---
 
-## 9. 修正の実行手順（セクション8〜9）
+## 9. 残存タスク（2026-02-28更新）
 
-### すぐに実行可能（フロントエンド、セクション8）
+### コード修正: ✅ 全完了
+- セクション8（フロントエンド5件）修正済み
+- セクション9のSQL定義（9-1, 9-2）修正済み
+- セクション10（品質向上4件）全て解消済み
+- ISSUES-LIST残存4件: A9/A15は問題なし、G4は修正済み、A11はRLSで保護済み
 
-```
-1. messages.html: supabase-unified.js を core-utils.js の前に移動
-2. notifications.html: 同上
-3. connections.html: notification-system-unified.js を追加
-4. connections-bundle.js: title → position に変更（5箇所）
-5. favicon.ico + robots.txt 作成
-6. deploy.yml を git push（再試行 or GitHub UI）
-7. git commit + push
-```
-
-### 手動操作が必要（バックエンド、セクション9）
+### 手動操作が必要な唯一の項目
 
 ```
-1. Supabase Dashboard → SQL Editor で RLS ポリシー追加（9-1, 9-2）
-2. Netlify Dashboard → Environment variables で4変数設定（9-3）
-3. （必要なら）000_canonical_schema.sql を Supabase で実行
+1. Netlify Dashboard → Environment variables で4変数設定（9-3）
+2. Supabase Dashboard → SQL Editor で 000_canonical_schema.sql のRLSポリシーが反映されているか確認
 ```

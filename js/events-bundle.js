@@ -209,13 +209,27 @@
             this.updateResultCount(events.length);
 
             if (!events || events.length === 0) {
+                const ctaBtn = this.searchQuery
+                    ? '<button class="btn btn-secondary" style="margin-top:16px;" id="resetSearchBtn">検索をリセット</button>'
+                    : '<a href="mailto:info@inter-connect.jp?subject=イベントリクエスト" class="btn btn-primary" style="margin-top:16px;">イベントをリクエスト</a>';
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-alt"></i>
                         <h3>イベントがありません</h3>
                         <p>${this.searchQuery ? '検索条件に一致するイベントが見つかりませんでした' : '現在表示できるイベントはありません'}</p>
+                        ${ctaBtn}
                     </div>
                 `;
+                const resetBtn = document.getElementById('resetSearchBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => {
+                        const input = document.getElementById('eventSearchInput');
+                        if (input) {
+                            input.value = '';
+                            input.dispatchEvent(new Event('input'));
+                        }
+                    });
+                }
                 return;
             }
 

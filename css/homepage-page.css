@@ -51,7 +51,7 @@
     margin-bottom: 24px;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    visibility: hidden; /* ローディング完了まで非表示（JSのタイプライターで表示） */
+    opacity: 0; /* ローディング完了まで非表示（JSのタイプライターで表示） */
     font-family: 'Courier New', 'Monaco', monospace;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 0, 0, 0.3);
 }
@@ -61,7 +61,7 @@
     color: rgba(255, 255, 255, 0.9);
     margin-bottom: 48px;
     line-height: 1.6;
-    visibility: hidden; /* ローディング完了まで非表示（JSのタイプライターで表示） */
+    opacity: 0; /* ローディング完了まで非表示（JSのタイプライターで表示） */
     font-family: 'Courier New', 'Monaco', monospace;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
@@ -1598,7 +1598,7 @@ video.error ~ .video-fallback {
 .hero-video-container {
     /* position: absolute は先のルールで定義済み — relativeに変えない */
     background: linear-gradient(135deg, #1a1f3a 0%, #0a0e27 100%);
-    background-image: url('../assets/video-poster.svg');
+    background-image: url('../assets/video-poster.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

@@ -130,6 +130,9 @@
 
         } catch (error) {
             console.error('[NotificationsUnified] 通知読み込みエラー:', error);
+            if (window.showToast) {
+                window.showToast('通知の読み込みに失敗しました', 'error');
+            }
         }
     }
 
@@ -345,6 +348,9 @@
 
         } catch (error) {
             console.error('[NotificationsUnified] 既読更新エラー:', error);
+            if (window.showToast) {
+                window.showToast('既読の更新に失敗しました', 'error');
+            }
         }
     }
 
@@ -376,12 +382,15 @@
 
         } catch (error) {
             console.error('[NotificationsUnified] 全て既読エラー:', error);
+            if (window.showToast) {
+                window.showToast('既読処理に失敗しました', 'error');
+            }
         }
     }
 
     // 通知削除
     window.deleteNotification = async function(notificationId) {
-        if (!confirm('この通知を削除してもよろしいですか？')) return;
+        if (!await window.showConfirmModal('この通知を削除してもよろしいですか？', { confirmLabel: '削除', danger: true })) return;
 
         try {
             const { error } = await window.supabaseClient
@@ -398,6 +407,9 @@
 
         } catch (error) {
             console.error('[NotificationsUnified] 削除エラー:', error);
+            if (window.showToast) {
+                window.showToast('通知の削除に失敗しました', 'error');
+            }
         }
     };
 
@@ -634,8 +646,8 @@
             try {
                 const browserNotification = new Notification(notification.title || '新しい通知', {
                     body: notification.message || '',
-                    icon: '/favicon.svg',
-                    badge: '/favicon.svg',
+                    icon: '/assets/notification-icon.png',
+                    badge: '/assets/notification-icon.png',
                     tag: notification.id,
                     requireInteraction: false,
                     silent: false

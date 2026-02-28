@@ -13,22 +13,16 @@
         }
 
         // 現在のユーザーを確認
-        window.supabaseClient.auth.getUser().then(({ data: { user } }) => {
+        window.supabaseClient.auth.getUser().then(async ({ data: { user } }) => {
             if (user) {
-                // console.log('[RegisterAuthCheck] ログイン済みユーザー検出:', user.email);
-
-                // アラートを表示
-                if (confirm('既にログイン済みです。ダッシュボードに移動しますか？')) {
+                if (await window.showConfirmModal('既にログイン済みです。ダッシュボードに移動しますか？', { confirmLabel: 'ダッシュボードへ' })) {
                     window.location.href = '/dashboard.html';
                 } else {
-                    // ログアウトするか確認
-                    if (confirm('新規登録を行うには、一度ログアウトする必要があります。ログアウトしますか？')) {
+                    if (await window.showConfirmModal('新規登録を行うには、一度ログアウトする必要があります。ログアウトしますか？', { confirmLabel: 'ログアウト' })) {
                         window.supabaseClient.auth.signOut().then(() => {
-                            // console.log('[RegisterAuthCheck] ログアウト完了');
                             window.location.reload();
                         });
                     } else {
-                        // ダッシュボードに移動
                         window.location.href = '/dashboard.html';
                     }
                 }
@@ -692,7 +686,7 @@ function showSuccessMessage(message) {
 
         // エラー表示
         if (errors.length > 0) {
-            alert(errors.join('\n'));
+            if (window.showToast) window.showToast(errors.join('、'), 'error');
             return false;
         }
 
@@ -1141,7 +1135,7 @@ function showSuccessMessage(message) {
                 });
 
                 if (errors.length > 0) {
-                    alert('以下の項目を確認してください：\n\n' + errors.join('\n'));
+                    if (window.showToast) window.showToast('以下の項目を確認してください：' + errors.join('、'), 'error');
                     return false;
                 }
             }
@@ -1618,7 +1612,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (file) {
                 // ファイルサイズチェック（5MB以下）
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('ファイルサイズは5MB以下にしてください');
+                    if (window.showToast) window.showToast('ファイルサイズは5MB以下にしてください', 'error');
                     fileInput.value = '';
                     window._selectedLineQrFile = null;
                     return;
@@ -1626,7 +1620,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // ファイルタイプチェック
                 if (!file.type.match(/^image\/(png|jpg|jpeg)$/i)) {
-                    alert('PNG、JPG、JPEG形式の画像をアップロードしてください');
+                    if (window.showToast) window.showToast('PNG、JPG、JPEG形式の画像をアップロードしてください', 'error');
                     fileInput.value = '';
                     window._selectedLineQrFile = null;
                     return;
@@ -1820,6 +1814,14 @@ window.InterConnect.Registration.validateCurrentStep = function(stepNum) {
         }
     }
 
+    // 最初のエラーフィールドにスクロール
+    if (!isValid) {
+        const firstError = currentStepElement.querySelector('.form-group.error');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
     return isValid;
 };
 
@@ -1833,6 +1835,13 @@ window.InterConnect.Registration.showFieldError = function(field, message) {
 
     const formGroup = field.closest('.form-group');
     if (!formGroup) return;
+
+    // 既にエラー状態の場合、shakeアニメーションを再トリガー
+    if (formGroup.classList.contains('error')) {
+        field.style.animation = 'none';
+        field.offsetHeight; // reflow強制
+        field.style.animation = '';
+    }
 
     formGroup.classList.add('error');
 

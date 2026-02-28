@@ -832,7 +832,7 @@ window.cashoutModal = new CashoutModal();
 
     // リンクの削除
     window.deleteLink = async function(linkId) {
-        if (!confirm('このリンクを削除してもよろしいですか？')) {
+        if (!await window.showConfirmModal('このリンクを削除してもよろしいですか？', { confirmLabel: '削除', danger: true })) {
             return;
         }
 

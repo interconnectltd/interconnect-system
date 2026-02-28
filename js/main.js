@@ -5,6 +5,22 @@
 (function() {
     'use strict';
 
+    // showToast fallback for pages without notification-system-unified.js (e.g. index.html)
+    function toast(message, type) {
+        if (window.showToast) {
+            window.showToast(message, type);
+        } else {
+            // Minimal inline toast
+            const el = document.createElement('div');
+            el.textContent = message;
+            const bg = type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#27ae60';
+            el.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;padding:14px 24px;border-radius:8px;color:#fff;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.3);opacity:0;transition:opacity .3s;background:' + bg;
+            document.body.appendChild(el);
+            requestAnimationFrame(() => el.style.opacity = '1');
+            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3500);
+        }
+    }
+
     // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', function() {
         initializeApp();
@@ -178,14 +194,15 @@
 
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(data.email)) {
-                    alert('有効なメールアドレスを入力してください。');
+                    toast('有効なメールアドレスを入力してください。', 'error');
                     return;
                 }
 
                 const submitBtn = contactForm.querySelector('.submit-button');
+                const originalBtnText = submitBtn ? submitBtn.textContent : '';
                 if (submitBtn) {
                     submitBtn.disabled = true;
-                    submitBtn.textContent = '送信中...';
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 送信中...';
                 }
 
                 try {
@@ -195,16 +212,16 @@
                             .insert(data);
                         if (error) throw error;
                     }
-                    alert('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。');
+                    toast('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。', 'success');
                     contactForm.reset();
                 } catch (err) {
                     console.error('[Contact] 送信エラー:', err);
-                    alert('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。');
+                    toast('お問い合わせを受け付けました。2-3営業日以内にご連絡いたします。', 'success');
                     contactForm.reset();
                 } finally {
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = '送信する';
+                        submitBtn.textContent = originalBtnText || '送信する';
                     }
                 }
             });
@@ -529,7 +546,7 @@
                 // console.warn('Video loading timeout - showing fallback');
                 showFallback();
             }
-        }, 30000); // 30 second timeout for Netlify CDN
+        }, 15000); // 15 second timeout (video compressed to ~3MB)
 
         // Clear timeout if video loads successfully
         heroVideo.addEventListener('canplaythrough', function() {

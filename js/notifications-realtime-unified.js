@@ -383,8 +383,8 @@
     function showBrowserNotification(notification) {
         const options = {
             body: notification.message || '',
-            icon: '/images/logo-icon.png',
-            badge: '/images/logo-badge.png',
+            icon: '/assets/notification-icon.png',
+            badge: '/assets/notification-icon.png',
             tag: notification.id,
             requireInteraction: false
         };

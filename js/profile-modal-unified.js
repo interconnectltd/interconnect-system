@@ -831,7 +831,7 @@
             try {
                 const user = await window.safeGetUser();
                 if (!user) {
-                    alert('ログインが必要です');
+                    if (window.showToast) window.showToast('ログインが必要です', 'warning');
                     return;
                 }
 
@@ -844,7 +844,7 @@
                     .maybeSingle();
 
                 if (existing) {
-                    alert('既にコネクト申請済みです');
+                    if (window.showToast) window.showToast('既にコネクト申請済みです', 'warning');
                     return;
                 }
 
@@ -859,12 +859,12 @@
 
                 if (error) throw error;
 
-                alert('コネクト申請を送信しました！');
+                if (window.showToast) window.showToast('コネクト申請を送信しました！', 'success');
                 this.close();
 
             } catch (error) {
                 console.error('[ProfileDetailModal] コネクト申請エラー:', error);
-                alert('コネクト申請の送信に失敗しました');
+                if (window.showToast) window.showToast('コネクト申請の送信に失敗しました', 'error');
             }
         }
 
@@ -877,12 +877,12 @@
             try {
                 const user = await window.safeGetUser();
                 if (!user) {
-                    alert('ログインが必要です');
+                    if (window.showToast) window.showToast('ログインが必要です', 'warning');
                     return;
                 }
 
                 // ブックマーク機能（仮実装）
-                alert('ブックマーク機能は準備中です');
+                if (window.showToast) window.showToast('ブックマーク機能は準備中です', 'info');
 
             } catch (error) {
                 console.error('[ProfileDetailModal] ブックマークエラー:', error);

@@ -141,9 +141,8 @@
             btn.addEventListener('click', async function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                // console.log(`[UserDropdown] ログアウトボタン${index}がクリックされました`);
-                
-                if (confirm('ログアウトしますか？')) {
+
+                if (await window.showConfirmModal('ログアウトしますか？', { confirmLabel: 'ログアウト' })) {
                     // console.log('[UserDropdown] ログアウト処理を開始');
                     
                     try {
@@ -172,9 +171,8 @@
                         // console.log('[UserDropdown] ログアウト完了');
                     } catch (error) {
                         console.error('[UserDropdown] ログアウト失敗:', error);
-                        // alert('ログアウトに失敗しました');
-                        if (window.showError) {
-                            showError('ログアウトに失敗しました');
+                        if (window.showToast) {
+                            window.showToast('ログアウトに失敗しました', 'error');
                         }
                     }
                 }

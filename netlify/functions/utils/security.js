@@ -40,7 +40,7 @@ function validateRequest(event, requiredFields = []) {
             response: {
                 statusCode: 200,
                 headers: {
-                    'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || 'https://interconnect-system.netlify.app',
+                    'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || 'https://inter-connect.app',
                     'Access-Control-Allow-Headers': 'Content-Type',
                     'Access-Control-Allow-Methods': 'POST, OPTIONS'
                 },

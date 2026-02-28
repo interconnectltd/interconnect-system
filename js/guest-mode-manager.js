@@ -70,7 +70,7 @@
 
             if (restrictedPages.includes(currentPage)) {
                 // ゲストユーザーは管理者ページにアクセス不可
-                alert('ゲストモードではこのページにアクセスできません。');
+                if (window.showToast) { window.showToast('ゲストモードではこのページにアクセスできません。', 'warning'); } else { alert('ゲストモードではこのページにアクセスできません。'); }
                 window.location.href = 'dashboard.html?guest=true';
             }
         }

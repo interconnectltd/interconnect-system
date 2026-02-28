@@ -110,7 +110,7 @@ Tech Stack: Vanilla JS + HTML/CSS, Supabase (PostgreSQL + Auth + Realtime), Netl
 SDK: Supabase JS v2.95.3 (CDN, SRI)
 Auth: Email/Password + LINE OAuth (Magic Link)
 Canonical Schema: sql/000_canonical_schema.sql
-Site URL: https://interconnect-system.netlify.app
+Site URL: https://inter-connect.app
 Supabase: https://zrddqaaaoerbguwxrlic.supabase.co
 
 Script Load Order (authenticated pages):

@@ -52,3 +52,6 @@ sync-*.log
 
 # Development specific
 *.sublime-*
+
+# Original uncompressed video backup
+assets/interconnect-top-original.mp4

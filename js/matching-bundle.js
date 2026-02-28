@@ -618,7 +618,7 @@
             // 現在のユーザーID取得
             const user = await window.safeGetUser();
             if (!user) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>ログインが必要です</h3></div>';
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>ログインが必要です</h3><p>マッチング機能を使うにはログインしてください</p><a href="login.html" class="btn btn-primary" style="margin-top:16px;">ログイン</a></div>';
                 return;
             }
             
@@ -710,7 +710,7 @@
             });
             
             if (!users || users.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><h3>マッチング候補が見つかりません</h3><p>条件を変更して再度お試しください</p></div>';
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><h3>マッチング候補が見つかりません</h3><p>条件を変更して再度お試しください</p><button class="btn btn-secondary" style="margin-top:16px;" onclick="location.reload()">フィルターをリセット</button></div>';
                 return;
             }
             
@@ -783,7 +783,7 @@
                 console.error('[MatchingUnified] matchingUsersが空です！');
                 const container = document.getElementById('matching-container');
                 if (container) {
-                    container.innerHTML = '<div class="empty-state">マッチング候補が見つかりません</div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><h3>マッチング候補が見つかりません</h3><button class="btn btn-secondary" style="margin-top:16px;" onclick="location.reload()">フィルターをリセット</button></div>';
                 }
             }
             

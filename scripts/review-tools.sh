@@ -258,9 +258,9 @@ fi
 echo ""
 echo "## 6. URL CONSISTENCY"
 echo "---"
-echo "Rule: All references should use 'interconnect-system.netlify.app'"
+echo "Rule: All references should use 'inter-connect.app'"
 
-OLD_URLS=$(grep -rn 'interconnect-auto' $EXCLUDE --exclude-dir=scripts . 2>/dev/null | grep -v '.git/' || true)
+OLD_URLS=$(grep -rn -E 'interconnect-auto|interconnect-system\.netlify\.app' $EXCLUDE --exclude-dir=scripts . 2>/dev/null | grep -v '.git/' || true)
 if [ -n "$OLD_URLS" ]; then
   echo "FOUND (old URL references):"
   echo "$OLD_URLS"

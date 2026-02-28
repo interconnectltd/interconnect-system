@@ -25,20 +25,28 @@
             const newButton = button.cloneNode(true);
             button.parentNode.replaceChild(newButton, button);
             
+            // Set initial ARIA attributes
+            newButton.setAttribute('aria-pressed', 'false');
+            newButton.setAttribute('title', 'パスワードを表示');
+
             newButton.addEventListener('click', function() {
                 const wrapper = this.closest('.password-input-wrapper');
                 const input = wrapper ? wrapper.querySelector('input[type="password"], input[type="text"]') : null;
                 const icon = this.querySelector('i');
-                
+
                 if (input && icon) {
                     if (input.type === 'password') {
                         input.type = 'text';
                         icon.classList.remove('fa-eye');
                         icon.classList.add('fa-eye-slash');
+                        this.setAttribute('aria-pressed', 'true');
+                        this.setAttribute('title', 'パスワードを隠す');
                     } else {
                         input.type = 'password';
                         icon.classList.remove('fa-eye-slash');
                         icon.classList.add('fa-eye');
+                        this.setAttribute('aria-pressed', 'false');
+                        this.setAttribute('title', 'パスワードを表示');
                     }
                 }
             });

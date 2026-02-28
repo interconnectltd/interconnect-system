@@ -26,5 +26,6 @@ cp -f _redirects "$DIST/" 2>/dev/null || true
 cp -f favicon.ico "$DIST/" 2>/dev/null || true
 cp -f favicon.svg "$DIST/" 2>/dev/null || true
 cp -f robots.txt "$DIST/" 2>/dev/null || true
+cp -f sitemap.xml "$DIST/" 2>/dev/null || true
 
 echo "Build complete: public files copied to $DIST/"

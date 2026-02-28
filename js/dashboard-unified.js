@@ -188,7 +188,7 @@
             if (!container) return;
 
             if (this.events.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>予定されているイベントはありません</p></div>';
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>予定されているイベントはありません</p><a href="events.html" class="btn btn-primary btn-small" style="margin-top:12px;">イベントを見る</a></div>';
                 return;
             }
 
@@ -259,7 +259,7 @@
             // フォールバック: 空状態を表示
             const container = document.querySelector('.activity-list');
             if (container) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>まだアクティビティがありません</p></div>';
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>まだアクティビティがありません</p><a href="matching.html" class="btn btn-primary btn-small" style="margin-top:12px;">マッチングを始める</a></div>';
             }
         }
     }

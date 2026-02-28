@@ -156,13 +156,13 @@ body::before {
 }
 
 .password-input-wrapper input {
-    padding-right: 50px !important;
+    padding-right: 54px !important;
 }
 
 /* パスワード表示ボタン */
 .password-toggle {
     position: absolute;
-    right: 16px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -170,11 +170,26 @@ body::before {
     color: #64748b;
     cursor: pointer;
     padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: color 0.2s ease;
     z-index: 2;
 }
 
 .password-toggle:hover {
+    color: #0066ff;
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid #0066ff;
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.password-toggle[aria-pressed="true"] {
     color: #0066ff;
 }
 
@@ -250,7 +265,7 @@ body::before {
     text-decoration: underline;
 }
 
-/* エラーメッセージ */
+/* エラーメッセージ（バナー型） */
 .error-message {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.2);
@@ -259,6 +274,51 @@ body::before {
     border-radius: 8px;
     margin-bottom: 20px;
     font-size: 0.875rem;
+}
+
+/* インラインフィールドエラー */
+.form-group.error input,
+.form-group.error textarea,
+.form-group.error select {
+    border-color: #ef4444 !important;
+    background: #fef2f2 !important;
+    animation: fieldShake 0.4s ease;
+}
+
+.form-group.error input:focus,
+.form-group.error textarea:focus,
+.form-group.error select:focus {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+}
+
+/* インラインエラーメッセージ（バナースタイルを上書き） */
+.form-group .error-message {
+    display: block;
+    color: #dc2626;
+    font-size: 0.8125rem;
+    margin-top: 6px;
+    margin-bottom: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+
+@keyframes fieldShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .form-group.error input,
+    .form-group.error textarea,
+    .form-group.error select {
+        animation: none;
+    }
 }
 
 /* 成功メッセージ */

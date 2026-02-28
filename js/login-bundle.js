@@ -62,7 +62,7 @@
     'use strict';
 
     const LINE_CHANNEL_ID = '2009174893';
-    const PRODUCTION_ORIGIN = 'https://interconnect-system.netlify.app';
+    const PRODUCTION_ORIGIN = 'https://inter-connect.app';
     const LINE_REDIRECT_URI = PRODUCTION_ORIGIN + '/line-callback.html';
 
     // console.log('📱 LINE Login Simple loaded');
@@ -118,7 +118,7 @@
 
         } catch (error) {
             console.error('LINE login error:', error);
-            alert('LINEログインでエラーが発生しました。もう一度お試しください。');
+            if (window.showToast) { window.showToast('LINEログインでエラーが発生しました。もう一度お試しください。', 'error'); } else { alert('LINEログインでエラーが発生しました。もう一度お試しください。'); }
         }
     }
 

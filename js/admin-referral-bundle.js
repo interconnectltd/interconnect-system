@@ -809,7 +809,7 @@ class AdminReferralManager {
 
     // アクション
     async approveCashout(cashoutId) {
-        if (!confirm('このキャッシュアウト申請を承認しますか？')) return;
+        if (!await window.showConfirmModal('このキャッシュアウト申請を承認しますか？', { confirmLabel: '承認' })) return;
 
         try {
             const currentUser = await window.safeGetUser();
@@ -876,7 +876,7 @@ class AdminReferralManager {
     }
 
     async resolveFlag(flagId) {
-        if (!confirm('このフラグを解決済みにしますか？')) return;
+        if (!await window.showConfirmModal('このフラグを解決済みにしますか？', { confirmLabel: '解決済みにする' })) return;
 
         try {
             const currentUser = await window.safeGetUser();
@@ -1137,7 +1137,7 @@ class ManualMeetingConfirmation {
             .map(cb => cb.value);
 
         if (verificationMethods.length === 0) {
-            alert('少なくとも1つの確認方法を選択してください');
+            if (window.showToast) window.showToast('少なくとも1つの確認方法を選択してください', 'warning');
             return;
         }
 

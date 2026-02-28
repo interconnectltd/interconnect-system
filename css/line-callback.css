@@ -41,6 +41,11 @@
 }
 
 .error-message {
+    display: none;
     color: #dc2626;
     margin-top: 16px;
+}
+
+.callback-icon.success {
+    color: #10b981;
 }

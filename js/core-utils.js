@@ -556,4 +556,98 @@
         }
     };
 
+    // ============================================================
+    // Part 5: Confirm Modal (confirm() の代替)
+    // ============================================================
+
+    /**
+     * カスタム確認モーダル
+     * await showConfirmModal('メッセージ') → true/false
+     */
+    var confirmModalCounter = 0;
+
+    window.showConfirmModal = function(message, options) {
+        options = options || {};
+        return new Promise(function(resolve) {
+            var confirmLabel = options.confirmLabel || '確認';
+            var cancelLabel = options.cancelLabel || 'キャンセル';
+            var isDanger = options.danger || false;
+            var resolved = false;
+
+            // ユニークID生成（重複防止）
+            var uid = 'confirm-modal-' + (++confirmModalCounter);
+
+            // オーバーレイ
+            var overlay = document.createElement('div');
+            overlay.className = 'confirm-modal-overlay';
+
+            // モーダル本体
+            var modal = document.createElement('div');
+            modal.className = 'confirm-modal';
+            modal.setAttribute('role', 'alertdialog');
+            modal.setAttribute('aria-modal', 'true');
+
+            // メッセージ
+            var msgEl = document.createElement('p');
+            msgEl.id = uid;
+            modal.setAttribute('aria-labelledby', uid);
+            msgEl.className = 'confirm-modal-message';
+            msgEl.textContent = message;
+
+            // ボタンコンテナ
+            var btnContainer = document.createElement('div');
+            btnContainer.className = 'confirm-modal-buttons';
+
+            var cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn btn-outline confirm-modal-cancel';
+            cancelBtn.textContent = cancelLabel;
+
+            var confirmBtn = document.createElement('button');
+            confirmBtn.className = isDanger
+                ? 'btn confirm-modal-confirm confirm-modal-danger'
+                : 'btn btn-primary confirm-modal-confirm';
+            confirmBtn.textContent = confirmLabel;
+
+            btnContainer.appendChild(cancelBtn);
+            btnContainer.appendChild(confirmBtn);
+            modal.appendChild(msgEl);
+            modal.appendChild(btnContainer);
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            var prevOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+
+            // フォーカスをモーダルに移動
+            confirmBtn.focus();
+
+            function cleanup(result) {
+                if (resolved) return;
+                resolved = true;
+                document.removeEventListener('keydown', onKeyDown);
+                document.body.style.overflow = prevOverflow;
+                overlay.classList.add('confirm-modal-closing');
+                setTimeout(function() {
+                    if (overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                    }
+                }, 200);
+                resolve(result);
+            }
+
+            confirmBtn.addEventListener('click', function() { cleanup(true); });
+            cancelBtn.addEventListener('click', function() { cleanup(false); });
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) { cleanup(false); }
+            });
+
+            // Escape キーで閉じる
+            function onKeyDown(e) {
+                if (e.key === 'Escape') {
+                    cleanup(false);
+                }
+            }
+            document.addEventListener('keydown', onKeyDown);
+        });
+    };
+
 })();

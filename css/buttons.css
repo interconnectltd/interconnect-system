@@ -98,7 +98,7 @@
 .btn-small {
     padding: var(--space-xs) var(--space-md);
     font-size: 0.875rem;
-    min-height: 36px;
+    min-height: 44px;
 }
 
 .btn-large {
@@ -122,8 +122,8 @@
 }
 
 .btn-icon.btn-small {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
 }
 
 /* Text button */
@@ -205,7 +205,7 @@
     .btn-small {
         padding: var(--space-xs) var(--space-sm);
         font-size: 0.8125rem;
-        min-height: 32px;
+        min-height: 40px;
     }
     
     .btn-large {
@@ -220,8 +220,113 @@
         font-size: 0.8125rem;
         min-height: 36px;
     }
-    
+
     .btn i {
         font-size: 0.875rem;
+    }
+}
+
+/* ===========================
+   Confirm Modal (confirm() replacement)
+   =========================== */
+.confirm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: confirmFadeIn 0.2s ease;
+    padding: 20px;
+}
+
+.confirm-modal-overlay.confirm-modal-closing {
+    animation: confirmFadeOut 0.2s ease forwards;
+}
+
+.confirm-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: confirmSlideIn 0.2s ease;
+}
+
+.confirm-modal-closing .confirm-modal {
+    animation: confirmSlideOut 0.2s ease forwards;
+}
+
+.confirm-modal-message {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #1e293b;
+    margin: 0 0 24px;
+    white-space: pre-line;
+}
+
+.confirm-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.confirm-modal-buttons .btn {
+    min-width: 100px;
+}
+
+.confirm-modal-danger {
+    background: #ef4444;
+    color: white;
+    border: 2px solid #ef4444;
+}
+
+.confirm-modal-danger:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+@keyframes confirmFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes confirmFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes confirmSlideIn {
+    from { transform: translateY(-20px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes confirmSlideOut {
+    from { transform: translateY(0) scale(1); opacity: 1; }
+    to { transform: translateY(-20px) scale(0.95); opacity: 0; }
+}
+
+@media (max-width: 480px) {
+    .confirm-modal {
+        padding: 24px;
+    }
+
+    .confirm-modal-buttons {
+        flex-direction: column-reverse;
+    }
+
+    .confirm-modal-buttons .btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .confirm-modal-overlay,
+    .confirm-modal-overlay.confirm-modal-closing,
+    .confirm-modal,
+    .confirm-modal-closing .confirm-modal {
+        animation: none;
     }
 }

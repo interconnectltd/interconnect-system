@@ -244,7 +244,7 @@
                                 window.membersProfileModal.show(memberId);
                             } else {
                                 // モーダルが利用できない場合のみアラート表示
-                                alert('プロフィールを読み込み中です。もう一度お試しください。');
+                                if (window.showToast) window.showToast('プロフィールを読み込み中です。もう一度お試しください。', 'warning');
                             }
                         }, 500);
                     }

@@ -1,7 +1,7 @@
 # INTERCONNECT - System Architecture
 
 > 日本語ビジネスコミュニティプラットフォーム
-> Last Updated: 2026-02-16
+> Last Updated: 2026-02-28
 
 ---
 
@@ -23,7 +23,7 @@ Backend  : Supabase — 完結（DB / Auth / Realtime / Storage / Edge Functions
 
 | Layer | Technology | 役割 |
 |-------|-----------|------|
-| Frontend | HTML5 / CSS3 / Vanilla JS | 静的ページ群（27 HTML, 33 JS, 32 CSS） |
+| Frontend | HTML5 / CSS3 / Vanilla JS | 静的ページ群（29 HTML, 34 JS, 32 CSS） |
 | Hosting | Netlify | CDN 配信・セキュリティヘッダー・リダイレクト |
 | Functions | Netlify Functions (Node.js) | LINE OAuth 認証処理 |
 | Database | Supabase PostgreSQL | データ永続化・RLS 認可・DB 関数・Trigger |
@@ -36,6 +36,7 @@ Backend  : Supabase — 完結（DB / Auth / Realtime / Storage / Edge Functions
 | Icons | Font Awesome 6.4.0 (CDN, SRI) | |
 | Fonts | Google Fonts (Inter, Noto Sans JP) | |
 | SDK | Supabase JS v2.95.3 (CDN, SRI) | |
+| LIFF | LINE Front-end Framework SDK v2 | LINEアプリ内自動ログイン |
 
 ---
 
@@ -288,9 +289,35 @@ Netlify Function: line-auth-simple-v4.js
 
 **セキュリティ**:
 - LINE Channel Secret は Netlify 環境変数に保持（クライアントに露出しない）
-- Netlify Function で CORS オリジン制限（`interconnect-system.netlify.app` + localhost）
+- Netlify Function で CORS オリジン制限（`inter-connect.app` + localhost）
 - リダイレクト URL のバリデーション（`isValidRedirectURL`）
 - レートリミット（`checkRateLimit`）
+
+### 6.3 LIFF（LINE Front-end Framework）認証
+
+LINEアプリ内でページを開いた場合の自動ログインフロー。
+
+```
+[ユーザー] → LINEアプリ内で URL を開く
+    ↓
+liff-init.js: liff.init({ liffId: '2009174893-SzFZ1PZM' })
+    ↓
+liff.isInClient() === true → liff.login() で自動認可
+    ↓
+liff.getAccessToken() → Netlify Function（LIFFモード）
+    ↓
+line-auth-simple-v4.js: liff_access_token → LINE Profile API
+    ↓
+Supabase Admin: generateLink(magiclink) → OTP トークン返却
+    ↓
+クライアント: supabase.auth.verifyOtp() → セッション確立
+    ↓
+dashboard.html へリダイレクト
+```
+
+**LIFF ID**: `2009174893-SzFZ1PZM`（LINE Developers Console で発行）
+**対象ページ**: login.html, register.html, dashboard.html
+**ブラウザの場合**: LIFF 初期化はするが `isInClient() === false` で何もしない（通常の OAuth フローを使用）
 
 ---
 
@@ -324,16 +351,17 @@ supabaseClient
 
 ```
 interconnect/
-├── *.html                    # 27 HTML ページ
+├── *.html                    # 29 HTML ページ
 ├── css/                      # 32 CSS ファイル
-├── js/                       # 33 JavaScript ファイル
-├── assets/                   # SVG プレースホルダー + 動画
+├── js/                       # 34 JavaScript ファイル
+├── assets/                   # SVG/PNG プレースホルダー + 動画 + OG画像
 ├── includes/                 # HTML インクルード（header-right, security-meta）
 ├── sql/                      # スキーマ + 70+ マイグレーション SQL
 │   └── 000_canonical_schema.sql  # 正規スキーマ（唯一の真実源）
 ├── netlify/
 │   └── functions/
-│       └── line-auth-simple-v4.js  # LINE OAuth
+│       ├── line-auth-simple-v4.js  # LINE OAuth + LIFF 認証
+│       └── utils/security.js       # レートリミット・IP取得・URLバリデーション
 ├── supabase/
 │   └── functions/
 │       ├── timerex-webhook/index.ts
@@ -342,13 +370,14 @@ interconnect/
 ├── dist/                     # ビルド出力（公開ファイルのみ）
 ├── netlify.toml              # Netlify 設定
 ├── build.sh                  # ビルドスクリプト
-├── favicon.svg               # ファビコン
+├── favicon.ico               # ファビコン（ICO）
+├── favicon.svg               # ファビコン（SVG）
 ├── robots.txt                # クローラー指示
 └── .github/workflows/
     └── deploy.yml            # GitHub Actions CI/CD
 ```
 
-### 8.2 HTML ページ一覧（27 ファイル）
+### 8.2 HTML ページ一覧（29 ファイル）
 
 | ページ | ファイル | 認証要否 |
 |-------|---------|---------|
@@ -360,6 +389,7 @@ interconnect/
 | 招待受諾 | invite.html | 不要 |
 | 相談予約完了 | booking-complete.html | 不要 |
 | 会社概要 | about.html | 不要 |
+| ニュース | news.html | 不要 |
 | 利用規約 | terms.html | 不要 |
 | プライバシーポリシー | privacy.html | 不要 |
 | ダッシュボード | dashboard.html | 要 |
@@ -380,7 +410,7 @@ interconnect/
 | 管理者紹介管理 | admin-referral.html | 要（管理者のみ） |
 | サイト設定 | admin-site-settings.html | 要（管理者のみ） |
 
-### 8.3 JavaScript モジュール構成（33 ファイル）
+### 8.3 JavaScript モジュール構成（34 ファイル）
 
 #### 共通モジュール（全認証ページで使用）
 
@@ -429,6 +459,7 @@ interconnect/
 | `profile-modal-unified.js` | プロフィールモーダル |
 | `activities.js` | アクティビティページ |
 | `main.js` | ホームページ初期化 |
+| `liff-init.js` | LIFF 初期化・LINEアプリ内自動ログイン |
 
 ### 8.4 スクリプト読み込み順序（重要）
 
@@ -460,7 +491,7 @@ interconnect/
 | **ページ固有** | homepage-page.css, homepage-complete.css, profile.css, connections.css, messages-page.css, matching.css, members-page.css, events-page.css, dashboard-page.css, settings-page.css, referral-page.css, activities.css, booking-complete.css, invite.css, legal-pages.css |
 | **管理者** | admin.css, admin-forms.css, super-admin.css |
 
-### 8.6 アセット（10 ファイル）
+### 8.6 アセット（14 ファイル）
 
 ```
 assets/
@@ -470,11 +501,17 @@ assets/
 ├── placeholder-logo.svg      # ロゴプレースホルダー
 ├── placeholder-hero.svg      # ヒーロープレースホルダー
 ├── qr-placeholder.svg        # QR コードプレースホルダー
-├── video-poster.svg          # 動画ポスター
-├── og-image.svg              # OGP 画像（1200x630）
 ├── hero-fallback.svg         # ヒーローフォールバック
-└── interconnect-top.mp4      # ホームページ動画（27MB）
+├── video-poster.jpg          # 動画ポスター（97KB, JPG）
+├── notification-icon.png     # ブラウザ通知アイコン（192x192, 3KB）
+├── og-image.png              # OGP 画像（1200x630, 68KB, SNS共有用）
+├── og-image.svg              # OGP 画像ソース（SVG版、本番未使用）
+├── interconnect-top.mp4      # ホームページ動画（3.1MB, H.264, 960x540）
+├── interconnect-top.webm     # ホームページ動画（4.5MB, VP9, 960x540）
+└── interconnect-top-original.mp4  # 元動画（27MB, .gitignore対象）
 ```
+
+**注意**: `og-image.png`（PNG）が本番のog:imageメタタグで使用。SNSプラットフォームはSVGを非サポートのため。
 
 ---
 
@@ -500,7 +537,7 @@ assets/
 ```
 1. dist/ をクリーン
 2. *.html をコピー
-3. css/, js/, assets/, images/, sounds/, includes/ をコピー
+3. css/, js/, assets/, sounds/, includes/ をコピー（存在するディレクトリのみ）
 4. _headers, _redirects, favicon.ico, favicon.svg, robots.txt をコピー
 ```
 
@@ -522,14 +559,16 @@ assets/
 
 ```
 default-src 'self';
-script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://apis.google.com;
+script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://apis.google.com https://static.line-scdn.net;
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
 font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
 img-src 'self' data: blob: https://*.supabase.co https://ui-avatars.com https://profile.line-scdn.net;
-connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://api.line.me https://access.line.me;
+connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://api.line.me https://access.line.me https://liff.line.me;
 frame-src https://www.google.com;
 frame-ancestors 'none'
 ```
+
+**LIFF関連**: `script-src` に `https://static.line-scdn.net`（LIFF SDK配信元）、`connect-src` に `https://liff.line.me`（LIFF API）を追加済み。
 
 **注**: `'unsafe-inline'` は script-src / style-src で使用中。多数のインラインイベントハンドラとインラインスタイルが存在するため現状維持。
 
@@ -545,7 +584,7 @@ frame-ancestors 'none'
 
 Netlify Functions 用:
 ```
-Access-Control-Allow-Origin: https://interconnect-system.netlify.app
+Access-Control-Allow-Origin: https://inter-connect.app
 Access-Control-Allow-Headers: Content-Type, Authorization
 Access-Control-Allow-Methods: POST, OPTIONS
 ```
@@ -611,6 +650,7 @@ Steps:
 | サービス | 用途 | 連携方法 |
 |---------|------|---------|
 | LINE Login | ソーシャルログイン | OAuth 2.0 → Netlify Function → Magic Link |
+| LIFF | LINEアプリ内自動ログイン | LIFF SDK → Access Token → Netlify Function → Magic Link |
 | TimeRex | 面談予約 | Webhook → Supabase Edge Function |
 | tldv | 面談録画 | Webhook → Supabase Edge Function |
 | Supabase Storage | 画像保管 | Direct upload via SDK |
@@ -625,7 +665,7 @@ Steps:
 
 | 用途 | URL |
 |------|-----|
-| 本番サイト | `https://interconnect-system.netlify.app` |
+| 本番サイト | `https://inter-connect.app` |
 | Supabase | `https://zrddqaaaoerbguwxrlic.supabase.co` |
 | LINE OAuth Function | `/.netlify/functions/line-auth-simple-v4` |
 | TimeRex Webhook | `/api/timerex-webhook` → Supabase Edge Function |
@@ -639,5 +679,10 @@ Steps:
 2. **Supabase クライアント**: `window.supabaseClient` が正規名。`window.supabase` はエイリアス（supabase-unified.js で設定）
 3. **テーブル名**: イベントは `event_items`（`events` はビュー）
 4. **スキーマ真実源**: `sql/000_canonical_schema.sql` のみ。他の SQL はマイグレーション履歴
-5. **dist/ ディレクトリ**: ビルド出力。直接編集しないこと。ソースファイルを編集して再ビルド
+5. **dist/ ディレクトリ**: ビルド出力。直接編集しないこと。ソースファイルを編集して `bash build.sh` で再ビルド
 6. **deploy.yml 更新**: GitHub OAuth トークンに `workflow` スコープが必要
+7. **OG画像**: SNS共有には `og-image.png`（PNG）を使用。SVG は Facebook/Twitter/LINE 等で非サポート
+8. **通知アイコン**: `assets/notification-icon.png`（192x192 PNG）。Notification API は Chrome で SVG 非サポート
+9. **LIFF ID**: `2009174893-SzFZ1PZM`（LINE Developers Console で発行、liff-init.js にハードコード）
+10. **images/ ディレクトリ**: 削除済み。全アセットは `assets/` に統一
+11. **動画最適化**: 元の 27MB → MP4 3.1MB + WebM 4.5MB に圧縮済み。元ファイルは .gitignore 対象

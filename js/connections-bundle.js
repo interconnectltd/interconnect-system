@@ -77,6 +77,9 @@
                 
             } catch (error) {
                 console.error('[ConnectionsManager Simple] 初期化エラー:', error);
+                if (window.showToast) {
+                    window.showToast('コネクション情報の読み込みに失敗しました', 'error');
+                }
             }
         }
 
@@ -362,6 +365,7 @@
                         <i class="fas fa-inbox"></i>
                         <h3>承認待ちの申請はありません</h3>
                         <p>新しいコネクト申請が届くとここに表示されます</p>
+                        <a href="matching.html" class="btn btn-primary" style="margin-top:16px;">マッチング候補を探す</a>
                     </div>
                 `;
                 return;
@@ -515,6 +519,7 @@
                         <i class="fas fa-ban"></i>
                         <h3>拒否された申請はありません</h3>
                         <p>拒否またはキャンセルされた申請がここに表示されます</p>
+                        <a href="matching.html" class="btn btn-primary" style="margin-top:16px;">新しいコネクションを探す</a>
                     </div>
                 `;
                 return;
@@ -554,7 +559,7 @@
 
         async acceptConnection(connectionId, userId, userName) {
             // 確認ダイアログ
-            if (!confirm(`${userName}さんのコネクト申請を承認しますか？\n承認後は連絡先情報が相手に公開されます。`)) {
+            if (!await window.showConfirmModal(`${userName}さんのコネクト申請を承認しますか？\n承認後は連絡先情報が相手に公開されます。`, { confirmLabel: '承認' })) {
                 return;
             }
             
@@ -611,7 +616,7 @@
 
         async rejectConnection(connectionId, userId, userName) {
             // 確認ダイアログ
-            if (!confirm(`${userName}さんのコネクト申請を拒否しますか？`)) {
+            if (!await window.showConfirmModal(`${userName}さんのコネクト申請を拒否しますか？`, { confirmLabel: '拒否', danger: true })) {
                 return;
             }
             
@@ -646,7 +651,7 @@
 
         async cancelConnection(connectionId) {
             // 確認ダイアログ
-            if (!confirm('このコネクト申請を取り消しますか？')) {
+            if (!await window.showConfirmModal('このコネクト申請を取り消しますか？', { confirmLabel: '取り消す', danger: true })) {
                 return;
             }
             
@@ -680,7 +685,7 @@
         
         async removeConnection(connectionId, userId, userName) {
             // 確認ダイアログ
-            if (!confirm(`${userName}さんとのコネクションを削除しますか？\nこの操作は取り消せません。`)) {
+            if (!await window.showConfirmModal(`${userName}さんとのコネクションを削除しますか？\nこの操作は取り消せません。`, { confirmLabel: '削除', danger: true })) {
                 return;
             }
             
@@ -714,7 +719,7 @@
         
         async reacceptConnection(connectionId, userId, userName) {
             // 確認ダイアログ
-            if (!confirm(`${userName}さんのコネクト申請を再承認しますか？`)) {
+            if (!await window.showConfirmModal(`${userName}さんのコネクト申請を再承認しますか？`, { confirmLabel: '再承認' })) {
                 return;
             }
             

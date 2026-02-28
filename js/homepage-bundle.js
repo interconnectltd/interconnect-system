@@ -79,10 +79,9 @@
             // プログレスバーアニメーションを開始（段階的に）
             const bar = document.getElementById('loadingBar');
             if (bar) {
-                setTimeout(() => bar.style.width = '30%', 100);
-                setTimeout(() => bar.style.width = '60%', 500);
-                setTimeout(() => bar.style.width = '90%', 1000);
-                setTimeout(() => bar.style.width = '100%', 1800);
+                setTimeout(() => bar.style.width = '40%', 50);
+                setTimeout(() => bar.style.width = '80%', 150);
+                setTimeout(() => bar.style.width = '100%', 250);
             }
 
             // 動画の追加（重複チェック付き）
@@ -97,7 +96,7 @@
         },
 
         setupCompletion(screen) {
-            const minTime = 500;
+            const minTime = 300;
             const self = this;
 
             const complete = () => {
@@ -111,7 +110,7 @@
                 });
 
                 // ローディング画面フェードアウト
-                screen.style.transition = 'opacity 0.6s ease-out';
+                screen.style.transition = 'opacity 0.4s ease-out';
                 screen.style.opacity = '0';
 
                 // フェードアウト完了後にアニメーション開始
@@ -120,7 +119,7 @@
                     document.body.style.overflow = '';
                     document.body.classList.add('loading-complete');
                     self.onComplete();
-                }, 600);
+                }, 400);
             };
 
             setTimeout(() => {
@@ -163,8 +162,8 @@
         animateHeroTitle() {
             const elements = [
                 { selector: '.section-badge', delay: 0 },
-                { selector: '.hero-title', delay: 300 },
-                { selector: '.hero-subtitle', delay: 1200 }
+                { selector: '.hero-title', delay: 100 },
+                { selector: '.hero-subtitle', delay: 600 }
             ];
 
             elements.forEach(item => {
@@ -195,7 +194,7 @@
 
         typeWriter(element, text, iconHTML = '') {
             let index = 0;
-            const speed = 30;
+            const speed = 22;
 
             if (iconHTML) {
                 element.innerHTML = iconHTML;
@@ -219,7 +218,7 @@
                                 buttons.style.visibility = 'visible';
                                 buttons.style.transform = 'translateY(0)';
                             }
-                        }, 200);
+                        }, 100);
                     }
                 }
             }

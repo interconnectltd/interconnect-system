@@ -184,6 +184,11 @@
     background: #f9fafb;
 }
 
+.booking-fallback-message {
+    text-align: center;
+    color: #6b7280;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 640px) {
     .complete-container {
