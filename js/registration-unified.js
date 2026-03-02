@@ -643,24 +643,19 @@ function showSuccessMessage(message) {
         if (step === 2) {
             const challengeGroups = stepElement.querySelectorAll('.challenge-group');
             challengeGroups.forEach(group => {
-                const noChallengeChecked = group.querySelector('input[value="現状課題なし"]:checked');
-                const otherChallengesChecked = group.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])');
+                const exclusiveChecked = group.querySelector('input[data-exclusive]:checked');
+                const otherChallengesChecked = group.querySelectorAll('input[name="challenges"]:checked:not([data-exclusive])');
 
-                if (!noChallengeChecked && otherChallengesChecked.length === 0) {
+                if (!exclusiveChecked && otherChallengesChecked.length === 0) {
                     const groupTitle = group.querySelector('h4').textContent.trim();
-                    errors.push(`${groupTitle}の項目を選択するか、「現状課題なし」を選択してください`);
+                    errors.push(`${groupTitle}で項目を選択するか「現状課題なし」を選択してください`);
                 }
             });
 
-            // 予算の検証
+            // 予算の検証（任意、入力時のみフォーマットチェック）
             const budgetInput = stepElement.querySelector('#budget');
-            if (budgetInput) {
-                const value = budgetInput.value.trim();
-                if (!value) {
-                    errors.push('年間予算規模を入力してください');
-                } else if (!/^\d+$/.test(value)) {
-                    errors.push('年間予算規模は数字のみで入力してください');
-                }
+            if (budgetInput && budgetInput.value.trim() && !/^\d+$/.test(budgetInput.value.trim())) {
+                errors.push('年間予算規模は数字のみで入力してください');
             }
         }
 
@@ -765,12 +760,7 @@ function showSuccessMessage(message) {
             passwordConfirm: false
         },
         step2: {
-            challenges: false,
-            revenueDetails: false,
-            hrDetails: false,
-            dxDetails: false,
-            strategyDetails: false,
-            budget: false
+            challenges: false
         },
         step3: {
             phone: false,
@@ -790,7 +780,7 @@ function showSuccessMessage(message) {
     // ステップごとの必須チェック項目
     const stepRequirements = {
         1: ['name', 'company', 'industry', 'email', 'password', 'passwordConfirm'],
-        2: ['challenges', 'budget'], // テキストエリアは条件付き
+        2: ['challenges'],
         3: ['phone', 'lineId', 'lineQr', 'position'],
         4: ['skillsPr'],
         5: ['interestsDetails', 'agree']
@@ -806,32 +796,11 @@ function showSuccessMessage(message) {
 
         // ステップ2の特別処理
         if (stepNum === 2) {
-            // 必須項目のチェック
-            if (!stepState.challenges || !stepState.budget) return false;
-
-            // 各課題グループのチェック（:has()を使わない方法）
-            const groups = ['revenue', 'hr', 'dx', 'strategy'];
-            for (const group of groups) {
-                // textareaのIDから親のchallenge-groupを探す
-                const textarea = document.getElementById(`${group}-details`);
-                if (!textarea) continue;
-
-                const challengeGroup = textarea.closest('.challenge-group');
-                if (!challengeGroup) continue;
-
-                const noChallengeCheckbox = challengeGroup.querySelector('input[value="現状課題なし"]:checked');
-                const otherChallenges = challengeGroup.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])');
-
-                // 「現状課題なし」がチェックされている場合は詳細不要
-                if (noChallengeCheckbox) {
-                    // 現状課題なしの場合はスキップ
-                    continue;
-                }
-
-                // その他の課題が選択されている場合、詳細が必要
-                if (otherChallenges.length > 0) {
-                    if (!stepState[`${group}Details`]) return false;
-                }
+            // 各カテゴリで何か選択されているかチェック
+            const challengeGroups = document.querySelectorAll('.form-step[data-step="2"] .challenge-group');
+            for (const group of challengeGroups) {
+                const anyChecked = group.querySelectorAll('input[name="challenges"]:checked');
+                if (anyChecked.length === 0) return false;
             }
             return true;
         }
@@ -1118,15 +1087,10 @@ function showSuccessMessage(message) {
                             case 'password': errors.push('パスワードは8文字以上で入力してください'); break;
                             case 'passwordConfirm': errors.push('パスワードが一致しません'); break;
                             case 'challenges': errors.push('各カテゴリーで少なくとも1つの課題を選択してください'); break;
-                            case 'budget': errors.push('年間予算規模を数字で入力してください'); break;
                             case 'phone': errors.push('有効な電話番号を入力してください（例: 090-1234-5678）'); break;
                             case 'lineId': errors.push('LINE IDまたはURLを入力してください'); break;
                             case 'lineQr': errors.push('LINE QRコードをアップロードしてください'); break;
                             case 'position': errors.push('役職を入力してください'); break;
-                            case 'revenueDetails': errors.push('売上・収益課題の詳細を50文字以上で入力してください'); break;
-                            case 'hrDetails': errors.push('組織・人材課題の詳細を50文字以上で入力してください'); break;
-                            case 'dxDetails': errors.push('業務効率・DX課題の詳細を50文字以上で入力してください'); break;
-                            case 'strategyDetails': errors.push('事業戦略課題の詳細を50文字以上で入力してください'); break;
                             case 'skillsPr': errors.push('スキル・専門分野のPRを100文字以上で入力してください'); break;
                             case 'interestsDetails': errors.push('興味・困りごとの詳細を100文字以上で入力してください'); break;
                             case 'agree': errors.push('利用規約に同意してください'); break;
@@ -1581,6 +1545,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return true;
     }
+
+    // ステップ2: 「現状課題なし」排他制御 + バリデーション更新
+    document.querySelectorAll('input[name="challenges"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const group = this.closest('.challenge-group');
+            if (!group) return;
+
+            if (this.dataset.exclusive && this.checked) {
+                // 「現状課題なし」が選択 → 同グループの他を解除
+                group.querySelectorAll('input[name="challenges"]:not([data-exclusive])').forEach(other => {
+                    other.checked = false;
+                });
+            } else if (!this.dataset.exclusive && this.checked) {
+                // 具体的な課題が選択 → 同グループの「現状課題なし」を解除
+                const exclusive = group.querySelector('input[data-exclusive]');
+                if (exclusive) exclusive.checked = false;
+            }
+
+            // ステップ2全体のバリデーション更新
+            const allGroups = document.querySelectorAll('.form-step[data-step="2"] .challenge-group');
+            let allValid = true;
+            allGroups.forEach(g => {
+                if (g.querySelectorAll('input[name="challenges"]:checked').length === 0) {
+                    allValid = false;
+                }
+            });
+            validationState.step2.challenges = allValid;
+            updateButtonState(2);
+        });
+    });
 
     // ステップ4・5のバリデーション状態をリアルタイム更新
     const skillsPrField = document.getElementById('skills-pr');

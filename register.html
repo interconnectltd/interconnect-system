@@ -138,9 +138,9 @@
                     
                     <div class="challenges-section">
                         <div class="challenge-group">
-                            <h4><i class="fas fa-chart-line"></i> 売上・収益の課題</h4>
+                            <h4><i class="fas fa-chart-line"></i> 売上・収益</h4>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし">
+                                <input type="checkbox" name="challenges" value="現状課題なし_売上" data-exclusive="true">
                                 <span>現状課題なし</span>
                             </label>
                             <label class="checkbox-label">
@@ -163,17 +163,12 @@
                                 <input type="checkbox" name="challenges" value="新規事業開発">
                                 <span>新規事業・サービスの開発</span>
                             </label>
-                            <div class="form-group">
-                                <label for="revenue-details">売上・収益課題の詳細</label>
-                                <textarea id="revenue-details" name="revenue-details" rows="4" minlength="50" placeholder="具体的な課題内容を50文字以上で入力してください"></textarea>
-                                <small class="char-count"><span id="revenue-count">0</span>/50文字</small>
-                            </div>
                         </div>
-                        
+
                         <div class="challenge-group">
-                            <h4><i class="fas fa-users"></i> 組織・人材の課題</h4>
+                            <h4><i class="fas fa-users"></i> 組織・人材</h4>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし">
+                                <input type="checkbox" name="challenges" value="現状課題なし_組織" data-exclusive="true">
                                 <span>現状課題なし</span>
                             </label>
                             <label class="checkbox-label">
@@ -196,17 +191,12 @@
                                 <input type="checkbox" name="challenges" value="評価制度">
                                 <span>人事評価制度の構築</span>
                             </label>
-                            <div class="form-group">
-                                <label for="hr-details">組織・人材課題の詳細</label>
-                                <textarea id="hr-details" name="hr-details" rows="4" minlength="50" placeholder="具体的な課題内容を50文字以上で入力してください"></textarea>
-                                <small class="char-count"><span id="hr-count">0</span>/50文字</small>
-                            </div>
                         </div>
-                        
+
                         <div class="challenge-group">
-                            <h4><i class="fas fa-cogs"></i> 業務効率・DXの課題</h4>
+                            <h4><i class="fas fa-cogs"></i> 業務効率・DX</h4>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし">
+                                <input type="checkbox" name="challenges" value="現状課題なし_DX" data-exclusive="true">
                                 <span>現状課題なし</span>
                             </label>
                             <label class="checkbox-label">
@@ -229,17 +219,12 @@
                                 <input type="checkbox" name="challenges" value="セキュリティ">
                                 <span>情報セキュリティの強化</span>
                             </label>
-                            <div class="form-group">
-                                <label for="dx-details">業務効率・DX課題の詳細</label>
-                                <textarea id="dx-details" name="dx-details" rows="4" minlength="50" placeholder="具体的な課題内容を50文字以上で入力してください"></textarea>
-                                <small class="char-count"><span id="dx-count">0</span>/50文字</small>
-                            </div>
                         </div>
 
                         <div class="challenge-group">
-                            <h4><i class="fas fa-globe"></i> 事業戦略・競争力の課題</h4>
+                            <h4><i class="fas fa-globe"></i> 事業戦略・競争力</h4>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし">
+                                <input type="checkbox" name="challenges" value="現状課題なし_戦略" data-exclusive="true">
                                 <span>現状課題なし</span>
                             </label>
                             <label class="checkbox-label">
@@ -258,18 +243,13 @@
                                 <input type="checkbox" name="challenges" value="パートナーシップ">
                                 <span>戦略的パートナーシップ構築</span>
                             </label>
-                            <div class="form-group">
-                                <label for="strategy-details">事業戦略課題の詳細</label>
-                                <textarea id="strategy-details" name="strategy-details" rows="4" minlength="50" placeholder="具体的な課題内容を50文字以上で入力してください"></textarea>
-                                <small class="char-count"><span id="strategy-count">0</span>/50文字</small>
-                            </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="budget">年間予算規模（万円）<span class="required">*</span></label>
-                        <input type="text" id="budget" name="budget" placeholder="例：1000（1000万円の場合）" data-required="true" pattern="[0-9]*" inputmode="numeric">
-                        <small class="form-help">数字のみ入力してください（単位：万円）</small>
+                        <label for="budget">年間予算規模（万円）</label>
+                        <input type="text" id="budget" name="budget" placeholder="例：1000（1000万円の場合）" pattern="[0-9]*" inputmode="numeric">
+                        <small class="form-help">任意。数字のみ（単位：万円）</small>
                     </div>
                     
                     <div class="form-navigation">
