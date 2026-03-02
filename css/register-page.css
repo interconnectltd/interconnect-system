@@ -178,6 +178,13 @@
     transition: var(--transition-base);
 }
 
+.auth-button.line-button {
+    width: 33% !important;
+    padding: 14px 1rem !important;
+    font-size: 0.85rem !important;
+    display: inline-flex !important;
+}
+
 .auth-button:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
