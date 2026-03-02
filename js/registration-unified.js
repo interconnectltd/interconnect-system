@@ -2185,6 +2185,14 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.textContent = '登録処理中...';
 
         try {
+            // 必須フィールドの確認（ステップ自由移動で未入力のまま送信防止）
+            if (!formData.email || !formData.password) {
+                throw new Error('メールアドレスとパスワードは必須です。ステップ3（連絡先）を入力してください。');
+            }
+            if (!formData.name || !formData.company) {
+                throw new Error('お名前と会社名は必須です。ステップ1（基本情報）を入力してください。');
+            }
+
             // Supabaseクライアントの確認
             if (!window.supabaseClient) {
                 throw new Error('システムが初期化されていません。ページを再読み込みしてください。');
