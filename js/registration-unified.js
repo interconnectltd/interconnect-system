@@ -2084,9 +2084,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // data-action="next"と"prev"は global-functions.js が処理するため、
-    // ここでは何もしない
-    // console.log('[registration-flow] Button handlers set up for next-step and prev-step only');
+    // プログレスステップのクリックで任意のステップに移動
+    document.querySelectorAll('.progress-step').forEach(step => {
+        step.style.cursor = 'pointer';
+        step.addEventListener('click', function() {
+            const targetStep = parseInt(this.getAttribute('data-step'));
+            if (targetStep && targetStep !== currentStep) {
+                window.InterConnect.Registration.moveToStep(targetStep);
+                currentStep = targetStep;
+            }
+        });
+    });
 
     // ローカルのmoveToStep関数は削除（グローバルで定義済み）
 
