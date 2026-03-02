@@ -44,16 +44,15 @@
 .auth-card {
     width: 100%;
     max-width: 800px;
-    height: 90vh;
-    max-height: 900px;
+    height: auto;
+    max-height: none;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
     border-radius: var(--radius-lg);
     box-shadow: 0 10px 40px rgba(0, 102, 255, 0.1);
     padding: var(--space-md) var(--space-lg);
     margin: auto;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible;
     position: relative;
     z-index: 1;
     display: flex;
@@ -1637,9 +1636,8 @@ textarea {
 
 /* オーバーフロー処理 */
 .auth-card {
-    max-height: calc(100vh - 40px) !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch; /* iOSスムーズスクロール */
+    max-height: none !important;
+    overflow: visible !important;
 }
 
 /* フレックスボックスのフォールバック */
