@@ -1582,6 +1582,42 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
+    // ステップ4・5のバリデーション状態をリアルタイム更新
+    const skillsPrField = document.getElementById('skills-pr');
+    if (skillsPrField) {
+        skillsPrField.addEventListener('input', function() {
+            validationState.step4.skillsPr = validateSkills();
+            updateButtonState(4);
+        });
+    }
+    document.querySelectorAll('input[name="skills"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            validationState.step4.skillsPr = validateSkills();
+            updateButtonState(4);
+        });
+    });
+
+    const interestsDetailsField = document.getElementById('interests-details');
+    if (interestsDetailsField) {
+        interestsDetailsField.addEventListener('input', function() {
+            validationState.step5.interestsDetails = this.value.trim().length >= 100;
+            updateButtonState(5);
+        });
+    }
+    document.querySelectorAll('input[name="interests"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            validationState.step5.interestsDetails = validateInterests();
+            updateButtonState(5);
+        });
+    });
+    const agreeCheckbox = document.querySelector('input[name="agree"]');
+    if (agreeCheckbox) {
+        agreeCheckbox.addEventListener('change', function() {
+            validationState.step5.agree = this.checked;
+            updateButtonState(5);
+        });
+    }
+
     // メールアドレスの形式確認
     function isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
