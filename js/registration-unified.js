@@ -516,88 +516,25 @@ function showSuccessMessage(message) {
     //     return;
     // }
 
-    // 「現状課題なし」チェックボックスの処理
+    // 「現状課題なし」チェックボックスの処理（排他制御）
     function handleNoChallengeCheckbox(checkbox) {
         const group = checkbox.closest('.challenge-group');
-        const otherCheckboxes = group.querySelectorAll('input[type="checkbox"][name="challenges"]:not([value="現状課題なし"])');
-        const textarea = group.querySelector('textarea');
+        const otherCheckboxes = group.querySelectorAll('input[type="checkbox"][name="challenges"]:not([data-exclusive])');
 
         if (checkbox.checked) {
-            // 他のチェックボックスを無効化（現状課題なし以外）
             otherCheckboxes.forEach(cb => {
                 cb.checked = false;
-                cb.disabled = true;
             });
-            // テキストエリアを無効化してクリア
-            if (textarea) {
-                textarea.value = '';
-                textarea.disabled = true;
-                textarea.removeAttribute('data-required');
-                textarea.removeAttribute('minlength'); // minlength属性も削除
-                textarea.setAttribute('data-no-validate', 'true'); // バリデーションスキップフラグ
-
-                // 文字カウント表示を非表示にする
-                const charCountElement = textarea.parentElement.querySelector('.char-count');
-                if (charCountElement) {
-                    charCountElement.style.display = 'none';
-                }
-
-                // エラー表示もクリア
-                const errorElement = textarea.parentElement.querySelector('.error-message');
-                if (errorElement) {
-                    errorElement.style.display = 'none';
-                }
-            }
-        } else {
-            // 他のチェックボックスを有効化
-            otherCheckboxes.forEach(cb => {
-                cb.disabled = false;
-            });
-            // テキストエリアを有効化
-            if (textarea) {
-                textarea.disabled = false;
-                textarea.setAttribute('data-required', 'true');
-                textarea.setAttribute('minlength', '50'); // minlength属性を復元
-                textarea.removeAttribute('data-no-validate'); // バリデーションスキップフラグを削除
-
-                // 文字カウント表示を再表示
-                const charCountElement = textarea.parentElement.querySelector('.char-count');
-                if (charCountElement) {
-                    charCountElement.style.display = '';
-                }
-            }
         }
     }
 
-    // 課題チェックボックスの処理
+    // 課題チェックボックスの処理（排他制御）
     function handleChallengeCheckbox(checkbox) {
         const group = checkbox.closest('.challenge-group');
-        const noChallengeCheckbox = group.querySelector('input[value="現状課題なし"]');
-        const textarea = group.querySelector('textarea');
-        const checkedBoxes = group.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])');
+        const exclusiveCheckbox = group.querySelector('input[data-exclusive]');
 
-        // 「現状課題なし」のチェックを外す
-        if (noChallengeCheckbox && noChallengeCheckbox.checked) {
-            noChallengeCheckbox.checked = false;
-            const otherCheckboxes = group.querySelectorAll('input[type="checkbox"][name="challenges"]');
-            otherCheckboxes.forEach(cb => cb.disabled = false);
-            if (textarea) {
-                textarea.disabled = false;
-                // 文字カウント表示を再表示
-                const charCountElement = textarea.parentElement.querySelector('.char-count');
-                if (charCountElement) {
-                    charCountElement.style.display = '';
-                }
-            }
-        }
-
-        // 課題が選択されている場合、テキストエリアを必須にする
-        if (textarea) {
-            if (checkedBoxes.length > 0) {
-                textarea.setAttribute('data-required', 'true');
-            } else {
-                textarea.removeAttribute('data-required');
-            }
+        if (exclusiveCheckbox && exclusiveCheckbox.checked) {
+            exclusiveCheckbox.checked = false;
         }
     }
 
@@ -611,15 +548,7 @@ function showSuccessMessage(message) {
         // 必須フィールドのチェック
         const requiredFields = stepElement.querySelectorAll('[data-required="true"]:not(:disabled)');
         requiredFields.forEach(field => {
-            // テキストエリアの場合、現状課題なしがチェックされていればスキップ
             if (field.tagName === 'TEXTAREA') {
-                const challengeGroup = field.closest('.challenge-group');
-                if (challengeGroup) {
-                    const noChallengeChecked = challengeGroup.querySelector('input[value="現状課題なし"]:checked');
-                    if (noChallengeChecked) {
-                        return; // このテキストエリアのバリデーションをスキップ
-                    }
-                }
                 const minLength = parseInt(field.getAttribute('minlength') || '0');
                 if (field.value.trim().length < minLength) {
                     errors.push(`${field.closest('.form-group').querySelector('label').textContent.replace('*', '').trim()}は${minLength}文字以上で入力してください`);
@@ -693,11 +622,8 @@ function showSuccessMessage(message) {
         // 文字数カウンターの初期化は無効化（register-char-count.jsが処理）
 
         // 初期状態のチェック - 「現状課題なし」がチェックされていたら処理
-        // console.log('[RegisterEnhanced] Checking initial checkbox states...');
-        document.querySelectorAll('input[value="現状課題なし"]').forEach(checkbox => {
-            // console.log(`[RegisterEnhanced] Checkbox "現状課題なし" checked: ${checkbox.checked}`);
+        document.querySelectorAll('input[data-exclusive]').forEach(checkbox => {
             if (checkbox.checked) {
-                // console.log('[RegisterEnhanced] Processing checked "現状課題なし"');
                 handleNoChallengeCheckbox(checkbox);
             }
         });
@@ -705,7 +631,7 @@ function showSuccessMessage(message) {
         // チェックボックスのイベントリスナー
         document.addEventListener('change', function(e) {
             if (e.target.matches('input[type="checkbox"][name="challenges"]')) {
-                if (e.target.value === '現状課題なし') {
+                if (e.target.dataset.exclusive) {
                     handleNoChallengeCheckbox(e.target);
                 } else {
                     handleChallengeCheckbox(e.target);
@@ -908,21 +834,6 @@ function showSuccessMessage(message) {
                 isValid = field.value.trim().length > 0;
                 break;
 
-            case 'revenue-details':
-            case 'hr-details':
-            case 'dx-details':
-            case 'strategy-details':
-                fieldKey = field.id.replace('-', '').replace('details', 'Details');
-                // 現状課題なしがチェックされている場合はバリデーションをスキップ
-                const group = field.closest('.challenge-group');
-                const noChallenge = group ? group.querySelector('input[value="現状課題なし"]:checked') : null;
-                if (noChallenge) {
-                    isValid = true; // 現状課題なしの場合は常にtrue
-                } else {
-                    isValid = field.value.trim().length >= 50;
-                }
-                break;
-
             case 'skills-pr':
                 fieldKey = 'skillsPr';
                 isValid = field.value.trim().length >= 100;
@@ -955,14 +866,6 @@ function showSuccessMessage(message) {
                 const checkedBoxes = group.querySelectorAll('input[name="challenges"]:checked');
                 if (checkedBoxes.length === 0) {
                     allGroupsValid = false;
-                } else {
-                    // 「現状課題なし」がチェックされている場合はtextareaのvalidationStateをtrueに
-                    const noChallengeChecked = group.querySelector('input[value="現状課題なし"]:checked');
-                    const textarea = group.querySelector('textarea');
-                    if (noChallengeChecked && textarea) {
-                        const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
-                        validationState.step2[fieldKey] = true;
-                    }
                 }
             });
 
@@ -1048,37 +951,9 @@ function showSuccessMessage(message) {
                 const stepKey = `step${currentStepNum}`;
                 const stepState = validationState[stepKey];
 
-                // 各フィールドのエラーをチェック（現状課題なしの場合は詳細をスキップ）
+                // 各フィールドのエラーをチェック
                 Object.keys(stepState).forEach(key => {
-                    // 詳細フィールドの場合、現状課題なしがチェックされていればスキップ
-                    if (key.endsWith('Details') && currentStepNum === 2) {
-                        const groupName = key.replace('Details', '').toLowerCase();
-                        const textarea = document.getElementById(`${groupName}-details`);
-                        if (textarea) {
-                            const challengeGroup = textarea.closest('.challenge-group');
-                            const noChallengeChecked = challengeGroup ?
-                                challengeGroup.querySelector('input[value="現状課題なし"]:checked') : null;
-                            if (noChallengeChecked) {
-                                return; // このフィールドのエラーチェックをスキップ
-                            }
-                        }
-                    }
-
                     if (!stepState[key]) {
-                        // 現在のステップに関連するフィールドのみエラーをチェック
-                        const stepFields = {
-                            1: ['name', 'company', 'industry', 'email', 'password', 'passwordConfirm'],
-                            2: ['challenges', 'budget', 'revenueDetails', 'hrDetails', 'dxDetails', 'strategyDetails'],
-                            3: ['phone', 'lineId', 'lineQr', 'position'],
-                            4: ['skillsPr'],
-                            5: ['interestsDetails', 'agree']
-                        };
-
-                        // 現在のステップのフィールドのみ処理
-                        if (!stepFields[currentStepNum] || !stepFields[currentStepNum].includes(key)) {
-                            return; // 他のステップのフィールドはスキップ
-                        }
-
                         switch(key) {
                             case 'name': errors.push('お名前を入力してください'); break;
                             case 'company': errors.push('会社名を入力してください'); break;
@@ -1140,40 +1015,6 @@ function showSuccessMessage(message) {
         document.addEventListener('change', function(e) {
             if (e.target.matches('input[type="checkbox"][name="challenges"]')) {
                 validateCheckboxes(2);
-
-                // 「現状課題なし」の処理
-                const group = e.target.closest('.challenge-group');
-                const textarea = group.querySelector('textarea');
-
-                if (e.target.value === '現状課題なし') {
-                    if (e.target.checked && textarea) {
-                        const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
-                        validationState.step2[fieldKey] = true; // 現状課題なしの場合は詳細不要
-                    } else if (!e.target.checked && textarea) {
-                        // 現状課題なしのチェックを外した場合
-                        const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
-                        validationState.step2[fieldKey] = false;
-                    }
-                } else {
-                    // 他の課題が選択された場合
-                    const noChallengeCheckbox = group.querySelector('input[value="現状課題なし"]:checked');
-                    const otherChecked = group.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])').length > 0;
-
-                    if (textarea) {
-                        const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
-                        if (noChallengeCheckbox) {
-                            // 現状課題なしがチェックされている場合は詳細不要
-                            validationState.step2[fieldKey] = true;
-                        } else if (otherChecked) {
-                            // 他の課題が選択されている場合はvalidateFieldで検証
-                            validateField(textarea);
-                        } else {
-                            // 何も選択されていない場合
-                            validationState.step2[fieldKey] = false;
-                        }
-                    }
-                }
-
                 updateButtonState(2);
             } else if (e.target.matches('input[name="skills"]')) {
                 // スキルチェックボックスの変更時
@@ -1213,18 +1054,6 @@ function showSuccessMessage(message) {
             }
         }
 
-        // ステップ2の「現状課題なし」の初期状態を処理
-        document.querySelectorAll('.challenge-group').forEach(group => {
-            const noChallengeCheckbox = group.querySelector('input[value="現状課題なし"]:checked');
-            if (noChallengeCheckbox) {
-                const textarea = group.querySelector('textarea');
-                if (textarea) {
-                    const fieldKey = textarea.id.replace('-', '').replace('details', 'Details');
-                    validationState.step2[fieldKey] = true;
-                    // console.log(`[Init] Setting ${fieldKey} to true due to 現状課題なし`);
-                }
-            }
-        });
     }
 
     // DOMContentLoadedで初期化
@@ -1253,10 +1082,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 文字カウントが必要な要素の設定
     const charCountFields = [
-        { id: 'revenue-details', countId: 'revenue-count', min: 50 },
-        { id: 'hr-details', countId: 'hr-count', min: 50 },
-        { id: 'dx-details', countId: 'dx-count', min: 50 },
-        { id: 'strategy-details', countId: 'strategy-count', min: 50 },
         { id: 'skills-pr', countId: 'skills-pr-count', min: 100 },
         { id: 'interests-details', countId: 'interests-details-count', min: 100 }
     ];
@@ -1275,23 +1100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }); */
 
         if (textarea && countElement) {
-            // console.log(`[CharCount] Found elements for ${field.id}`);
-
-            // 「現状課題なし」がチェックされているか確認
-            const challengeGroup = textarea.closest('.challenge-group');
-            const noChallengeChecked = challengeGroup ?
-                challengeGroup.querySelector('input[value="現状課題なし"]:checked') : null;
-
-            // 初期値設定（現状課題なしの場合は特別処理）
-            if (noChallengeChecked) {
-                // 現状課題なしの場合は文字カウント非表示
-                const charCountWrapper = countElement.closest('.char-count');
-                if (charCountWrapper) {
-                    charCountWrapper.style.display = 'none';
-                }
-            } else {
-                updateCharCount(textarea, countElement, field.min);
-            }
+            updateCharCount(textarea, countElement, field.min);
             // console.log(`[CharCount] Initial count set for ${field.id}`);
 
             // 既存のイベントリスナーをクリアしてから新規追加
@@ -1442,42 +1251,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 事業課題のバリデーション
     function validateChallenges() {
-        // 各課題グループでのチェック
-        const groups = ['revenue', 'hr', 'dx', 'strategy'];
-        for (let group of groups) {
-            const textarea = document.getElementById(`${group}-details`);
-            if (!textarea) continue;
-
-            const challengeGroup = textarea.closest('.challenge-group');
-            if (!challengeGroup) continue;
-
-            const noChallengeCheckbox = challengeGroup.querySelector('input[value="現状課題なし"]:checked');
-            const otherChallenges = challengeGroup.querySelectorAll('input[name="challenges"]:checked:not([value="現状課題なし"])');
-
-            // グループごとに少なくとも1つは選択必要
-            if (!noChallengeCheckbox && otherChallenges.length === 0) {
+        // 各カテゴリで少なくとも1つチェックされているか確認
+        const challengeGroups = document.querySelectorAll('.form-step[data-step="2"] .challenge-group');
+        for (const group of challengeGroups) {
+            if (group.querySelectorAll('input[name="challenges"]:checked').length === 0) {
                 return false;
             }
-
-            // 「現状課題なし」がチェックされている場合はテキストエリアのチェックをスキップ
-            if (noChallengeCheckbox) {
-                continue; // このグループはスキップ
-            }
-
-            // その他の課題が選択されている場合のみ、詳細のtrim後文字数チェック
-            if (otherChallenges.length > 0) {
-                if (textarea.value.trim().length < 50) {
-                    return false;
-                }
-            }
         }
-
-        // 予算が入力されているか
-        const budget = document.getElementById('budget');
-        if (!budget || !budget.value.trim()) {
-            return false;
-        }
-
         return true;
     }
 
@@ -2296,11 +2076,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     skills: formData.skills,
                     interests: formData.interests,
                     business_challenges: {
-                        challenges: formData.challenges || [],
-                        revenue_details: formData['revenue-details'] || '',
-                        hr_details: formData['hr-details'] || '',
-                        dx_details: formData['dx-details'] || '',
-                        strategy_details: formData['strategy-details'] || ''
+                        challenges: formData.challenges || []
                     },
                     industry: formData.industry,
                     is_active: true,
@@ -2451,12 +2227,6 @@ document.addEventListener('DOMContentLoaded', function() {
             challenges: Array.from(document.querySelectorAll('input[name="challenges"]:checked'))
                 .map(cb => cb.value),
             budget: getElementValue('budget'),
-
-            // 事業課題の詳細
-            'revenue-details': getElementValue('revenue-details'),
-            'hr-details': getElementValue('hr-details'),
-            'dx-details': getElementValue('dx-details'),
-            'strategy-details': getElementValue('strategy-details'),
 
             // 連絡先
             phone: getElementValue('phone'),
