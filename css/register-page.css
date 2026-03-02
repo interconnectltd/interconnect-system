@@ -179,10 +179,11 @@
 }
 
 .auth-button.line-button {
-    width: 33% !important;
+    width: 66% !important;
     padding: 14px 1rem !important;
-    font-size: 0.85rem !important;
+    font-size: 1rem !important;
     display: inline-flex !important;
+    margin: 0 auto 12px !important;
 }
 
 .auth-button:hover {
