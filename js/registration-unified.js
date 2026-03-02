@@ -2186,11 +2186,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             // 必須フィールドの確認（ステップ自由移動で未入力のまま送信防止）
-            if (!formData.email || !formData.password) {
-                throw new Error('メールアドレスとパスワードは必須です。ステップ3（連絡先）を入力してください。');
+            const missingFields = [];
+            if (!formData.name) missingFields.push('お名前（ステップ1）');
+            if (!formData.company) missingFields.push('会社名（ステップ1）');
+            if (!formData.industry) missingFields.push('業種（ステップ1）');
+            if (!formData.email) missingFields.push('メールアドレス（ステップ1）');
+            if (!formData.password) missingFields.push('パスワード（ステップ1）');
+
+            const passwordConfirm = document.getElementById('password-confirm');
+            if (passwordConfirm && formData.password && passwordConfirm.value !== formData.password) {
+                missingFields.push('パスワード（確認）が一致しません');
+            } else if (passwordConfirm && !passwordConfirm.value) {
+                missingFields.push('パスワード確認（ステップ1）');
             }
-            if (!formData.name || !formData.company) {
-                throw new Error('お名前と会社名は必須です。ステップ1（基本情報）を入力してください。');
+
+            if (!formData.phone) missingFields.push('電話番号（ステップ3）');
+
+            const termsCheckbox = document.getElementById('terms');
+            if (termsCheckbox && !termsCheckbox.checked) {
+                missingFields.push('利用規約への同意（ステップ5）');
+            }
+
+            if (missingFields.length > 0) {
+                throw new Error('以下の項目が未入力です：\n' + missingFields.join('\n'));
             }
 
             // Supabaseクライアントの確認
