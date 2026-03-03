@@ -107,18 +107,24 @@ function showReferralInfo(code) {
         existingInfo.remove();
     }
 
-    // 紹介情報HTML
-    const infoHTML = `
-        <div id="referral-info" class="referral-info">
-            <i class="fas fa-gift"></i>
-            <span>紹介コード適用中: <strong>${code}</strong></span>
-        </div>
-    `;
+    // 紹介情報を安全にDOM構築（XSS防止）
+    const infoDiv = document.createElement('div');
+    infoDiv.id = 'referral-info';
+    infoDiv.className = 'referral-info';
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-gift';
+    const span = document.createElement('span');
+    span.textContent = '紹介コード適用中: ';
+    const strong = document.createElement('strong');
+    strong.textContent = code;
+    span.appendChild(strong);
+    infoDiv.appendChild(icon);
+    infoDiv.appendChild(span);
 
     // フォームの上に挿入
     const form = document.getElementById('registerForm');
     if (form) {
-        form.insertAdjacentHTML('beforebegin', infoHTML);
+        form.parentElement.insertBefore(infoDiv, form);
     }
 
     // スタイルを追加
@@ -695,7 +701,7 @@ function showSuccessMessage(message) {
             position: false
         },
         step4: {
-            skillsPr: false
+            skillsPr: true // スキルは任意。未入力のまま次へ進める
         },
         step5: {
             interestsDetails: false,
@@ -1063,6 +1069,10 @@ function showSuccessMessage(message) {
         init();
     }
 
+    // register-char-count.js から参照するため window に公開
+    window._regValidationState = validationState;
+    window._regUpdateButtonState = updateButtonState;
+
     // console.log('[RegisterStrictValidation] 初期化完了');
 
 })();
@@ -1327,6 +1337,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ステップ2: 「現状課題なし」排他制御 + バリデーション更新
+    // NOTE: validationState / updateButtonState は StrictValidation IIFE 内にあるため
+    //       window._regValidationState / window._regUpdateButtonState 経由でアクセスする
     document.querySelectorAll('input[name="challenges"]').forEach(cb => {
         cb.addEventListener('change', function() {
             const group = this.closest('.challenge-group');
@@ -1351,8 +1363,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     allValid = false;
                 }
             });
-            validationState.step2.challenges = allValid;
-            updateButtonState(2);
+            if (window._regValidationState) {
+                window._regValidationState.step2.challenges = allValid;
+            }
+            if (window._regUpdateButtonState) {
+                window._regUpdateButtonState(2);
+            }
         });
     });
 
@@ -1360,35 +1376,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const skillsPrField = document.getElementById('skills-pr');
     if (skillsPrField) {
         skillsPrField.addEventListener('input', function() {
-            validationState.step4.skillsPr = validateSkills();
-            updateButtonState(4);
+            if (window._regValidationState) {
+                window._regValidationState.step4.skillsPr = validateSkills();
+            }
+            if (window._regUpdateButtonState) {
+                window._regUpdateButtonState(4);
+            }
         });
     }
     document.querySelectorAll('input[name="skills"]').forEach(cb => {
         cb.addEventListener('change', function() {
-            validationState.step4.skillsPr = validateSkills();
-            updateButtonState(4);
+            if (window._regValidationState) {
+                window._regValidationState.step4.skillsPr = validateSkills();
+            }
+            if (window._regUpdateButtonState) {
+                window._regUpdateButtonState(4);
+            }
         });
     });
 
     const interestsDetailsField = document.getElementById('interests-details');
     if (interestsDetailsField) {
         interestsDetailsField.addEventListener('input', function() {
-            validationState.step5.interestsDetails = this.value.trim().length >= 100;
-            updateButtonState(5);
+            if (window._regValidationState) {
+                window._regValidationState.step5.interestsDetails = this.value.trim().length >= 100;
+            }
+            if (window._regUpdateButtonState) {
+                window._regUpdateButtonState(5);
+            }
         });
     }
     document.querySelectorAll('input[name="interests"]').forEach(cb => {
         cb.addEventListener('change', function() {
-            validationState.step5.interestsDetails = validateInterests();
-            updateButtonState(5);
+            if (window._regValidationState) {
+                window._regValidationState.step5.interestsDetails = validateInterests();
+            }
+            if (window._regUpdateButtonState) {
+                window._regUpdateButtonState(5);
+            }
         });
     });
     const agreeCheckbox = document.querySelector('input[name="agree"]');
     if (agreeCheckbox) {
         agreeCheckbox.addEventListener('change', function() {
-            validationState.step5.agree = this.checked;
-            updateButtonState(5);
+            if (window._regValidationState) {
+                window._regValidationState.step5.agree = this.checked;
+            }
+            if (window._regUpdateButtonState) {
+                window._regUpdateButtonState(5);
+            }
         });
     }
 
@@ -1598,28 +1634,21 @@ window.InterConnect.Registration.validateCurrentStep = function(stepNum) {
             isValid = false;
         }
     } else if (stepNum === 2) {
-        // 少なくとも1つの課題を選択しているか確認
-        const checkedChallenges = currentStepElement.querySelectorAll('input[name="challenges"]:checked');
-
-        if (checkedChallenges.length === 0) {
-            window.InterConnect.Registration.showToast('少なくとも1つの事業課題を選択してください', 'error');
-            isValid = false;
-        }
-
-        // テキストエリアの文字数検証
-        const textareas = currentStepElement.querySelectorAll('textarea[minlength]');
-        textareas.forEach(textarea => {
-            const minLength = parseInt(textarea.getAttribute('minlength'));
-            if (textarea.value.trim().length < minLength) {
-                window.InterConnect.Registration.showFieldError(textarea, `${minLength}文字以上入力してください`);
+        // 各カテゴリで少なくとも1つの課題を選択しているか確認
+        const challengeGroups = currentStepElement.querySelectorAll('.challenge-group');
+        challengeGroups.forEach(group => {
+            const anyChecked = group.querySelectorAll('input[name="challenges"]:checked');
+            if (anyChecked.length === 0) {
+                const groupTitle = group.querySelector('h4') ? group.querySelector('h4').textContent.trim() : '課題';
+                window.InterConnect.Registration.showToast(`${groupTitle}で項目を選択してください`, 'error');
                 isValid = false;
             }
         });
 
-        // 予算の検証
+        // 予算は任意（入力時のみフォーマット検証）
         const budget = document.getElementById('budget');
-        if (budget && (!budget.value || parseInt(budget.value) <= 0)) {
-            window.InterConnect.Registration.showFieldError(budget, '有効な金額を入力してください');
+        if (budget && budget.value.trim() && !/^\d+$/.test(budget.value.trim())) {
+            window.InterConnect.Registration.showFieldError(budget, '数字のみで入力してください');
             isValid = false;
         }
     }
@@ -2011,9 +2040,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (!formData.phone) missingFields.push('電話番号（ステップ3）');
+            if (!formData.lineId) missingFields.push('LINE ID または URL（ステップ3）');
+            if (!formData.position) missingFields.push('役職（ステップ3）');
 
-            const termsCheckbox = document.getElementById('terms');
-            if (termsCheckbox && !termsCheckbox.checked) {
+            const lineQrInput = document.getElementById('line-qr');
+            if (lineQrInput && (!lineQrInput.files || lineQrInput.files.length === 0) && !window._selectedLineQrFile) {
+                missingFields.push('LINE QRコード（ステップ3）');
+            }
+
+            if (!formData.challenges || formData.challenges.length === 0) {
+                missingFields.push('事業課題の選択（ステップ2）');
+            }
+
+            const interestsDetails = formData['interests-details'] || '';
+            if (interestsDetails.trim().length < 100) {
+                missingFields.push('興味・困りごとの詳細（100文字以上、ステップ5）');
+            }
+
+            const termsCheckbox = document.querySelector('input[name="agree"]');
+            if (!termsCheckbox || !termsCheckbox.checked) {
                 missingFields.push('利用規約への同意（ステップ5）');
             }
 
