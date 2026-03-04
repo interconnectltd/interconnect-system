@@ -395,7 +395,7 @@
 }
 
 .challenge-group h4 {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: white;
     margin-bottom: var(--space-md);
@@ -409,6 +409,7 @@
     gap: var(--space-sm);
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .challenge-group h4::before {
