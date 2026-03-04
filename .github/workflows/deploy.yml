@@ -47,4 +47,4 @@ name: Deploy to Netlify
         if: success()
         run: |
           echo "✅ Deployment successful!"
-          echo "Site URL: https://interconnect-system.netlify.app"
+          echo "Site URL: https://inter-connect.app"
