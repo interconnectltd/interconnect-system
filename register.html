@@ -135,114 +135,134 @@
                 <!-- Step 2: Business Challenges -->
                 <div class="form-step" data-step="2">
                     <h3>事業課題を選択してください（複数選択可）</h3>
-                    
+
                     <div class="challenges-section">
                         <div class="challenge-group">
-                            <h4><i class="fas fa-chart-line"></i> 売上・収益</h4>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし_売上" data-exclusive="true">
-                                <span>現状課題なし</span>
-                            </label>
+                            <h4><i class="fas fa-chart-line"></i> 売上・マーケティング</h4>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="新規顧客獲得">
-                                <span>新規顧客獲得の伸び悩み</span>
+                                <span>新規顧客獲得</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="既存顧客単価">
-                                <span>既存顧客の単価向上</span>
+                                <span>既存顧客リピート・単価向上</span>
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="市場シェア拡大">
-                                <span>市場シェアの拡大</span>
+                                <input type="checkbox" name="challenges" value="Web集客・SNS活用">
+                                <span>Web集客・SNS活用</span>
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="リピート率向上">
-                                <span>顧客リピート率の向上</span>
+                                <input type="checkbox" name="challenges" value="営業力強化">
+                                <span>営業力強化</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="新規事業開発">
-                                <span>新規事業・サービスの開発</span>
+                                <span>新規事業開発</span>
                             </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="その他_売上" data-other="true">
+                                <span>その他</span>
+                            </label>
+                            <div class="other-input-wrapper" data-for="その他_売上" style="display:none;">
+                                <input type="text" class="other-input" name="challenges_other_sales" placeholder="具体的に入力してください">
+                            </div>
                         </div>
 
                         <div class="challenge-group">
                             <h4><i class="fas fa-users"></i> 組織・人材</h4>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし_組織" data-exclusive="true">
-                                <span>現状課題なし</span>
-                            </label>
-                            <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="人材採用">
-                                <span>優秀な人材の採用</span>
+                                <span>採用</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="人材育成">
-                                <span>社員の育成・スキルアップ</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="組織文化">
-                                <span>組織文化の醸成</span>
+                                <span>社員教育・人材育成</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="離職防止">
-                                <span>離職率の改善・定着率向上</span>
+                                <span>離職防止</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="マネジメント育成">
+                                <span>マネジメント・リーダー育成</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="評価制度">
-                                <span>人事評価制度の構築</span>
+                                <span>人事評価・報酬制度</span>
                             </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="その他_組織" data-other="true">
+                                <span>その他</span>
+                            </label>
+                            <div class="other-input-wrapper" data-for="その他_組織" style="display:none;">
+                                <input type="text" class="other-input" name="challenges_other_org" placeholder="具体的に入力してください">
+                            </div>
                         </div>
 
                         <div class="challenge-group">
-                            <h4><i class="fas fa-cogs"></i> 業務効率・DX</h4>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし_DX" data-exclusive="true">
-                                <span>現状課題なし</span>
-                            </label>
+                            <h4><i class="fas fa-cogs"></i> 業務改善・テクノロジー</h4>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="DX推進">
-                                <span>DX推進・デジタル化</span>
+                                <span>DX推進</span>
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="業務自動化">
-                                <span>業務プロセスの自動化</span>
+                                <input type="checkbox" name="challenges" value="業務プロセス改善">
+                                <span>業務フロー改善</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="システム統合">
-                                <span>社内システムの統合</span>
+                                <span>ITツール・システム導入</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="データ活用">
-                                <span>データ分析・活用の推進</span>
+                                <span>データ活用</span>
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="セキュリティ">
-                                <span>情報セキュリティの強化</span>
+                                <input type="checkbox" name="challenges" value="AI・自動化">
+                                <span>AI・自動化</span>
                             </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="その他_DX" data-other="true">
+                                <span>その他</span>
+                            </label>
+                            <div class="other-input-wrapper" data-for="その他_DX" style="display:none;">
+                                <input type="text" class="other-input" name="challenges_other_dx" placeholder="具体的に入力してください">
+                            </div>
                         </div>
 
                         <div class="challenge-group">
-                            <h4><i class="fas fa-globe"></i> 事業戦略・競争力</h4>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="現状課題なし_戦略" data-exclusive="true">
-                                <span>現状課題なし</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="challenges" value="差別化戦略">
-                                <span>競合他社との差別化</span>
-                            </label>
+                            <h4><i class="fas fa-globe"></i> 経営・戦略</h4>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="ブランディング">
-                                <span>ブランド力の向上</span>
+                                <span>ブランディング・PR</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="資金調達">
+                                <span>資金調達</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="事業承継">
+                                <span>事業承継・M&amp;A</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="海外展開">
-                                <span>海外市場への展開</span>
+                                <span>海外展開</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="challenges" value="パートナーシップ">
-                                <span>戦略的パートナーシップ構築</span>
+                                <span>アライアンス</span>
                             </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="法務・コンプライアンス">
+                                <span>法務・コンプライアンス</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="その他_戦略" data-other="true">
+                                <span>その他</span>
+                            </label>
+                            <div class="other-input-wrapper" data-for="その他_戦略" style="display:none;">
+                                <input type="text" class="other-input" name="challenges_other_strategy" placeholder="具体的に入力してください">
+                            </div>
                         </div>
                     </div>
 
@@ -251,7 +271,12 @@
                         <input type="text" id="budget" name="budget" placeholder="例：1000（1000万円の場合）" pattern="[0-9]*" inputmode="numeric">
                         <small class="form-help">任意。数字のみ（単位：万円）</small>
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="challenges-detail">具体的に相談したいこと・解決したいこと</label>
+                        <textarea id="challenges-detail" name="challenges_detail" placeholder="自由にご記入ください（任意）" rows="4"></textarea>
+                    </div>
+
                     <div class="form-navigation">
                         <button type="button" class="auth-button-outline" data-action="prev">戻る</button>
                         <button type="button" class="auth-button" data-action="next">次へ</button>

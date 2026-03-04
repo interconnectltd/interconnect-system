@@ -2343,8 +2343,10 @@
             'SDGs', 'ESG投資', 'スタートアップ', 'イノベーション', '地方創生'
         ],
         businessChallenges: [
-            '売上向上', '新規顧客獲得', 'コスト削減', '人材採用', '人材育成',
-            'DX推進', '新規事業開発', '海外展開', '資金調達', '事業承継'
+            '新規顧客獲得', '既存顧客単価', 'Web集客・SNS活用', '営業力強化', '新規事業開発',
+            '人材採用', '人材育成', '離職防止', 'マネジメント育成', '評価制度',
+            'DX推進', '業務プロセス改善', 'システム統合', 'データ活用', 'AI・自動化',
+            'ブランディング', '資金調達', '事業承継', '海外展開', 'パートナーシップ', '法務・コンプライアンス'
         ],
         locations: [
             '東京', '大阪', '名古屋', '福岡', '札幌', '仙台', '広島', '京都', 'その他'
@@ -2660,11 +2662,16 @@
             }
 
             if (searchFilters.businessChallenges.length > 0) {
-                filteredUsers = filteredUsers.filter(user => 
-                    user.business_challenges && searchFilters.businessChallenges.some(challenge => 
-                        user.business_challenges.includes(challenge)
-                    )
-                );
+                filteredUsers = filteredUsers.filter(user => {
+                    if (!user.business_challenges) return false;
+                    // JSONB {challenges:[...]} 形式にも対応
+                    let bc = user.business_challenges;
+                    if (typeof bc === 'object' && !Array.isArray(bc) && Array.isArray(bc.challenges)) {
+                        bc = bc.challenges;
+                    }
+                    if (!Array.isArray(bc)) return false;
+                    return searchFilters.businessChallenges.some(challenge => bc.includes(challenge));
+                });
             }
 
             // 結果を表示

@@ -355,6 +355,103 @@
             ],
             weight: 25,
             keywords: ['提携', 'パートナー', 'アライアンス', '協業']
+        },
+
+        // ============ 新規追加エントリ ============
+        'Web集客・SNS活用': {
+            requiredSkills: [
+                'SNSマーケティング',
+                'デジタルマーケティング',
+                'SEO/SEM',
+                'コンテンツマーケティング',
+                'Web制作'
+            ],
+            weight: 25,
+            keywords: ['Web', 'SNS', '集客', 'インスタ', 'YouTube']
+        },
+
+        '営業力強化': {
+            requiredSkills: [
+                '営業戦略',
+                'セールス',
+                'CRM',
+                'ネゴシエーション',
+                'プレゼンテーション'
+            ],
+            weight: 25,
+            keywords: ['営業', 'セールス', '商談', '受注']
+        },
+
+        'マネジメント育成': {
+            requiredSkills: [
+                'マネジメント',
+                'コーチング',
+                'リーダーシップ',
+                '組織開発',
+                '人材開発'
+            ],
+            weight: 25,
+            keywords: ['マネジメント', 'リーダー', '幹部', '管理職']
+        },
+
+        '業務プロセス改善': {
+            requiredSkills: [
+                'BPR',
+                'プロセス改善',
+                'リーン',
+                'シックスシグマ',
+                'プロジェクトマネジメント'
+            ],
+            weight: 25,
+            keywords: ['業務改善', 'プロセス', '効率化', '生産性']
+        },
+
+        'AI・自動化': {
+            requiredSkills: [
+                'AI・機械学習',
+                'RPA',
+                'データサイエンス',
+                'システム設計',
+                'DX推進'
+            ],
+            weight: 30,
+            keywords: ['AI', '自動化', '機械学習', 'ChatGPT']
+        },
+
+        '資金調達': {
+            requiredSkills: [
+                '資金調達',
+                'ファイナンス',
+                '事業計画策定',
+                'VC交渉',
+                '財務戦略'
+            ],
+            weight: 30,
+            keywords: ['資金', '調達', '融資', '投資', 'VC']
+        },
+
+        '事業承継': {
+            requiredSkills: [
+                'M&A戦略',
+                '事業承継',
+                '経営戦略立案',
+                '組織変革',
+                '法務'
+            ],
+            weight: 30,
+            keywords: ['承継', 'M&A', '後継者', '事業売却']
+        },
+
+        '法務・コンプライアンス': {
+            requiredSkills: [
+                'コンプライアンス',
+                '法務',
+                'リスクマネジメント',
+                '契約交渉',
+                '知的財産'
+            ],
+            weight: 20,
+            keywords: ['法務', 'コンプライアンス', '法令', '規制']
         }
     };
     
@@ -885,19 +982,24 @@
             balance: 0       // バランススコア
         };
         
+        // business_challenges正規化ヘルパー: JSONB {challenges:[...]} 形式にも対応
+        function normalizeChallenges(bc) {
+            if (!bc) return [];
+            if (Array.isArray(bc)) return bc;
+            if (typeof bc === 'object' && Array.isArray(bc.challenges)) return bc.challenges;
+            if (typeof bc === 'string') return bc.split(',').map(s => s.trim());
+            return [];
+        }
+
         // Aのスキル、Bの課題を抽出
-        const aSkills = Array.isArray(userA.skills) ? userA.skills : 
+        const aSkills = Array.isArray(userA.skills) ? userA.skills :
             (userA.skills ? userA.skills.split(',').map(s => s.trim()) : []);
-        const bChallenges = Array.isArray(userB.business_challenges) ? 
-            userB.business_challenges : 
-            (userB.business_challenges ? userB.business_challenges.split(',').map(s => s.trim()) : []);
-        
+        const bChallenges = normalizeChallenges(userB.business_challenges);
+
         // Bのスキル、Aの課題を抽出
-        const bSkills = Array.isArray(userB.skills) ? userB.skills : 
+        const bSkills = Array.isArray(userB.skills) ? userB.skills :
             (userB.skills ? userB.skills.split(',').map(s => s.trim()) : []);
-        const aChallenges = Array.isArray(userA.business_challenges) ? 
-            userA.business_challenges : 
-            (userA.business_challenges ? userA.business_challenges.split(',').map(s => s.trim()) : []);
+        const aChallenges = normalizeChallenges(userA.business_challenges);
         
         // A → B の支援度計算
         let aHelpsBScore = 0;
@@ -1684,14 +1786,20 @@
                         </div>
                     ` : ''}
                     
-                    ${user.business_challenges && user.business_challenges.length > 0 ? `
+                    ${(() => {
+                        let bc = user.business_challenges;
+                        if (bc && typeof bc === 'object' && !Array.isArray(bc) && Array.isArray(bc.challenges)) bc = bc.challenges;
+                        if (!Array.isArray(bc)) return '';
+                        const visible = bc.filter(c => !c.startsWith('その他_'));
+                        return visible.length > 0 ? `
                         <div class="profile-section">
                             <h4>ビジネス課題</h4>
                             <ul class="challenges-list">
-                                ${user.business_challenges.map(challenge => `<li>${escapeHtml(challenge)}</li>`).join('')}
+                                ${visible.map(challenge => `<li>${escapeHtml(challenge)}</li>`).join('')}
                             </ul>
                         </div>
-                    ` : ''}
+                    ` : '';
+                    })()}
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary">閉じる</button>

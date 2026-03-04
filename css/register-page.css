@@ -441,8 +441,36 @@
     cursor: pointer;
 }
 
-.challenge-group .checkbox-label:last-child {
+.challenge-group .checkbox-label:last-of-type {
     margin-bottom: 0;
+}
+
+/* 「その他」テキスト入力欄 */
+.other-input-wrapper {
+    margin-top: var(--space-xs);
+    margin-left: calc(var(--space-sm) + 18px);
+    margin-bottom: var(--space-xs);
+}
+
+.other-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    transition: var(--transition-base);
+}
+
+.other-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* 自由記述テキストエリア */
+#challenges-detail {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
 }
 
 .auth-form select {

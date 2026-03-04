@@ -522,25 +522,17 @@ function showSuccessMessage(message) {
     //     return;
     // }
 
-    // 「現状課題なし」チェックボックスの処理（排他制御）
-    function handleNoChallengeCheckbox(checkbox) {
+    // 「その他」チェックボックスの処理（テキスト入力欄の表示/非表示）
+    function handleOtherCheckbox(checkbox) {
         const group = checkbox.closest('.challenge-group');
-        const otherCheckboxes = group.querySelectorAll('input[type="checkbox"][name="challenges"]:not([data-exclusive])');
-
-        if (checkbox.checked) {
-            otherCheckboxes.forEach(cb => {
-                cb.checked = false;
-            });
-        }
-    }
-
-    // 課題チェックボックスの処理（排他制御）
-    function handleChallengeCheckbox(checkbox) {
-        const group = checkbox.closest('.challenge-group');
-        const exclusiveCheckbox = group.querySelector('input[data-exclusive]');
-
-        if (exclusiveCheckbox && exclusiveCheckbox.checked) {
-            exclusiveCheckbox.checked = false;
+        if (!group) return;
+        const wrapper = group.querySelector(`.other-input-wrapper[data-for="${checkbox.value}"]`);
+        if (wrapper) {
+            wrapper.style.display = checkbox.checked ? 'block' : 'none';
+            if (!checkbox.checked) {
+                const input = wrapper.querySelector('.other-input');
+                if (input) input.value = '';
+            }
         }
     }
 
@@ -578,12 +570,20 @@ function showSuccessMessage(message) {
         if (step === 2) {
             const challengeGroups = stepElement.querySelectorAll('.challenge-group');
             challengeGroups.forEach(group => {
-                const exclusiveChecked = group.querySelector('input[data-exclusive]:checked');
-                const otherChallengesChecked = group.querySelectorAll('input[name="challenges"]:checked:not([data-exclusive])');
-
-                if (!exclusiveChecked && otherChallengesChecked.length === 0) {
+                const checkedBoxes = group.querySelectorAll('input[name="challenges"]:checked');
+                if (checkedBoxes.length === 0) {
                     const groupTitle = group.querySelector('h4').textContent.trim();
-                    errors.push(`${groupTitle}で項目を選択するか「現状課題なし」を選択してください`);
+                    errors.push(`${groupTitle}で項目を選択してください`);
+                }
+                // 「その他」チェック時にテキスト未入力チェック
+                const otherCb = group.querySelector('input[data-other]:checked');
+                if (otherCb) {
+                    const wrapper = group.querySelector(`.other-input-wrapper[data-for="${otherCb.value}"]`);
+                    const input = wrapper && wrapper.querySelector('.other-input');
+                    if (input && !input.value.trim()) {
+                        const groupTitle = group.querySelector('h4').textContent.trim();
+                        errors.push(`${groupTitle}の「その他」の内容を入力してください`);
+                    }
                 }
             });
 
@@ -627,21 +627,17 @@ function showSuccessMessage(message) {
     function init() {
         // 文字数カウンターの初期化は無効化（register-char-count.jsが処理）
 
-        // 初期状態のチェック - 「現状課題なし」がチェックされていたら処理
-        document.querySelectorAll('input[data-exclusive]').forEach(checkbox => {
+        // 初期状態のチェック - 「その他」がチェックされていたら入力欄を表示
+        document.querySelectorAll('input[data-other]').forEach(checkbox => {
             if (checkbox.checked) {
-                handleNoChallengeCheckbox(checkbox);
+                handleOtherCheckbox(checkbox);
             }
         });
 
-        // チェックボックスのイベントリスナー
+        // チェックボックスのイベントリスナー（「その他」の表示制御）
         document.addEventListener('change', function(e) {
-            if (e.target.matches('input[type="checkbox"][name="challenges"]')) {
-                if (e.target.dataset.exclusive) {
-                    handleNoChallengeCheckbox(e.target);
-                } else {
-                    handleChallengeCheckbox(e.target);
-                }
+            if (e.target.matches('input[type="checkbox"][name="challenges"][data-other]')) {
+                handleOtherCheckbox(e.target);
             }
         });
 
@@ -872,6 +868,15 @@ function showSuccessMessage(message) {
                 const checkedBoxes = group.querySelectorAll('input[name="challenges"]:checked');
                 if (checkedBoxes.length === 0) {
                     allGroupsValid = false;
+                }
+                // 「その他」チェック時にテキスト未入力ならNG
+                const otherCb = group.querySelector('input[data-other]:checked');
+                if (otherCb) {
+                    const wrapper = group.querySelector(`.other-input-wrapper[data-for="${otherCb.value}"]`);
+                    const input = wrapper && wrapper.querySelector('.other-input');
+                    if (input && !input.value.trim()) {
+                        allGroupsValid = false;
+                    }
                 }
             });
 
@@ -1336,7 +1341,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // ステップ2: 「現状課題なし」排他制御 + バリデーション更新
+    // ステップ2: 「その他」表示制御 + バリデーション更新
     // NOTE: validationState / updateButtonState は StrictValidation IIFE 内にあるため
     //       window._regValidationState / window._regUpdateButtonState 経由でアクセスする
     document.querySelectorAll('input[name="challenges"]').forEach(cb => {
@@ -1344,15 +1349,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const group = this.closest('.challenge-group');
             if (!group) return;
 
-            if (this.dataset.exclusive && this.checked) {
-                // 「現状課題なし」が選択 → 同グループの他を解除
-                group.querySelectorAll('input[name="challenges"]:not([data-exclusive])').forEach(other => {
-                    other.checked = false;
-                });
-            } else if (!this.dataset.exclusive && this.checked) {
-                // 具体的な課題が選択 → 同グループの「現状課題なし」を解除
-                const exclusive = group.querySelector('input[data-exclusive]');
-                if (exclusive) exclusive.checked = false;
+            // 「その他」チェックボックスの表示制御
+            if (this.dataset.other) {
+                const wrapper = group.querySelector(`.other-input-wrapper[data-for="${this.value}"]`);
+                if (wrapper) {
+                    wrapper.style.display = this.checked ? 'block' : 'none';
+                    if (!this.checked) {
+                        const input = wrapper.querySelector('.other-input');
+                        if (input) input.value = '';
+                    }
+                }
             }
 
             // ステップ2全体のバリデーション更新
@@ -1361,6 +1367,37 @@ document.addEventListener('DOMContentLoaded', function() {
             allGroups.forEach(g => {
                 if (g.querySelectorAll('input[name="challenges"]:checked').length === 0) {
                     allValid = false;
+                }
+                const otherCb = g.querySelector('input[data-other]:checked');
+                if (otherCb) {
+                    const w = g.querySelector(`.other-input-wrapper[data-for="${otherCb.value}"]`);
+                    const inp = w && w.querySelector('.other-input');
+                    if (inp && !inp.value.trim()) allValid = false;
+                }
+            });
+            if (window._regValidationState) {
+                window._regValidationState.step2.challenges = allValid;
+            }
+            if (window._regUpdateButtonState) {
+                window._regUpdateButtonState(2);
+            }
+        });
+    });
+
+    // 「その他」テキスト入力時もバリデーション再評価
+    document.querySelectorAll('.other-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const allGroups = document.querySelectorAll('.form-step[data-step="2"] .challenge-group');
+            let allValid = true;
+            allGroups.forEach(g => {
+                if (g.querySelectorAll('input[name="challenges"]:checked').length === 0) {
+                    allValid = false;
+                }
+                const otherCb = g.querySelector('input[data-other]:checked');
+                if (otherCb) {
+                    const w = g.querySelector(`.other-input-wrapper[data-for="${otherCb.value}"]`);
+                    const inp = w && w.querySelector('.other-input');
+                    if (inp && !inp.value.trim()) allValid = false;
                 }
             });
             if (window._regValidationState) {
@@ -1642,6 +1679,17 @@ window.InterConnect.Registration.validateCurrentStep = function(stepNum) {
                 const groupTitle = group.querySelector('h4') ? group.querySelector('h4').textContent.trim() : '課題';
                 window.InterConnect.Registration.showToast(`${groupTitle}で項目を選択してください`, 'error');
                 isValid = false;
+            }
+            // 「その他」チェック時にテキスト未入力チェック
+            const otherCb = group.querySelector('input[data-other]:checked');
+            if (otherCb) {
+                const wrapper = group.querySelector(`.other-input-wrapper[data-for="${otherCb.value}"]`);
+                const input = wrapper && wrapper.querySelector('.other-input');
+                if (input && !input.value.trim()) {
+                    const groupTitle = group.querySelector('h4') ? group.querySelector('h4').textContent.trim() : '課題';
+                    window.InterConnect.Registration.showToast(`${groupTitle}の「その他」の内容を入力してください`, 'error');
+                    isValid = false;
+                }
             }
         });
 
@@ -2121,7 +2169,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     skills: formData.skills,
                     interests: formData.interests,
                     business_challenges: {
-                        challenges: formData.challenges || []
+                        challenges: formData.challenges || [],
+                        challenges_other: formData.challenges_other || {},
+                        challenges_detail: formData.challenges_detail || ''
                     },
                     industry: formData.industry,
                     is_active: true,
@@ -2271,6 +2321,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // 事業課題
             challenges: Array.from(document.querySelectorAll('input[name="challenges"]:checked'))
                 .map(cb => cb.value),
+            challenges_other: {
+                sales: (document.querySelector('input[name="challenges_other_sales"]') || {}).value || '',
+                org: (document.querySelector('input[name="challenges_other_org"]') || {}).value || '',
+                dx: (document.querySelector('input[name="challenges_other_dx"]') || {}).value || '',
+                strategy: (document.querySelector('input[name="challenges_other_strategy"]') || {}).value || ''
+            },
+            challenges_detail: (document.getElementById('challenges-detail') || {}).value || '',
             budget: getElementValue('budget'),
 
             // 連絡先
