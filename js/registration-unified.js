@@ -1097,8 +1097,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 文字カウントが必要な要素の設定
     const charCountFields = [
-        { id: 'skills-pr', countId: 'skills-pr-count', min: 100 },
-        { id: 'interests-details', countId: 'interests-details-count', min: 0 }
+        { id: 'skills-pr', countId: 'skills-pr-count', min: 100 }
     ];
 
     // 各フィールドにイベントリスナーを設定
