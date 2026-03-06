@@ -609,8 +609,8 @@ function showSuccessMessage(message) {
         // ステップ5の特別なバリデーション（詳細欄）
         if (step === 5) {
             const detailsTextarea = stepElement.querySelector('#interests-details');
-            if (detailsTextarea && detailsTextarea.value.trim().length < 100) {
-                errors.push('興味・困りごとの詳細は100文字以上で入力してください');
+            if (detailsTextarea && detailsTextarea.value.trim().length === 0) {
+                errors.push('興味・困りごとの詳細を入力してください');
             }
         }
 
@@ -843,7 +843,7 @@ function showSuccessMessage(message) {
 
             case 'interests-details':
                 fieldKey = 'interestsDetails';
-                isValid = field.value.trim().length >= 100;
+                isValid = field.value.trim().length > 0;
                 break;
         }
 
@@ -978,7 +978,7 @@ function showSuccessMessage(message) {
                             case 'lineQr': errors.push('LINE QRコードをアップロードしてください'); break;
                             case 'position': errors.push('役職を入力してください'); break;
                             case 'skillsPr': errors.push('スキル・専門分野のPRを100文字以上で入力してください'); break;
-                            case 'interestsDetails': errors.push('興味・困りごとの詳細を100文字以上で入力してください'); break;
+                            case 'interestsDetails': errors.push('興味・困りごとの詳細を入力してください'); break;
                             case 'agree': errors.push('利用規約に同意してください'); break;
                         }
                     }
@@ -1098,7 +1098,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 文字カウントが必要な要素の設定
     const charCountFields = [
         { id: 'skills-pr', countId: 'skills-pr-count', min: 100 },
-        { id: 'interests-details', countId: 'interests-details-count', min: 100 }
+        { id: 'interests-details', countId: 'interests-details-count', min: 0 }
     ];
 
     // 各フィールドにイベントリスナーを設定
@@ -1328,7 +1328,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 詳細テキストの文字数チェック
         const interestsDetails = document.getElementById('interests-details');
-        if (!interestsDetails || interestsDetails.value.trim().length < 100) {
+        if (!interestsDetails || interestsDetails.value.trim().length === 0) {
             return false;
         }
 
@@ -1436,7 +1436,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (interestsDetailsField) {
         interestsDetailsField.addEventListener('input', function() {
             if (window._regValidationState) {
-                window._regValidationState.step5.interestsDetails = this.value.trim().length >= 100;
+                window._regValidationState.step5.interestsDetails = this.value.trim().length > 0;
             }
             if (window._regUpdateButtonState) {
                 window._regUpdateButtonState(5);
@@ -2101,8 +2101,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const interestsDetails = formData['interests-details'] || '';
-            if (interestsDetails.trim().length < 100) {
-                missingFields.push('興味・困りごとの詳細（100文字以上、ステップ5）');
+            if (interestsDetails.trim().length === 0) {
+                missingFields.push('興味・困りごとの詳細（ステップ5）');
             }
 
             const termsCheckbox = document.querySelector('input[name="agree"]');
