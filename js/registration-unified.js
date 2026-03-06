@@ -2181,6 +2181,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (profileError) throw profileError;
 
+            // settings・user_points行を作成（トリガー不使用のためフロントエンドで処理）
+            await window.supabaseClient
+                .from('settings')
+                .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
+            await window.supabaseClient
+                .from('user_points')
+                .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
+
             // LINE QRコード画像のアップロード
             if (window._selectedLineQrFile) {
                 try {
