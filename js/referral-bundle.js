@@ -419,7 +419,6 @@ window.cashoutModal = new CashoutModal();
 (function() {
     'use strict';
 
-    // console.log('[ReferralUnified] 紹介システム統一モジュール初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -433,7 +432,6 @@ window.cashoutModal = new CashoutModal();
 
     // 初期化
     async function initialize() {
-        // console.log('[ReferralUnified] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -447,7 +445,6 @@ window.cashoutModal = new CashoutModal();
         }
 
         currentUserId = user.id;
-        // console.log('[ReferralUnified] ユーザーID:', currentUserId);
 
         // イベントリスナーの設定
         setupEventListeners();
@@ -863,7 +860,6 @@ window.cashoutModal = new CashoutModal();
     // 紹介履歴のフィルタリング
     function filterReferrals() {
         const filterValue = document.getElementById('status-filter').value;
-        // console.log('[ReferralUnified] フィルター:', filterValue);
         // フィルタリング処理を実装
     }
 
@@ -928,7 +924,6 @@ window.cashoutModal = new CashoutModal();
 
     function showNotification(message, type = 'info') {
         // 通知の表示（実装は既存の通知システムに依存）
-        // console.log(`[ReferralUnified] ${type}: ${message}`);
     }
 
     // 初期化実行
@@ -952,7 +947,6 @@ window.cashoutModal = new CashoutModal();
 (function() {
     'use strict';
 
-    // console.log('[ShareModal] ハンドラー初期化');
 
     // 現在の紹介リンクURL
     let currentShareUrl = '';
@@ -960,7 +954,6 @@ window.cashoutModal = new CashoutModal();
 
     // 初期化
     function initialize() {
-        // console.log('[ShareModal] 初期化開始');
         
         // デフォルトのシェアテキストを設定
         const shareMessageElement = document.getElementById('share-message');
@@ -978,17 +971,14 @@ window.cashoutModal = new CashoutModal();
         const inviteLinkElement = document.querySelector('.invite-link-url');
         if (inviteLinkElement) {
             currentShareUrl = inviteLinkElement.textContent;
-            // console.log('[ShareModal] 紹介リンクを使用:', currentShareUrl);
         } else {
             // なければ現在のページURL
             currentShareUrl = window.location.href;
-            // console.log('[ShareModal] 現在のページURLを使用:', currentShareUrl);
         }
     }
 
     // シェアモーダルを開く
     window.openShareModal = function(linkUrl) {
-        // console.log('[ShareModal] モーダルを開く:', linkUrl);
         
         if (linkUrl) {
             currentShareUrl = linkUrl;
@@ -1008,7 +998,6 @@ window.cashoutModal = new CashoutModal();
 
     // シェアモーダルを閉じる
     window.closeShareModal = function() {
-        // console.log('[ShareModal] モーダルを閉じる');
         
         const modal = document.getElementById('share-modal');
         if (modal) {
@@ -1035,7 +1024,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // Twitterでシェア
     window.shareToTwitter = function() {
-        // console.log('[ShareModal] Twitterでシェア');
         
         const text = encodeURIComponent(currentShareText);
         const url = encodeURIComponent(currentShareUrl);
@@ -1051,7 +1039,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // LINEでシェア
     window.shareToLine = function() {
-        // console.log('[ShareModal] LINEでシェア');
         
         const text = encodeURIComponent(`${currentShareText}\n\n${currentShareUrl}`);
         const lineUrl = `https://line.me/R/msg/text/?${text}`;
@@ -1069,7 +1056,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // Facebookでシェア
     window.shareToFacebook = function() {
-        // console.log('[ShareModal] Facebookでシェア');
         
         const url = encodeURIComponent(currentShareUrl);
         const quote = encodeURIComponent(currentShareText);
@@ -1084,7 +1070,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // メールでシェア
     window.shareByEmail = function() {
-        // console.log('[ShareModal] メールでシェア');
         
         const subject = encodeURIComponent('INTERCONNECTのご紹介');
         const body = encodeURIComponent(`${currentShareText}\n\n詳細はこちら:\n${currentShareUrl}`);
@@ -1099,7 +1084,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // コピー機能（追加）
     window.copyShareLink = function() {
-        // console.log('[ShareModal] リンクをコピー');
         
         const tempInput = document.createElement('input');
         tempInput.value = currentShareUrl;
@@ -1132,7 +1116,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
 
     // シェアアナリティクス
     function trackShare(platform) {
-        // console.log(`[ShareModal] ${platform}でシェアされました`);
         
         // Google Analytics
         if (typeof gtag !== 'undefined') {
@@ -1167,7 +1150,6 @@ AIを活用した次世代のビジネスマッチングサービスで、経営
             if (error) {
                 console.error('[ShareModal] シェア記録エラー:', error);
             } else {
-                // console.log('[ShareModal] シェア活動を記録しました');
             }
         } catch (error) {
             console.error('[ShareModal] シェア記録エラー:', error);

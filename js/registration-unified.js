@@ -3,7 +3,6 @@
 // ============================================================
 // 登録ページのログイン状態チェック
 (function() {
-    // console.log('[RegisterAuthCheck] 認証状態チェック開始');
 
     // Supabaseクライアントの初期化を待つ
     function checkAuthStatus() {
@@ -27,7 +26,6 @@
                     }
                 }
             } else {
-                // console.log('[RegisterAuthCheck] 未ログイン状態 - 登録ページ表示を継続');
             }
         }).catch(error => {
             console.error('[RegisterAuthCheck] 認証状態確認エラー:', error);
@@ -46,7 +44,6 @@
 // Section: register-referral-handler.js
 // ============================================================
 // 登録ページでの紹介コード処理
-// console.log('=== 登録ページ紹介コード処理 ===');
 
 (function() {
     // 紹介コードを取得（優先順位: URL > Session > Cookie）
@@ -66,7 +63,6 @@
     referralCode = urlRef || sessionRef || cookieRef;
 
     if (referralCode) {
-        // console.log('[Register] 紹介コード検出:', referralCode);
 
         // 隠しフィールドに設定
         const referralInput = document.getElementById('referral-code-input');
@@ -212,7 +208,6 @@ async function recordReferralRegistration(code, userId) {
         if (invitationError) {
             console.error('[Register] 招待記録エラー:', invitationError);
         } else {
-            // console.log('[Register] 紹介登録を記録しました');
 
             // 成功メッセージを表示
             showSuccessMessage('紹介コードが適用されました！');
@@ -282,7 +277,6 @@ function showSuccessMessage(message) {
     }
 }
 
-// console.log('=== 登録ページ紹介コード処理準備完了 ===');
 
 // ============================================================
 // Section: event-listener-manager.js
@@ -327,7 +321,6 @@ function showSuccessMessage(message) {
 
         // 既に同じハンドラーが登録されている場合はスキップ
         if (handlers.has(handler)) {
-            // console.log(`[EventManager] Duplicate listener prevented for ${event}`);
             return () => removeSafeEventListener(element, event, handler, options);
         }
 
@@ -388,7 +381,6 @@ function showSuccessMessage(message) {
         // グローバルリスナーとして登録
         const key = `${parentSelector}_${eventType}_${childSelector}`;
         if (globalListeners.has(key)) {
-            // console.log(`[EventManager] Delegated listener already exists for ${key}`);
             return globalListeners.get(key).remove;
         }
 
@@ -496,7 +488,6 @@ function showSuccessMessage(message) {
     // グローバルな影響を避けるため、必要な要素に対して個別にイベントリスナーを管理する
     // これによりシステム全体への予期しない影響を防ぐ
 
-    // console.log('[EventManager] Event listener management system initialized');
 })();
 
 // ============================================================
@@ -510,7 +501,6 @@ function showSuccessMessage(message) {
 (function() {
     'use strict';
 
-    // console.log('[RegisterEnhancedValidation] 初期化開始');
 
     // 現在のステップ
     let currentStep = 1;
@@ -660,7 +650,6 @@ function showSuccessMessage(message) {
         init();
     }
 
-    // console.log('[RegisterEnhancedValidation] 初期化完了');
 
 })();
 
@@ -675,7 +664,6 @@ function showSuccessMessage(message) {
 (function() {
     'use strict';
 
-    // console.log('[RegisterStrictValidation] 初期化開始');
 
     // バリデーション状態を管理
     const validationState = {
@@ -747,7 +735,6 @@ function showSuccessMessage(message) {
 
         const isValid = isStepValid(stepNum);
 
-        // console.log(`[RegisterStrictValidation] Step ${stepNum} validation:`, {
         //     isValid,
         //     state: validationState[`step${stepNum}`]
         // });
@@ -1013,7 +1000,6 @@ function showSuccessMessage(message) {
         // budgetフィールド専用の処理（確実にイベントリスナーを追加）
         const budgetField = document.getElementById('budget');
         if (budgetField) {
-            // console.log('[RegisterStrict] Adding validation to budget field');
             budgetField.addEventListener('input', () => validateField(budgetField));
             budgetField.addEventListener('blur', () => validateField(budgetField));
         }
@@ -1078,7 +1064,6 @@ function showSuccessMessage(message) {
     window._regValidationState = validationState;
     window._regUpdateButtonState = updateButtonState;
 
-    // console.log('[RegisterStrictValidation] 初期化完了');
 
 })();
 
@@ -1092,8 +1077,6 @@ function showSuccessMessage(message) {
 document.addEventListener('DOMContentLoaded', function() {
     // デバッグ用
     const DEBUG = false;
-    // console.log('[CharCount] Initializing character count feature...');
-    // console.log('[CharCount] DOMContentLoaded at:', new Date().toISOString());
 
     // 文字カウントが必要な要素の設定
     const charCountFields = [
@@ -1115,20 +1098,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (textarea && countElement) {
             updateCharCount(textarea, countElement, field.min);
-            // console.log(`[CharCount] Initial count set for ${field.id}`);
 
             // 既存のイベントリスナーをクリアしてから新規追加
             // ただしcloneNodeは使わない（disabled状態もコピーされるため）
 
             // 既存のイベントリスナーを上書き
             const inputHandler = function(e) {
-                // console.log(`[CharCount] Input event triggered for ${field.id}, length: ${this.value.length}`);
                 const count = document.getElementById(field.countId);
                 if (count) {
                     updateCharCount(this, count, field.min);
-                    // console.log(`[CharCount] Updated count display to: ${this.value.length}`);
                 } else {
-                    // console.error(`[CharCount] Count element not found: ${field.countId}`);
                 }
                 // ローカルのバリデーション関数を呼び出し
                 validateCharCountStep();
@@ -1139,7 +1118,6 @@ document.addEventListener('DOMContentLoaded', function() {
             textarea.addEventListener('input', inputHandler);
 
             // デバッグ: リスナー追加後の確認
-            // console.log(`[CharCount] Added input listener to ${field.id}, disabled: ${textarea.disabled}`);
 
             // デバッグ: getEventListenersがある場合は確認
             // if (typeof getEventListeners !== 'undefined') {
@@ -1159,7 +1137,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCharCount(textarea, countElement, minLength) {
         const currentLength = textarea.value.trim().length;
         countElement.textContent = currentLength;
-        // console.log(`[updateCharCount] Setting ${countElement.id} to ${currentLength}`);
 
         // 親要素の.char-countを取得
         const charCountWrapper = countElement.closest('.char-count');
@@ -1820,7 +1797,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const inviterId = sessionStorage.getItem('inviterId');
 
     if (inviteCode) {
-        // console.log('招待コードが検出されました:', inviteCode);
         // 招待情報を表示
         const inviteNotice = document.createElement('div');
         inviteNotice.className = 'invite-notice';
@@ -2020,7 +1996,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // LINE登録ボタンの処理は削除（auth-supabase.jsで処理）
     // 競合を避けるため、ここでは何もしない
-    // console.log('registration-flow.js: LINE button handling delegated to auth-supabase.js');
 });
 
 // ============================================================
@@ -2139,7 +2114,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('このメールアドレスは既に登録されています。');
                 } else if (authError.message.includes('Password should be at least')) {
                     throw new Error('パスワードは8文字以上で入力してください。');
-                } else if (authError.message.includes('Invalid email')) {
+                } else if (authError.message.includes('Invalid email') || authError.message.includes('is invalid')) {
                     throw new Error('有効なメールアドレスを入力してください。');
                 }
                 throw authError;
@@ -2223,7 +2198,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 招待コードがある場合の処理
             if (inviteCode && inviterId) {
-                // console.log('招待コードを処理中:', inviteCode);
 
                 // 招待記録を作成
                 const { error: invitationError } = await window.supabaseClient
@@ -2238,7 +2212,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                 if (invitationError) {
-                    // console.error('招待記録の作成エラー:', invitationError);
                     // エラーが発生しても登録処理は継続
                 }
 
@@ -2300,7 +2273,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 3000);
 
         } catch (error) {
-            // console.error('登録エラー:', error);
             (window.showToast || function(m){alert(m)})(error.message || '登録に失敗しました', 'error');
 
             submitButton.disabled = false;
@@ -2313,7 +2285,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function collectFormData() {
         const getElementValue = (id) => {
             const elem = document.getElementById(id);
-            return elem ? elem.value : '';
+            return elem ? elem.value.trim() : '';
         };
 
         return {
@@ -2322,7 +2294,7 @@ document.addEventListener('DOMContentLoaded', function() {
             company: getElementValue('company'),
             industry: getElementValue('industry'),
             email: getElementValue('email'),
-            password: getElementValue('password'),
+            password: (document.getElementById('password') || {}).value || '',
             position: getElementValue('position'),
 
             // 事業課題

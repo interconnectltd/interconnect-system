@@ -443,7 +443,6 @@
         const heroVideo = document.querySelector('.hero-video');
         
         if (!heroVideo || !heroVideoContainer) {
-            // console.log('Video elements not found');
             return;
         }
 
@@ -470,7 +469,6 @@
 
         // Function to show fallback
         function showFallback() {
-            // console.log('Showing fallback image');
             heroVideo.style.display = 'none';
             fallbackImage.style.display = 'block';
         }
@@ -479,7 +477,6 @@
         function checkVideoSource() {
             const videoSource = heroVideo.querySelector('source');
             if (!videoSource) {
-                // console.error('No video source found');
                 showFallback();
                 return false;
             }
@@ -494,7 +491,6 @@
         // Handle various video errors
         heroVideo.addEventListener('error', function(e) {
             loadAttempts++;
-            // console.error(`Video load error (attempt ${loadAttempts}/${maxAttempts}):`, e);
             
             if (loadAttempts >= maxAttempts) {
                 showFallback();
@@ -510,19 +506,16 @@
         const videoSource = heroVideo.querySelector('source');
         if (videoSource) {
             videoSource.addEventListener('error', function(e) {
-                // console.error('Video source error:', e);
                 showFallback();
             });
         }
 
         // Check if video can be played
         heroVideo.addEventListener('loadedmetadata', function() {
-            // console.log('Video metadata loaded successfully');
         });
 
         // Handle successful video load
         heroVideo.addEventListener('canplay', function() {
-            // console.log('Video can play');
             loadAttempts = 0; // Reset attempts on success
             heroVideo.classList.remove('loading');
             heroVideo.classList.add('loaded');
@@ -530,20 +523,17 @@
             // 動画を遅延再生（パフォーマンス改善）
             setTimeout(() => {
                 heroVideo.play().catch(err => {
-                    // console.log('Video play failed:', err);
                 });
             }, 100);
         });
 
         // Handle stalled video
         heroVideo.addEventListener('stalled', function() {
-            // console.warn('Video stalled');
         });
 
         // Handle slow loading
         let loadingTimeout = setTimeout(function() {
             if (heroVideo.readyState < 3) { // HAVE_FUTURE_DATA
-                // console.warn('Video loading timeout - showing fallback');
                 showFallback();
             }
         }, 15000); // 15 second timeout (video compressed to ~3MB)
@@ -551,7 +541,6 @@
         // Clear timeout if video loads successfully
         heroVideo.addEventListener('canplaythrough', function() {
             clearTimeout(loadingTimeout);
-            // console.log('Video loaded completely');
         });
 
         // Performance optimization: pause video when not visible
@@ -586,7 +575,6 @@
         if (!isNetlify && 'connection' in navigator) {
             const connection = navigator.connection;
             if (connection.saveData || connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
-                // console.log('Slow connection detected - showing fallback');
                 showFallback();
             }
         }

@@ -9,19 +9,16 @@
 (function() {
     'use strict';
 
-    // console.log('[GuestLogin] ゲストログインハンドラー初期化');
 
     document.addEventListener('DOMContentLoaded', function() {
         // ゲストログインボタンを取得
         const guestButton = document.querySelector('.guest-button');
 
         if (guestButton) {
-            // console.log('[GuestLogin] ゲストログインボタンを検出');
 
             // 既存のリンクを無効化してイベントハンドラーを追加
             guestButton.addEventListener('click', function(e) {
                 e.preventDefault();
-                // console.log('[GuestLogin] ゲストログインボタンがクリックされました');
 
                 // ゲストモードフラグを設定
                 sessionStorage.setItem('isGuestMode', 'true');
@@ -38,7 +35,6 @@
                 // ローカルストレージに保存
                 localStorage.setItem('currentUser', JSON.stringify(guestUser));
 
-                // console.log('[GuestLogin] ゲストモード設定完了');
 
                 // ダッシュボードへリダイレクト
                 window.location.href = 'dashboard.html?guest=true';
@@ -65,9 +61,6 @@
     const PRODUCTION_ORIGIN = 'https://inter-connect.app';
     const LINE_REDIRECT_URI = PRODUCTION_ORIGIN + '/line-callback.html';
 
-    // console.log('📱 LINE Login Simple loaded');
-    // console.log('   Channel ID:', LINE_CHANNEL_ID);
-    // console.log('   Redirect URI:', LINE_REDIRECT_URI);
 
     // ランダム文字列生成（暗号学的に安全なランダム値を使用）
     function generateRandomString(length) {
@@ -128,7 +121,6 @@
         const lineRegisterBtn = document.getElementById('lineRegisterBtn');
 
         if (lineLoginBtn) {
-            // console.log('✅ LINE Login button found');
 
             // 既存のイベントリスナーをクリア
             const newButton = lineLoginBtn.cloneNode(true);
@@ -137,11 +129,9 @@
             // 新しいイベントリスナーを追加
             newButton.addEventListener('click', handleLineLogin);
 
-            // console.log('✅ LINE Login button setup complete');
         }
 
         if (lineRegisterBtn) {
-            // console.log('✅ LINE Register button found');
 
             // 既存のイベントリスナーをクリア
             const newButton = lineRegisterBtn.cloneNode(true);
@@ -150,7 +140,6 @@
             // 新しいイベントリスナーを追加
             newButton.addEventListener('click', handleLineLogin);
 
-            // console.log('✅ LINE Register button setup complete');
         }
     }
 

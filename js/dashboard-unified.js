@@ -33,14 +33,12 @@
         }
 
         async init() {
-            // console.log('[DashboardLoader] Initializing...');
 
             // 各モジュールを順番に初期化
             for (const moduleName of this.loadOrder) {
                 await this.loadModule(moduleName);
             }
 
-            // console.log('[DashboardLoader] All modules loaded');
         }
 
         async loadModule(name) {
@@ -353,7 +351,6 @@
         }
 
         async init() {
-            // console.log('[DashboardBundle] Initializing...');
             await this.loader.init();
 
             // UIモジュールをグローバルに公開（Calculator群のモンキーパッチで参照される）
@@ -438,7 +435,6 @@
         init() {
             if (this.initialized) return;
 
-            // console.log('[StatsInitializer] 統計カードを初期化中...');
 
             // 各統計カードを「読み込み中」状態に設定
             this.setLoadingState();
@@ -609,7 +605,6 @@
         }, 10);
     }
 
-    // console.log('[StatsInitializer] モジュールが読み込まれました');
 
 })();
 
@@ -634,7 +629,6 @@
          * メンバー統計を計算
          */
         async calculateMemberStats() {
-            // console.log('[MemberCalculator] メンバー統計を計算中...');
 
             try {
                 // 総メンバー数と先月の新規メンバー数を並行で取得
@@ -671,7 +665,6 @@
                     calculated_at: new Date().toISOString()
                 };
 
-                // console.log('[MemberCalculator] 計算結果:', stats);
                 return stats;
 
             } catch (error) {
@@ -715,7 +708,6 @@
                     timestamp: Date.now()
                 });
 
-                // console.log('[MemberCalculator] 総メンバー数:', memberCount);
                 return memberCount;
 
             } catch (error) {
@@ -745,7 +737,6 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(new Date(nextMonth - 1));
 
-                // console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバーを取得: ${startDate} ~ ${endDate}`);
 
                 const { count, error } = await window.supabaseClient
                     .from('user_profiles')
@@ -766,7 +757,6 @@
                     timestamp: Date.now()
                 });
 
-                // console.log(`[MemberCalculator] ${monthOffset === 0 ? '今月' : '先月'}の新規メンバー数: ${newMemberCount}`);
                 return newMemberCount;
 
             } catch (error) {
@@ -859,7 +849,6 @@
         }.bind(window.dashboardUI);
     }
 
-    // console.log('[MemberCalculator] モジュールが読み込まれました');
 
 })();
 
@@ -884,7 +873,6 @@
          * イベント統計を計算
          */
         async calculateEventStats() {
-            // console.log('[EventCalculator] イベント統計を計算中...');
 
             try {
                 // 今月と先月のイベント数を並行で取得
@@ -929,7 +917,6 @@
                     calculated_at: new Date().toISOString()
                 };
 
-                // console.log('[EventCalculator] 計算結果:', stats);
                 return stats;
 
             } catch (error) {
@@ -967,7 +954,6 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(new Date(nextMonth - 1));
 
-                // console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベントを取得: ${startDate} ~ ${endDate}`);
 
                 // event_dateカラムを使用（正規スキーマ）
                 const { count, error } = await window.supabaseClient
@@ -989,7 +975,6 @@
                     timestamp: Date.now()
                 });
 
-                // console.log(`[EventCalculator] ${monthOffset === 0 ? '今月' : '先月'}のイベント数: ${eventCount}`);
                 return eventCount;
 
             } catch (error) {
@@ -1020,7 +1005,6 @@
 
                 if (!error && data && data.length > 0) {
                     const columns = Object.keys(data[0]);
-                    // console.log('[EventCalculator] イベントテーブルのカラム:', columns);
 
                     return {
                         hasEventDate: columns.includes('event_date'),
@@ -1088,7 +1072,6 @@
         }.bind(window.dashboardUI);
     }
 
-    // console.log('[EventCalculator] モジュールが読み込まれました');
 
 })();
 
@@ -1113,7 +1096,6 @@
          * マッチング統計を計算
          */
         async calculateMatchingStats() {
-            // console.log('[MatchingCalculator] マッチング統計を計算中...');
 
             try {
                 // 今月と先月のマッチング数を並行で取得
@@ -1151,7 +1133,6 @@
                     calculated_at: new Date().toISOString()
                 };
 
-                // console.log('[MatchingCalculator] 計算結果:', stats);
                 return stats;
 
             } catch (error) {
@@ -1232,7 +1213,6 @@
                 const startDate = this.formatDate(targetMonth);
                 const endDate = this.formatDate(new Date(nextMonth - 1));
 
-                // console.log(`[MatchingCalculator] ${monthOffset === 0 ? '今月' : '先月'}のマッチングを取得: ${startDate} ~ ${endDate}`);
 
                 // まずmatchingsビューを試す（statusカラムなし）
                 let { count, error } = await window.supabaseClient
@@ -1291,9 +1271,7 @@
                     .limit(1);
 
                 if (!matchingError && matchingData && matchingData.length > 0) {
-                    // console.log('[MatchingCalculator] matchingsテーブルの構造:', Object.keys(matchingData[0]));
                 } else {
-                    // console.log('[MatchingCalculator] matchingsテーブルが存在しないか空です');
                 }
 
                 // user_activitiesのマッチング関連データ
@@ -1304,7 +1282,6 @@
                     .limit(5);
 
                 if (activityData && activityData.length > 0) {
-                    // console.log('[MatchingCalculator] user_activitiesのマッチングデータ:', activityData);
                 }
 
             } catch (error) {
@@ -1376,7 +1353,6 @@
         }.bind(window.dashboardUI);
     }
 
-    // console.log('[MatchingCalculator] モジュールが読み込まれました');
 
 })();
 
@@ -1403,7 +1379,6 @@
          * 初期化
          */
         init() {
-            // console.log('[UpcomingEvents] 初期化開始');
 
             // コンテナを探す
             this.findContainer();
@@ -1432,7 +1407,6 @@
                     const card = header.closest('.content-card');
                     if (card) {
                         this.container = card.querySelector('.event-list');
-                        // console.log('[UpcomingEvents] コンテナを発見');
                         break;
                     }
                 }
@@ -1449,12 +1423,10 @@
         async loadUpcomingEvents() {
             // キャッシュチェック
             if (this.eventCache && this.cacheTime && (Date.now() - this.cacheTime) < this.cacheTTL) {
-                // console.log('[UpcomingEvents] キャッシュからイベントを表示');
                 this.displayEvents(this.eventCache);
                 return;
             }
 
-            // console.log('[UpcomingEvents] データベースからイベントを取得中...');
 
             try {
                 const now = new Date().toISOString();
@@ -1475,7 +1447,6 @@
 
                 // event_itemsテーブルが存在しない場合、eventsテーブルで試す（後方互換性）
                 if (error && (error.code === '42P01' || error.message.includes('event_items'))) {
-                    // console.log('[UpcomingEvents] event_itemsテーブルが存在しません。eventsテーブルで再試行...');
 
                     const result = await window.supabaseClient
                         .from('events')
@@ -1494,7 +1465,6 @@
                     return;
                 }
 
-                // console.log('[UpcomingEvents] 取得したイベント数:', events?.length || 0);
 
                 // キャッシュに保存
                 this.eventCache = events || [];
@@ -1598,7 +1568,6 @@
          * イベント詳細を表示
          */
         async showEventDetail(eventId) {
-            // console.log('[UpcomingEvents] イベント詳細を表示:', eventId);
 
             // event-detail-modal.jsの関数を呼び出し
             if (window.eventDetailModal && typeof window.eventDetailModal.show === 'function') {
@@ -1678,8 +1647,6 @@
 
                 if (!error && data && data.length > 0) {
                     const columns = Object.keys(data[0]);
-                    // console.log('[UpcomingEvents] イベントテーブルのカラム:', columns);
-                    // console.log('[UpcomingEvents] サンプルデータ:', data[0]);
                 }
             } catch (error) {
                 console.error('[UpcomingEvents] テーブル構造確認エラー:', error);
@@ -1702,7 +1669,6 @@
         }, 100);
     }
 
-    // console.log('[UpcomingEvents] モジュールが読み込まれました');
 
 })();
 
@@ -1717,7 +1683,6 @@
 (function() {
     'use strict';
 
-    // console.log('[DashboardFix] ローディング修正開始');
 
     // Supabaseクライアントの初期化を待つ
     function waitForSupabase() {
@@ -1854,7 +1819,6 @@
 
     // フォールバックデータの表示
     function showFallbackData() {
-        // console.log('[DashboardFix] フォールバックデータを表示');
 
         // 統計カードにデフォルト値を設定
         const statCards = document.querySelectorAll('.stat-card');
@@ -1932,7 +1896,6 @@
             return;
         }
 
-        // console.log('[DashboardFix] 初期化開始');
 
         // 各修正を実行
         Promise.all([
@@ -1940,7 +1903,6 @@
             fixUpcomingEvents(),
             fixRealtimeNotifications()
         ]).then(() => {
-            // console.log('[DashboardFix] すべての修正が完了');
         }).catch(error => {
             console.error('[DashboardFix] 修正中にエラー:', error);
         });
@@ -1989,7 +1951,6 @@
             // データを読み込んでチャートを作成
             await this.loadDataAndCreateCharts();
 
-            // console.log('[DashboardCharts] Initialized');
         }
 
         /**
@@ -2798,7 +2759,6 @@
             // イベントリスナーを設定
             this.setupEventListeners();
 
-            // console.log('[ActivityEventFilter] Initialized');
         }
 
         /**

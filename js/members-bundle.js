@@ -15,7 +15,6 @@
 (function() {
     'use strict';
 
-    // console.log('[MembersSupabase] 初期化開始...');
 
     class MembersSupabaseManager {
         constructor() {
@@ -43,17 +42,14 @@
                     return;
                 }
 
-                // console.log('[MembersSupabase] Supabase接続確認OK');
 
                 // 認証状態を確認
                 const user = await window.safeGetUser();
                 if (!user) {
-                    // console.log('[MembersSupabase] ユーザー未認証');
                     this.showFallbackUI();
                     return;
                 }
 
-                // console.log('[MembersSupabase] 認証済みユーザー:', user.id);
                 this.currentUserId = user.id;
                 this.initialized = true;
                 
@@ -71,7 +67,6 @@
          */
         async loadMembers() {
             try {
-                // console.log('[MembersSupabase] メンバーデータ読み込み中...');
                 
                 // ベースクエリ（user_profilesテーブルを使用 - active_usersはビュー）
                 let query = window.supabaseClient
@@ -128,7 +123,6 @@
 
                 if (error) throw error;
 
-                // console.log('[MembersSupabase] データ取得成功:', data?.length || 0, '件');
                 
                 this.members = data || [];
                 this.totalMembers = count || 0;
@@ -426,7 +420,6 @@
          * プロフィール変更を処理
          */
         handleProfileChange(payload) {
-            // console.log('[MembersSupabase] プロフィール変更:', payload);
             
             // 現在表示中のメンバーに変更があった場合は再読み込み
             const affectedMember = this.members.find(m => m.id === payload.new?.id || m.id === payload.old?.id);
@@ -439,7 +432,6 @@
          * フォールバックUIを表示
          */
         showFallbackUI() {
-            // console.log('[MembersSupabase] フォールバックUI表示');
             
             const grid = document.querySelector('.members-grid');
             if (!grid) return;
@@ -644,11 +636,9 @@
     // Supabaseの準備ができるまで待つ
     function initializeWhenReady() {
         if (window.supabaseClient) {
-            // console.log('[MembersSupabase] Supabase準備完了、マネージャー作成');
             window.membersSupabase = new MembersSupabaseManager();
             window.membersSupabase.init();
         } else {
-            // console.log('[MembersSupabase] Supabaseの準備待ち...');
             setTimeout(initializeWhenReady, 100);
         }
     }
@@ -658,7 +648,6 @@
         initializeWhenReady();
     } else {
         window.addEventListener('supabaseReady', () => {
-            // console.log('[MembersSupabase] supabaseReadyイベント受信');
             initializeWhenReady();
         });
         // フォールバックとして500ms後に再チェック
@@ -672,7 +661,6 @@
         }
     });
 
-    // console.log('[MembersSupabase] セットアップ完了');
 })();
 
 // ============================================================
@@ -687,7 +675,6 @@
 (function() {
     'use strict';
 
-    // console.log('[MembersSearch] 初期化開始...');
 
     class MembersSearchManager {
         constructor() {
@@ -988,7 +975,6 @@
             // 地域フィルター
             // 並び替え機能
             // 詳細検索モーダル
-            // console.log('[MembersSearch] 高度な検索機能は今後実装予定');
         }
     }
 
@@ -1053,7 +1039,6 @@
     // グローバルインスタンス
     window.membersSearch = new MembersSearchManager();
 
-    // console.log('[MembersSearch] 初期化完了');
 })();
 
 // ============================================================
@@ -1068,7 +1053,6 @@
 (function() {
     'use strict';
 
-    // console.log('[MembersConnection] 初期化開始...');
 
     class MembersConnectionManager {
         constructor() {
@@ -1384,7 +1368,6 @@
          * コネクション変更を処理
          */
         handleConnectionChange(payload) {
-            // console.log('[MembersConnection] コネクション変更:', payload);
             
             // コネクション情報を再読み込み
             this.loadConnections();
@@ -1533,7 +1516,6 @@
         }
     });
 
-    // console.log('[MembersConnection] 初期化完了');
 })();
 
 // ============================================================
@@ -1548,7 +1530,6 @@
 (function() {
     'use strict';
 
-    // console.log('[MembersViewMode] 初期化開始...');
 
     class MembersViewModeManager {
         constructor() {
@@ -1854,7 +1835,6 @@
         };
     }
 
-    // console.log('[MembersViewMode] 初期化完了');
 })();
 
 // ============================================================
@@ -1885,7 +1865,6 @@
         init() {
             this.createPreviewElement();
             this.setupEventListeners();
-            // console.log('[ProfilePreview] Initialized');
         }
 
         /**
@@ -2309,7 +2288,6 @@
 (function() {
     'use strict';
 
-    // console.log('[AdvancedSearch] 高度な検索機能初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -2355,7 +2333,6 @@
 
     // 初期化
     async function initialize() {
-        // console.log('[AdvancedSearch] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -2368,7 +2345,6 @@
         }
 
         currentUserId = user.id;
-        // console.log('[AdvancedSearch] ユーザーID:', currentUserId);
 
         // 検索UIを構築
         buildSearchUI();
@@ -2384,7 +2360,6 @@
     function buildSearchUI() {
         const searchContainer = document.querySelector('.advanced-search-container');
         if (!searchContainer) {
-            // console.log('[AdvancedSearch] 検索コンテナが見つかりません');
             return;
         }
 

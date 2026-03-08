@@ -11,7 +11,6 @@
 (function() {
     'use strict';
 
-    // console.log('[SupabaseUnified] 統一初期化モジュール読み込み開始');
 
     // Supabase設定
     const SUPABASE_URL = 'https://zrddqaaaoerbguwxrlic.supabase.co';
@@ -65,14 +64,12 @@
     // Supabaseクライアントを初期化
     async function initializeSupabase() {
         if (isInitialized) {
-            // console.log('[SupabaseUnified] 既に初期化済み');
             return;
         }
 
         try {
             // SDKを読み込み
             await loadSupabaseSDK();
-            // console.log('[SupabaseUnified] Supabase SDK読み込み完了');
 
             // クライアントを作成
             window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -86,7 +83,6 @@
             window.supabase = window.supabaseClient;
 
             isInitialized = true;
-            // console.log('[SupabaseUnified] Supabaseクライアント初期化完了');
 
             // 初期化完了イベントを発火
             window.dispatchEvent(new Event('supabaseReady'));
@@ -107,13 +103,11 @@
         if (authInitialized) return;
         authInitialized = true;
 
-        // console.log('[SupabaseUnified] 認証機能初期化開始');
 
         // ログインフォームの処理
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', handleEmailLogin);
-            // console.log('[SupabaseUnified] ログインフォームハンドラー設定完了');
         }
 
         // LINEログインボタンの処理は login-bundle.js (line-login-simple.js) に一本化
@@ -193,7 +187,6 @@
             loginFailCount = 0;
             
             // ログイン成功
-            // console.log('[SupabaseUnified] ログイン成功:', data.user.email);
             
             // ユーザー情報を保存
             localStorage.setItem('user', JSON.stringify({
@@ -230,13 +223,11 @@
 
         // 公開ページの場合は認証チェックをスキップ
         if (isPublicPage) {
-            // console.log('[SupabaseUnified] 公開ページのため認証チェックをスキップ');
             return;
         }
 
         // ゲストモードの場合は認証チェックをスキップ
         if (sessionStorage.getItem('isGuestMode') === 'true') {
-            // console.log('[SupabaseUnified] ゲストモードのため認証チェックをスキップ');
             return;
         }
         
@@ -262,7 +253,6 @@
             }
             
             if (user) {
-                // console.log('[SupabaseUnified] ログイン済みユーザー:', user.email);
                 
                 // ログインページの場合はダッシュボードへリダイレクト
                 if (window.location.pathname.includes('login.html')) {

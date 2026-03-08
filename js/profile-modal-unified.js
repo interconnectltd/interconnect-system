@@ -6,7 +6,6 @@
 (function() {
     'use strict';
 
-    // console.log('[ProfileDetailModal] 初期化開始');
 
     class ProfileDetailModal {
         constructor() {
@@ -26,7 +25,6 @@
                 }
 
                 if (!window.supabaseClient || !window.supabaseClient.auth) {
-                    // console.log('[ProfileDetailModal] Waiting for Supabase initialization...');
                     // 初期化をスキップして後で再試行
                     window.addEventListener('supabaseReady', () => this.init());
                     return;
@@ -444,7 +442,6 @@
                         meetingMinutes = data;
                     }
                 } catch (e) {
-                    // console.log('[ProfileDetailModal] meeting_minutesテーブルは存在しません');
                 }
 
                 // マッチングスコアを計算
@@ -708,7 +705,6 @@
 
             // 既に描画済みの場合はスキップ
             if (canvas.dataset.rendered === 'true') {
-                // console.log('[ProfileDetailModal] レーダーチャート既に描画済み');
                 return;
             }
 

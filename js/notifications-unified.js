@@ -15,7 +15,6 @@
 (function() {
     'use strict';
 
-    // console.log('[NotificationsUnified] 通知システム統一モジュール初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -28,7 +27,6 @@
 
     // 初期化
     async function initialize() {
-        // console.log('[NotificationsUnified] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -41,7 +39,6 @@
         }
 
         currentUserId = user.id;
-        // console.log('[NotificationsUnified] ユーザーID:', currentUserId);
 
         // イベントリスナーの設定
         setupEventListeners();
@@ -475,7 +472,6 @@
 
     // リアルタイム更新処理（拡張版：削除されたファイルから復元）
     function handleRealtimeUpdate(payload) {
-        // console.log('[NotificationsUnified] リアルタイム更新:', payload.eventType);
 
         switch (payload.eventType) {
             case 'INSERT':
@@ -530,7 +526,6 @@
 
             if (error) throw error;
 
-            // console.log('[NotificationsUnified] 通知送信成功:', data);
             return data;
 
         } catch (error) {
@@ -578,7 +573,6 @@
 
     function showToast(message, type = 'success') {
         // トースト通知の実装（既存の実装に依存）
-        // console.log(`[NotificationsUnified] Toast: ${type} - ${message}`);
         
         // 簡易的なトースト表示
         const toast = document.createElement('div');
@@ -609,7 +603,6 @@
             notificationSound = new Audio('data:audio/wav;base64,UklGRuIBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YXEBAAAAAAEAAgADAAQABQAGAAcACAAPAA4ADQAMAAsACgAJAAMABAAFAAYABwAIAAkACgALAAwADQAOAA8ADwAOAA0ADAALAAoACQAIAAcABgAFAAQAAwACAA==');
             notificationSound.volume = 0.3;
         } catch (error) {
-            // console.log('[NotificationsUnified] 通知音の準備に失敗');
         }
     }
 
@@ -632,7 +625,6 @@
             try {
                 await Notification.requestPermission();
             } catch (error) {
-                // console.log('[NotificationsUnified] 通知権限のリクエストに失敗');
             }
         }
     }
@@ -663,7 +655,6 @@
                 setTimeout(() => browserNotification.close(), 5000);
                 
             } catch (error) {
-                // console.log('[NotificationsUnified] ブラウザ通知の表示に失敗');
             }
         }
     }

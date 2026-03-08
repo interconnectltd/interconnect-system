@@ -47,7 +47,6 @@
 
             log: function(...args) {
                 if (this.config.debug) {
-                    // console.log('[INTERCONNECT]', ...args);
                 }
             },
 

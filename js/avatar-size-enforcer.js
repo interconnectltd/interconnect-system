@@ -6,7 +6,6 @@
 (function() {
     'use strict';
     
-    // console.log('[AvatarEnforcer] 初期化開始');
     
     // サイズ定義
     const AVATAR_SIZES = {
@@ -54,7 +53,6 @@
             
             // サイズが異なる場合は修正
             if (currentWidth !== size.width || currentHeight !== size.height) {
-                // console.warn(`[AvatarEnforcer] サイズ不一致検出:`, {
                 //     element: avatar,
                 //     context: context,
                 //     current: `${currentWidth}x${currentHeight}`,
@@ -84,7 +82,6 @@
         });
         
         if (fixedCount > 0) {
-            // console.log(`[AvatarEnforcer] ${fixedCount}個のアバターサイズを修正`);
         }
         
         return fixedCount;
@@ -125,7 +122,6 @@
         });
         
         if (conflicts.length > 0) {
-            // console.warn('[AvatarEnforcer] CSS競合検出:', conflicts);
         }
         
         return conflicts;
@@ -152,7 +148,6 @@
             });
             
             if (hasNewAvatars) {
-                // console.log('[AvatarEnforcer] 新しいアバター要素を検出');
                 setTimeout(enforceAvatarSizes, 100);
             }
         });
@@ -165,12 +160,10 @@
     
     // 初期化
     function initialize() {
-        // console.log('[AvatarEnforcer] 実行開始');
         
         // CSS競合をチェック
         const conflicts = detectCSSConflicts();
         if (conflicts.length > 0) {
-            // console.warn(`[AvatarEnforcer] ${conflicts.length}個のCSS競合を検出`);
         }
         
         // 初回適用
@@ -198,7 +191,6 @@
             resizeTimer = setTimeout(enforceAvatarSizes, 250);
         });
         
-        // console.log('[AvatarEnforcer] 初期化完了');
     }
     
     // DOMContentLoaded後に実行

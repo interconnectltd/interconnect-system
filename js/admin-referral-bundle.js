@@ -749,7 +749,6 @@ class AdminReferralManager {
 
     showNotification(message, type = 'info') {
         // 通知表示の実装
-        // console.log(`[${type}] ${message}`);
     }
 
     // モーダル関連

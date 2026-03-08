@@ -27,9 +27,5 @@
   "devDependencies": {
     "netlify-cli": "^15.0.0"
   },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.95.3",
-    "dotenv": "^17.2.1",
-    "node-fetch": "^2.6.9"
-  }
+  "dependencies": {}
 }

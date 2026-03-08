@@ -51,14 +51,11 @@
             
             // supabaseReadyイベントを待ってから動的データを読み込み
             if (window.supabaseClient) {
-                // console.log('[EventsSupabase] Supabase ready, loading events...');
                 this.loadEvents();
                 this.loadPastEvents();
             } else {
-                // console.log('[EventsSupabase] Waiting for Supabase initialization...');
                 // Supabaseクライアントがまだ初期化されていない場合は待機
                 document.addEventListener('supabaseReady', () => {
-                    // console.log('[EventsSupabase] Supabase client ready, initializing...');
                     this.loadEvents();
                     this.loadPastEvents();
                 });
@@ -66,7 +63,6 @@
                 // フォールバック: 3秒後にも確認
                 setTimeout(() => {
                     if (window.supabaseClient && !this.eventsLoaded) {
-                        // console.log('[EventsSupabase] Fallback: Loading events after timeout');
                         this.loadEvents();
                         this.loadPastEvents();
                     }
@@ -194,7 +190,6 @@
                     });
                 }
             } catch (error) {
-                // console.error('[EventsSupabase] Error loading participant counts:', error);
             }
         }
 
@@ -337,7 +332,6 @@
          */
         attachCardEventListeners() {
             const cards = document.querySelectorAll('.event-card');
-            // console.log('[EventsSupabase] Found', cards.length, 'event cards');
             
             cards.forEach(card => {
                 // 既にリスナーが追加されている場合はスキップ
@@ -353,13 +347,10 @@
                     // ボタンクリックは除外
                     if (!e.target.closest('button')) {
                         const eventId = card.dataset.eventId;
-                        // console.log('[EventsSupabase] Card clicked, eventId:', eventId);
-                        // console.log('[EventsSupabase] window.eventModal exists?', !!window.eventModal);
                         
                         // EventModalが存在するまで待つ
                         if (eventId) {
                             if (window.eventModal && typeof window.eventModal.show === 'function') {
-                                // console.log('[EventsSupabase] Calling eventModal.show()');
                                 window.eventModal.show(eventId);
                             } else {
                                 console.error('[EventsSupabase] EventModal not ready, retrying...');
@@ -729,7 +720,6 @@
                     .limit(5);
 
                 if (error) {
-                    // console.error('[EventsSupabase] Error loading past events:', error);
                     container.innerHTML = '<p class="error-message">過去のイベントの読み込みに失敗しました</p>';
                     return;
                 }
@@ -793,7 +783,6 @@
                 await this.loadPastEventParticipants(events);
 
             } catch (error) {
-                // console.error('[EventsSupabase] Error loading past events:', error);
             }
         }
 
@@ -829,7 +818,6 @@
                     });
                 }
             } catch (error) {
-                // console.error('[EventsSupabase] Error loading past event participants:', error);
             }
         }
     }
@@ -838,7 +826,6 @@
     window.EventsSupabase = EventsSupabase;
     window.eventsSupabase = new EventsSupabase();
 
-    // console.log('[EventsSupabase] Module loaded');
 
 })();
 
@@ -890,14 +877,12 @@
                 this.eventActionBtn.addEventListener('click', () => this.handleEventAction());
             }
 
-            // console.log('[EventModal] Initialized');
         }
 
         /**
          * イベント詳細を表示
          */
         async show(eventId) {
-            // console.log('[EventModal] Showing event:', eventId);
             
             // モーダルが存在しない場合は終了
             if (!this.modal) {
@@ -919,7 +904,6 @@
 
                 if (error) {
                     console.error('[EventModal] Error fetching event:', error);
-                    // console.error('[EventModal] Error details:', {
                     //     code: error.code,
                     //     message: error.message,
                     //     details: error.details,
@@ -1156,7 +1140,6 @@
                     await this.fetchParticipantPreviews(eventId);
                 }
             } catch (error) {
-                // console.error('[EventModal] Error fetching participants:', error);
             }
         }
 
@@ -1198,7 +1181,6 @@
                     }
                 }
             } catch (error) {
-                // console.error('[EventModal] Error fetching participant previews:', error);
             }
         }
 
@@ -1225,7 +1207,6 @@
                 }
             } catch (error) {
                 // エラーは無視（未参加として扱う）
-                // console.log('[EventModal] User not registered for this event');
             }
         }
 
@@ -1404,7 +1385,6 @@
                 if (window.dashboardUI) {
                     updateDashboardUI();
                 }
-                // console.log('[EventModal] Initialized on DOMContentLoaded');
                 
                 // EventModalReadyイベントを発火
                 const event = new CustomEvent('eventModalReady');
@@ -1424,7 +1404,6 @@
                 if (window.dashboardUI) {
                     updateDashboardUI();
                 }
-                // console.log('[EventModal] Initialized immediately');
                 
                 // EventModalReadyイベントを発火
                 const event = new CustomEvent('eventModalReady');
@@ -1452,7 +1431,6 @@
         }
     }
 
-    // console.log('[EventModal] Module loaded');
 
 })();
 
@@ -1473,7 +1451,6 @@
 (function() {
     'use strict';
 
-    // console.log('[CalendarIntegration] カレンダー連携機能初期化');
 
     // グローバル変数
     let currentUserId = null;
@@ -1482,7 +1459,6 @@
 
     // 初期化
     async function initialize() {
-        // console.log('[CalendarIntegration] 初期化開始');
 
         // Supabaseの準備を待つ
         await window.waitForSupabase();
@@ -1495,7 +1471,6 @@
         }
 
         currentUserId = user.id;
-        // console.log('[CalendarIntegration] ユーザーID:', currentUserId);
 
         // カレンダー要素が存在する場合のみ初期化
         const calendarEl = document.getElementById('calendar');
@@ -1717,7 +1692,6 @@
         try {
             // 新規イベント作成モーダルを表示
             // TODO: イベント作成機能は別途実装予定
-            // console.log('[CalendarIntegration] 日付クリック:', info.dateStr);
             
             // イベント作成モーダルを表示（存在する場合）
             if (typeof window.showCreateEventModal === 'function') {
@@ -1732,7 +1706,6 @@
             }
         } catch (error) {
             // ドラッグ操作時のshowCreateEventModal未定義エラーを抑制
-            // console.error('[CalendarIntegration] 日付クリックエラー:', error);
             // エラーが発生してもトースト通知は表示しない（UXを損なうため）
         }
     }

@@ -50,7 +50,6 @@
      * 初期化
      */
     async function init() {
-        // console.log('[Activities] Initializing...');
         
         // イベントリスナーの設定
         setupEventListeners();

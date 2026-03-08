@@ -9,7 +9,6 @@
 (function() {
     'use strict';
 
-    // console.log('[PerfectFinal] 初期化開始');
 
     // グローバル状態管理
     const GlobalState = {
@@ -144,7 +143,6 @@
             if (GlobalState.animationsStarted) return;
             GlobalState.animationsStarted = true;
 
-            // console.log('[PerfectFinal] アニメーション開始');
 
             // ヒーロー動画再生は main.js に任せる（重複防止）
             // const heroVideo = document.querySelector('.hero-video');
@@ -252,7 +250,6 @@
             if (GlobalState.scrollObserversSetup) return;
             GlobalState.scrollObserversSetup = true;
 
-            // console.log('[PerfectFinal] スクロールエフェクト初期化');
 
             // フェードイン対象要素
             const fadeElements = document.querySelectorAll(
@@ -337,7 +334,6 @@
 
     // エラーハンドリング追加
     window.addEventListener('error', (e) => {
-        // console.error('エラー検出:', e);
         // ローディング画面が残っている場合は強制削除
         const screen = document.getElementById('instantLoadingScreen');
         if (screen && screen.style.display !== 'none') {
@@ -361,7 +357,6 @@
 // Section: referral-landing.js
 // ============================================================
 // 紹介リンクからのランディング処理
-// console.log('=== 紹介リンク処理開始 ===');
 
 (function() {
     // URLから紹介コードを取得
@@ -370,7 +365,6 @@
 
     if (referralMatch) {
         const referralCode = referralMatch[1];
-        // console.log('[Referral] 紹介コード検出:', referralCode);
 
         // セッションストレージに保存
         sessionStorage.setItem('referral_code', referralCode);
@@ -390,7 +384,6 @@
         const refCode = urlParams.get('ref');
 
         if (refCode && /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(refCode)) {
-            // console.log('[Referral] クエリパラメータから紹介コード検出:', refCode);
             sessionStorage.setItem('referral_code', refCode);
             sessionStorage.setItem('referral_timestamp', new Date().toISOString());
 
@@ -581,4 +574,3 @@ function customizeCTAButtons(referralCode) {
 }
 
 
-// console.log('=== 紹介リンク処理準備完了 ===');

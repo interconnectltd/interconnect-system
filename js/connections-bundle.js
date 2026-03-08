@@ -198,7 +198,6 @@
                 console.log('[ConnectionsManager Simple] 取得したconnections:', allConnections);
                 
                 if (!allConnections || allConnections.length === 0) {
-                    // console.log('[ConnectionsManager Simple] コネクションが存在しません');
                     this.updateUI();
                     return;
                 }
@@ -953,7 +952,6 @@
 
         // プロフィールモーダル表示
         showProfileModal(userId) {
-            // console.log('[ConnectionsManager] プロフィール表示:', userId);
             
             // プロフィールモーダル関数が利用可能か確認
             if (window.ProfileDetailModal && window.profileDetailModal) {
@@ -1198,7 +1196,6 @@
         // グローバル関数として公開
         window.sendConnectionNotification = sendConnectionNotification;
         
-        // console.log('[MissingFeatures] サルベージ機能を適用しました');
     }
     
     // DOMContentLoadedで初期化
@@ -1220,12 +1217,10 @@
 
 /* 削除済み - responsive-menu-simple.js に統一
 document.addEventListener('DOMContentLoaded', () => {
-    // console.log('[Sidebar] DOM loaded, initializing sidebar toggles');
     
     // ダッシュボード用の特別処理（disabled-scripts/sidebar-toggle-fixed.jsから救出）
     const dashboardToggle = document.getElementById('dashboardSidebarToggle');
     if (dashboardToggle) {
-        // console.log('[Sidebar] Dashboard toggle found, setting up with priority');
         
         // モバイルバックドロップを作成（存在しない場合）
         let mobileBackdrop = document.querySelector('.mobile-backdrop');
@@ -1233,7 +1228,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileBackdrop = document.createElement('div');
             mobileBackdrop.className = 'mobile-backdrop';
             document.body.appendChild(mobileBackdrop);
-            // console.log('[Sidebar] Mobile backdrop created for dashboard');
         }
         
         // ダッシュボード用の開閉関数
@@ -1289,16 +1283,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // すべてのサイドバートグルボタンを取得（ダッシュボード以外）
     const toggleButtons = document.querySelectorAll('.mobile-menu-toggle:not(#dashboardSidebarToggle)');
-    // console.log(`[Sidebar] Found ${toggleButtons.length} toggle buttons`);
     
     toggleButtons.forEach((button, index) => {
-        // console.log(`[Sidebar] Setting up toggle button ${index}:`, button.id || 'no-id');
         
         button.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             
-            // console.log('[Sidebar] Toggle button clicked');
             
             // サイドバーを探す
             const sidebar = document.querySelector('.sidebar');
@@ -1306,14 +1297,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (sidebar) {
                 sidebar.classList.toggle('active');
-                // console.log('[Sidebar] Sidebar toggled, active:', sidebar.classList.contains('active'));
             } else {
                 console.error('[Sidebar] Sidebar element not found');
             }
             
             if (mobileNav) {
                 mobileNav.classList.toggle('active');
-                // console.log('[Sidebar] Mobile nav toggled, active:', mobileNav.classList.contains('active'));
             }
             
             // オーバーレイの処理
@@ -1322,7 +1311,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 overlay = document.createElement('div');
                 overlay.className = 'sidebar-overlay';
                 document.body.appendChild(overlay);
-                // console.log('[Sidebar] Overlay created');
             }
             
             if (sidebar && sidebar.classList.contains('active')) {
@@ -1337,7 +1325,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // サイドバーを閉じる関数
     function closeSidebar() {
-        // console.log('[Sidebar] Closing sidebar');
         const sidebar = document.querySelector('.sidebar');
         const mobileNav = document.querySelector('.mobile-nav');
         const overlay = document.querySelector('.sidebar-overlay');
@@ -1353,7 +1340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ESCキーでサイドバーを閉じる
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            // console.log('[Sidebar] ESC key pressed');
             closeSidebar();
         }
     });
@@ -1363,7 +1349,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            // console.log('[Sidebar] Window resized, width:', window.innerWidth);
             if (window.innerWidth > 991) {
                 closeSidebar();
             }
