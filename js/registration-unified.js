@@ -2116,8 +2116,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('パスワードは8文字以上で入力してください。');
                 } else if (authError.message.includes('Invalid email') || authError.message.includes('is invalid')) {
                     throw new Error('有効なメールアドレスを入力してください。');
+                } else if (authError.message.includes('security purposes') || authError.message.includes('rate limit')) {
+                    const seconds = authError.message.match(/(\d+)\s*second/);
+                    throw new Error(seconds ? `セキュリティ保護のため、${seconds[1]}秒後に再度お試しください。` : 'しばらく時間をおいてから再度お試しください。');
+                } else if (authError.message.includes('network') || authError.message.includes('fetch')) {
+                    throw new Error('ネットワークエラーが発生しました。通信環境を確認してください。');
                 }
-                throw authError;
+                throw new Error('登録処理中にエラーが発生しました。しばらくしてから再度お試しください。');
             }
 
             // Supabaseのメール列挙防止: signUpがエラーなしで user: null を返す場合がある
