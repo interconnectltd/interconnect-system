@@ -3,6 +3,8 @@
 // ============================================================
 // 登録ページのログイン状態チェック
 (function() {
+    // LINE登録モード検出（グローバルフラグ）
+    window._isLineMode = new URLSearchParams(window.location.search).get('mode') === 'line';
 
     // Supabaseクライアントの初期化を待つ
     function checkAuthStatus() {
@@ -11,7 +13,22 @@
             return;
         }
 
-        // 現在のユーザーを確認
+        // LINE登録モードではログイン済みが正常（プロフィール入力のため）
+        if (window._isLineMode) {
+            window.supabaseClient.auth.getUser().then(({ data: { user } }) => {
+                if (!user) {
+                    // LINEモードなのに未ログイン → ログインページへ
+                    window.location.href = '/login.html';
+                    return;
+                }
+                // LINEユーザー情報をグローバルに保持
+                window._lineAuthUser = user;
+                setupLineMode();
+            });
+            return;
+        }
+
+        // 通常モード: ログイン済みならダッシュボードへ
         window.supabaseClient.auth.getUser().then(async ({ data: { user } }) => {
             if (user) {
                 if (await window.showConfirmModal('既にログイン済みです。ダッシュボードに移動しますか？', { confirmLabel: 'ダッシュボードへ' })) {
@@ -25,11 +42,58 @@
                         window.location.href = '/dashboard.html';
                     }
                 }
-            } else {
             }
         }).catch(error => {
             console.error('[RegisterAuthCheck] 認証状態確認エラー:', error);
         });
+    }
+
+    function setupLineMode() {
+        // LINEモード: フィールド非表示 + プリフィル
+        const hideField = (id) => {
+            const el = document.getElementById(id);
+            if (el) {
+                const group = el.closest('.form-group');
+                if (group) group.style.display = 'none';
+                el.removeAttribute('required');
+                el.removeAttribute('data-required');
+            }
+        };
+
+        // メール・パスワード・LINE QRを非表示
+        hideField('email');
+        hideField('password');
+        hideField('password-confirm');
+        hideField('line-qr');
+
+        // LINE登録ボタンと「または」を非表示
+        const lineBtn = document.querySelector('.line-login-btn, .line-register-btn, [href*="line"], .social-login');
+        if (lineBtn) {
+            const container = lineBtn.closest('.social-login-section, .line-login-section') || lineBtn.parentElement;
+            if (container) container.style.display = 'none';
+        }
+        // 「または」テキストを非表示
+        document.querySelectorAll('.divider, .or-divider').forEach(el => el.style.display = 'none');
+
+        // ページタイトルを変更
+        const title = document.querySelector('h1, h2, .page-title');
+        if (title && title.textContent.includes('新規登録')) {
+            title.textContent = 'プロフィール登録';
+        }
+
+        // 「すでにアカウントをお持ちの方は ログイン」を非表示
+        document.querySelectorAll('.auth-link, .login-link').forEach(el => {
+            const container = el.closest('p, .auth-links, .login-section') || el.parentElement;
+            if (container) container.style.display = 'none';
+        });
+
+        // LINE名をプリフィル
+        const lineData = JSON.parse(sessionStorage.getItem('line_user_data') || '{}');
+        const nameField = document.getElementById('name');
+        if (nameField && lineData.name && !nameField.value) {
+            nameField.value = lineData.name;
+            nameField.dispatchEvent(new Event('input', { bubbles: true }));
+        }
     }
 
     // DOMContentLoadedを待つ
@@ -693,8 +757,14 @@ function showSuccessMessage(message) {
         }
     };
 
-    // ステップごとの必須チェック項目
-    const stepRequirements = {
+    // ステップごとの必須チェック項目（LINEモードではメール/パスワード/QRをスキップ）
+    const stepRequirements = window._isLineMode ? {
+        1: ['name', 'company', 'industry'],
+        2: ['challenges'],
+        3: ['phone', 'lineId', 'position'],
+        4: ['skillsPr'],
+        5: ['interestsDetails', 'agree']
+    } : {
         1: ['name', 'company', 'industry', 'email', 'password', 'passwordConfirm'],
         2: ['challenges'],
         3: ['phone', 'lineId', 'lineQr', 'position'],
@@ -1214,7 +1284,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 基本情報のバリデーション
     function validateBasicInfo() {
-        const requiredFields = ['name', 'company', 'industry', 'email', 'password', 'password-confirm'];
+        const requiredFields = window._isLineMode
+            ? ['name', 'company', 'industry']
+            : ['name', 'company', 'industry', 'email', 'password', 'password-confirm'];
         let isValid = true;
 
         requiredFields.forEach(fieldId => {
@@ -1224,17 +1296,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // パスワード一致確認
-        const password = document.getElementById('password');
-        const passwordConfirm = document.getElementById('password-confirm');
-        if (password && passwordConfirm && password.value !== passwordConfirm.value) {
-            isValid = false;
-        }
+        if (!window._isLineMode) {
+            // パスワード一致確認
+            const password = document.getElementById('password');
+            const passwordConfirm = document.getElementById('password-confirm');
+            if (password && passwordConfirm && password.value !== passwordConfirm.value) {
+                isValid = false;
+            }
 
-        // メールアドレスの形式確認
-        const email = document.getElementById('email');
-        if (email && !isValidEmail(email.value)) {
-            isValid = false;
+            // メールアドレスの形式確認
+            const email = document.getElementById('email');
+            if (email && !isValidEmail(email.value)) {
+                isValid = false;
+            }
         }
 
         return isValid;
@@ -1264,10 +1338,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // ファイルアップロードのチェック
-        const fileInput = document.getElementById('line-qr');
-        if (fileInput && !fileInput.files.length) {
-            isValid = false;
+        // ファイルアップロードのチェック（LINEモードではスキップ）
+        if (!window._isLineMode) {
+            const fileInput = document.getElementById('line-qr');
+            if (fileInput && !fileInput.files.length) {
+                isValid = false;
+            }
         }
 
         return isValid;
@@ -2051,23 +2127,28 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!formData.name) missingFields.push('お名前（ステップ1）');
             if (!formData.company) missingFields.push('会社名（ステップ1）');
             if (!formData.industry) missingFields.push('業種（ステップ1）');
-            if (!formData.email) missingFields.push('メールアドレス（ステップ1）');
-            if (!formData.password) missingFields.push('パスワード（ステップ1）');
 
-            const passwordConfirm = document.getElementById('password-confirm');
-            if (passwordConfirm && formData.password && passwordConfirm.value !== formData.password) {
-                missingFields.push('パスワード（確認）が一致しません');
-            } else if (passwordConfirm && !passwordConfirm.value) {
-                missingFields.push('パスワード確認（ステップ1）');
+            if (!window._isLineMode) {
+                if (!formData.email) missingFields.push('メールアドレス（ステップ1）');
+                if (!formData.password) missingFields.push('パスワード（ステップ1）');
+
+                const passwordConfirm = document.getElementById('password-confirm');
+                if (passwordConfirm && formData.password && passwordConfirm.value !== formData.password) {
+                    missingFields.push('パスワード（確認）が一致しません');
+                } else if (passwordConfirm && !passwordConfirm.value) {
+                    missingFields.push('パスワード確認（ステップ1）');
+                }
             }
 
             if (!formData.phone) missingFields.push('電話番号（ステップ3）');
             if (!formData.lineId) missingFields.push('LINE ID または URL（ステップ3）');
             if (!formData.position) missingFields.push('役職（ステップ3）');
 
-            const lineQrInput = document.getElementById('line-qr');
-            if (lineQrInput && (!lineQrInput.files || lineQrInput.files.length === 0) && !window._selectedLineQrFile) {
-                missingFields.push('LINE QRコード（ステップ3）');
+            if (!window._isLineMode) {
+                const lineQrInput = document.getElementById('line-qr');
+                if (lineQrInput && (!lineQrInput.files || lineQrInput.files.length === 0) && !window._selectedLineQrFile) {
+                    missingFields.push('LINE QRコード（ステップ3）');
+                }
             }
 
             if (!formData.challenges || formData.challenges.length === 0) {
@@ -2093,145 +2174,138 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('システムが初期化されていません。ページを再読み込みしてください。');
             }
 
-            // auth.signUpのエラーで既存ユーザーを判定（レースコンディション防止）
-            const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
-                email: formData.email,
-                password: formData.password,
-                options: {
-                    data: {
-                        name: formData.name,
-                        company: formData.company,
-                        position: formData.position,
-                        phone: formData.phone,
-                        line_id: formData.lineId
-                    }
-                }
-            });
+            // プロフィールデータ共通
+            const profileData = {
+                name: formData.name,
+                full_name: formData.name,
+                company: formData.company,
+                position: formData.position,
+                phone: formData.phone,
+                line_id: formData.lineId,
+                budget_range: formData.budget,
+                bio: formData['skills-pr'] || '',
+                skills: formData.skills,
+                interests: formData.interests,
+                business_challenges: {
+                    challenges: formData.challenges || [],
+                    challenges_other: formData.challenges_other || {},
+                    challenges_detail: formData.challenges_detail || ''
+                },
+                industry: formData.industry,
+                is_active: true,
+                is_online: true,
+                last_login_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
 
-            if (authError) {
-                // Supabaseのエラーメッセージを日本語化
-                if (authError.message.includes('User already registered')) {
-                    throw new Error('このメールアドレスは既に登録されています。');
-                } else if (authError.message.includes('Password should be at least')) {
-                    throw new Error('パスワードは8文字以上で入力してください。');
-                } else if (authError.message.includes('Invalid email') || authError.message.includes('is invalid')) {
-                    throw new Error('有効なメールアドレスを入力してください。');
-                } else if (authError.message.includes('security purposes') || authError.message.includes('rate limit')) {
-                    const seconds = authError.message.match(/(\d+)\s*second/);
-                    throw new Error(seconds ? `セキュリティ保護のため、${seconds[1]}秒後に再度お試しください。` : 'しばらく時間をおいてから再度お試しください。');
-                } else if (authError.message.includes('network') || authError.message.includes('fetch')) {
-                    throw new Error('ネットワークエラーが発生しました。通信環境を確認してください。');
-                }
-                throw new Error('登録処理中にエラーが発生しました。しばらくしてから再度お試しください。');
-            }
+            let userId;
 
-            // Supabaseのメール列挙防止: signUpがエラーなしで user: null を返す場合がある
-            if (!authData || !authData.user) {
-                throw new Error('このメールアドレスは既に登録されています。ログインページからお試しください。');
-            }
+            if (window._isLineMode) {
+                // === LINEモード: signUpなし、既存ユーザーのプロフィールを更新 ===
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                if (!user) throw new Error('認証情報が見つかりません。再度LINEログインしてください。');
+                userId = user.id;
 
-            // セッション確認: メール確認有効時はsignUp直後にセッションがない
-            const { data: sessionData } = await window.supabaseClient.auth.getSession();
-            const hasSession = !!sessionData?.session;
-
-            if (hasSession) {
-                // セッションあり → プロフィール・設定を即座に作成
                 const { error: profileError } = await window.supabaseClient
                     .from('user_profiles')
-                    .upsert({
-                        id: authData.user.id,
-                        name: formData.name,
-                        full_name: formData.name,
-                        company: formData.company,
-                        position: formData.position,
-                        email: formData.email,
-                        phone: formData.phone,
-                        line_id: formData.lineId,
-                        budget_range: formData.budget,
-                        bio: formData['skills-pr'] || '',
-                        skills: formData.skills,
-                        interests: formData.interests,
-                        business_challenges: {
-                            challenges: formData.challenges || [],
-                            challenges_other: formData.challenges_other || {},
-                            challenges_detail: formData.challenges_detail || ''
-                        },
-                        industry: formData.industry,
-                        is_active: true,
-                        is_online: true,
-                        last_login_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'id' });
+                    .upsert({ id: userId, email: user.email, ...profileData }, { onConflict: 'id' });
+
+                if (profileError) {
+                    console.error('[Register LINE] プロフィール作成エラー:', profileError.message);
+                    throw new Error('プロフィールの保存中にエラーが発生しました。');
+                }
+
+                await window.supabaseClient.from('settings').upsert({ user_id: userId }, { onConflict: 'user_id' });
+                await window.supabaseClient.from('user_points').upsert({ user_id: userId }, { onConflict: 'user_id' });
+
+            } else {
+                // === 通常モード: メール/パスワードでsignUp ===
+                const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
+                    email: formData.email,
+                    password: formData.password,
+                    options: {
+                        data: {
+                            name: formData.name,
+                            company: formData.company,
+                            position: formData.position,
+                            phone: formData.phone,
+                            line_id: formData.lineId
+                        }
+                    }
+                });
+
+                if (authError) {
+                    if (authError.message.includes('User already registered')) {
+                        throw new Error('このメールアドレスは既に登録されています。');
+                    } else if (authError.message.includes('Password should be at least')) {
+                        throw new Error('パスワードは8文字以上で入力してください。');
+                    } else if (authError.message.includes('Invalid email') || authError.message.includes('is invalid')) {
+                        throw new Error('有効なメールアドレスを入力してください。');
+                    } else if (authError.message.includes('security purposes') || authError.message.includes('rate limit')) {
+                        const seconds = authError.message.match(/(\d+)\s*second/);
+                        throw new Error(seconds ? `セキュリティ保護のため、${seconds[1]}秒後に再度お試しください。` : 'しばらく時間をおいてから再度お試しください。');
+                    } else if (authError.message.includes('network') || authError.message.includes('fetch')) {
+                        throw new Error('ネットワークエラーが発生しました。通信環境を確認してください。');
+                    }
+                    throw new Error('登録処理中にエラーが発生しました。しばらくしてから再度お試しください。');
+                }
+
+                if (!authData || !authData.user) {
+                    throw new Error('このメールアドレスは既に登録されています。ログインページからお試しください。');
+                }
+
+                userId = authData.user.id;
+
+                const { error: profileError } = await window.supabaseClient
+                    .from('user_profiles')
+                    .upsert({ id: userId, email: formData.email, ...profileData }, { onConflict: 'id' });
 
                 if (profileError) {
                     console.error('[Register] プロフィール作成エラー:', profileError.message);
                     throw new Error('プロフィールの保存中にエラーが発生しました。');
                 }
 
-                await window.supabaseClient
-                    .from('settings')
-                    .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
-                await window.supabaseClient
-                    .from('user_points')
-                    .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
-            } else {
-                // セッション未確立 = メール確認待ち
-                // プロフィールデータをlocalStorageに保存し、確認後の初回ログイン時に作成
-                localStorage.setItem('pending_profile', JSON.stringify(formData));
-            }
+                await window.supabaseClient.from('settings').upsert({ user_id: userId }, { onConflict: 'user_id' });
+                await window.supabaseClient.from('user_points').upsert({ user_id: userId }, { onConflict: 'user_id' });
 
-            // LINE QRコード画像のアップロード（セッションがある場合のみ）
-            if (hasSession && window._selectedLineQrFile) {
-                try {
-                    const ext = window._selectedLineQrFile.name.split('.').pop();
-                    const filePath = `line-qr/${authData.user.id}.${ext}`;
-                    const { error: uploadError } = await window.supabaseClient.storage
-                        .from('avatars')
-                        .upload(filePath, window._selectedLineQrFile, { upsert: true });
-
-                    if (uploadError) {
-                        console.error('LINE QRアップロードエラー:', uploadError);
-                        (window.showToast || function(m){alert(m)})('LINE QRコードのアップロードに失敗しました。プロフィール設定から再アップロードできます。', 'error');
-                    } else {
-                        const { data: urlData } = window.supabaseClient.storage
+                // LINE QRコード画像のアップロード
+                if (window._selectedLineQrFile) {
+                    try {
+                        const ext = window._selectedLineQrFile.name.split('.').pop();
+                        const filePath = `line-qr/${userId}.${ext}`;
+                        const { error: uploadError } = await window.supabaseClient.storage
                             .from('avatars')
-                            .getPublicUrl(filePath);
+                            .upload(filePath, window._selectedLineQrFile, { upsert: true });
 
-                        if (urlData?.publicUrl) {
-                            await window.supabaseClient
-                                .from('user_profiles')
-                                .update({ line_qr_url: urlData.publicUrl })
-                                .eq('id', authData.user.id);
+                        if (!uploadError) {
+                            const { data: urlData } = window.supabaseClient.storage
+                                .from('avatars')
+                                .getPublicUrl(filePath);
+                            if (urlData?.publicUrl) {
+                                await window.supabaseClient
+                                    .from('user_profiles')
+                                    .update({ line_qr_url: urlData.publicUrl })
+                                    .eq('id', userId);
+                            }
                         }
+                    } catch (qrError) {
+                        console.error('LINE QRアップロードエラー:', qrError);
                     }
                     window._selectedLineQrFile = null;
-                } catch (qrError) {
-                    console.error('LINE QRアップロードエラー:', qrError);
-                    (window.showToast || function(m){alert(m)})('LINE QRコードのアップロードに失敗しました。プロフィール設定から再アップロードできます。', 'error');
-                    window._selectedLineQrFile = null;
                 }
             }
 
-            // 招待コードがある場合の処理
+            // 招待コードがある場合の処理（LINE・通常共通）
             if (inviteCode && inviterId) {
+                await window.supabaseClient.from('invitations').insert({
+                    inviter_id: inviterId,
+                    invitee_id: userId,
+                    invitee_email: formData.email || '',
+                    status: 'registered',
+                    invitation_code: inviteCode,
+                    registered_at: new Date().toISOString()
+                });
 
-                // 招待記録を作成
-                const { error: invitationError } = await window.supabaseClient
-                    .from('invitations')
-                    .insert({
-                        inviter_id: inviterId,
-                        invitee_id: authData.user.id,
-                        invitee_email: formData.email,
-                        status: 'registered',
-                        invitation_code: inviteCode,
-                        registered_at: new Date().toISOString()
-                    });
-
-                if (invitationError) {
-                    // エラーが発生しても登録処理は継続
-                }
-
-                // 招待リンクの使用回数を更新
                 const { data: inviteLink } = await window.supabaseClient
                     .from('invite_links')
                     .select('id, used_count')
@@ -2239,54 +2313,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     .maybeSingle();
 
                 if (inviteLink) {
-                    await window.supabaseClient
-                        .from('invite_links')
-                        .update({
-                            used_count: (inviteLink.used_count || 0) + 1,
-                            last_used_at: new Date().toISOString()
-                        })
+                    await window.supabaseClient.from('invite_links')
+                        .update({ used_count: (inviteLink.used_count || 0) + 1, last_used_at: new Date().toISOString() })
                         .eq('id', inviteLink.id);
                 }
 
-                // セッションストレージをクリア
                 sessionStorage.removeItem('inviteCode');
                 sessionStorage.removeItem('inviterId');
             }
 
             // アクティビティ記録
-            await window.supabaseClient
-                .from('activities')
-                .insert({
-                    type: 'member_joined',
-                    title: `${formData.name}さんがコミュニティに参加しました`,
-                    user_id: authData.user.id
-                });
-
-            // 成功メッセージ
-            (window.showToast || function(m){alert(m)})('登録が完了しました！メールをご確認ください。', 'success');
+            await window.supabaseClient.from('activities').insert({
+                type: 'member_joined',
+                title: `${formData.name}さんがコミュニティに参加しました`,
+                user_id: userId
+            });
 
             // ユーザー情報を保存
             localStorage.setItem('user', JSON.stringify({
-                id: authData.user.id,
-                email: formData.email,
+                id: userId,
+                email: formData.email || '',
                 name: formData.name,
                 company: formData.company
             }));
             sessionStorage.setItem('isLoggedIn', 'true');
 
-            // 認証状態を待ってからリダイレクト（メール確認後にログインページへ）
-            const { data: { subscription } } = window.supabaseClient.auth.onAuthStateChange((event) => {
-                if (event === 'SIGNED_IN') {
-                    subscription.unsubscribe();
+            if (window._isLineMode) {
+                // LINEモード: 登録完了 → ダッシュボードへ
+                sessionStorage.removeItem('line_user_data');
+                (window.showToast || function(m){alert(m)})('プロフィール登録が完了しました！', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1500);
+            } else {
+                // 通常モード: 登録完了 → ログインページへ
+                (window.showToast || function(m){alert(m)})('登録が完了しました！', 'success');
+                setTimeout(() => {
                     window.location.href = '/login.html';
-                }
-            });
-
-            // フォールバック: 3秒後にログインページへ（メール確認待ちの場合）
-            setTimeout(() => {
-                subscription.unsubscribe();
-                window.location.href = '/login.html';
-            }, 3000);
+                }, 2000);
+            }
 
         } catch (error) {
             (window.showToast || function(m){alert(m)})(error.message || '登録に失敗しました', 'error');

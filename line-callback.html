@@ -212,11 +212,34 @@
                     icon.className = 'fas fa-check-circle callback-icon success';
                 }
 
-                // ダッシュボードへリダイレクト
-                console.log('Redirecting to dashboard...');
-                setTimeout(() => {
-                    window.location.href = data.redirect_to || 'dashboard.html';
-                }, 1000);
+                // プロフィール完了チェック → 未完了ならプロフィール登録へ
+                console.log('Checking profile completeness...');
+                let profileComplete = false;
+                try {
+                    const { data: profileData } = await window.supabaseClient
+                        .from('user_profiles')
+                        .select('company')
+                        .eq('id', data.user.id)
+                        .maybeSingle();
+                    profileComplete = !!(profileData && profileData.company);
+                } catch (e) {
+                    console.error('Profile check error:', e);
+                }
+
+                if (profileComplete) {
+                    console.log('Profile complete, redirecting to dashboard...');
+                    setTimeout(() => {
+                        window.location.href = data.redirect_to || 'dashboard.html';
+                    }, 1000);
+                } else {
+                    console.log('Profile incomplete, redirecting to profile registration...');
+                    sessionStorage.setItem('line_user_data', JSON.stringify(userData));
+                    const msgEl2 = document.querySelector('.callback-message');
+                    if (msgEl2) msgEl2.textContent = 'プロフィール登録に進みます...';
+                    setTimeout(() => {
+                        window.location.href = 'register.html?mode=line';
+                    }, 1000);
+                }
                 
             } catch (err) {
                 console.error('LINE認証エラー:', err);
