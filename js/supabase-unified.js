@@ -115,6 +115,9 @@
 
         // 認証状態をチェック
         checkAuthStatus();
+
+        // LINEユーザーのプロフィール完了ガード
+        checkProfileCompletion();
     }
 
     // 安全なgetUserヘルパー（data が null でもクラッシュしない）
@@ -334,6 +337,42 @@
         });
 
         authStateUnsubscribe = subscription;
+    }
+
+    // LINEユーザーのプロフィール未完了ガード（認証済みページで強制リダイレクト）
+    async function checkProfileCompletion() {
+        if (!window.supabaseClient) return;
+
+        // 公開ページ・登録ページではチェック不要
+        const path = window.location.pathname;
+        const skipPages = ['index.html', '/', '', 'login.html', 'register.html', 'forgot-password.html', 'reset-password.html', 'line-callback.html', 'invite.html'];
+        const isSkipPage = skipPages.some(p => {
+            if (p === '/' || p === '') return path === '/' || path === '/index.html' || path === '';
+            return path.includes(p);
+        });
+        if (isSkipPage) return;
+        if (sessionStorage.getItem('isGuestMode') === 'true') return;
+
+        try {
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) return;
+
+            // LINEユーザーかどうか確認（provider=lineまたはline_で始まるメール）
+            const isLineUser = user.user_metadata?.provider === 'line' || (user.email && user.email.startsWith('line_'));
+            if (!isLineUser) return;
+
+            const { data: profile } = await window.supabaseClient
+                .from('user_profiles')
+                .select('company')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            if (!profile || !profile.company) {
+                window.location.href = '/register.html?mode=line';
+            }
+        } catch (e) {
+            console.error('[ProfileGuard] チェックエラー:', e);
+        }
     }
 
     // ページ離脱時にunsubscribe（メモリリーク防止）
