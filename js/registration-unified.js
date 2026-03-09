@@ -2130,47 +2130,58 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('このメールアドレスは既に登録されています。ログインページからお試しください。');
             }
 
-            // プロフィール作成（user_profilesテーブルに保存）
-            // handle_new_user()トリガーが先に基本行を作成する場合があるためupsertを使用
-            const { error: profileError } = await window.supabaseClient
-                .from('user_profiles')
-                .upsert({
-                    id: authData.user.id,
-                    name: formData.name,
-                    full_name: formData.name,
-                    company: formData.company,
-                    position: formData.position,
-                    email: formData.email,
-                    phone: formData.phone,
-                    line_id: formData.lineId,
-                    budget_range: formData.budget,
-                    bio: formData['skills-pr'] || '', // bioカラムにスキルPRテキストを保存
-                    skills: formData.skills,
-                    interests: formData.interests,
-                    business_challenges: {
-                        challenges: formData.challenges || [],
-                        challenges_other: formData.challenges_other || {},
-                        challenges_detail: formData.challenges_detail || ''
-                    },
-                    industry: formData.industry,
-                    is_active: true,
-                    is_online: true,
-                    last_login_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'id' });
+            // セッション確認: メール確認有効時はsignUp直後にセッションがない
+            const { data: sessionData } = await window.supabaseClient.auth.getSession();
+            const hasSession = !!sessionData?.session;
 
-            if (profileError) throw profileError;
+            if (hasSession) {
+                // セッションあり → プロフィール・設定を即座に作成
+                const { error: profileError } = await window.supabaseClient
+                    .from('user_profiles')
+                    .upsert({
+                        id: authData.user.id,
+                        name: formData.name,
+                        full_name: formData.name,
+                        company: formData.company,
+                        position: formData.position,
+                        email: formData.email,
+                        phone: formData.phone,
+                        line_id: formData.lineId,
+                        budget_range: formData.budget,
+                        bio: formData['skills-pr'] || '',
+                        skills: formData.skills,
+                        interests: formData.interests,
+                        business_challenges: {
+                            challenges: formData.challenges || [],
+                            challenges_other: formData.challenges_other || {},
+                            challenges_detail: formData.challenges_detail || ''
+                        },
+                        industry: formData.industry,
+                        is_active: true,
+                        is_online: true,
+                        last_login_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'id' });
 
-            // settings・user_points行を作成（トリガー不使用のためフロントエンドで処理）
-            await window.supabaseClient
-                .from('settings')
-                .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
-            await window.supabaseClient
-                .from('user_points')
-                .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
+                if (profileError) {
+                    console.error('[Register] プロフィール作成エラー:', profileError.message);
+                    throw new Error('プロフィールの保存中にエラーが発生しました。');
+                }
 
-            // LINE QRコード画像のアップロード
-            if (window._selectedLineQrFile) {
+                await window.supabaseClient
+                    .from('settings')
+                    .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
+                await window.supabaseClient
+                    .from('user_points')
+                    .upsert({ user_id: authData.user.id }, { onConflict: 'user_id' });
+            } else {
+                // セッション未確立 = メール確認待ち
+                // プロフィールデータをlocalStorageに保存し、確認後の初回ログイン時に作成
+                localStorage.setItem('pending_profile', JSON.stringify(formData));
+            }
+
+            // LINE QRコード画像のアップロード（セッションがある場合のみ）
+            if (hasSession && window._selectedLineQrFile) {
                 try {
                     const ext = window._selectedLineQrFile.name.split('.').pop();
                     const filePath = `line-qr/${authData.user.id}.${ext}`;

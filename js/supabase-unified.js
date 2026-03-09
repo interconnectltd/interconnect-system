@@ -313,7 +313,46 @@
     function setupAuthStateListener() {
         if (!window.supabaseClient) return;
 
-        const { data: { subscription } } = window.supabaseClient.auth.onAuthStateChange((event, session) => {
+        const { data: { subscription } } = window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            // メール確認後の初回ログイン: 保留中のプロフィールを作成
+            if (event === 'SIGNED_IN' && session) {
+                try {
+                    const pending = localStorage.getItem('pending_profile');
+                    if (pending) {
+                        const formData = JSON.parse(pending);
+                        await window.supabaseClient.from('user_profiles').upsert({
+                            id: session.user.id,
+                            name: formData.name,
+                            full_name: formData.name,
+                            company: formData.company,
+                            position: formData.position,
+                            email: formData.email,
+                            phone: formData.phone,
+                            line_id: formData.lineId,
+                            budget_range: formData.budget,
+                            bio: formData['skills-pr'] || '',
+                            skills: formData.skills,
+                            interests: formData.interests,
+                            business_challenges: {
+                                challenges: formData.challenges || [],
+                                challenges_other: formData.challenges_other || {},
+                                challenges_detail: formData.challenges_detail || ''
+                            },
+                            industry: formData.industry,
+                            is_active: true,
+                            is_online: true,
+                            last_login_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'id' });
+                        await window.supabaseClient.from('settings').upsert({ user_id: session.user.id }, { onConflict: 'user_id' });
+                        await window.supabaseClient.from('user_points').upsert({ user_id: session.user.id }, { onConflict: 'user_id' });
+                        localStorage.removeItem('pending_profile');
+                    }
+                } catch (e) {
+                    console.error('[Auth] 保留プロフィール作成エラー:', e);
+                }
+            }
+
             if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
                 // ゲストモードでは何もしない
                 if (sessionStorage.getItem('isGuestMode') === 'true') return;
