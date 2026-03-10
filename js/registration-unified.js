@@ -1025,8 +1025,9 @@ function showSuccessMessage(message) {
                 const stepKey = `step${currentStepNum}`;
                 const stepState = validationState[stepKey];
 
-                // 各フィールドのエラーをチェック
-                Object.keys(stepState).forEach(key => {
+                // 各フィールドのエラーをチェック（必須項目のみ）
+                const requiredKeys = stepRequirements[currentStepNum] || [];
+                requiredKeys.forEach(key => {
                     if (!stepState[key]) {
                         switch(key) {
                             case 'name': errors.push('お名前を入力してください'); break;
