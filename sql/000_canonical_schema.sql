@@ -444,6 +444,14 @@ CREATE POLICY "Admin can view all user points" ON user_points
         EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND is_admin = true)
     );
 
+DROP POLICY IF EXISTS "Users can insert own points" ON user_points;
+CREATE POLICY "Users can insert own points" ON user_points
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own points" ON user_points;
+CREATE POLICY "Users can update own points" ON user_points
+    FOR UPDATE USING (auth.uid() = user_id);
+
 DROP TRIGGER IF EXISTS update_user_points_updated_at ON user_points;
 CREATE TRIGGER update_user_points_updated_at
     BEFORE UPDATE ON user_points
