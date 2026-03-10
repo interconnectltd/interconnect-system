@@ -49,6 +49,17 @@
     }
 
     function setupLineMode() {
+        // LINEユーザーでない場合はLINEモードを無効化（手動URLアクセス防止）
+        const user = window._lineAuthUser;
+        if (user) {
+            const isLineUser = user.user_metadata?.provider === 'line' || (user.email && user.email.startsWith('line_'));
+            if (!isLineUser) {
+                window._isLineMode = false;
+                window.location.href = '/register.html';
+                return;
+            }
+        }
+
         // LINEモード: フィールド非表示 + プリフィル
         const hideField = (id) => {
             const el = document.getElementById(id);
@@ -66,14 +77,12 @@
         hideField('password-confirm');
         hideField('line-qr');
 
-        // LINE登録ボタンと「または」を非表示
-        const lineBtn = document.querySelector('.line-login-btn, .line-register-btn, [href*="line"], .social-login');
-        if (lineBtn) {
-            const container = lineBtn.closest('.social-login-section, .line-login-section') || lineBtn.parentElement;
-            if (container) container.style.display = 'none';
-        }
-        // 「または」テキストを非表示
-        document.querySelectorAll('.divider, .or-divider').forEach(el => el.style.display = 'none');
+        // LINE登録ボタンを非表示
+        const lineBtn = document.getElementById('lineRegisterBtn');
+        if (lineBtn) lineBtn.style.display = 'none';
+
+        // 「または」仕切りを非表示
+        document.querySelectorAll('.auth-divider').forEach(el => el.style.display = 'none');
 
         // ページタイトルを変更
         const title = document.querySelector('h1, h2, .page-title');
@@ -81,11 +90,8 @@
             title.textContent = 'プロフィール登録';
         }
 
-        // 「すでにアカウントをお持ちの方は ログイン」を非表示
-        document.querySelectorAll('.auth-link, .login-link').forEach(el => {
-            const container = el.closest('p, .auth-links, .login-section') || el.parentElement;
-            if (container) container.style.display = 'none';
-        });
+        // フッター（ログインリンク・トップへ戻る）を非表示
+        document.querySelectorAll('.auth-footer, .auth-back').forEach(el => el.style.display = 'none');
 
         // LINE名をプリフィル
         const lineData = JSON.parse(sessionStorage.getItem('line_user_data') || '{}');
@@ -2189,7 +2195,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 business_challenges: {
                     challenges: formData.challenges || [],
                     challenges_other: formData.challenges_other || {},
-                    challenges_detail: formData.challenges_detail || ''
+                    challenges_detail: formData.challenges_detail || '',
+                    interests_details: formData['interests-details'] || ''
                 },
                 industry: formData.industry,
                 is_active: true,

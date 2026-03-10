@@ -110,15 +110,38 @@
 
             liffReadyResolve({ available: true, inClient: true, loggedIn: true, user: data.user });
 
-            // 認証ページにいる場合はダッシュボードへリダイレクト（同一オリジンのみ許可）
+            // 認証ページにいる場合 → プロフィール完了チェック後にリダイレクト
             var currentPage = window.location.pathname.split('/').pop();
-            if (currentPage === 'login.html' || currentPage === 'register.html' || currentPage === '' || currentPage === 'index.html') {
+            if (currentPage === 'login.html' || currentPage === '' || currentPage === 'index.html') {
                 var redirectTo = data.redirect_to || 'dashboard.html';
                 try {
                     var parsed = new URL(redirectTo, window.location.origin);
                     if (parsed.origin !== window.location.origin) redirectTo = 'dashboard.html';
                 } catch (e) { redirectTo = 'dashboard.html'; }
+
+                // LINEユーザーのプロフィール完了チェック
+                if (window.supabaseClient && data.user && data.user.id) {
+                    try {
+                        var profileResult = await window.supabaseClient
+                            .from('user_profiles')
+                            .select('company')
+                            .eq('id', data.user.id)
+                            .maybeSingle();
+                        if (!profileResult.data || !profileResult.data.company) {
+                            sessionStorage.setItem('line_user_data', JSON.stringify({
+                                name: data.user.display_name,
+                                picture_url: data.user.picture_url
+                            }));
+                            redirectTo = 'register.html?mode=line';
+                        }
+                    } catch (e) {
+                        console.error('[LIFF] Profile check error:', e);
+                    }
+                }
+
                 window.location.href = redirectTo;
+            } else if (currentPage === 'register.html') {
+                // register.htmlではリダイレクトしない（LINEモードで入力中の可能性）
             }
 
         } catch (err) {
