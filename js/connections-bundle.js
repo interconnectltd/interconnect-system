@@ -49,15 +49,18 @@
                 
                 // 現在のユーザーを取得
                 const user = await window.safeGetUser();
-                if (!user || (user.user_metadata && user.user_metadata.isGuest)) {
-                    // ゲストモードまたは未ログイン → ログイン案内
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                if (user.user_metadata && user.user_metadata.isGuest) {
                     document.querySelectorAll('.connection-list').forEach(list => {
                         list.innerHTML = `
                             <div class="empty-state">
-                                <i class="fas fa-sign-in-alt"></i>
-                                <h3>ログインが必要です</h3>
-                                <p>コネクション機能を利用するにはログインしてください</p>
-                                <a href="login.html" class="btn btn-primary" style="margin-top:12px;">ログイン</a>
+                                <i class="fas fa-user-friends"></i>
+                                <h3>この機能はゲストモードでは利用できません。</h3>
+                                <p>コネクション機能を利用するにはアカウント登録してください</p>
+                                <a href="register.html" class="btn btn-primary" style="margin-top:12px;">新規登録</a>
                             </div>
                         `;
                     });

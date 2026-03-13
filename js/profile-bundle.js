@@ -353,10 +353,11 @@ window.InterConnect.Profile = {
     sendConnectionRequest: async function() {
         try {
             if (!window.supabaseClient || !this.currentUserId || !this.targetUserId) {
-                // alert('ログインが必要です');
-                if (window.showError) {
-                    showError('ログインが必要です');
-                }
+                if (window.showToast) window.showToast('ログインが必要です', 'warning');
+                return;
+            }
+            if (sessionStorage.getItem('isGuestMode') === 'true') {
+                if (window.showToast) window.showToast('この機能はゲストモードでは利用できません。', 'warning');
                 return;
             }
             

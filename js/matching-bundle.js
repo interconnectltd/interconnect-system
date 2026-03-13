@@ -715,6 +715,10 @@
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>ログインが必要です</h3><p>マッチング機能を使うにはログインしてください</p><a href="login.html" class="btn btn-primary" style="margin-top:16px;">ログイン</a></div>';
                 return;
             }
+            if (user.user_metadata && user.user_metadata.isGuest) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-user-friends"></i><h3>この機能はゲストモードでは利用できません。</h3><p>マッチング機能を利用するにはアカウント登録してください</p><a href="register.html" class="btn btn-primary" style="margin-top:16px;">新規登録</a></div>';
+                return;
+            }
             
             currentUserId = user.id;
             console.log('[MatchingUnified] 現在のユーザーID:', currentUserId);

@@ -1151,6 +1151,10 @@
                 this.showLoginPrompt();
                 return;
             }
+            if (sessionStorage.getItem('isGuestMode') === 'true') {
+                if (window.showToast) window.showToast('この機能はゲストモードでは利用できません。', 'warning');
+                return;
+            }
 
             // 既にコネクト済みまたはペンディングの場合
             const status = this.connections.get(memberId);

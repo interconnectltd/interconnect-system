@@ -830,6 +830,10 @@
                     if (window.showToast) window.showToast('ログインが必要です', 'warning');
                     return;
                 }
+                if (user.user_metadata && user.user_metadata.isGuest) {
+                    if (window.showToast) window.showToast('この機能はゲストモードでは利用できません。', 'warning');
+                    return;
+                }
 
                 // 既存のコネクションをチェック
                 const { data: existing } = await window.supabaseClient
@@ -865,6 +869,10 @@
         }
 
         sendMessage(profileId) {
+            if (sessionStorage.getItem('isGuestMode') === 'true') {
+                if (window.showToast) window.showToast('この機能はゲストモードでは利用できません。', 'warning');
+                return;
+            }
             // メッセージページへ遷移
             window.location.href = `messages.html?to=${profileId}`;
         }
@@ -874,6 +882,10 @@
                 const user = await window.safeGetUser();
                 if (!user) {
                     if (window.showToast) window.showToast('ログインが必要です', 'warning');
+                    return;
+                }
+                if (user.user_metadata && user.user_metadata.isGuest) {
+                    if (window.showToast) window.showToast('この機能はゲストモードでは利用できません。', 'warning');
                     return;
                 }
 

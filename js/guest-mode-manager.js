@@ -5,8 +5,10 @@
 
 (function() {
     'use strict';
-    
-    
+
+    // 二重初期化ガード
+    if (window.GuestModeManager) return;
+
     class GuestModeManager {
         constructor() {
             this.isGuestMode = false;
@@ -52,8 +54,24 @@
         }
         
         setupGuestMode() {
+            // グローバルヘルパー: ゲスト操作ブロック判定＋トースト表示
+            window.checkGuestBlock = function() {
+                if (sessionStorage.getItem('isGuestMode') === 'true') {
+                    if (window.showToast) {
+                        window.showToast('この機能はゲストモードでは利用できません。', 'warning');
+                    } else {
+                        alert('この機能はゲストモードでは利用できません。');
+                    }
+                    return true; // blocked
+                }
+                return false; // not guest
+            };
+
             // ゲストモードでの管理者ページアクセスをブロック
             this.blockAdminAccess();
+
+            // ゲストモードでのインタラクティブ操作をブロック
+            this.blockInteractiveActions();
 
             // Supabaseのクエリをインターセプト
             this.interceptSupabaseQueries();
@@ -67,12 +85,68 @@
             const restrictedPages = ['admin', 'super-admin', 'settings', 'billing'];
 
             if (restrictedPages.includes(currentPage)) {
-                // ゲストユーザーは管理者ページにアクセス不可
-                if (window.showToast) { window.showToast('ゲストモードではこのページにアクセスできません。', 'warning'); } else { alert('ゲストモードではこのページにアクセスできません。'); }
+                if (window.showToast) { window.showToast('この機能はゲストモードでは利用できません。', 'warning'); } else { alert('この機能はゲストモードでは利用できません。'); }
                 window.location.href = 'dashboard.html?guest=true';
             }
         }
-        
+
+        blockInteractiveActions() {
+            // 公開ページではブロック不要（ログインフォーム等を壊さない）
+            const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+            const publicPages = ['login', 'register', 'index', 'forgot-password', 'reset-password', 'line-callback', 'invite', ''];
+            if (publicPages.includes(currentPage)) return;
+
+            // ページ読み込み後にボタン・フォームをインターセプト
+            const setup = () => {
+                // 操作系ボタンをキャプチャ（送信、申込、リクエスト、換金等）
+                const selectors = [
+                    '.send-message-btn',
+                    '.connect-btn',
+                    '.cashout-btn',
+                    '#cashoutBtn',
+                    '#cashout-btn',
+                    '.cashout-button',
+                    '#sendMessageBtn',
+                    '#chatSendBtn',
+                    '.event-register-btn',
+                    '.event-join-btn',
+                    '#eventActionBtn',
+                    '.bookmark-btn',
+                    '.profile-edit-btn',
+                    '#editProfileBtn',
+                    '.save-profile-btn',
+                    '#saveProfileBtn',
+                    '#saveProfile'
+                ];
+
+                document.addEventListener('click', (e) => {
+                    const target = e.target.closest(selectors.join(','));
+                    if (target) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.checkGuestBlock();
+                    }
+                }, true);
+
+                // メッセージ入力欄のEnterキーもブロック
+                const msgInput = document.querySelector('#messageInput, .message-input, .chat-input input, .chat-input textarea');
+                if (msgInput) {
+                    msgInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            window.checkGuestBlock();
+                        }
+                    }, true);
+                }
+            };
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setup);
+            } else {
+                setup();
+            }
+        }
+
         interceptSupabaseQueries() {
             // window.supabaseが存在する場合、クエリをインターセプト
             if (window.supabaseClient) {

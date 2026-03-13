@@ -21,6 +21,13 @@
                 window.location.href = 'login.html';
                 return;
             }
+            if (user.user_metadata && user.user_metadata.isGuest) {
+                const container = document.querySelector('.messages-container, .chat-container, main');
+                if (container) {
+                    container.innerHTML = '<div class="empty-state" style="padding:60px 20px;text-align:center;"><i class="fas fa-comments" style="font-size:3rem;color:#ccc;margin-bottom:16px;"></i><h3>この機能はゲストモードでは利用できません。</h3><p>メッセージ機能を利用するにはアカウント登録してください</p><a href="register.html" class="btn btn-primary" style="margin-top:16px;">新規登録</a></div>';
+                }
+                return;
+            }
             this.currentUserId = user.id;
 
             // 自分のプロフィールをキャッシュ

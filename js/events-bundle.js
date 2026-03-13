@@ -394,11 +394,9 @@
             try {
                 // ユーザー認証チェック
                 const user = await window.safeGetUser();
-                if (!user || (user.user_metadata && user.user_metadata.isGuest)) {
-                    if (window.showToast) {
-                        window.showToast('ログインが必要です', 'warning');
-                    }
-                    window.location.href = 'login.html';
+                if (!user) { window.location.href = 'login.html'; return; }
+                if (user.user_metadata && user.user_metadata.isGuest) {
+                    if (window.showToast) window.showToast('この機能はゲストモードでは利用できません。', 'warning');
                     return;
                 }
 
@@ -1236,11 +1234,9 @@
             try {
                 // ユーザー認証チェック
                 const user = await window.safeGetUser();
-                if (!user || (user.user_metadata && user.user_metadata.isGuest)) {
-                    if (window.showToast) {
-                        window.showToast('ログインが必要です', 'warning');
-                    }
-                    window.location.href = 'login.html';
+                if (!user) { window.location.href = 'login.html'; return; }
+                if (user.user_metadata && user.user_metadata.isGuest) {
+                    if (window.showToast) window.showToast('この機能はゲストモードでは利用できません。', 'warning');
                     return;
                 }
 
