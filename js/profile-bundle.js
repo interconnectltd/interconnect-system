@@ -136,6 +136,7 @@ window.InterConnect.Profile = {
                 .from('user_profiles')
                 .select(`
                     id,
+                    member_id,
                     name,
                     full_name,
                     email,
@@ -422,7 +423,13 @@ window.InterConnect.Profile = {
         userNameElements.forEach(el => {
             if (el) el.textContent = data.name || 'ユーザー名';
         });
-        
+
+        // 会員ID
+        const memberIdEl = document.querySelector('.profile-member-id');
+        if (memberIdEl && data.member_id) {
+            memberIdEl.textContent = data.member_id;
+        }
+
         // 会社名
         const companyElement = document.querySelector('.profile-company');
         if (companyElement) companyElement.textContent = data.company || '会社名';
@@ -1029,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // プロフィールデータを取得
                 const { data: profile, error } = await window.supabaseClient
                     .from('user_profiles')
-                    .select('id, name, email, company, position, avatar_url, bio, skills, interests, industry, location, phone, line_id')
+                    .select('id, member_id, name, email, company, position, avatar_url, bio, skills, interests, industry, location, phone, line_id')
                     .eq('id', this.targetUserId)
                     .maybeSingle();
 
@@ -1067,6 +1074,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.user-name').forEach(el => {
                 el.textContent = profile.name || profile.email?.split('@')[0] || 'ユーザー';
             });
+
+            // 会員ID
+            const memberIdEl = document.querySelector('.profile-member-id');
+            if (memberIdEl) memberIdEl.textContent = profile.member_id || '';
 
             // 役職・会社
             updateElement('.profile-title', profile.position);

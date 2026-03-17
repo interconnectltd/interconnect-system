@@ -30,8 +30,12 @@ $$ LANGUAGE plpgsql;
 -- 注: JSは .from('user_profiles') を使用。
 -- 旧 'profiles' テーブルがある場合は RENAME で移行すること。
 
+-- 会員ID用シーケンス
+CREATE SEQUENCE IF NOT EXISTS member_id_seq START WITH 1 INCREMENT BY 1;
+
 CREATE TABLE IF NOT EXISTS user_profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    member_id TEXT UNIQUE,
     name TEXT,
     full_name TEXT,
     email TEXT UNIQUE,
@@ -59,6 +63,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_profiles_email ON user_profiles(email);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_member_id ON user_profiles(member_id);
 CREATE INDEX IF NOT EXISTS idx_user_profiles_industry ON user_profiles(industry);
 CREATE INDEX IF NOT EXISTS idx_user_profiles_is_active ON user_profiles(is_active) WHERE is_active = true;
 
@@ -1410,9 +1415,10 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO user_profiles (id, email, name, full_name, created_at, updated_at)
+    INSERT INTO user_profiles (id, member_id, email, name, full_name, created_at, updated_at)
     VALUES (
         NEW.id,
+        'IC-' || LPAD(nextval('member_id_seq')::TEXT, 5, '0'),
         NEW.email,
         COALESCE(NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
         COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', ''),

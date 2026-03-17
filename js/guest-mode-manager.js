@@ -19,7 +19,7 @@
     const DEMO_DATA = {
         user_profiles: [
             {
-                id: 'guest-user', email: 'guest@interconnect.jp',
+                id: 'guest-user', member_id: 'IC-00000', email: 'guest@interconnect.jp',
                 name: 'ゲストユーザー', full_name: 'ゲストユーザー',
                 company: 'サンプル株式会社', position: '代表取締役',
                 industry: 'IT・テクノロジー', avatar_url: 'assets/user-placeholder.svg',
@@ -34,7 +34,7 @@
                 last_login_at: now, created_at: now, updated_at: now
             },
             {
-                id: 'demo-user-1', email: 'yamada@example.com',
+                id: 'demo-user-1', member_id: 'IC-00001', email: 'yamada@example.com',
                 name: '山田 太郎', full_name: '山田 太郎',
                 company: '株式会社テックイノベーション', position: '代表取締役CEO',
                 industry: 'IT・テクノロジー', avatar_url: 'assets/user-placeholder.svg',
@@ -50,7 +50,7 @@
                 last_login_at: now, created_at: lastWeek, updated_at: now
             },
             {
-                id: 'demo-user-2', email: 'sato@example.com',
+                id: 'demo-user-2', member_id: 'IC-00002', email: 'sato@example.com',
                 name: '佐藤 花子', full_name: '佐藤 花子',
                 company: 'グローバルコマース株式会社', position: 'マーケティング部長',
                 industry: '小売・EC', avatar_url: 'assets/user-placeholder.svg',
@@ -66,7 +66,7 @@
                 last_login_at: yesterday, created_at: lastWeek, updated_at: yesterday
             },
             {
-                id: 'demo-user-3', email: 'takahashi@example.com',
+                id: 'demo-user-3', member_id: 'IC-00003', email: 'takahashi@example.com',
                 name: '高橋 健一', full_name: '高橋 健一',
                 company: 'デジタルソリューションズ', position: 'CTO',
                 industry: 'IT・テクノロジー', avatar_url: 'assets/user-placeholder.svg',
@@ -82,7 +82,7 @@
                 last_login_at: now, created_at: lastWeek, updated_at: now
             },
             {
-                id: 'demo-user-4', email: 'tanaka@example.com',
+                id: 'demo-user-4', member_id: 'IC-00004', email: 'tanaka@example.com',
                 name: '田中 美咲', full_name: '田中 美咲',
                 company: '株式会社ヘルステック', position: '取締役COO',
                 industry: 'ヘルスケア', avatar_url: 'assets/user-placeholder.svg',
@@ -98,7 +98,7 @@
                 last_login_at: yesterday, created_at: lastWeek, updated_at: yesterday
             },
             {
-                id: 'demo-user-5', email: 'suzuki@example.com',
+                id: 'demo-user-5', member_id: 'IC-00005', email: 'suzuki@example.com',
                 name: '鈴木 大輔', full_name: '鈴木 大輔',
                 company: 'フィンテックラボ株式会社', position: '代表取締役',
                 industry: '金融・フィンテック', avatar_url: 'assets/user-placeholder.svg',
