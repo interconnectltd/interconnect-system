@@ -1317,6 +1317,16 @@ body[data-page="referral"] .content-body {
     text-transform: uppercase;
 }
 
+/* 空状態メッセージの中央配置 */
+.empty-state {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Source: css-conflict-fix.css */
 /* ===========================
    CSS競合修正
