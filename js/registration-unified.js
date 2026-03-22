@@ -1030,26 +1030,26 @@ function showSuccessMessage(message) {
                 requiredKeys.forEach(key => {
                     if (!stepState[key]) {
                         switch(key) {
-                            case 'name': errors.push('お名前を入力してください'); break;
-                            case 'company': errors.push('会社名を入力してください'); break;
-                            case 'industry': errors.push('業種を選択してください'); break;
-                            case 'email': errors.push('有効なメールアドレスを入力してください'); break;
-                            case 'password': errors.push('パスワードは8文字以上で入力してください'); break;
-                            case 'passwordConfirm': errors.push('パスワードが一致しません'); break;
-                            case 'challenges': errors.push('各カテゴリーで少なくとも1つの課題を選択してください'); break;
-                            case 'phone': errors.push('有効な電話番号を入力してください（例: 090-1234-5678）'); break;
-                            case 'lineId': errors.push('LINE IDまたはURLを入力してください'); break;
-                            case 'lineQr': errors.push('LINE QRコードをアップロードしてください'); break;
-                            case 'position': errors.push('役職を入力してください'); break;
-                            case 'skillsPr': errors.push('スキル・専門分野のPRを100文字以上で入力してください'); break;
-                            case 'interestsDetails': errors.push('興味・困りごとの詳細を入力してください'); break;
-                            case 'agree': errors.push('利用規約に同意してください'); break;
+                            case 'name': errors.push('お名前'); break;
+                            case 'company': errors.push('会社名'); break;
+                            case 'industry': errors.push('業種'); break;
+                            case 'email': errors.push('メールアドレス'); break;
+                            case 'password': errors.push('パスワード（8文字以上）'); break;
+                            case 'passwordConfirm': errors.push('パスワード（確認）'); break;
+                            case 'challenges': errors.push('課題の選択'); break;
+                            case 'phone': errors.push('電話番号'); break;
+                            case 'lineId': errors.push('LINE ID'); break;
+                            case 'lineQr': errors.push('LINE QRコード'); break;
+                            case 'position': errors.push('役職'); break;
+                            case 'skillsPr': errors.push('スキル・専門分野のPR'); break;
+                            case 'interestsDetails': errors.push('興味・困りごとの詳細'); break;
+                            case 'agree': errors.push('利用規約への同意'); break;
                         }
                     }
                 });
 
                 if (errors.length > 0) {
-                    if (window.showToast) window.showToast('以下の項目を確認してください：' + errors.join('、'), 'error');
+                    if (window.showToast) window.showToast('未入力の項目があります：' + errors.join('、'), 'error');
                     return false;
                 }
             }

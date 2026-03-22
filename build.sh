@@ -14,7 +14,7 @@ mkdir -p "$DIST"
 cp -f *.html "$DIST/" 2>/dev/null || true
 
 # Copy public asset directories
-for dir in css js assets images sounds includes; do
+for dir in css js assets images sounds includes img dl; do
   if [ -d "$dir" ]; then
     cp -r "$dir" "$DIST/"
   fi
