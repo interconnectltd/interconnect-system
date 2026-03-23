@@ -815,17 +815,11 @@ function showSuccessMessage(message) {
         //     state: validationState[`step${stepNum}`]
         // });
 
-        if (isValid) {
-            nextButton.disabled = false;
-            nextButton.classList.remove('disabled');
-            nextButton.style.opacity = '1';
-            nextButton.style.cursor = 'pointer';
-        } else {
-            nextButton.disabled = true;
-            nextButton.classList.add('disabled');
-            nextButton.style.opacity = '0.5';
-            nextButton.style.cursor = 'not-allowed';
-        }
+        // ボタンは常に有効（押下時にnextStepValidationで判定）
+        nextButton.disabled = false;
+        nextButton.classList.remove('disabled');
+        nextButton.style.opacity = '1';
+        nextButton.style.cursor = 'pointer';
     }
 
     // フィールドのバリデーション
@@ -1025,6 +1019,21 @@ function showSuccessMessage(message) {
                 const stepKey = `step${currentStepNum}`;
                 const stepState = validationState[stepKey];
 
+                // Step2は各カテゴリごとに未選択を具体的に表示
+                if (currentStepNum === 2) {
+                    const categoryNames = ['売上・マーケティング', '組織・人材', '業務改善・テクノロジー', '経営・戦略'];
+                    const groups = document.querySelectorAll('.form-step[data-step="2"] .challenge-group');
+                    groups.forEach((group, i) => {
+                        if (group.querySelectorAll('input[name="challenges"]:checked').length === 0) {
+                            errors.push(categoryNames[i] || 'カテゴリ' + (i + 1));
+                        }
+                    });
+                    if (errors.length > 0) {
+                        if (window.showToast) window.showToast('未選択のカテゴリがあります：' + errors.join('、'), 'error');
+                        return false;
+                    }
+                }
+
                 // 各フィールドのエラーをチェック（必須項目のみ）
                 const requiredKeys = stepRequirements[currentStepNum] || [];
                 requiredKeys.forEach(key => {
@@ -1036,7 +1045,6 @@ function showSuccessMessage(message) {
                             case 'email': errors.push('メールアドレス'); break;
                             case 'password': errors.push('パスワード（8文字以上）'); break;
                             case 'passwordConfirm': errors.push('パスワード（確認）'); break;
-                            case 'challenges': errors.push('課題の選択'); break;
                             case 'phone': errors.push('電話番号'); break;
                             case 'lineId': errors.push('LINE ID'); break;
                             case 'lineQr': errors.push('LINE QRコード'); break;
@@ -1272,21 +1280,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
         }
 
-        // 次へボタンの有効/無効切り替え
-        const nextButton = activeStep.querySelector('.auth-button:not(.auth-button-outline)');
-        if (nextButton && nextButton.textContent.includes('次へ')) {
-            if (isValid) {
-                nextButton.disabled = false;
-                nextButton.classList.remove('disabled');
-                nextButton.style.opacity = '';
-                nextButton.style.cursor = '';
-            } else {
-                nextButton.disabled = true;
-                nextButton.classList.add('disabled');
-                nextButton.style.opacity = '0.5';
-                nextButton.style.cursor = 'not-allowed';
-            }
-        }
+        // 次へボタンは常に有効（押下時にバリデーションで判定）
     }
 
     // 基本情報のバリデーション
