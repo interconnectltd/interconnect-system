@@ -290,14 +290,18 @@ async function recordReferralRegistration(code, userId) {
 
 // 成功メッセージを表示
 function showSuccessMessage(message) {
-    const messageHTML = `
-        <div class="referral-success-message">
-            <i class="fas fa-check-circle"></i>
-            <span>${message}</span>
-        </div>
-    `;
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'referral-success-message';
 
-    document.body.insertAdjacentHTML('beforeend', messageHTML);
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-check-circle';
+    messageDiv.appendChild(icon);
+
+    const span = document.createElement('span');
+    span.textContent = message;
+    messageDiv.appendChild(span);
+
+    document.body.appendChild(messageDiv);
 
     // アニメーション後に削除
     setTimeout(() => {
@@ -1652,6 +1656,9 @@ window.InterConnect.Registration.moveToStep = function(step) {
     // 新しいステップを表示
     const newStep = document.querySelector(`.form-step[data-step="${step}"]`);
     const progressStep = document.querySelector(`.progress-step[data-step="${step}"]`);
+
+    // ステップ切り替え時にページ上部へスクロール
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (newStep) {
         newStep.classList.add('active');

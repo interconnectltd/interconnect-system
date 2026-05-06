@@ -148,6 +148,10 @@
     async function handleEmailLogin(e) {
         e.preventDefault();
 
+        const form = e.target;
+        if (form.dataset.submitting === 'true') return;
+        form.dataset.submitting = 'true';
+
         const submitButton = e.target.querySelector('button[type="submit"]');
 
         // ロックアウトチェック
@@ -183,6 +187,7 @@
                 submitButton.classList.remove('loading');
                 submitButton.disabled = false;
                 submitButton.textContent = 'ログイン';
+                form.dataset.submitting = 'false';
                 return;
             }
 
@@ -207,6 +212,7 @@
             submitButton.classList.remove('loading');
             submitButton.disabled = false;
             submitButton.textContent = 'ログイン';
+            form.dataset.submitting = 'false';
         }
     }
 
@@ -307,7 +313,7 @@
         }
 
         // 5秒後に自動で削除
-        setTimeout(() => errorDiv.remove(), 5000);
+        setTimeout(() => errorDiv.remove(), 10000);
     }
 
     // 認証状態変更リスナー（セッション期限切れ時の自動リダイレクト、タブ間同期）

@@ -292,10 +292,7 @@
                 // 招待リンク情報を取得
                 const { data: inviteLink, error: linkError } = await supabaseClient
                     .from('invite_links')
-                    .select(`
-                        *,
-                        creator:profiles!invite_links_created_by_fkey(name, company)
-                    `)
+                    .select('*')
                     .eq('link_code', code)
                     .eq('is_active', true)
                     .maybeSingle();

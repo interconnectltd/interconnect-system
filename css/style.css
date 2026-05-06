@@ -1475,3 +1475,20 @@ select {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Mobile touch improvements */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, [role="button"], input, select, textarea, label {
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

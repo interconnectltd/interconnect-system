@@ -199,13 +199,13 @@
     .btn {
         padding: var(--space-sm) var(--space-md);
         font-size: 0.875rem;
-        min-height: 40px;
+        min-height: 44px;
     }
-    
+
     .btn-small {
         padding: var(--space-xs) var(--space-sm);
         font-size: 0.8125rem;
-        min-height: 40px;
+        min-height: 44px;
     }
     
     .btn-large {
@@ -218,7 +218,7 @@
 @media (max-width: 480px) {
     .btn {
         font-size: 0.8125rem;
-        min-height: 36px;
+        min-height: 44px;
     }
 
     .btn i {

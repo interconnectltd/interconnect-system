@@ -68,10 +68,10 @@
                         // フォームをリセット
                         form.reset();
                         
-                        // 5秒後にログインページへリダイレクト
+                        // 10秒後にログインページへリダイレクト
                         setTimeout(() => {
                             window.location.href = 'login.html';
-                        }, 5000);
+                        }, 10000);
                     }
                 } else {
                     // Supabaseが利用できない場合のデモモード

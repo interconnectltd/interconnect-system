@@ -43,8 +43,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            min-width: 300px;
-            max-width: 500px;
+            min-width: 280px;
+            max-width: calc(100vw - 32px);
             animation: slideIn 0.3s ease;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         `;

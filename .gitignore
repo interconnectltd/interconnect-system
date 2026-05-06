@@ -11,6 +11,9 @@ netlify/functions/node_modules/
 dist/
 build/
 .netlify/
+.next/
+tsconfig.tsbuildinfo
+next-env.d.ts
 
 # IDE
 .vscode/
