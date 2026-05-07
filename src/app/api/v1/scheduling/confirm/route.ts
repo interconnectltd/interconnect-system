@@ -185,17 +185,20 @@ export async function POST(request: Request) {
           (room.user_a_id === target_user_id && room.user_b_id === user.id);
 
         if (isParticipant) {
-          const meetingDetails = [
-            `日時: ${formattedDate}`,
-            `時間: ${duration}分`,
-            ...(platform ? [`プラットフォーム: ${platform === "zoom" ? "Zoom" : "Google Meet"}`] : []),
-            ...(meeting_url ? [`会議リンク: ${meeting_url}`] : []),
-          ].join("\n");
+          // Card UI (MeetingConfirmedCard) parses this JSON to render the
+          // confirmed-meeting card; keep the shape aligned with from-chat.
+          const meetingMessageContent = JSON.stringify({
+            meeting_id: meeting.id,
+            scheduled_at,
+            duration_min: duration,
+            platform: platform ?? null,
+            meeting_url: meeting_url ?? null,
+          });
 
           await serviceClient.from("chat_messages").insert({
             room_id: chat_room_id,
             sender_id: user.id,
-            content: meetingDetails,
+            content: meetingMessageContent,
             content_type: "meeting_confirmed",
           });
 
@@ -212,7 +215,7 @@ export async function POST(request: Request) {
     }
 
     // --- 8. レスポンス ---
-    return json(meeting, 201);
+    return json(meeting, { status: 201 });
   } catch (error) {
     return handleApiError(error);
   }

@@ -109,7 +109,7 @@ export async function POST(request: Request) {
 
     if (error) throw error;
 
-    return json(data, 201);
+    return json(data, { status: 201 });
   } catch (error) {
     return handleApiError(error);
   }

@@ -280,7 +280,7 @@ export async function POST(request: Request) {
         ...meeting,
         calendar_urls: calendarUrls,
       },
-      201,
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error);

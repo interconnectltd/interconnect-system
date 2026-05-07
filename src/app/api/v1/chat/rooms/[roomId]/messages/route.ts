@@ -201,6 +201,11 @@ export async function POST(
             (result.intent === "proposed" && result.confidence >= 0.5);
 
           if (shouldSuggest) {
+            // Resolve the peer (target_user_id) so the card can POST
+            // /meetings/from-chat without an extra round-trip.
+            const peerId =
+              room.user_a_id === user.id ? room.user_b_id : room.user_a_id;
+
             await svc.from("chat_messages").insert({
               room_id: roomId,
               sender_id: user.id,
@@ -211,6 +216,8 @@ export async function POST(
                 platform: result.platform,
                 confidence: result.confidence,
                 triggered_by: message.id,
+                target_user_id: peerId,
+                duration_min: 30,
               }),
             });
           }
@@ -220,7 +227,7 @@ export async function POST(
       })();
     }
 
-    return json(message, 201);
+    return json(message, { status: 201 });
   } catch (error) {
     return handleApiError(error);
   }
