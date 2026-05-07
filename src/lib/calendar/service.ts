@@ -4,7 +4,6 @@ import { encryptToken } from "./crypto";
 import { getProvider } from "./registry";
 import type { ConnectionRecord, SyncResult } from "./types";
 import { CalendarProviderError } from "./types";
-import { decryptToken } from "./crypto";
 
 /** Check if a connection's token is expired */
 function isTokenExpired(connection: ConnectionRecord): boolean {

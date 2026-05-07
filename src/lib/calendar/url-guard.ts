@@ -138,8 +138,7 @@ export async function safeFetch(
   rawUrl: string,
   init: RequestInit & { maxRedirects?: number } = {},
 ): Promise<Response> {
-  const maxRedirects = init.maxRedirects ?? 5;
-  const { maxRedirects: _ignored, ...rest } = init;
+  const { maxRedirects = 5, ...rest } = init;
 
   let currentUrl = rawUrl;
   for (let hop = 0; hop <= maxRedirects; hop++) {
