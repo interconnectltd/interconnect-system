@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database";
 
 export class AuthError extends Error {
   constructor(message = "Unauthorized") {
@@ -11,6 +13,7 @@ export class AuthError extends Error {
 
 export async function withAuth(): Promise<{
   user: { id: string; email: string | null };
+  supabase: SupabaseClient<Database>;
 }> {
   const supabase = await createClient();
   const {
@@ -22,7 +25,10 @@ export async function withAuth(): Promise<{
     throw new AuthError();
   }
 
-  return { user: { id: user.id, email: user.email ?? null } };
+  return {
+    user: { id: user.id, email: user.email ?? null },
+    supabase,
+  };
 }
 
 export function json<T>(data: T, init?: ResponseInit): NextResponse {

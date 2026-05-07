@@ -141,10 +141,12 @@ export default function CalendarPage() {
             variant="outline"
             size="sm"
             className="mt-4"
-            render={<Link href="/settings" />}
+            asChild
           >
-            <Settings className="mr-1.5 h-3.5 w-3.5" />
-            設定ページで接続する
+            <Link href="/settings">
+              <Settings className="mr-1.5 h-3.5 w-3.5" />
+              設定ページで接続する
+            </Link>
           </Button>
         </div>
       ) : isLoading ? (

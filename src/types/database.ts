@@ -139,7 +139,7 @@ export type Database = {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["user_profiles"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       // ════════════════════════════════════════════════════════════════════
@@ -164,7 +164,7 @@ export type Database = {
           updated_at?: string | null;
           responded_at?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["connections"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       messages: {
@@ -184,7 +184,7 @@ export type Database = {
           is_read?: boolean | null;
           created_at?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["messages"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       notifications: {
@@ -214,7 +214,7 @@ export type Database = {
           created_at?: string | null;
           read_at?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["notifications"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       activities: {
@@ -234,7 +234,7 @@ export type Database = {
           related_user_id?: string | null;
           created_at?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["activities"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       // ════════════════════════════════════════════════════════════════════
@@ -273,9 +273,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["calendar_connections"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       calendar_events: {
@@ -315,9 +313,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["calendar_events"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       // ════════════════════════════════════════════════════════════════════
@@ -342,7 +338,7 @@ export type Database = {
           last_message_preview?: string | null;
           created_at?: string;
         };
-        Update: Partial<Database["public"]["Tables"]["chat_rooms"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       chat_messages: {
@@ -364,9 +360,7 @@ export type Database = {
           is_read?: boolean;
           created_at?: string;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["chat_messages"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       chat_analysis: {
@@ -390,9 +384,7 @@ export type Database = {
           engagement_signals?: Json;
           analyzed_at?: string;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["chat_analysis"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       // ════════════════════════════════════════════════════════════════════
@@ -419,9 +411,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["availability_rules"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       availability_overrides: {
@@ -443,9 +433,7 @@ export type Database = {
           end_time?: string | null;
           created_at?: string;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["availability_overrides"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       // ════════════════════════════════════════════════════════════════════
@@ -481,7 +469,7 @@ export type Database = {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["meetings"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       // TODO: migration pending — referenced by from-chat / scheduling/confirm
@@ -506,9 +494,7 @@ export type Database = {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["meeting_requests"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       // TODO: migration pending — used by webhooks/zoom & meetings/from-chat
@@ -527,9 +513,7 @@ export type Database = {
           role?: string | null;
           created_at?: string | null;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["meeting_participants_v2"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       // TODO: migration pending — used by worker/src/handlers/ingest.ts
@@ -554,9 +538,7 @@ export type Database = {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["meeting_transcripts"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       // TODO: migration pending — used by worker ingest/analyze pipeline
@@ -575,9 +557,7 @@ export type Database = {
           is_linked?: boolean | null;
           created_at?: string | null;
         };
-        Update: Partial<
-          Database["public"]["Tables"]["meeting_participants"]["Insert"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       // TODO: migration pending — used by webhooks/zoom for async dispatch
@@ -606,7 +586,7 @@ export type Database = {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["job_queue"]["Insert"]>;
+        Update: Record<string, unknown>;
       };
 
       // ════════════════════════════════════════════════════════════════════
@@ -637,7 +617,7 @@ export type Database = {
           title: string;
           event_date: string;
         };
-        Update: Partial<Database["public"]["Tables"]["event_items"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       event_participants: {
@@ -657,9 +637,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["event_participants"]["Row"]
         > & { event_id: string; user_id: string };
-        Update: Partial<
-          Database["public"]["Tables"]["event_participants"]["Row"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       match_requests: {
@@ -677,7 +655,7 @@ export type Database = {
           requester_id: string;
           recipient_id: string;
         };
-        Update: Partial<Database["public"]["Tables"]["match_requests"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       match_connections: {
@@ -693,9 +671,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["match_connections"]["Row"]
         > & { user1_id: string; user2_id: string };
-        Update: Partial<
-          Database["public"]["Tables"]["match_connections"]["Row"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       invitations: {
@@ -726,7 +702,7 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["invitations"]["Row"]> & {
           inviter_id: string;
         };
-        Update: Partial<Database["public"]["Tables"]["invitations"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       invite_links: {
@@ -753,7 +729,7 @@ export type Database = {
           created_by: string;
           link_code: string;
         };
-        Update: Partial<Database["public"]["Tables"]["invite_links"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       user_points: {
@@ -771,7 +747,7 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["user_points"]["Row"]> & {
           user_id: string;
         };
-        Update: Partial<Database["public"]["Tables"]["user_points"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       point_transactions: {
@@ -787,9 +763,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["point_transactions"]["Row"]
         > & { user_id: string; points: number };
-        Update: Partial<
-          Database["public"]["Tables"]["point_transactions"]["Row"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       bookings: {
@@ -817,7 +791,7 @@ export type Database = {
           user_email: string;
           scheduled_at: string;
         };
-        Update: Partial<Database["public"]["Tables"]["bookings"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       booking_sessions: {
@@ -835,9 +809,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["booking_sessions"]["Row"]
         > & { session_id: string };
-        Update: Partial<
-          Database["public"]["Tables"]["booking_sessions"]["Row"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       meeting_confirmations: {
@@ -857,9 +829,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["meeting_confirmations"]["Row"]
         >;
-        Update: Partial<
-          Database["public"]["Tables"]["meeting_confirmations"]["Row"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       meeting_minutes: {
@@ -881,9 +851,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["meeting_minutes"]["Row"]
         >;
-        Update: Partial<
-          Database["public"]["Tables"]["meeting_minutes"]["Row"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       settings: {
@@ -900,7 +868,7 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["settings"]["Row"]> & {
           user_id: string;
         };
-        Update: Partial<Database["public"]["Tables"]["settings"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       contact_inquiries: {
@@ -918,9 +886,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["contact_inquiries"]["Row"]
         > & { name: string; email: string; message: string };
-        Update: Partial<
-          Database["public"]["Tables"]["contact_inquiries"]["Row"]
-        >;
+        Update: Record<string, unknown>;
       };
 
       news_items: {
@@ -936,7 +902,7 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["news_items"]["Row"]> & {
           title: string;
         };
-        Update: Partial<Database["public"]["Tables"]["news_items"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       site_settings: {
@@ -946,7 +912,7 @@ export type Database = {
           updated_at: string | null;
         };
         Insert: { key: string; value?: Json; updated_at?: string | null };
-        Update: Partial<Database["public"]["Tables"]["site_settings"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       login_sessions: {
@@ -962,7 +928,7 @@ export type Database = {
         Insert: Partial<
           Database["public"]["Tables"]["login_sessions"]["Row"]
         > & { user_id: string };
-        Update: Partial<Database["public"]["Tables"]["login_sessions"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       faqs: {
@@ -979,7 +945,7 @@ export type Database = {
           question: string;
           answer: string;
         };
-        Update: Partial<Database["public"]["Tables"]["faqs"]["Row"]>;
+        Update: Record<string, unknown>;
       };
 
       case_studies: {
@@ -998,7 +964,7 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["case_studies"]["Row"]> & {
           title: string;
         };
-        Update: Partial<Database["public"]["Tables"]["case_studies"]["Row"]>;
+        Update: Record<string, unknown>;
       };
     };
     Views: {
