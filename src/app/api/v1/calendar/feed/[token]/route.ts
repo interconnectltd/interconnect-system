@@ -15,12 +15,36 @@ export async function GET(
   try {
     const { token } = await params;
 
-    const userId = validateFeedToken(token);
-    if (!userId) {
+    const validated = validateFeedToken(token);
+    if (!validated) {
       return new Response("Invalid or expired feed token", { status: 403 });
     }
+    const { userId, version } = validated;
 
     const supabase = await createServiceClient();
+
+    // Per-user revocation: トークン内 version が DB の現行 version と一致するか確認
+    const { data: profile, error: profileErr } = await supabase
+      .from("user_profiles")
+      .select("feed_token_version")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profileErr) {
+      console.error("Feed: failed to fetch token version", profileErr);
+      return new Response("Internal error", { status: 500 });
+    }
+
+    const currentVersion =
+      (profile as { feed_token_version: number | null } | null)
+        ?.feed_token_version ?? 1;
+
+    if (version !== currentVersion) {
+      return new Response(
+        "このフィードURLは無効になりました。新しいURLは設定画面で取得してください。",
+        { status: 410 },
+      );
+    }
 
     // ユーザーが参加している confirmed 会議を取得
     const { data: participantRows, error: pError } = await supabase

@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { json, jsonError, handleApiError } from "@/lib/api-helpers";
+import { sanitizeLikePattern } from "@/lib/sanitize";
 import { createServiceClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------------------
@@ -15,6 +16,26 @@ const ZOOM_WEBHOOK_SECRET = () => process.env.ZOOM_WEBHOOK_SECRET ?? "";
 /** HMAC-SHA256 hex digest */
 function hmacSha256Hex(data: string, secret: string): string {
   return createHmac("sha256", secret).update(data).digest("hex");
+}
+
+/**
+ * Validate that a recording download URL is hosted on a Zoom-owned domain.
+ * Defense-in-depth complement to HMAC signature verification — prevents
+ * SSRF on the worker if signature verification is ever bypassed.
+ *
+ * Allowed hosts: *.zoom.us (commercial) and *.zoomgov.com (Zoom Government).
+ */
+function isAllowedZoomHost(rawUrl: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    return false;
+  }
+  if (parsed.protocol !== "https:") return false;
+  const host = parsed.hostname.toLowerCase();
+  if (host === "zoom.us" || host === "zoomgov.com") return true;
+  return host.endsWith(".zoom.us") || host.endsWith(".zoomgov.com");
 }
 
 /**
@@ -147,6 +168,29 @@ async function handleRecordingCompleted(
 
   const downloadUrl = audioFile.download_url as string;
 
+  // ------------------------------------------------------------------
+  // SSRF defense — reject non-Zoom recording URLs even if signature
+  // verification is bypassed. Zoom recordings are always hosted on
+  // *.zoom.us or *.zoomgov.com.
+  // ------------------------------------------------------------------
+  if (!downloadUrl || !isAllowedZoomHost(downloadUrl)) {
+    let parsedHostname = "<unparseable>";
+    try {
+      parsedHostname = new URL(downloadUrl).hostname;
+    } catch {
+      // ignore — keep placeholder
+    }
+    console.warn(
+      "[zoom-webhook] Rejected non-Zoom recording URL:",
+      parsedHostname,
+    );
+    return jsonError(
+      400,
+      "INVALID_RECORDING_URL",
+      "Recording URL is not hosted on an allowed Zoom domain",
+    );
+  }
+
   const supabase = await createServiceClient();
 
   // ------------------------------------------------------------------
@@ -155,7 +199,7 @@ async function handleRecordingCompleted(
   const { data: meeting } = await supabase
     .from("meetings")
     .select("id, meeting_url, status")
-    .like("meeting_url", `%${zoomMeetingId}%`)
+    .like("meeting_url", `%${sanitizeLikePattern(zoomMeetingId)}%`)
     .limit(1)
     .maybeSingle();
 
@@ -205,7 +249,7 @@ async function handleRecordingCompleted(
     .from("calendar_events")
     .select("id, video_url, linked_meeting_id, user_id")
     .eq("is_interconnect", true)
-    .like("video_url", `%${zoomMeetingId}%`)
+    .like("video_url", `%${sanitizeLikePattern(zoomMeetingId)}%`)
     .limit(1)
     .maybeSingle();
 
