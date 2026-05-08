@@ -86,6 +86,29 @@ CREATE INDEX IF NOT EXISTS idx_meetings_request_id   ON public.meetings(request_
 CREATE INDEX IF NOT EXISTS idx_meetings_status       ON public.meetings(status);
 
 -- ────────────────────────────────────────────────────────────
+-- 2.1 Backfill FK from 00006 (calendar_events.linked_meeting_id → meetings.id)
+--     The column was declared without a FK in 00006 because public.meetings
+--     does not exist until this migration. Add the constraint now.
+--     Idempotency: DO block skips if the constraint already exists.
+-- ────────────────────────────────────────────────────────────
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'calendar_events_linked_meeting_id_fkey'
+      AND conrelid = 'public.calendar_events'::regclass
+  ) THEN
+    ALTER TABLE public.calendar_events
+      ADD CONSTRAINT calendar_events_linked_meeting_id_fkey
+        FOREIGN KEY (linked_meeting_id)
+        REFERENCES public.meetings(id)
+        ON DELETE SET NULL;
+  END IF;
+END
+$$;
+
+-- ────────────────────────────────────────────────────────────
 -- 3. meeting_participants_v2
 --    Used by: /api/v1/scheduling/confirm, /api/v1/meetings/from-chat,
 --             /api/v1/meetings/[id]/ics, /api/v1/calendar/feed/[token],

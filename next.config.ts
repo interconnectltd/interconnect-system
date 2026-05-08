@@ -9,7 +9,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://use.typekit.net https://p.typekit.net",
   "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://use.typekit.net",
   "img-src 'self' data: blob: https://*.supabase.co https://ui-avatars.com https://profile.line-scdn.net",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://api.line.me https://access.line.me https://liff.line.me https://timerex.net https://performance.typekit.net https://api.deepgram.com https://api.anthropic.com https://api.zoom.us https://*.zoom.us https://login.microsoftonline.com https://graph.microsoft.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://oauth2.googleapis.com https://accounts.google.com https://api.line.me https://access.line.me https://liff.line.me https://timerex.net https://performance.typekit.net https://api.deepgram.com https://api.anthropic.com https://api.zoom.us https://*.zoom.us https://login.microsoftonline.com https://graph.microsoft.com",
   "frame-src https://www.google.com https://timerex.net",
   "frame-ancestors 'none'",
 ].join("; ");

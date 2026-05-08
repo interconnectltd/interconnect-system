@@ -27,15 +27,18 @@
  */
 
 import { createRoot, type Root } from "react-dom/client";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import SchedulingSuggestions, {
   type SchedulingSuggestion,
 } from "./scheduling-suggestions";
+
+// Module-level singleton: the legacy site has no React tree above this
+// mount, so detecting a parent QueryClientProvider via try/catch around
+// useQueryClient breaks rules-of-hooks. Always wrap in our own client.
+const standaloneClient = new QueryClient({
+  defaultOptions: { queries: { retry: 1, staleTime: 60_000 } },
+});
 
 type MountOptions = {
   targetUserId: string;
@@ -73,23 +76,10 @@ function readDataset(
 }
 
 function ProvidedSuggestions(props: MountOptions) {
-  // If the host page already wraps in a provider, this hook will return it
-  // and we'll attach a thin pass-through. If not, we provide a fresh client.
-  let client: QueryClient | null = null;
-  try {
-    client = useQueryClient();
-  } catch {
-    client = null;
-  }
-
-  const inner = <SchedulingSuggestions {...props} />;
-  if (client) return inner;
-
-  const standalone = new QueryClient({
-    defaultOptions: { queries: { retry: 1, staleTime: 60_000 } },
-  });
   return (
-    <QueryClientProvider client={standalone}>{inner}</QueryClientProvider>
+    <QueryClientProvider client={standaloneClient}>
+      <SchedulingSuggestions {...props} />
+    </QueryClientProvider>
   );
 }
 

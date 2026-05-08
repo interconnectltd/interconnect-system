@@ -63,7 +63,8 @@ CREATE TABLE public.calendar_events (
   attendee_emails   JSONB DEFAULT '[]',
   is_interconnect   BOOLEAN NOT NULL DEFAULT false,
   recording_enabled BOOLEAN NOT NULL DEFAULT true,
-  linked_meeting_id UUID REFERENCES public.meetings(id) ON DELETE SET NULL,
+  -- FK to public.meetings(id) is installed in 00009 (meetings is created there).
+  linked_meeting_id UUID,
   etag              TEXT,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -73,9 +74,8 @@ CREATE TABLE public.calendar_events (
 CREATE INDEX idx_calendar_events_user_start ON public.calendar_events(user_id, start_at DESC);
 CREATE INDEX idx_calendar_events_interconnect ON public.calendar_events(is_interconnect) WHERE is_interconnect = true;
 
--- meetings テーブルに calendar_event_id を追加
-ALTER TABLE public.meetings
-  ADD COLUMN IF NOT EXISTS calendar_event_id UUID REFERENCES public.calendar_events(id) ON DELETE SET NULL;
+-- meetings テーブルへの calendar_event_id 追加は 00009 の CREATE TABLE 内で行う
+-- (00009 がこのテーブルを初めて作成するため、ここで ALTER できない)
 
 -- ────────────────────────────────────────────────────────────
 -- 3. CHAT TABLES
