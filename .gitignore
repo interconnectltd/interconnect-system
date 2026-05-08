@@ -58,3 +58,6 @@ sync-*.log
 
 # Original uncompressed video backup
 assets/interconnect-top-original.mp4
+
+# Claude Code local runtime state (scheduled_tasks.lock, agent caches, etc.)
+.claude/

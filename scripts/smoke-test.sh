@@ -11,9 +11,16 @@
 # Required env vars:
 #   BASE_URL      Deployed origin (e.g. https://interconnect.vercel.app)
 #   CRON_SECRET   Vercel cron secret used to authorize /api/v1/*/cron
+#                 The deployment registers 3 crons (Phase 5):
+#                   - /api/v1/calendar/cron   (every 15min)
+#                   - /api/v1/jobs/cron       (every 5min, ingest queue drain)
+#                   - /api/v1/retention/cron  (daily 18:00 UTC)
+#                 All three are validated when CRON_SECRET is provided.
 #
 # Optional env vars:
-#   SKIP_CRON=1   Skip cron-auth checks (when CRON_SECRET is unavailable)
+#   SKIP_CRON=1   Skip cron-auth checks for ALL three cron endpoints
+#                 (calendar / jobs / retention). Use when CRON_SECRET is
+#                 unavailable in the local shell (e.g. preview-only secrets).
 
 set -u
 
@@ -39,7 +46,7 @@ info() { echo "${C_DIM}       $1${C_RESET}"; }
 
 # ---------- usage / help ----------
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-  sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'
   exit 0
 fi
 
@@ -106,14 +113,24 @@ assert_status "root" "${BASE_URL}/" "$code" 200 301 302 308
 code=$(status "${BASE_URL}/login")
 assert_status "login page" "${BASE_URL}/login" "$code" 200 301 302 308
 
-code=$(status "${BASE_URL}/api/v1/health")
-if [[ "$code" == "200" ]]; then
-  pass "health endpoint: ${BASE_URL}/api/v1/health -> 200"
-elif [[ "$code" == "404" ]]; then
-  info "no /api/v1/health route defined (acceptable; project has no health endpoint)"
-  warn "health endpoint: ${BASE_URL}/api/v1/health -> 404 (not implemented)"
+# /api/v1/health: unauthenticated GET; returns 200 + {"status":"ok"} when
+# healthy, or 503 + {"status":"degraded"} when env/db checks fail.
+health_url="${BASE_URL}/api/v1/health"
+health_tmp="$(mktemp -t smoke-health.XXXXXX)"
+health_code=$(curl -s -o "${health_tmp}" -w "%{http_code}" --max-time 15 "${health_url}" || echo "000")
+health_body=$(cat "${health_tmp}" 2>/dev/null || echo "")
+rm -f "${health_tmp}"
+
+if [[ "${health_code}" == "200" ]] && echo "${health_body}" | grep -q '"status"[[:space:]]*:[[:space:]]*"ok"'; then
+  pass "health endpoint: ${health_url} -> 200 (status=ok)"
+elif [[ "${health_code}" == "503" ]] && echo "${health_body}" | grep -q '"status"[[:space:]]*:[[:space:]]*"degraded"'; then
+  warn "health endpoint: ${health_url} -> 503 (status=degraded; env/db check failing)"
+  info "body: ${health_body}"
+elif [[ "${health_code}" == "404" ]]; then
+  warn "health endpoint: ${health_url} -> 404 (route not deployed yet)"
 else
-  fail "health endpoint: ${BASE_URL}/api/v1/health -> ${code} (expected 200 or 404)"
+  fail "health endpoint: ${health_url} -> ${health_code} (expected 200/ok or 503/degraded)"
+  info "body: ${health_body}"
 fi
 
 # ---------- C. Auth boundary (must 401 without token) ----------
@@ -132,7 +149,14 @@ done
 echo
 echo "=== D. Cron endpoints ==="
 if [[ -n "${CRON_SECRET:-}" ]]; then
-  for path in "/api/v1/calendar/cron" "/api/v1/retention/cron"; do
+  # Phase 5: 3 crons registered in vercel.json. All share the same Bearer
+  # auth pattern — 401 without the header, 200 with it.
+  cron_paths=(
+    "/api/v1/calendar/cron"
+    "/api/v1/jobs/cron"
+    "/api/v1/retention/cron"
+  )
+  for path in "${cron_paths[@]}"; do
     code=$(status "${BASE_URL}${path}")
     assert_status "cron-no-auth" "${BASE_URL}${path}" "$code" 401 403
 
@@ -140,7 +164,7 @@ if [[ -n "${CRON_SECRET:-}" ]]; then
     assert_status "cron-with-secret" "${BASE_URL}${path}" "$code" 200
   done
 else
-  warn "Skipping cron-auth checks (no CRON_SECRET)"
+  warn "Skipping cron-auth checks for all 3 crons (calendar/jobs/retention) — no CRON_SECRET"
 fi
 
 # ---------- E. Webhook signature enforcement ----------
@@ -181,10 +205,10 @@ echo
 echo "=== H. Vercel cron configuration ==="
 if [[ -f "vercel.json" ]]; then
   cron_count=$(grep -c '"path"' vercel.json 2>/dev/null || echo 0)
-  if [[ "$cron_count" -ge 2 ]]; then
-    pass "vercel.json declares ${cron_count} cron job(s) locally"
+  if [[ "$cron_count" -ge 3 ]]; then
+    pass "vercel.json declares ${cron_count} cron job(s) locally (>=3 expected)"
   else
-    warn "vercel.json has ${cron_count} cron entries (expected 2: calendar + retention)"
+    warn "vercel.json has ${cron_count} cron entries (expected 3: calendar + jobs + retention)"
   fi
 else
   warn "vercel.json not found in cwd; run from repo root to verify cron config"

@@ -1,6 +1,7 @@
 # INTERCONNECT アーキテクチャ V5（統合版）
 
 > **発行日**: 2026-05-07
+> **最終更新**: 2026-05-09
 > **位置付け**: 本書は legacy 版（`ARCHITECTURE.md`）と新機能版（`CALENDAR_CHAT_AGENT_A_ARCHITECTURE.md`）の **上位ナビゲーション層**。
 > 詳細仕様は各下位ドキュメントを参照すること。
 
@@ -235,7 +236,7 @@ INTERCONNECT は legacy（HTML + Vanilla JS）と新コード（Next.js）が **
 
 ---
 
-## 8. フェーズ進捗（2026-05-07 時点）
+## 8. フェーズ進捗（2026-05-09 時点）
 
 | Phase | 内容 | 状態 |
 |---|---|---|
@@ -243,23 +244,25 @@ INTERCONNECT は legacy（HTML + Vanilla JS）と新コード（Next.js）が **
 | Phase 2 | UI 実装（チャット / カレンダー / 設定 / 会議タブ） | ✓ 完了 |
 | Phase 3 | セキュリティ強化 + V6 対策（90日 Cron / フィードトークン版数） | ✓ 完了 |
 | Phase 4 | デプロイ阻害リスク先回り（00009 マイグレーションで欠損テーブル補完など） | ✓ 完了 |
-| Phase 5 | 型システム正規化 + 残 UI + 文書整備（**本書はその一部**） | ⏳ 進行中 |
-| Phase 6 | 本番デプロイ + smoke test 実走 | ⏸ user 待ち |
-| Phase 7 | 外部審査（Zoom Marketplace / Azure AD）+ 本番ローンチ | ⏸ 未着手 |
+| Phase 5 | 型正規化 + UI + CSP + ヘルスチェック + V5 統合書 + hardening | ✓ 完了 |
+| Phase 6 | Vercel 接続 / DB migration / gen types / preview deploy / smoke-test | ⏳ 進行中 |
+| Phase 7 | Zoom Marketplace 審査 / Azure AD 審査 / Deepgram PoC / analyze handler / Resend メール基盤 | ⏸ 未着手 |
 
 ---
 
-## 9. 未解決事項（V1–V5）
+## 9. 未解決事項（V1–V8）
 
-`CALENDAR_CHAT_AGENT_A_ARCHITECTURE.md §12` のうち **2026-05-07 時点で未解決のもの**。V6（90日 Cron）は Phase 3 で実装済みのため除外。
+`CALENDAR_CHAT_AGENT_A_ARCHITECTURE.md §12` のうち **2026-05-09 時点で未解決のもの**。V6（90日 Cron）は Phase 3 で実装済みのため除外。V7・V8 は Phase 5 完了時点で識別された新規項目。
 
 | # | 項目 | 優先度 | 備考 |
 |---|---|---|---|
-| V1 | Deepgram 日本語精度 | P0 | 本番導入前に PoC 必須 |
-| V2 | Haiku 日本語会議検知精度 | P1 | 曖昧表現のチューニング |
-| V3 | Zoom Marketplace 審査期間 | P1 | 4–8 週間想定 |
-| V4 | Azure AD アプリ審査 | P2 | Outlook 連携用 |
-| V5 | ICS URL の更新遅延 | P2 | プロバイダーごとの実測 |
+| V1 | Deepgram 日本語精度 | P0 | Phase 7 で PoC を実施し本番導入可否を判断 |
+| V2 | Haiku 日本語会議検知精度 | P1 | Phase 7 で曖昧表現のチューニング |
+| V3 | Zoom Marketplace 審査期間 | P1 | Phase 6 完了後着手、4–8 週間想定 |
+| V4 | Azure AD アプリ審査 | P2 | Phase 6 完了後着手（Outlook 連携用） |
+| V5 | ICS URL の更新遅延 | P2 | 本番運用後にプロバイダーごとの実測 |
+| V7 | Supabase gen types 実行 → `next.config.ts` の `ignoreBuildErrors: false` 復帰 | P0 | Phase 6 中に対応（DB migration 直後） |
+| V8 | Agent A `analyze` job handler の実装（Opus 4.6 構造化分析） | P1 | Phase 7 で実装、現状は ingest のみ稼働 |
 
 ---
 
@@ -270,6 +273,7 @@ INTERCONNECT は legacy（HTML + Vanilla JS）と新コード（Next.js）が **
 | Legacy 詳細（HTML/JS、Netlify、認証フロー、レガシー DB） | `ARCHITECTURE.md` |
 | 新機能 詳細（カレンダー / チャット / 日程調整 / Agent A の設計と実装） | `CALENDAR_CHAT_AGENT_A_ARCHITECTURE.md` |
 | デプロイ手順（環境変数 / Vercel / Supabase 実行順） | `DEPLOY.md` |
+| Phase 6 ランブック（Vercel 接続 / migration / smoke-test 手順） | `docs/PHASE-6-RUNBOOK.md`（A5 が作成予定） |
 | プライバシーポリシー改訂草案 | `docs/privacy-policy-update-draft.md` |
 | スモークテストランナー | `scripts/smoke-test.sh` |
 | DB マイグレーション | `sql/000_canonical_schema.sql`, `supabase/migrations/00006`〜`00009` |

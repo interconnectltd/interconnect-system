@@ -1,5 +1,9 @@
 # INTERCONNECT デプロイ手順
 
+> **最終更新日**: 2026-05-09
+> **対応 Phase**: Phase 5 (型システム正規化 + 文書整備) 進行中 / Phase 6 (本番デプロイ + smoke test) 着手準備完了
+> 上位ドキュメント: [`docs/ARCHITECTURE-V5.md`](./docs/ARCHITECTURE-V5.md) §8
+
 本ドキュメントは、リポジトリをクローンしたチームメンバーがローカル動作確認から本番デプロイまでを完了するための手順書です。
 
 ---
@@ -73,8 +77,10 @@ Supabase プロジェクトが新規の場合は、以下を順番に適用し�
 
 1. `sql/000_canonical_schema.sql` — legacy 側で既に適用済みの想定 (会員・プロフィール・チャット等)
 2. `supabase/migrations/00006_calendar_chat.sql` — Calendar / Chat / Agent A スキーマ
-3. `supabase/migrations/00007_scheduling_availability.sql` — 候補時間帯ロジック
-4. `supabase/migrations/00008_feed_token_version.sql` — ICS フィードトークンの世代管理
+3. `supabase/migrations/00007_scheduling_availability.sql` — 候補時間帯ロジック / `messages.content_type` CHECK 拡張
+4. `supabase/migrations/00008_feed_token_version.sql` — ICS フィードトークンの世代管理 (per-user リボーク)
+5. `supabase/migrations/00009_meetings_jobs_transcripts.sql` — `meetings` / `meeting_requests` / `meeting_participants_v2` / `meeting_transcripts` / `job_queue` を新設 (00006 から参照されていた `public.meetings` を実体化)
+6. `supabase/migrations/00010_ics_feed_access_token_optional.sql` — ICS フィード接続向けに `calendar_connections.access_token_enc` の NOT NULL 制約を解除 (※後述 3.3)
 
 ### 3.2 適用方法
 
@@ -87,9 +93,55 @@ supabase link --project-ref <project-ref>
 supabase db push
 ```
 
-### 3.3 重要: 00006 と 00007 は同一トランザクションで適用すること
+### 3.3 重要事項
 
-`00006_calendar_chat.sql` のみを単独で適用した状態だと、`messages.content_type` の CHECK 制約が新しいコードが投入する値を拒否します。`00007_scheduling_availability.sql` で CHECK が拡張されるため、**必ず 00006 → 00007 をワンセットで適用**してください。SQL Editor で実行する場合は両ファイルを連結した1スクリプトとして流すのが安全です。
+#### 3.3.1 00006 と 00007 は同一トランザクションで適用すること
+
+`00006_calendar_chat.sql` のみを単独で適用した状態だと、`messages.content_type` の CHECK 制約が新しいコードが投入する値 (`scheduling_card` / `meeting_suggestion` / `meeting_confirmed`) を拒否します。`00007_scheduling_availability.sql` で CHECK が拡張されるため、**必ず 00006 → 00007 をワンセットで適用**してください。SQL Editor で実行する場合は両ファイルを連結した1スクリプトとして流すのが安全です。
+
+#### 3.3.2 00010 で NOT NULL を解除する理由
+
+`calendar_connections.access_token_enc` は OAuth (Google / Microsoft) 接続では必須ですが、**ICS フィード購読の場合は OAuth bearer token を持たず URL 自体が credential** になります。代わりに専用カラム `ics_url` に AES-256-GCM で暗号化した URL を 1 度だけ保存します。00010 はこの運用の差異に合わせ DB 制約を緩和し、必須性は provider ごとにアプリケーション層 (`src/lib/calendar/service.ts`) で検証します。詳細は `docs/privacy-policy-update-draft.md` §2.3 を参照。
+
+### 3.4 Database 型の自動生成 (`supabase gen types`)
+
+現状 `src/types/database.ts` は **手書きで保守されている** ため (00006〜00009 を反映済み)、Phase 5 の一環として Supabase 公式 CLI による自動生成へ移行します。手順は以下:
+
+```bash
+# 1. Supabase CLI で認証 (初回のみ)
+supabase login
+
+# 2. プロジェクトに紐付け (.supabase/ 以下が初期化される)
+supabase link --project-ref <PROJECT_REF>
+
+# 3. 型を再生成し src/types/database.ts へ上書き
+supabase gen types typescript --project-id <PROJECT_REF> > src/types/database.ts
+```
+
+`<PROJECT_REF>` は Supabase ダッシュボード `Project Settings → General → Reference ID` の値 (例: `abcdefghijklmnop`)。
+
+#### 3.4.1 生成後に維持する手書き定義
+
+自動生成された型には **アプリ層で利用しているリテラル列挙** が含まれないため、生成後に以下を **追記し直す** 必要があります (元ファイル冒頭の Enums セクションを丸ごと再追加):
+
+- `NotificationType` (chat_message / meeting_request / mutual_match など 15 値)
+- `MeetingPlatform` (`zoom` / `google_meet` / `teams` / `in_person`)
+- `CalendarProvider` (`google` / `microsoft` / `ics_feed`)
+- `ChatContentType` (`scheduling_card` / `meeting_suggestion` / `meeting_confirmed` ほか)
+
+これらは Postgres 側で純粋な enum ではなく CHECK 制約や `text` カラムで表現されているため、`gen types` では `string` として落ちてしまいます。手書き enum を維持することで TypeScript 側の網羅性チェックを失わずに済みます。
+
+#### 3.4.2 `next.config.ts` の `ignoreBuildErrors` を戻す
+
+`next.config.ts` には Phase 1 scaffolding の名残として以下が残っています:
+
+```ts
+typescript: {
+  ignoreBuildErrors: true,
+},
+```
+
+`gen types` 適用後にビルドが通ることを確認したら、**`false` に戻して** PR を出してください (Phase 5 完了の必須条件)。
 
 ---
 
@@ -194,13 +246,47 @@ curl -H "Authorization: Bearer $CRON_SECRET" \
 
 リリース前に着手 / 検討すべき残課題:
 
-1. **Database 型の正規化**: `supabase gen types typescript --project-id <ref> > src/types/database.ts` を整備し、`next.config.ts` の `typescript.ignoreBuildErrors` を `false` に戻す。
+1. **Database 型の正規化**: §3.4 の手順で `supabase gen types` を実行し、`next.config.ts` の `typescript.ignoreBuildErrors` を `false` に戻す (Phase 6 中)。
 2. **Profile modal の候補3件提案**: legacy のプロフィール modal と新 scheduling ロジックを連携させ、空き時間候補を3件まで提案する UI を実装。
 3. **メール送信基盤**: ICS の自動配信 (招待メール) のために Resend を導入予定。`RESEND_API_KEY` を env に追加し、 `/api/v1/calendar/invite` から送信。
 4. **プライバシーポリシー更新**: `privacy.html` に以下の条項を追記する必要あり。
    - 会議音声の録音について
    - AI による文字起こし・要約処理について
    - 録音・文字起こしデータの90日自動削除について
+5. **`analyze` job handler 実装** (Phase 7): Opus 4.6 構造化分析パス。現状は `/api/v1/jobs/cron` 内で no-op スキップで `completed` マーク。
+
+---
+
+## 9. Phase 6 完了の定義
+
+Phase 6 (本番デプロイ準備) が完了したと判断する基準。詳細手順は [`docs/PHASE-6-RUNBOOK.md`](./docs/PHASE-6-RUNBOOK.md)、項目別チェックは [`docs/PHASE-6-CHECKLIST.md`](./docs/PHASE-6-CHECKLIST.md) を参照。
+
+### 9.1 環境構築完了
+- [ ] `vercel link` で Vercel project に紐付け済み
+- [ ] `supabase login` + `supabase link --project-ref <REF>` 完了
+- [ ] §2.2 の必須9キー + §2.3 の利用機能分の env が Production / Preview / Development の3環境に投入済 (`vercel env ls` で確認)
+
+### 9.2 DB 反映完了
+- [ ] §3.1 の順序で migration 00006 → 00007 (連結) → 00008 → 00009 → 00010 を全適用
+- [ ] `scripts/smoke-test-supabase.ts` 実行で全 12 テーブル + 2 realtime publication が PASS
+
+### 9.3 型・ビルド健全性
+- [ ] §3.4 の `supabase gen types` 実行後に `pnpm type-check` が **0 件**
+- [ ] `next.config.ts` の `typescript.ignoreBuildErrors` を `false` に復帰
+- [ ] `pnpm build` が成功し、25 ページ + 全 cron route (`/api/v1/calendar/cron`, `/api/v1/jobs/cron`, `/api/v1/retention/cron`) が出力に含まれる
+
+### 9.4 Preview デプロイ + Smoke-test
+- [ ] `vercel deploy` (preview) 成功、URL を控える
+- [ ] `BASE_URL=<preview> CRON_SECRET=xxx ./scripts/smoke-test.sh` が PASSED ≧ 12 / FAILED == 0
+- [ ] `/api/v1/health` が 200 + `status: "ok"`
+- [ ] 3 cron すべてが 401 (no auth) / 200 (with bearer) を区別
+
+### 9.5 PR レビュー準備完了
+- [ ] PR #1 を draft → ready for review に格上げ
+- [ ] preview URL を PR コメントで共有
+- [ ] CRITICAL/HIGH 残課題 0 件 (privacy.html 本文挿入は法務レビュー律速で別軸)
+
+すべてチェック完了で Phase 6 完了 → Phase 7 (Zoom Marketplace 審査 / Azure AD 審査 / Deepgram PoC / `analyze` handler / Resend) 着手可。
 
 ---
 
