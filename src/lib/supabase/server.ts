@@ -60,10 +60,12 @@ export async function createClient(): Promise<SupabaseClient<Database>> {
       getAll() {
         return cookieStore.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(
+        cookiesToSet: { name: string; value: string; options: CookieOptions }[],
+      ) {
         try {
           for (const { name, value, options } of cookiesToSet) {
-            cookieStore.set(name, value, options as CookieOptions);
+            cookieStore.set(name, value, options);
           }
         } catch {
           // Called from a Server Component — refresh handled by middleware.

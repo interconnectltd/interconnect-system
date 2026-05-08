@@ -43,6 +43,24 @@ export function jsonError(
   return NextResponse.json({ error: { code, message } }, { status });
 }
 
+/**
+ * Build a 400 response from a failed Zod safeParse() result.
+ * Includes both `flatten()` (field/form summary) and raw issues.
+ */
+export function validationErrorResponse(error: ZodError): NextResponse {
+  return NextResponse.json(
+    {
+      error: {
+        code: "VALIDATION_FAILED",
+        message: "リクエストの検証に失敗しました",
+        details: error.flatten(),
+        issues: error.issues,
+      },
+    },
+    { status: 400 },
+  );
+}
+
 export function handleApiError(error: unknown): NextResponse {
   if (error instanceof AuthError) {
     return jsonError(401, "UNAUTHORIZED", error.message);

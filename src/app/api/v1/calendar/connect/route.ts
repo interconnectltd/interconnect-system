@@ -1,4 +1,5 @@
 import { withAuth, json, jsonError, handleApiError } from "@/lib/api-helpers";
+import { signOAuthState } from "@/lib/calendar/oauth-state";
 
 const SCOPES = [
   "https://www.googleapis.com/auth/calendar.readonly",
@@ -25,7 +26,7 @@ export async function POST() {
       scope: SCOPES.join(" "),
       access_type: "offline",
       prompt: "consent",
-      state: user.id,
+      state: signOAuthState(user.id),
     });
 
     const url = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;

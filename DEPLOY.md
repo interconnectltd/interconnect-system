@@ -158,6 +158,7 @@ vercel deploy --prod
 | Path | Schedule | 役割 |
 | --- | --- | --- |
 | `/api/v1/calendar/cron` | 15分ごと | カレンダー差分同期 / トークンリフレッシュ |
+| `/api/v1/jobs/cron` | 5分ごと | `job_queue` polling → ingest/analyze ハンドラ起動 (Agent A pipeline) |
 | `/api/v1/retention/cron` | 日次 18:00 UTC (= JST 03:00) | 録音・文字起こしの90日リテンション削除 |
 
 ### 初回手動トリガー
@@ -167,6 +168,9 @@ vercel deploy --prod
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
   https://<deploy>.vercel.app/api/v1/calendar/cron
+
+curl -H "Authorization: Bearer $CRON_SECRET" \
+  https://<deploy>.vercel.app/api/v1/jobs/cron
 
 curl -H "Authorization: Bearer $CRON_SECRET" \
   https://<deploy>.vercel.app/api/v1/retention/cron

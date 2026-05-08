@@ -1,5 +1,7 @@
-import { withAuth, json, handleApiError } from "@/lib/api-helpers";
+import { withAuth, json, jsonError, handleApiError } from "@/lib/api-helpers";
 import { createServiceClient } from "@/lib/supabase/server";
+import { createRoomFromConnection } from "./_post-handler";
+import { createChatRoomSchema } from "@/validations/chat";
 
 interface PeerProfile {
   id: string;
@@ -90,6 +92,46 @@ export async function GET() {
     });
 
     return json({ rooms: summaries });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+/**
+ * POST /api/v1/chat/rooms — Create (or fetch) a chat room from an accepted
+ * connection. Idempotent: returns the existing room if one exists for the
+ * given connection_id.
+ */
+export async function POST(request: Request) {
+  try {
+    const { user } = await withAuth();
+
+    const body = (await request.json().catch(() => null)) as unknown;
+    const parsed = createChatRoomSchema.safeParse(body);
+    if (!parsed.success) {
+      return jsonError(
+        400,
+        "VALIDATION_FAILED",
+        "リクエストの検証に失敗しました",
+      );
+    }
+
+    try {
+      const { roomId } = await createRoomFromConnection(
+        parsed.data.connection_id,
+        user.id,
+      );
+      return json({ room_id: roomId });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.startsWith("BAD_REQUEST"))
+        return jsonError(400, "BAD_REQUEST", msg);
+      if (msg.startsWith("NOT_FOUND"))
+        return jsonError(404, "NOT_FOUND", msg);
+      if (msg.startsWith("FORBIDDEN"))
+        return jsonError(403, "FORBIDDEN", msg);
+      throw e;
+    }
   } catch (error) {
     return handleApiError(error);
   }

@@ -1,4 +1,10 @@
-import { withAuth, json, jsonError, handleApiError } from "@/lib/api-helpers";
+import {
+  withAuth,
+  json,
+  jsonError,
+  handleApiError,
+  validationErrorResponse,
+} from "@/lib/api-helpers";
 import { isValidUUID } from "@/lib/sanitize";
 import { createServiceClient } from "@/lib/supabase/server";
 import {
@@ -6,6 +12,7 @@ import {
   hasRecentSuggestion,
   detectMeetingIntent,
 } from "@/lib/chat/meeting-detector";
+import { postChatMessageSchema } from "@/validations/chat";
 
 export async function GET(
   request: Request,
@@ -95,15 +102,13 @@ export async function POST(
 
     const body = await request.json().catch(() => null);
 
-    if (!body || typeof body !== "object") {
-      return jsonError(400, "BAD_REQUEST", "リクエストボディが不正です");
+    // Zod validation: trims content, enforces length (1〜5000), and content_type
+    // is restricted to the values allowed by chat_messages_content_type_check.
+    const parsed = postChatMessageSchema.safeParse(body);
+    if (!parsed.success) {
+      return validationErrorResponse(parsed.error);
     }
-
-    const { content, content_type } = body;
-
-    if (!content || typeof content !== "string" || content.trim().length === 0) {
-      return jsonError(400, "BAD_REQUEST", "メッセージ内容が必要です");
-    }
+    const { content, content_type } = parsed.data;
 
     const serviceClient = await createServiceClient();
 

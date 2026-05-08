@@ -1,8 +1,12 @@
-import { withAuth, json, jsonError, handleApiError } from "@/lib/api-helpers";
-import { isValidUUID } from "@/lib/sanitize";
+import {
+  withAuth,
+  json,
+  jsonError,
+  handleApiError,
+  validationErrorResponse,
+} from "@/lib/api-helpers";
 import { createServiceClient } from "@/lib/supabase/server";
-
-const VALID_PLATFORMS = ["zoom", "google_meet"] as const;
+import { schedulingConfirmSchema } from "@/validations/scheduling";
 
 /** POST /api/v1/scheduling/confirm — 日時確定 + 会議作成 */
 export async function POST(request: Request) {
@@ -10,58 +14,28 @@ export async function POST(request: Request) {
     const { user, supabase } = await withAuth();
     const body = await request.json().catch(() => null);
 
-    if (!body || typeof body !== "object") {
-      return jsonError(400, "BAD_REQUEST", "リクエストボディが不正です");
+    // --- 1. Zod バリデーション ---
+    // target_user_id: uuid, scheduled_at: ISO 8601 + future,
+    // duration_min: 5-480 (default 30), platform: enum, meeting_url: URL, chat_room_id: uuid optional.
+    const parsed = schedulingConfirmSchema.safeParse(body);
+    if (!parsed.success) {
+      return validationErrorResponse(parsed.error);
     }
 
-    // --- 1. バリデーション ---
-    const { target_user_id, scheduled_at, duration_min, platform, meeting_url, chat_room_id } = body;
-
-    if (!target_user_id || !isValidUUID(target_user_id)) {
-      return jsonError(400, "BAD_REQUEST", "有効な相手のIDが必要です");
-    }
+    const {
+      target_user_id,
+      scheduled_at,
+      duration_min: duration,
+      platform,
+      meeting_url,
+      chat_room_id,
+    } = parsed.data;
 
     if (target_user_id === user.id) {
       return jsonError(400, "BAD_REQUEST", "自分自身との会議は作成できません");
     }
 
-    if (!scheduled_at || typeof scheduled_at !== "string") {
-      return jsonError(400, "BAD_REQUEST", "日時（scheduled_at）が必要です");
-    }
-
     const scheduledDate = new Date(scheduled_at);
-    if (Number.isNaN(scheduledDate.getTime())) {
-      return jsonError(400, "BAD_REQUEST", "scheduled_atは有効なISO日時文字列で指定してください");
-    }
-
-    if (scheduledDate.getTime() < Date.now()) {
-      return jsonError(400, "BAD_REQUEST", "過去の日時は指定できません");
-    }
-
-    const duration = typeof duration_min === "number" ? duration_min : 30;
-    if (duration < 5 || duration > 480) {
-      return jsonError(400, "BAD_REQUEST", "duration_minは5〜480の範囲で指定してください");
-    }
-
-    if (platform && !VALID_PLATFORMS.includes(platform)) {
-      return jsonError(
-        400,
-        "BAD_REQUEST",
-        `platformは${VALID_PLATFORMS.join(", ")}のいずれかを指定してください`,
-      );
-    }
-
-    if (meeting_url) {
-      try {
-        new URL(meeting_url);
-      } catch {
-        return jsonError(400, "BAD_REQUEST", "meeting_urlは有効なURLを指定してください");
-      }
-    }
-
-    if (chat_room_id && !isValidUUID(chat_room_id)) {
-      return jsonError(400, "BAD_REQUEST", "chat_room_idが無効です");
-    }
 
     // --- 2. ユーザー存在 + 接続チェック ---
     const [{ data: target }, { data: requester }] = await Promise.all([

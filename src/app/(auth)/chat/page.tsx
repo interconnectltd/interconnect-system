@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import ChatRoomList from "@/components/chat/chat-room-list";
 import ChatMessages from "@/components/chat/chat-messages";
 import MessageInput from "@/components/chat/message-input";
+import ChatConsentBanner from "@/components/chat/chat-consent-banner";
 
 interface ChatRoomSummary {
   id: string;
@@ -65,7 +66,9 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)]">
+    <div className="flex h-[calc(100vh-3.5rem)] flex-col">
+      <ChatConsentBanner />
+      <div className="flex min-h-0 flex-1">
       {/* Room list */}
       <aside
         className={`${
@@ -148,6 +151,7 @@ export default function ChatPage() {
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }

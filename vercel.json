@@ -5,6 +5,10 @@
       "schedule": "*/15 * * * *"
     },
     {
+      "path": "/api/v1/jobs/cron",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/v1/retention/cron",
       "schedule": "0 18 * * *"
     }

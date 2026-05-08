@@ -1,4 +1,5 @@
 import { withAuth, json, jsonError, handleApiError } from "@/lib/api-helpers";
+import { signOAuthState } from "@/lib/calendar/oauth-state";
 
 const SCOPES = [
   "openid",
@@ -27,7 +28,7 @@ export async function POST() {
       scope: SCOPES.join(" "),
       response_mode: "query",
       prompt: "consent",
-      state: user.id,
+      state: signOAuthState(user.id),
     });
 
     const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?${params}`;

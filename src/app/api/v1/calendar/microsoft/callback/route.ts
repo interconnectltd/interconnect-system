@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { encryptToken } from "@/lib/calendar/crypto";
+import { verifyOAuthState } from "@/lib/calendar/oauth-state";
 
 /** GET /api/v1/calendar/microsoft/callback — Microsoft OAuth コールバック */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  const state = searchParams.get("state"); // user_id
+  const state = searchParams.get("state");
   const errorParam = searchParams.get("error");
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
@@ -16,6 +17,14 @@ export async function GET(request: Request) {
       : "カレンダー連携に失敗しました";
     return NextResponse.redirect(`${appUrl}/settings?error=${encodeURIComponent(msg)}`);
   }
+
+  const verified = verifyOAuthState(state);
+  if (!verified) {
+    return NextResponse.redirect(
+      `${appUrl}/settings?error=${encodeURIComponent("OAuthセッションが無効または期限切れです")}`,
+    );
+  }
+  const userId = verified.userId;
 
   try {
     const redirectUri = `${appUrl}/api/v1/calendar/microsoft/callback`;
@@ -71,7 +80,7 @@ export async function GET(request: Request) {
       .from("calendar_connections")
       .upsert(
         {
-          user_id: state,
+          user_id: userId,
           provider: "microsoft",
           provider_email: providerEmail,
           access_token_enc: accessTokenEnc,

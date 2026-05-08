@@ -1,7 +1,14 @@
-import { withAuth, json, jsonError, handleApiError } from "@/lib/api-helpers";
+import {
+  withAuth,
+  json,
+  jsonError,
+  handleApiError,
+  validationErrorResponse,
+} from "@/lib/api-helpers";
 import { createServiceClient } from "@/lib/supabase/server";
 import { encryptToken } from "@/lib/calendar/crypto";
 import { safeFetch, UrlGuardError } from "@/lib/calendar/url-guard";
+import { icsSubscribeSchema } from "@/validations/calendar";
 
 /** POST /api/v1/calendar/ics/subscribe — ICS URL でカレンダー接続 */
 export async function POST(request: Request) {
@@ -9,23 +16,14 @@ export async function POST(request: Request) {
     const { user } = await withAuth();
 
     const body = await request.json().catch(() => null);
-    if (!body || typeof body.ics_url !== "string") {
-      return jsonError(400, "INVALID_BODY", "ics_url が必要です");
-    }
 
-    const icsUrl: string = body.ics_url.trim();
-
-    // URL format validation
-    if (!icsUrl.startsWith("https://")) {
-      return jsonError(400, "INVALID_URL", "URLは https:// で始まる必要があります");
+    // Zod: trims, requires valid URL, https://, max length 2048.
+    const parseResult = icsSubscribeSchema.safeParse(body);
+    if (!parseResult.success) {
+      return validationErrorResponse(parseResult.error);
     }
-
-    let parsed: URL;
-    try {
-      parsed = new URL(icsUrl);
-    } catch {
-      return jsonError(400, "INVALID_URL", "有効なURLを入力してください");
-    }
+    const icsUrl = parseResult.data.ics_url;
+    const parsedUrl = new URL(icsUrl);
 
     // Test-fetch the ICS URL to verify accessibility and content (SSRF-guarded)
     let icsText: string;
@@ -67,7 +65,7 @@ export async function POST(request: Request) {
     const icsUrlEnc = encryptToken(icsUrl);
 
     // Extract domain as identifier
-    const providerEmail = parsed.hostname;
+    const providerEmail = parsedUrl.hostname;
 
     // Upsert into calendar_connections (service role to bypass RLS)
     const supabase = await createServiceClient();

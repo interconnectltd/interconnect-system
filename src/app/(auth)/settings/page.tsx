@@ -2,6 +2,7 @@ import { CalendarConnectionsSection } from "@/components/settings/calendar-conne
 import { AvailabilityRulesSection } from "@/components/settings/availability-rules-section";
 import { AvailabilityOverridesSection } from "@/components/settings/availability-overrides-section";
 import { FeedUrlSection } from "@/components/settings/feed-url-section";
+import { AiConsentSection } from "@/components/settings/ai-consent-section";
 
 export default function SettingsPage() {
   return (
@@ -48,6 +49,13 @@ export default function SettingsPage() {
           フィードURL
         </h2>
         <FeedUrlSection />
+      </section>
+
+      <section aria-labelledby="ai-consent-heading" className="space-y-3">
+        <h2 id="ai-consent-heading" className="text-lg font-semibold">
+          AI 分析設定
+        </h2>
+        <AiConsentSection />
       </section>
     </div>
   );

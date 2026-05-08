@@ -5,9 +5,9 @@
  * Verifies:
  *   1. SUPABASE_URL + SUPABASE_SERVICE_KEY are set
  *   2. Connection succeeds
- *   3. Each table from migrations 00006 / 00007 / 00008 exists (SELECT ... LIMIT 0)
+ *   3. Each table from migrations 00006 / 00007 / 00009 exists (SELECT ... LIMIT 0)
  *   4. RLS is enabled on each (pg_class.relrowsecurity)
- *   5. chat_messages is in supabase_realtime publication
+ *   5. chat_messages and chat_rooms are in supabase_realtime publication
  *
  * Usage:
  *   SUPABASE_URL=... SUPABASE_SERVICE_KEY=... npx tsx scripts/smoke-test-supabase.ts
@@ -51,7 +51,19 @@ const TABLES_FROM_00006 = [
   "chat_analysis",
 ];
 const TABLES_FROM_00007 = ["availability_rules", "availability_overrides"];
-const ALL_TABLES = [...TABLES_FROM_00006, ...TABLES_FROM_00007];
+const TABLES_FROM_00009 = [
+  "meeting_requests",
+  "meetings",
+  "meeting_participants_v2",
+  "meeting_transcripts",
+  "job_queue",
+];
+const ALL_TABLES = [
+  ...TABLES_FROM_00006,
+  ...TABLES_FROM_00007,
+  ...TABLES_FROM_00009,
+];
+const REALTIME_TABLES = ["chat_messages", "chat_rooms"];
 
 async function main() {
   console.log("=== A. Environment variables ===");
@@ -136,17 +148,29 @@ async function main() {
 
   console.log("\n=== E. Realtime publication ===");
   const { data: pubRows, error: pubErr } = await supabase
-    .rpc("smoke_check_realtime", { table_names: ["chat_messages"] })
+    .rpc("smoke_check_realtime", { table_names: REALTIME_TABLES })
     .select();
   if (pubErr) {
     warn(
       `Could not auto-check realtime publication: ${pubErr.message}. ` +
-        `Verify supabase_realtime publication includes chat_messages in the dashboard.`,
+        `Verify supabase_realtime publication includes ${REALTIME_TABLES.join(
+          ", ",
+        )} in the dashboard.`,
     );
-  } else if (Array.isArray(pubRows) && pubRows.length > 0) {
-    const r = pubRows[0] as { table_name: string; in_publication: boolean };
-    if (r.in_publication) pass("chat_messages is in supabase_realtime publication");
-    else fail("chat_messages is NOT in supabase_realtime publication");
+  } else if (Array.isArray(pubRows)) {
+    const byName = new Map<string, boolean>(
+      (pubRows as { table_name: string; in_publication: boolean }[]).map((r) => [
+        r.table_name,
+        r.in_publication,
+      ]),
+    );
+    for (const t of REALTIME_TABLES) {
+      const on = byName.get(t);
+      if (on === true) pass(`${t} is in supabase_realtime publication`);
+      else if (on === false)
+        fail(`${t} is NOT in supabase_realtime publication`);
+      else warn(`realtime status unknown for ${t} (rpc returned no row)`);
+    }
   } else {
     warn("rpc('smoke_check_realtime') returned no rows");
   }

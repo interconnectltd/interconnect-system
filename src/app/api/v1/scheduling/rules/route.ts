@@ -1,5 +1,11 @@
-import { withAuth, json, jsonError, handleApiError } from "@/lib/api-helpers";
+import {
+  withAuth,
+  json,
+  handleApiError,
+  validationErrorResponse,
+} from "@/lib/api-helpers";
 import { createServiceClient } from "@/lib/supabase/server";
+import { availabilityRulesUpdateSchema } from "@/validations/calendar";
 
 /** GET /api/v1/scheduling/rules — 空き時間ルール取得 */
 export async function GET() {
@@ -29,47 +35,13 @@ export async function PUT(request: Request) {
     const { user } = await withAuth();
     const body = await request.json().catch(() => null);
 
-    if (!body || !Array.isArray(body.rules)) {
-      return jsonError(400, "BAD_REQUEST", "rulesは配列で指定してください");
+    // Zod: array<{day_of_week:0-6, start_time/end_time strict HH:MM,
+    // start_time<end_time}>, max 50 rules.
+    const parsed = availabilityRulesUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return validationErrorResponse(parsed.error);
     }
-
-    const rules: Array<{
-      day_of_week: number;
-      start_time: string;
-      end_time: string;
-    }> = body.rules;
-
-    // バリデーション
-    for (const rule of rules) {
-      if (
-        typeof rule.day_of_week !== "number" ||
-        rule.day_of_week < 0 ||
-        rule.day_of_week > 6
-      ) {
-        return jsonError(
-          400,
-          "BAD_REQUEST",
-          "day_of_weekは0〜6の数値で指定してください",
-        );
-      }
-
-      const timeRegex = /^\d{2}:\d{2}$/;
-      if (!timeRegex.test(rule.start_time) || !timeRegex.test(rule.end_time)) {
-        return jsonError(
-          400,
-          "BAD_REQUEST",
-          "時刻はHH:MM形式で指定してください",
-        );
-      }
-
-      if (rule.start_time >= rule.end_time) {
-        return jsonError(
-          400,
-          "BAD_REQUEST",
-          "start_timeはend_timeより前に設定してください",
-        );
-      }
-    }
+    const { rules } = parsed.data;
 
     const serviceClient = await createServiceClient();
 

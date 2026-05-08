@@ -215,6 +215,7 @@ INTERCONNECT は legacy（HTML + Vanilla JS）と新コード（Next.js）が **
 | パス | スケジュール | 用途 |
 |---|---|---|
 | `/api/v1/calendar/cron` | `*/15 * * * *` | 全ユーザーのカレンダー差分同期（Google/Outlook/ICS） |
+| `/api/v1/jobs/cron` | `*/5 * * * *` | `job_queue` の pending ジョブ polling → Agent A ingest/analyze 起動 |
 | `/api/v1/retention/cron` | `0 18 * * *` | プライバシーポリシー準拠の 90日テキスト null 化 |
 
 定義実体は `vercel.json`。スモークテストは `scripts/smoke-test.sh`。

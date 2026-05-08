@@ -289,10 +289,20 @@ export const ICSFeedProvider: CalendarProvider = {
     connection: ConnectionRecord,
     syncCursor: string | null,
   ): Promise<SyncResult> {
-    const icsUrl = connection.ics_url;
-    if (!icsUrl) {
+    if (!connection.ics_url) {
       throw new CalendarProviderError(
         "ICS URL is not configured for this connection",
+        "ics_feed",
+        "API_ERROR",
+      );
+    }
+    // ics_url is encrypted at rest (subscribe route encrypts via AES-256-GCM).
+    let icsUrl: string;
+    try {
+      icsUrl = decryptToken(connection.ics_url);
+    } catch {
+      throw new CalendarProviderError(
+        "ICS URL の復号に失敗しました (再連携が必要です)",
         "ics_feed",
         "API_ERROR",
       );

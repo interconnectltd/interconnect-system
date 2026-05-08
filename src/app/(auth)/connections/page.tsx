@@ -66,7 +66,7 @@ export default async function ConnectionsPage() {
   // Fetch all accepted connections where the current user is a party.
   // The legacy schema does not enforce a canonical ordering, so we OR on
   // both columns and resolve "the other party" client-side.
-  const acceptedStatuses = ["accepted", "reaccepted"];
+  const acceptedStatuses = ["accepted", "reaccepted"] as const;
   const { data: connections, error } = await supabase
     .from("connections")
     .select("id, user_id, connected_user_id, status, updated_at")

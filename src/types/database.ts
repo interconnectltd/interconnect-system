@@ -722,30 +722,8 @@ export type Database = {
         Relationships: [];
       };
 
-      meeting_participants: {
-        Row: {
-          id: string;
-          transcript_id: string;
-          user_id: string | null;
-          is_linked: boolean | null;
-          created_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          transcript_id: string;
-          user_id?: string | null;
-          is_linked?: boolean | null;
-          created_at?: string | null;
-        };
-        Update: Partial<{
-          id: string;
-          transcript_id: string;
-          user_id: string | null;
-          is_linked: boolean | null;
-          created_at: string | null;
-        }>;
-        Relationships: [];
-      };
+      // NOTE: legacy `meeting_participants` orphan removed; use
+      // meeting_participants_v2 (declared above, created by 00009).
 
       job_queue: {
         Row: {
