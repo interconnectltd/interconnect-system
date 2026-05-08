@@ -176,8 +176,17 @@ async function runJob(jobType: string, payload: unknown): Promise<void> {
       await handleIngest(payload);
       return;
     }
+    case "analyze": {
+      // Phase 7 scope: Opus 4.6 構造化分析 → user_conversation_vectors 更新
+      // → matching_scores_v4 再計算。analyze handler は別 PR で実装予定。
+      // 現状 ingest が完了して analyze ジョブを enqueue するパスが存在するため、
+      // ここで明示的にスキップして status=completed で抜ける (failed にしない)。
+      console.log("[jobs/cron] analyze job skipped (handler pending Phase 7)", {
+        payload,
+      });
+      return;
+    }
     default:
-      // analyze / notify / etc. land here until handlers are wired up.
       throw new Error(`Unknown job_type: ${jobType}`);
   }
 }

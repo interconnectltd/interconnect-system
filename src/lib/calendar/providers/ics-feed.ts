@@ -8,6 +8,7 @@ import type {
 } from "../types";
 import { CalendarProviderError } from "../types";
 import { safeFetch, UrlGuardError } from "../url-guard";
+import { decryptToken } from "../crypto";
 
 // ---------------------------------------------------------------------------
 // Video URL extraction patterns
