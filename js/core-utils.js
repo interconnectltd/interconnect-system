@@ -113,19 +113,35 @@
     // Part 1: Error Prevention (error-prevention.js)
     // ============================================================
 
-    // グローバルエラーハンドラー（本番環境では静かに処理）
+    // グローバルエラーハンドラー
+    // 以前は本番で event.preventDefault() のみ呼んでユーザー側を完全沈黙させていたため、
+    // 登録ボタン後の TypeError 等が「押しても何も起きない」体験になっていた。
+    // 本番でも console に必ず残し、user-facing エラーは showToast で通知する。
     window.addEventListener('error', function(event) {
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            console.error('Global error caught:', event.error);
-        }
+        try {
+            console.error('Global error caught:', event.error || event.message);
+            if (typeof window.showToast === 'function') {
+                const msg = (event.error && event.error.message) || event.message || '予期しないエラーが発生しました';
+                // スクリプト読み込み失敗 (Script error.) は通知しない
+                if (!/^Script error\.?$/i.test(String(msg))) {
+                    window.showToast(msg, 'error');
+                }
+            }
+        } catch (_) { /* noop */ }
         event.preventDefault();
     });
 
     // Promiseの未処理エラーをキャッチ
     window.addEventListener('unhandledrejection', function(event) {
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        try {
             console.error('Unhandled promise rejection:', event.reason);
-        }
+            if (typeof window.showToast === 'function') {
+                const reason = event.reason;
+                const msg = (reason && reason.message) ? String(reason.message)
+                    : (typeof reason === 'string' ? reason : '通信中にエラーが発生しました');
+                window.showToast(msg, 'error');
+            }
+        } catch (_) { /* noop */ }
         event.preventDefault();
     });
 
