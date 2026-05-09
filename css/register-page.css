@@ -503,7 +503,11 @@
     margin-top: var(--space-xl);
 }
 
-/* 4,5ページ目のナビゲーション */
+/* 4,5ページ目のナビゲーション
+   デスクトップでは画面下に固定 (UX 上のメリットあり)。
+   モバイルではキーボード表示時に visualViewport 外へ押し出されてしまい
+   登録ボタンが完全に画面外で押せない状態になる事象が報告されていたため、
+   モバイル MQ では position: static にしてフォーム末尾に通常配置する。 */
 .form-step[data-step="4"] .form-navigation,
 .form-step[data-step="5"] .form-navigation {
     position: fixed;
@@ -519,6 +523,23 @@
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
     margin-top: 0;
     z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .form-step[data-step="4"] .form-navigation,
+    .form-step[data-step="5"] .form-navigation {
+        position: static;
+        transform: none;
+        left: auto;
+        bottom: auto;
+        max-width: none;
+        background: transparent;
+        backdrop-filter: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+        margin-top: var(--space-xl);
+    }
 }
 
 .form-navigation button {
@@ -997,12 +1018,15 @@ textarea {
     color: #10b981 !important;
 }
 
-/* ボタンの無効化スタイルを修正 */
+/* ボタンの無効化スタイルを修正
+   pointer-events: none を併記して、disabled 中は click イベントが
+   発火しないことを保証 (一部モバイル Safari で disabled だけでは発火する) */
 .auth-button:disabled,
 .auth-button.disabled {
     opacity: 0.5 !important;
     cursor: not-allowed !important;
     background: #94a3b8 !important;
+    pointer-events: none !important;
 }
 
 /* ボタンが有効な場合 */

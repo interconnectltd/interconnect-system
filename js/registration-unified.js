@@ -878,7 +878,12 @@ function showSuccessMessage(message) {
             case 'phone':
                 fieldKey = 'phone';
                 // 日本の電話番号形式（ハイフンあり/なし対応）
-                const phoneDigits = field.value.replace(/[-\s]/g, '');
+                // iOS autofill の全角数字 (０-９) / 全角ハイフン (−) / 全角空白 (　) に対応。
+                // 半角化: 全角数字を半角に、全角ハイフンを半角に、全種類の空白とハイフンを除去。
+                const phoneDigits = String(field.value || '')
+                    .replace(/[０-９]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
+                    .replace(/[‐-―−－]/g, '-')
+                    .replace(/[\s　\-]/g, '');
                 isValid = /^0[0-9]{9,10}$/.test(phoneDigits);
                 break;
 
@@ -2116,6 +2121,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const form = e.target;
         const submitButton = form.querySelector('button[type="submit"]');
 
+        // submitButton が万一取得できなくても以降の処理を続行できるよう null safe にする。
+        // 元のテキストを覚えておき、エラー時に確実に復元する。
+        const originalButtonText = submitButton ? submitButton.textContent : '登録する';
+
         // フォームデータを収集
         const formData = collectFormData();
 
@@ -2124,10 +2133,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const inviteCode = urlParams.get('invite') || sessionStorage.getItem('inviteCode');
         const inviterId = sessionStorage.getItem('inviterId');
 
-        // ボタンをローディング状態に
-        submitButton.disabled = true;
-        submitButton.classList.add('loading');
-        submitButton.textContent = '登録処理中...';
+        // ボタンをローディング状態に (null safe)
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.classList.add('loading');
+            submitButton.textContent = '登録処理中...';
+        }
 
         try {
             // 必須フィールドの確認（ステップ自由移動で未入力のまま送信防止）
@@ -2233,6 +2244,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     email: formData.email,
                     password: formData.password,
                     options: {
+                        emailRedirectTo: `${window.location.origin}/login.html?confirmed=1`,
                         data: {
                             name: formData.name,
                             company: formData.company,
@@ -2244,19 +2256,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (authError) {
-                    if (authError.message.includes('User already registered')) {
+                    // null/undefined セーフな message 参照 — 一部のエラーレスポンスは
+                    // { status: 500 } のみで message が無く、直接 .includes() で TypeError
+                    // を起こしていた (本番では window.error ハンドラで preventDefault され
+                    // ユーザー側は完全沈黙する)
+                    const authMsg = (authError && authError.message) ? String(authError.message) : '';
+                    if (authMsg.includes('User already registered')) {
                         throw new Error('このメールアドレスは既に登録されています。');
-                    } else if (authError.message.includes('Password should be at least')) {
+                    } else if (authMsg.includes('Password should be at least')) {
                         throw new Error('パスワードは8文字以上で入力してください。');
-                    } else if (authError.message.includes('Invalid email') || authError.message.includes('is invalid')) {
+                    } else if (authMsg.includes('Invalid email') || authMsg.includes('is invalid')) {
                         throw new Error('有効なメールアドレスを入力してください。');
-                    } else if (authError.message.includes('security purposes') || authError.message.includes('rate limit')) {
-                        const seconds = authError.message.match(/(\d+)\s*second/);
+                    } else if (authMsg.includes('security purposes') || authMsg.includes('rate limit')) {
+                        const seconds = authMsg.match(/(\d+)\s*second/);
                         throw new Error(seconds ? `セキュリティ保護のため、${seconds[1]}秒後に再度お試しください。` : 'しばらく時間をおいてから再度お試しください。');
-                    } else if (authError.message.includes('network') || authError.message.includes('fetch')) {
+                    } else if (authMsg.includes('network') || authMsg.includes('fetch') || authMsg.includes('Failed to fetch')) {
                         throw new Error('ネットワークエラーが発生しました。通信環境を確認してください。');
                     }
-                    throw new Error('登録処理中にエラーが発生しました。しばらくしてから再度お試しください。');
+                    throw new Error(authMsg || '登録処理中にエラーが発生しました。しばらくしてから再度お試しください。');
                 }
 
                 if (!authData || !authData.user) {
@@ -2299,6 +2316,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     } catch (qrError) {
                         console.error('LINE QRアップロードエラー:', qrError);
+                        // 登録自体は続行するが、ユーザーには黙らずに通知 — モバイルで
+                        // ストレージ権限/ネットワークが原因のサイレントフェイルを避ける
+                        (window.showToast || function(){})(
+                            'LINE QRコードの保存に失敗しました。後ほど設定画面から再アップロードできます。',
+                            'warning'
+                        );
                     }
                     window._selectedLineQrFile = null;
                 }
@@ -2363,11 +2386,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
         } catch (error) {
-            (window.showToast || function(m){alert(m)})(error.message || '登録に失敗しました', 'error');
+            // モバイル本番では window.error ハンドラが preventDefault するため
+            // ここで明示的にトーストを出さないとユーザーは完全沈黙状態になる
+            const msg = (error && error.message) ? String(error.message) : '登録に失敗しました';
+            (window.showToast || function(m){ try { alert(m); } catch(_) {} })(msg, 'error');
+            console.error('[Register] 登録処理失敗:', error);
 
-            submitButton.disabled = false;
-            submitButton.classList.remove('loading');
-            submitButton.textContent = '登録する';
+            // submitButton が取得できていれば必ず元状態に戻す。null だった場合も
+            // isSubmitting だけは確実に解除して再送信できる状態にする。
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.classList.remove('loading');
+                submitButton.textContent = originalButtonText || '登録する';
+            }
             isSubmitting = false;
         }
     }
